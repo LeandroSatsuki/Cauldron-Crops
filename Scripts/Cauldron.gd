@@ -28,7 +28,7 @@ func _ready() -> void:
 	
 	# Reset Visual
 	$PopupLayer/CenterContainer/PopupUI.hide()
-	$PopupLayer/CenterContainer/PopupUI.mouse_filter = Control.MOUSE_FILTER_PASS
+	$PopupLayer/CenterContainer/PopupUI.mouse_filter = Control.MOUSE_FILTER_STOP
 	
 	# Shader Material
 	material = ShaderMaterial.new()

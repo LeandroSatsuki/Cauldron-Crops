@@ -17,7 +17,14 @@ var item_vinculado: String:
 @onready var destaque: ReferenceRect = $Destaque
 
 func _ready() -> void:
-	pass
+	# A MÁGICA ESTÁ AQUI: Garantir que o destaque visual 
+	# NUNCA bloqueie os cliques do mouse quando estiver visível.
+	if destaque:
+		destaque.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	if icon_label:
+		icon_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	if qtd_label:
+		qtd_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 func configurar_slot(id: String, qtd: int, texto_exibicao: String) -> void:
 	item_id = id
@@ -46,25 +53,19 @@ func set_destaque(ativo: bool) -> void:
 		if tween_piscar:
 			tween_piscar.kill()
 
-func _gui_input(event: InputEvent) -> void:
-	if event is InputEventMouseButton:
+# Dispara a seleção normalmente ao clicar (Sinal restaurado)
+func _gui_input(event):
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		if event.pressed:
-			if event.button_index == MOUSE_BUTTON_LEFT:
-				slot_clicado.emit(item_id, false, self)
-				# NÃO chame accept_event() aqui! Se você chamar accept_event(), o Drag & Drop não vai iniciar.
-			elif event.button_index == MOUSE_BUTTON_RIGHT:
-				slot_clicado.emit(item_id, true, self)
-				# NÃO chame accept_event() aqui!
+			emit_signal("slot_clicado", item_id, false, self)
 
-func _get_drag_data(at_position: Vector2) -> Variant:
-	# Se o slot estiver vazio, não faz nada
-	if item_vinculado == "":
+# O arrasto funciona independentemente da seleção
+func _get_drag_data(at_position):
+	if item_id == "":
 		return null
 	
-	# Cria uma preview visual do item que você está arrastando
 	var preview = Label.new()
-	preview.text = item_vinculado
+	preview.text = item_id
 	set_drag_preview(preview)
 	
-	# Retorna o nome do item como dado
-	return item_vinculado
+	return item_id
