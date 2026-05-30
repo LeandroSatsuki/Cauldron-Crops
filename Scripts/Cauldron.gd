@@ -28,7 +28,7 @@ func _ready() -> void:
 	
 	# Reset Visual
 	$PopupLayer/CenterContainer/PopupUI.hide()
-	$PopupLayer/CenterContainer/PopupUI.mouse_filter = Control.MOUSE_FILTER_STOP
+	$PopupLayer/CenterContainer/PopupUI.mouse_filter = Control.MOUSE_FILTER_PASS
 	
 	# Shader Material
 	material = ShaderMaterial.new()
@@ -42,6 +42,7 @@ func _process(_delta: float) -> void:
 
 func abrir_popup():
 	get_viewport().set_input_as_handled()
+	get_viewport().gui_disable_input = false
 	print("DEBUG: Executando abrir_popup()")
 	$PopupLayer/CenterContainer/PopupUI.visible = true
 	$PopupLayer/CenterContainer/PopupUI.process_mode = Node.PROCESS_MODE_INHERIT

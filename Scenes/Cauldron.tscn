@@ -110,7 +110,7 @@ position = Vector2(1900, 900)
 
 [node name="SpriteCaldeirao" type="AnimatedSprite2D" parent="BaseAnchor"]
 texture_filter = 1
-speed_scale = 0.5
+speed_scale = 0.7
 sprite_frames = SubResource("SpriteFrames_cauldron")
 animation = &"idle"
 autoplay = "idle"
@@ -135,11 +135,13 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 1
 
 [node name="PopupUI" type="Panel" parent="PopupLayer/CenterContainer"]
 custom_minimum_size = Vector2(300, 300)
 layout_mode = 2
 z_index = 10
+mouse_filter = 1
 visible = false
 
 [node name="DropSlot1" type="Panel" parent="PopupLayer/CenterContainer/PopupUI"]
