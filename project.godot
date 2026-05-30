@@ -21,6 +21,7 @@ Database="*uid://is4pr15d84oq"
 GlobalInventory="*uid://c1s8rdlc1baxi"
 EconomyManager="*res://Scripts/EconomyManager.gd"
 SeasonManager="*res://Scripts/SeasonManager.gd"
+GolemManager="*res://Scripts/GolemManager.gd"
 
 [physics]
 

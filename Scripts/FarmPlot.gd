@@ -17,6 +17,7 @@ var semente_atual: Dictionary = {}
 @onready var color_rect = $ColorRect
 
 func _ready() -> void:
+	add_to_group("lotes_terra")
 	# Configura o timer como one-shot e conecta o sinal de timeout
 	if timer:
 		timer.one_shot = true

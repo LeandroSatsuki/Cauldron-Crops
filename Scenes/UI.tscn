@@ -55,3 +55,11 @@ text = "Equipar: Trigo (Primavera)"
 [node name="EquiparInvernoButton" type="Button" parent="LeftPanel"]
 layout_mode = 2
 text = "Equipar: Raiz (Inverno)"
+
+[node name="ComprarGolemButton" type="Button" parent="LeftPanel"]
+layout_mode = 2
+text = "Comprar Golem Coletor (100 Moedas)"
+
+[node name="GolemsLabel" type="Label" parent="LeftPanel"]
+layout_mode = 2
+text = "Golems Ativos: 0"
