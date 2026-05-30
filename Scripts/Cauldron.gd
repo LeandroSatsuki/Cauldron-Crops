@@ -122,10 +122,8 @@ func _on_misturar_button_pressed() -> void:
 			estado_atual = "BREWING"
 			popup_ui.visible = false
 			$BaseAnchor/SpriteCaldeirao.play("brewing")
-			var tween = create_tween()
-			tween.tween_property($BaseAnchor/SpriteCaldeirao, "scale", Vector2(0.6, 0.4), 0.2)
-			tween.tween_property($BaseAnchor/SpriteCaldeirao, "scale", Vector2(0.5, 0.5), 0.2)
 			$BrewTimer.start(tempo_producao)
+			_iniciar_pulsar_magico()
 			_limpar_slots()
 		else:
 			if removed_1:
@@ -149,10 +147,8 @@ func _on_misturar_button_pressed() -> void:
 			estado_atual = "BREWING"
 			popup_ui.visible = false
 			$BaseAnchor/SpriteCaldeirao.play("brewing")
-			var tween = create_tween()
-			tween.tween_property($BaseAnchor/SpriteCaldeirao, "scale", Vector2(0.6, 0.4), 0.2)
-			tween.tween_property($BaseAnchor/SpriteCaldeirao, "scale", Vector2(0.5, 0.5), 0.2)
 			$BrewTimer.start(tempo_producao)
+			_iniciar_pulsar_magico()
 			_limpar_slots()
 		else:
 			if removed_1:
@@ -183,6 +179,15 @@ func _on_brew_timer_timeout() -> void:
 		var nome_exibicao = "Golem" if item_em_producao == "golem_coletor" else item_em_producao
 		ui.criar_texto_flutuante("Sucesso: " + nome_exibicao + "!", $BaseAnchor/SpriteCaldeirao.global_position, Color.GREEN)
 		
+	$BaseAnchor/SpriteCaldeirao.scale = Vector2(0.5, 0.5)
 	$BaseAnchor/SpriteCaldeirao.play("idle")
 	estado_atual = "IDLE"
 	item_em_producao = ""
+
+
+func _iniciar_pulsar_magico():
+	while estado_atual == "BREWING":
+		var tween = create_tween()
+		tween.tween_property($BaseAnchor/SpriteCaldeirao, "scale", Vector2(0.45, 0.45), 0.5)
+		tween.tween_property($BaseAnchor/SpriteCaldeirao, "scale", Vector2(0.5, 0.5), 0.5)
+		await tween.finished
