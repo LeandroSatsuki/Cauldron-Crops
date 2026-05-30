@@ -1,58 +1,42 @@
 extends Panel
 
-var ing_1: String = ""
-var ing_2: String = ""
-
-@onready var slot_1: Label = $Slot1
-@onready var slot_2: Label = $Slot2
-@onready var misturar_button: Button = $MisturarButton
 @onready var resultado_label: Label = $ResultadoLabel
-@onready var add_trigo_button: Button = $AddTrigoButton
-@onready var add_agua_button: Button = $AddAguaButton
+@onready var lista_receitas: VBoxContainer = $ScrollContainer/ListaReceitas
 
 func _ready() -> void:
-	if misturar_button:
-		misturar_button.pressed.connect(_on_misturar_button_pressed)
-	if add_trigo_button:
-		add_trigo_button.pressed.connect(func(): adicionar_ingrediente("trigo"))
-	if add_agua_button:
-		add_agua_button.pressed.connect(func(): adicionar_ingrediente("agua"))
-
-func adicionar_ingrediente(nome_item: String) -> void:
-	var slot_disponivel = ""
-	if ing_1 == "":
-		slot_disponivel = "slot1"
-	elif ing_2 == "":
-		slot_disponivel = "slot2"
-	
-	if slot_disponivel == "":
-		print("Ambos os slots estão cheios!")
-		return
+	for receita_key in Database.receitas_alquimia:
+		var ingredientes = receita_key.split("_")
+		var ingred1 = ingredientes[0]
+		var ingred2 = ingredientes[1]
+		var item_resultado = Database.receitas_alquimia[receita_key]
 		
-	if GlobalInventory.remover_item(nome_item, 1):
-		if slot_disponivel == "slot1":
-			ing_1 = nome_item
-			if slot_1:
-				slot_1.text = nome_item
+		var button = Button.new()
+		button.text = "Fazer " + item_resultado + " (Requer: " + ingred1 + " + " + ingred2 + ")"
+		button.pressed.connect(_tentar_fabricar.bind(ingred1, ingred2, item_resultado))
+		if lista_receitas:
+			lista_receitas.add_child(button)
+
+func _tentar_fabricar(ingred1: String, ingred2: String, resultado: String) -> void:
+	var qtd1 = GlobalInventory.inventario.get(ingred1, 0)
+	var qtd2 = GlobalInventory.inventario.get(ingred2, 0)
+	
+	if qtd1 >= 1 and qtd2 >= 1:
+		# Remover ambos os ingredientes
+		var removed_1 = GlobalInventory.remover_item(ingred1, 1)
+		var removed_2 = GlobalInventory.remover_item(ingred2, 1)
+		
+		if removed_1 and removed_2:
+			GlobalInventory.adicionar_item(resultado, 1)
+			if resultado_label:
+				resultado_label.text = "Sucesso: " + resultado + " criado!"
 		else:
-			ing_2 = nome_item
-			if slot_2:
-				slot_2.text = nome_item
-
-func _on_misturar_button_pressed() -> void:
-	if ing_1 == "" or ing_2 == "":
-		return
-	
-	var resultado = Database.fabricar_pocao(ing_1, ing_2)
-	
-	if resultado_label:
-		resultado_label.text = "Resultado: " + resultado
-		
-	GlobalInventory.adicionar_item(resultado)
-	
-	ing_1 = ""
-	ing_2 = ""
-	if slot_1:
-		slot_1.text = "Vazio"
-	if slot_2:
-		slot_2.text = "Vazio"
+			# Rollback if one somehow failed (shouldn't happen because of the check)
+			if removed_1:
+				GlobalInventory.adicionar_item(ingred1, 1)
+			if removed_2:
+				GlobalInventory.adicionar_item(ingred2, 1)
+			if resultado_label:
+				resultado_label.text = "Erro ao fabricar!"
+	else:
+		if resultado_label:
+			resultado_label.text = "Faltam ingredientes!"

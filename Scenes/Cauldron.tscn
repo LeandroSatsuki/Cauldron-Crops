@@ -13,50 +13,24 @@ offset_right = -20.0
 offset_bottom = 150.0
 script = ExtResource("1_cauldrongd")
 
-[node name="Slot1" type="Label" parent="."]
+[node name="ScrollContainer" type="ScrollContainer" parent="."]
 layout_mode = 0
-offset_left = 20.0
-offset_top = 20.0
-offset_right = 140.0
-offset_bottom = 46.0
-text = "Vazio"
+offset_left = 10.0
+offset_top = 10.0
+offset_right = 290.0
+offset_bottom = 240.0
 
-[node name="Slot2" type="Label" parent="."]
-layout_mode = 0
-offset_left = 160.0
-offset_top = 20.0
-offset_right = 280.0
-offset_bottom = 46.0
-text = "Vazio"
-
-[node name="AddTrigoButton" type="Button" parent="."]
-layout_mode = 0
-offset_left = 20.0
-offset_top = 50.0
-offset_right = 140.0
-offset_bottom = 81.0
-text = "+ Trigo"
-
-[node name="AddAguaButton" type="Button" parent="."]
-layout_mode = 0
-offset_left = 160.0
-offset_top = 50.0
-offset_right = 280.0
-offset_bottom = 81.0
-text = "+ Agua"
-
-[node name="MisturarButton" type="Button" parent="."]
-layout_mode = 0
-offset_left = 20.0
-offset_top = 95.0
-offset_right = 280.0
-offset_bottom = 135.0
-text = "Misturar"
+[node name="ListaReceitas" type="VBoxContainer" parent="ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
 
 [node name="ResultadoLabel" type="Label" parent="."]
 layout_mode = 0
-offset_left = 20.0
-offset_top = 150.0
-offset_right = 280.0
-offset_bottom = 180.0
+offset_left = 10.0
+offset_top = 250.0
+offset_right = 290.0
+offset_bottom = 290.0
 text = "Resultado: ..."
+horizontal_alignment = 1
+vertical_alignment = 1
