@@ -1,0 +1,45 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://Scripts/UI.gd" id="1_uigd"]
+
+[node name="UI" type="CanvasLayer"]
+script = ExtResource("1_uigd")
+
+[node name="LeftPanel" type="VBoxContainer" parent="."]
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 250.0
+offset_bottom = 350.0
+theme_override_constants/separation = 10
+
+[node name="MoedasLabel" type="Label" parent="LeftPanel"]
+layout_mode = 2
+text = "Moedas: 0"
+
+[node name="EstoqueLabel" type="Label" parent="LeftPanel"]
+layout_mode = 2
+text = "Trigo no Estoque: 0"
+
+[node name="VenderButton" type="Button" parent="LeftPanel"]
+layout_mode = 2
+text = "Vender Trigo"
+
+[node name="UsarPocaoButton" type="Button" parent="LeftPanel"]
+layout_mode = 2
+text = "Usar Poção (3 Cargas)"
+
+[node name="CargasLabel" type="Label" parent="LeftPanel"]
+layout_mode = 2
+text = "Cargas Mágicas: 0"
+
+[node name="DormirButton" type="Button" parent="LeftPanel"]
+layout_mode = 2
+text = "Dormir (Mudar Estação)"
+
+[node name="SeasonLabel" type="Label" parent="LeftPanel"]
+layout_mode = 2
+text = "Estação: Primavera | Ano: 1"
+
+[node name="ComprarCosmeticoButton" type="Button" parent="LeftPanel"]
+layout_mode = 2
+text = "Comprar Tema Verde (50 Moedas)"
