@@ -43,3 +43,15 @@ text = "Estação: Primavera | Ano: 1"
 [node name="ComprarCosmeticoButton" type="Button" parent="LeftPanel"]
 layout_mode = 2
 text = "Comprar Tema Verde (50 Moedas)"
+
+[node name="SementeLabel" type="Label" parent="LeftPanel"]
+layout_mode = 2
+text = "Semente Atual: Trigo"
+
+[node name="EquiparTrigoButton" type="Button" parent="LeftPanel"]
+layout_mode = 2
+text = "Equipar: Trigo (Primavera)"
+
+[node name="EquiparInvernoButton" type="Button" parent="LeftPanel"]
+layout_mode = 2
+text = "Equipar: Raiz (Inverno)"

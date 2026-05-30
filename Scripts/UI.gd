@@ -8,6 +8,9 @@ extends CanvasLayer
 @onready var dormir_button: Button = $LeftPanel/DormirButton
 @onready var season_label: Label = $LeftPanel/SeasonLabel
 @onready var comprar_cosmetico_button: Button = $LeftPanel/ComprarCosmeticoButton
+@onready var semente_label: Label = $LeftPanel/SementeLabel
+@onready var equipar_trigo_button: Button = $LeftPanel/EquiparTrigoButton
+@onready var equipar_inverno_button: Button = $LeftPanel/EquiparInvernoButton
 
 func _ready() -> void:
 	if vender_button:
@@ -18,6 +21,10 @@ func _ready() -> void:
 		dormir_button.pressed.connect(_on_dormir_button_pressed)
 	if comprar_cosmetico_button:
 		comprar_cosmetico_button.pressed.connect(_on_comprar_cosmetico_button_pressed)
+	if equipar_trigo_button:
+		equipar_trigo_button.pressed.connect(_on_equipar_trigo_button_pressed)
+	if equipar_inverno_button:
+		equipar_inverno_button.pressed.connect(_on_equipar_inverno_button_pressed)
 
 func _process(_delta: float) -> void:
 	if moedas_label:
@@ -45,3 +52,13 @@ func _on_comprar_cosmetico_button_pressed() -> void:
 	if EconomyManager.remover_moedas(50):
 		print("Tema comprado e aplicado!")
 		RenderingServer.set_default_clear_color(Color(0.1, 0.4, 0.1))
+
+func _on_equipar_trigo_button_pressed() -> void:
+	GlobalInventory.semente_selecionada = "semente_basica"
+	if semente_label:
+		semente_label.text = "Semente Atual: Trigo"
+
+func _on_equipar_inverno_button_pressed() -> void:
+	GlobalInventory.semente_selecionada = "semente_inverno"
+	if semente_label:
+		semente_label.text = "Semente Atual: Raiz"

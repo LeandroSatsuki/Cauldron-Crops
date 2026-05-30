@@ -34,11 +34,11 @@ func _on_plot_clicked() -> void:
 	match estado_atual:
 		State.VAZIO:
 			# Se o lote for clicado no estado VAZIO:
-			# Acessa a chave 'semente_basica' no Autoload Database
-			if "semente_basica" in Database:
-				semente_atual = Database.semente_basica
+			var semente_id = GlobalInventory.semente_selecionada
+			if semente_id in Database:
+				semente_atual = Database.get(semente_id)
 			else:
-				push_error("Chave 'semente_basica' não encontrada no Autoload Database!")
+				push_error("Semente '%s' não encontrada no Autoload Database!" % semente_id)
 				return
 			
 			if semente_atual.get("estacao_ideal") != SeasonManager.estacao_atual:
