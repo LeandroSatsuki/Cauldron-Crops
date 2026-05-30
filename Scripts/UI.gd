@@ -30,11 +30,11 @@ func _ready() -> void:
 	if comprar_cosmetico_button:
 		comprar_cosmetico_button.pressed.connect(_on_comprar_cosmetico_button_pressed)
 	if comprar_trigo_button:
-		comprar_trigo_button.pressed.connect(_on_comprar_trigo_button_pressed)
+		comprar_trigo_button.gui_input.connect(func(event): _on_comprar_semente_gui_input(event, "semente_basica", 5, "+1 Semente Trigo", "+10 Semente Trigo"))
 		comprar_trigo_button.mouse_entered.connect(_on_comprar_trigo_button_mouse_entered)
 		comprar_trigo_button.mouse_exited.connect(_on_comprar_trigo_button_mouse_exited)
 	if comprar_verao_button:
-		comprar_verao_button.pressed.connect(_on_comprar_verao_button_pressed)
+		comprar_verao_button.gui_input.connect(func(event): _on_comprar_semente_gui_input(event, "semente_verao", 10, "+1 Semente Tomate", "+10 Semente Tomate"))
 		comprar_verao_button.mouse_entered.connect(_on_comprar_verao_button_mouse_entered)
 		comprar_verao_button.mouse_exited.connect(_on_comprar_verao_button_mouse_exited)
 	if comprar_golem_button:
@@ -96,14 +96,40 @@ func atualizar_inventario_visual() -> void:
 			var emoji = obter_emoji_item(item_key)
 			slot.configurar_slot(item_key, qtd, emoji)
 			slot.slot_clicado.connect(_on_slot_clicado)
+			if GlobalInventory.semente_selecionada == item_key:
+				slot.set_destaque(true)
+			
+	atualizar_destaques()
 
-func _on_slot_clicado(item_id: String) -> void:
+func atualizar_destaques() -> void:
+	if not inventory_bar:
+		return
+	for slot in inventory_bar.get_children():
+		if slot.has_method("set_destaque"):
+			slot.set_destaque(slot.item_id == GlobalInventory.semente_selecionada)
+
+func _on_slot_clicado(item_id: String, clique_direito: bool) -> void:
 	if item_id.begins_with("semente_"):
 		GlobalInventory.semente_selecionada = item_id
 		print("Semente selecionada equipada: ", item_id)
+		atualizar_destaques()
 	else:
-		if sell_menu:
-			sell_menu.abrir(item_id, get_viewport().get_mouse_position())
+		if clique_direito:
+			# Venda 10x
+			var preco = Database.precos.get(item_id, 0)
+			if preco > 0:
+				var qtd_atual = GlobalInventory.inventario.get(item_id, 0)
+				if qtd_atual >= 10:
+					if GlobalInventory.remover_item(item_id, 10):
+						var ganho = preco * 10
+						EconomyManager.adicionar_moedas(ganho)
+						criar_texto_flutuante("+" + str(ganho) + " Moedas", get_viewport().get_mouse_position(), Color.GREEN)
+				else:
+					print("Quantidade insuficiente para vender 10x!")
+		else:
+			# Clique esquerdo -> abre SellMenu
+			if sell_menu:
+				sell_menu.abrir(item_id, get_viewport().get_mouse_position())
 
 func obter_emoji_item(item_id: String) -> String:
 	match item_id:
@@ -135,15 +161,16 @@ func _on_comprar_cosmetico_button_pressed() -> void:
 		print("Tema comprado e aplicado!")
 		RenderingServer.set_default_clear_color(Color(0.1, 0.4, 0.1))
 
-func _on_comprar_trigo_button_pressed() -> void:
-	if EconomyManager.remover_moedas(5):
-		GlobalInventory.adicionar_item("semente_basica", 1)
-		criar_texto_flutuante("+1 Semente Trigo", get_viewport().get_mouse_position(), Color.YELLOW)
-
-func _on_comprar_verao_button_pressed() -> void:
-	if EconomyManager.remover_moedas(10):
-		GlobalInventory.adicionar_item("semente_verao", 1)
-		criar_texto_flutuante("+1 Semente Tomate", get_viewport().get_mouse_position(), Color.YELLOW)
+func _on_comprar_semente_gui_input(event: InputEvent, semente_id: String, preco_unitario: int, texto_1x: String, texto_10x: String) -> void:
+	if event is InputEventMouseButton and event.pressed:
+		if event.button_index == MOUSE_BUTTON_LEFT:
+			if EconomyManager.remover_moedas(preco_unitario):
+				GlobalInventory.adicionar_item(semente_id, 1)
+				criar_texto_flutuante(texto_1x, get_viewport().get_mouse_position(), Color.YELLOW)
+		elif event.button_index == MOUSE_BUTTON_RIGHT:
+			if EconomyManager.remover_moedas(preco_unitario * 10):
+				GlobalInventory.adicionar_item(semente_id, 10)
+				criar_texto_flutuante(texto_10x, get_viewport().get_mouse_position(), Color.YELLOW)
 
 func _on_comprar_golem_button_pressed() -> void:
 	if EconomyManager.remover_moedas(100):
