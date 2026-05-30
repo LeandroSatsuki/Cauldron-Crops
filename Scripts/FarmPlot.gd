@@ -12,6 +12,7 @@ var estado_atual: State = State.VAZIO
 
 # Semente atual sendo cultivada
 var semente_atual: Dictionary = {}
+var semente_id_plantada: String = ""
 
 @onready var timer: Timer = $Timer
 @onready var color_rect = $ColorRect
@@ -67,8 +68,11 @@ func _on_plot_clicked() -> void:
 				print("Sem sementes deste tipo no estoque!")
 				return
 			
+			semente_id_plantada = semente_id
 			var tempo = semente_atual.get("tempo_crescimento_segundos", 3.0)
 			if regado:
+				tempo = tempo * 0.8
+			if SeasonManager.estacao_atual == SeasonManager.Estacao.VERAO:
 				tempo = tempo * 0.8
 			
 			# Configura o Timer com o tempo_crescimento_segundos
@@ -93,6 +97,16 @@ func _on_plot_clicked() -> void:
 			else:
 				push_error("Autoload GlobalInventory não possui o método adicionar_item()!")
 				return
+				
+			# Bônus de Outono (Colheita Extra)
+			if SeasonManager.estacao_atual == SeasonManager.Estacao.OUTONO and randf() <= 0.20:
+				GlobalInventory.adicionar_item(produto, 1)
+				print("Bônus de Outono: Colheita em dobro!")
+				
+			# Bônus de Primavera (Semente Extra)
+			if SeasonManager.estacao_atual == SeasonManager.Estacao.PRIMAVERA and randf() <= 0.20:
+				GlobalInventory.adicionar_item(semente_id_plantada, 1)
+				print("Bônus de Primavera: Semente recuperada!")
 			
 			ui = get_tree().current_scene.get_node_or_null("UI")
 			if ui and ui.has_method("criar_texto_flutuante"):
@@ -111,6 +125,7 @@ func _on_plot_clicked() -> void:
 			regado = false
 			_atualizar_visual()
 			semente_atual = {}
+			semente_id_plantada = ""
 			
 			# Dá um print de sucesso no console
 			print("Sucesso: Colheita realizada! Produto: '", produto, "' foi adicionado ao inventário. Lote agora está VAZIO.")
@@ -127,9 +142,10 @@ func _on_plot_clicked() -> void:
 # Quando o Timer emitir o sinal de timeout: o estado muda para PRONTO_PARA_COLHER
 func _on_timer_timeout() -> void:
 	if estado_atual == State.CRESCENDO:
-		if not regado:
+		if not regado and SeasonManager.estacao_atual != SeasonManager.Estacao.INVERNO:
 			if randf() <= 0.20:
 				semente_atual = {}
+				semente_id_plantada = ""
 				estado_atual = State.VAZIO
 				_atualizar_visual()
 				print("A planta morreu de sede!")

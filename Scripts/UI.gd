@@ -22,6 +22,8 @@ var slot_scene = preload("res://Scenes/InventorySlot.tscn")
 
 var ultimo_estado_inventario: Dictionary = {}
 var item_focado_id: String = ""
+var custo_dormir: int = 5
+var timer_reset_dormir: float = 0.0
 
 func _ready() -> void:
 	if usar_pocao_button:
@@ -44,7 +46,13 @@ func _ready() -> void:
 	# Inicializa
 	verificar_e_atualizar_inventario()
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
+	timer_reset_dormir += delta
+	if timer_reset_dormir >= 60.0:
+		custo_dormir = 5
+	if dormir_button:
+		dormir_button.text = "Dormir (Custo: " + str(custo_dormir) + ")"
+		
 	if moedas_label:
 		moedas_label.text = "Moedas: " + str(EconomyManager.moedas)
 	if season_label:
@@ -181,7 +189,14 @@ func _on_usar_pocao_button_pressed() -> void:
 		GlobalInventory.cargas_crescimento += 3
 
 func _on_dormir_button_pressed() -> void:
-	SeasonManager.avancar_estacao()
+	if EconomyManager.moedas >= custo_dormir:
+		if EconomyManager.remover_moedas(custo_dormir):
+			criar_texto_flutuante("Custo: -" + str(custo_dormir), get_viewport().get_mouse_position(), Color.RED)
+			SeasonManager.avancar_estacao()
+			custo_dormir *= 2
+			timer_reset_dormir = 0.0
+	else:
+		print("Moedas insuficientes para dormir!")
 
 func _on_comprar_cosmetico_button_pressed() -> void:
 	if EconomyManager.remover_moedas(50):
