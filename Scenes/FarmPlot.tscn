@@ -21,3 +21,12 @@ shape = SubResource("RectangleShape2D_farmplot")
 
 [node name="Timer" type="Timer" parent="." unique_id=1509925768]
 one_shot = true
+
+[node name="VisualRegado" type="ColorRect" parent="."]
+visible = false
+offset_left = -32.0
+offset_top = -32.0
+offset_right = 32.0
+offset_bottom = 32.0
+mouse_filter = 2
+color = Color(0, 0.4, 1, 0.3)

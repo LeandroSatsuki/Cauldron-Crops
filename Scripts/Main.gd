@@ -3,7 +3,6 @@ extends Node2D
 var farm_plot_scene = preload("res://Scenes/FarmPlot.tscn")
 
 func _ready() -> void:
-	GlobalInventory.adicionar_item("agua", 10)
 	
 	var screen_size = get_viewport_rect().size
 	var start_x = (screen_size.x - 320) / 2.0

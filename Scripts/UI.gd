@@ -117,14 +117,13 @@ func atualizar_destaques() -> void:
 				slot.set_destaque(false)
 
 func _on_slot_clicado(item_id: String, is_right_click: bool, slot_node: Control) -> void:
-	item_focado_id = item_id
-	atualizar_destaques()
-	
 	if item_id.begins_with("semente_"):
+		GlobalInventory.semente_selecionada = item_id
+		item_focado_id = ""
+		atualizar_destaques()
+		
 		if not is_right_click:
-			GlobalInventory.semente_selecionada = item_id
 			print("Semente selecionada equipada: ", item_id)
-			atualizar_destaques()
 		else:
 			var preco_revenda = int(Database.custo_semente.get(item_id, 0) * 0.6)
 			if preco_revenda > 0:
@@ -137,6 +136,10 @@ func _on_slot_clicado(item_id: String, is_right_click: bool, slot_node: Control)
 				else:
 					print("Quantidade insuficiente de sementes para revenda!")
 	else:
+		item_focado_id = item_id
+		GlobalInventory.semente_selecionada = ""
+		atualizar_destaques()
+		
 		if is_right_click:
 			# Venda 10x
 			var preco = Database.precos.get(item_id, 0)

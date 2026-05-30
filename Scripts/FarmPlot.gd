@@ -15,6 +15,8 @@ var semente_atual: Dictionary = {}
 
 @onready var timer: Timer = $Timer
 @onready var color_rect = $ColorRect
+var regado: bool = false
+@onready var visual_regado = $VisualRegado
 
 func _ready() -> void:
 	add_to_group("lotes_terra")
@@ -32,6 +34,21 @@ func _input_event(_viewport: Viewport, event: InputEvent, _shape_idx: int) -> vo
 		_on_plot_clicked()
 
 func _on_plot_clicked() -> void:
+	# Verificação de regar
+	var ui = get_tree().current_scene.get_node_or_null("UI")
+	if ui and ui.item_focado_id == "agua" and (estado_atual == State.VAZIO or estado_atual == State.CRESCENDO):
+		if GlobalInventory.inventario.get("agua", 0) >= 1:
+			if not regado:
+				if GlobalInventory.remover_item("agua", 1):
+					regado = true
+					_atualizar_visual()
+					print("Lote Regado!")
+					if estado_atual == State.CRESCENDO:
+						timer.start(timer.time_left * 0.8)
+			else:
+				print("Lote já está regado!")
+		return
+
 	match estado_atual:
 		State.VAZIO:
 			# Se o lote for clicado no estado VAZIO:
@@ -51,6 +68,8 @@ func _on_plot_clicked() -> void:
 				return
 			
 			var tempo = semente_atual.get("tempo_crescimento_segundos", 3.0)
+			if regado:
+				tempo = tempo * 0.8
 			
 			# Configura o Timer com o tempo_crescimento_segundos
 			timer.wait_time = tempo
@@ -89,6 +108,7 @@ func _on_plot_clicked() -> void:
 			
 			# Reseta o estado para VAZIO
 			estado_atual = State.VAZIO
+			regado = false
 			_atualizar_visual()
 			semente_atual = {}
 			
@@ -107,11 +127,21 @@ func _on_plot_clicked() -> void:
 # Quando o Timer emitir o sinal de timeout: o estado muda para PRONTO_PARA_COLHER
 func _on_timer_timeout() -> void:
 	if estado_atual == State.CRESCENDO:
+		if not regado:
+			if randf() <= 0.20:
+				semente_atual = {}
+				estado_atual = State.VAZIO
+				_atualizar_visual()
+				print("A planta morreu de sede!")
+				return
+		
 		estado_atual = State.PRONTO_PARA_COLHER
 		_atualizar_visual()
 		print("O tempo de crescimento acabou! Estado alterado para: PRONTO_PARA_COLHER.")
 
 func _atualizar_visual() -> void:
+	if visual_regado:
+		visual_regado.visible = regado
 	match estado_atual:
 		State.VAZIO:
 			color_rect.color = Color(0.42, 0.26, 0.15)
