@@ -110,6 +110,7 @@ position = Vector2(1900, 900)
 
 [node name="SpriteCaldeirao" type="AnimatedSprite2D" parent="BaseAnchor"]
 texture_filter = 1
+speed_scale = 0.5
 sprite_frames = SubResource("SpriteFrames_cauldron")
 animation = &"idle"
 autoplay = "idle"
@@ -128,20 +129,22 @@ one_shot = true
 [node name="PopupLayer" type="CanvasLayer" parent="."]
 layer = 10
 
-[node name="PopupUI" type="Panel" parent="PopupLayer"]
+[node name="CenterContainer" type="CenterContainer" parent="PopupLayer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="PopupUI" type="Panel" parent="PopupLayer/CenterContainer"]
+custom_minimum_size = Vector2(300, 300)
+layout_mode = 2
 z_index = 10
 visible = false
-anchor_left = 1.0
-anchor_top = 0.5
-anchor_right = 1.0
-anchor_bottom = 0.5
-offset_left = -320.0
-offset_top = -150.0
-offset_right = -20.0
-offset_bottom = 150.0
 
-[node name="DropSlot1" type="Panel" parent="PopupLayer/PopupUI"]
+[node name="DropSlot1" type="Panel" parent="PopupLayer/CenterContainer/PopupUI"]
 layout_mode = 0
+mouse_filter = 0
 offset_left = 40.0
 offset_top = 40.0
 offset_right = 120.0
@@ -159,8 +162,9 @@ text = "Soltar item"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="DropSlot2" type="Panel" parent="PopupLayer/PopupUI"]
+[node name="DropSlot2" type="Panel" parent="PopupLayer/CenterContainer/PopupUI"]
 layout_mode = 0
+mouse_filter = 0
 offset_left = 180.0
 offset_top = 40.0
 offset_right = 260.0
@@ -178,7 +182,7 @@ text = "Soltar item"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="MisturarButton" type="Button" parent="PopupLayer/PopupUI"]
+[node name="MisturarButton" type="Button" parent="PopupLayer/CenterContainer/PopupUI"]
 layout_mode = 0
 offset_left = 20.0
 offset_top = 150.0
@@ -186,7 +190,7 @@ offset_right = 280.0
 offset_bottom = 200.0
 text = "Misturar Ingredientes"
 
-[node name="ResultadoLabel" type="Label" parent="PopupLayer/PopupUI"]
+[node name="ResultadoLabel" type="Label" parent="PopupLayer/CenterContainer/PopupUI"]
 layout_mode = 0
 offset_left = 20.0
 offset_top = 220.0
@@ -196,7 +200,7 @@ text = "Resultado: ..."
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="BtnFechar" type="Button" parent="PopupLayer/PopupUI"]
+[node name="BtnFechar" type="Button" parent="PopupLayer/CenterContainer/PopupUI"]
 layout_mode = 0
 offset_left = 270.0
 offset_top = 5.0

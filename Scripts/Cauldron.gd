@@ -2,11 +2,11 @@ extends Node2D
 
 const MOUSE_LEFT = MOUSE_BUTTON_LEFT
 
-@onready var drop_slot_1: Panel = $PopupLayer/PopupUI/DropSlot1
-@onready var drop_slot_2: Panel = $PopupLayer/PopupUI/DropSlot2
-@onready var misturar_button: Button = $PopupLayer/PopupUI/MisturarButton
-@onready var resultado_label: Label = $PopupLayer/PopupUI/ResultadoLabel
-@onready var popup_ui: Panel = $PopupLayer/PopupUI
+@onready var drop_slot_1: Panel = $PopupLayer/CenterContainer/PopupUI/DropSlot1
+@onready var drop_slot_2: Panel = $PopupLayer/CenterContainer/PopupUI/DropSlot2
+@onready var misturar_button: Button = $PopupLayer/CenterContainer/PopupUI/MisturarButton
+@onready var resultado_label: Label = $PopupLayer/CenterContainer/PopupUI/ResultadoLabel
+@onready var popup_ui: Panel = $PopupLayer/CenterContainer/PopupUI
 
 var estado_atual: String = "IDLE"
 var item_em_producao: String = ""
@@ -19,7 +19,7 @@ func _ready() -> void:
 	$Area2D.input_event.connect(_on_area_2d_input_event)
 	$BrewTimer.timeout.connect(_on_brew_timer_timeout)
 	
-	var btn_fechar = $PopupLayer/PopupUI/BtnFechar
+	var btn_fechar = $PopupLayer/CenterContainer/PopupUI/BtnFechar
 	if btn_fechar:
 		btn_fechar.pressed.connect(func(): popup_ui.visible = false)
 		
@@ -27,8 +27,8 @@ func _ready() -> void:
 	$BaseAnchor/SpriteCaldeirao.offset = Vector2(0, -103)
 	
 	# Reset Visual
-	$PopupLayer/PopupUI.hide()
-	$PopupLayer/PopupUI.mouse_filter = Control.MOUSE_FILTER_STOP
+	$PopupLayer/CenterContainer/PopupUI.hide()
+	$PopupLayer/CenterContainer/PopupUI.mouse_filter = Control.MOUSE_FILTER_STOP
 	
 	# Shader Material
 	material = ShaderMaterial.new()
@@ -43,10 +43,10 @@ func _process(_delta: float) -> void:
 func abrir_popup():
 	get_viewport().set_input_as_handled()
 	print("DEBUG: Executando abrir_popup()")
-	$PopupLayer/PopupUI.visible = true
-	$PopupLayer/PopupUI.process_mode = Node.PROCESS_MODE_INHERIT
-	$PopupLayer/PopupUI.show()
-	$PopupLayer/PopupUI.move_to_front() # Move o nó para o topo da lista de renderização
+	$PopupLayer/CenterContainer/PopupUI.visible = true
+	$PopupLayer/CenterContainer/PopupUI.process_mode = Node.PROCESS_MODE_INHERIT
+	$PopupLayer/CenterContainer/PopupUI.show()
+	$PopupLayer/CenterContainer/PopupUI.move_to_front() # Move o nó para o topo da lista de renderização
 
 func _on_area_2d_input_event(viewport, event, shape_idx):
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_LEFT:
