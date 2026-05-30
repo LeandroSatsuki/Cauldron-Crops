@@ -7,6 +7,8 @@ var inventario: Dictionary = {
 var cargas_crescimento: int = 0
 var semente_selecionada: String = "semente_basica"
 var receitas_descobertas: Array = []
+var pontos_alquimia: int = 0
+var skills_desbloqueadas: Array = []
 
 func adicionar_item(produto: String, quantidade: int = 1) -> void:
 	if inventario.has(produto):

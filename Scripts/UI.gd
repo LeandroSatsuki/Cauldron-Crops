@@ -13,6 +13,9 @@ var slot_scene = preload("res://Scenes/InventorySlot.tscn")
 @onready var comprar_cosmetico_button: Button = $LeftPanel/ComprarCosmeticoButton
 @onready var comprar_trigo_button: Button = $LeftPanel/GridSementes/ComprarTrigoButton
 @onready var comprar_verao_button: Button = $LeftPanel/GridSementes/ComprarVeraoButton
+@onready var abrir_skill_tree_button: Button = $LeftPanel/AbrirSkillTreeButton
+var skill_tree_scene = preload("res://Scenes/SkillTree.tscn")
+var skill_tree: Panel
 
 @onready var inventory_bar: HBoxContainer = $InventoryBar
 @onready var tooltip_panel: Panel = $TooltipPanel
@@ -40,13 +43,18 @@ func _ready() -> void:
 		comprar_verao_button.mouse_entered.connect(_on_comprar_verao_button_mouse_entered)
 		comprar_verao_button.mouse_exited.connect(_on_comprar_verao_button_mouse_exited)
 		
+	skill_tree = skill_tree_scene.instantiate()
+	add_child(skill_tree)
+	if abrir_skill_tree_button:
+		abrir_skill_tree_button.pressed.connect(func(): skill_tree.visible = true)
+		
 	# Inicializa
 	verificar_e_atualizar_inventario()
 
 func _process(delta: float) -> void:
 	timer_reset_dormir += delta
 	if timer_reset_dormir >= 60.0:
-		custo_dormir = 5
+		custo_dormir = 2 if "skill_dormir" in GlobalInventory.skills_desbloqueadas else 5
 	if dormir_button:
 		dormir_button.text = "Dormir (Custo: " + str(custo_dormir) + ")"
 		
@@ -190,7 +198,10 @@ func _on_dormir_button_pressed() -> void:
 		if EconomyManager.remover_moedas(custo_dormir):
 			criar_texto_flutuante("Custo: -" + str(custo_dormir), get_viewport().get_mouse_position(), Color.RED)
 			SeasonManager.avancar_estacao()
-			custo_dormir *= 2
+			if "skill_dormir" in GlobalInventory.skills_desbloqueadas:
+				custo_dormir = int(custo_dormir * 1.5)
+			else:
+				custo_dormir *= 2
 			timer_reset_dormir = 0.0
 	else:
 		print("Moedas insuficientes para dormir!")

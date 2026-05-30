@@ -54,6 +54,10 @@ text = "Dormir (Mudar Estação)"
 layout_mode = 2
 text = "Usar Poção (3 Cargas)"
 
+[node name="AbrirSkillTreeButton" type="Button" parent="LeftPanel"]
+layout_mode = 2
+text = "Árvore de Alquimia"
+
 [node name="Separator1" type="HSeparator" parent="LeftPanel"]
 layout_mode = 2
 

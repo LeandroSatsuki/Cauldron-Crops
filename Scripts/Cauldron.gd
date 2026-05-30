@@ -62,6 +62,7 @@ func _on_misturar_button_pressed() -> void:
 		if removed_1 and removed_2:
 			EconomyManager.total_golems += 1
 			if not GlobalInventory.receitas_descobertas.has(chave_combinacao):
+				GlobalInventory.pontos_alquimia += 1
 				GlobalInventory.receitas_descobertas.append(chave_combinacao)
 			if resultado_label:
 				resultado_label.text = "Sucesso: Golem Coletor despertou!"
@@ -81,6 +82,7 @@ func _on_misturar_button_pressed() -> void:
 			if resultado != "":
 				GlobalInventory.adicionar_item(resultado, 1)
 				if not GlobalInventory.receitas_descobertas.has(chave_combinacao):
+					GlobalInventory.pontos_alquimia += 1
 					GlobalInventory.receitas_descobertas.append(chave_combinacao)
 				if resultado_label:
 					resultado_label.text = "Nova Descoberta: " + resultado
