@@ -18,6 +18,7 @@ var semente_id_plantada: String = ""
 @onready var color_rect = $ColorRect
 var regado: bool = false
 @onready var visual_regado = $VisualRegado
+@onready var tooltip_area: Control = $TooltipArea
 
 func _ready() -> void:
 	add_to_group("lotes_terra")
@@ -28,6 +29,22 @@ func _ready() -> void:
 	else:
 		push_error("Timer não encontrado na cena FarmPlot!")
 	_atualizar_visual()
+
+func _process(_delta: float) -> void:
+	if not tooltip_area:
+		return
+		
+	match estado_atual:
+		State.VAZIO:
+			tooltip_area.tooltip_text = "Lote Vazio\n(Requer Semente)"
+		State.PRONTO_PARA_COLHER:
+			var nome = semente_atual.get("nome", "Trigo" if semente_atual.get("produto_colheita", "trigo") == "trigo" else "Desconhecido")
+			tooltip_area.tooltip_text = "Pronto para colher!\nProduto: " + nome
+		State.CRESCENDO:
+			var nome = semente_atual.get("nome", "Trigo" if semente_atual.get("produto_colheita", "trigo") == "trigo" else "Semente")
+			var tempo = "%0.1f" % timer.time_left
+			var status_agua = "Sim 💧" if regado else "Não 🥀"
+			tooltip_area.tooltip_text = "Planta: " + nome + "\nTempo: " + tempo + "s\nRegado: " + status_agua
 
 # Função para capturar cliques do mouse (usando _input_event)
 func _input_event(_viewport: Viewport, event: InputEvent, _shape_idx: int) -> void:
