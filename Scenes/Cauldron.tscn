@@ -23,19 +23,19 @@ region = Rect2(768, 0, 256, 256)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_v4"]
 atlas = ExtResource("4_verde")
-region = Rect2(0, 256, 256, 256)
+region = Rect2(0, 223, 256, 256)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_v5"]
 atlas = ExtResource("4_verde")
-region = Rect2(256, 256, 256, 256)
+region = Rect2(256, 223, 256, 256)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_v6"]
 atlas = ExtResource("4_verde")
-region = Rect2(512, 256, 256, 256)
+region = Rect2(512, 223, 256, 256)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_v7"]
 atlas = ExtResource("4_verde")
-region = Rect2(768, 256, 256, 256)
+region = Rect2(768, 223, 256, 256)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_r0"]
 atlas = ExtResource("3_roxo")
@@ -55,19 +55,19 @@ region = Rect2(768, 0, 256, 256)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_r4"]
 atlas = ExtResource("3_roxo")
-region = Rect2(0, 256, 256, 256)
+region = Rect2(0, 223, 256, 256)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_r5"]
 atlas = ExtResource("3_roxo")
-region = Rect2(256, 256, 256, 256)
+region = Rect2(256, 223, 256, 256)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_r6"]
 atlas = ExtResource("3_roxo")
-region = Rect2(512, 256, 256, 256)
+region = Rect2(512, 223, 256, 256)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_r7"]
 atlas = ExtResource("3_roxo")
-region = Rect2(768, 256, 256, 256)
+region = Rect2(768, 223, 256, 256)
 
 [sub_resource type="Curve" id="Curve_smoke"]
 _data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
@@ -149,6 +149,7 @@ autoplay = "idle"
 
 [node name="Area2D" type="Area2D" parent="."]
 position = Vector2(950, 450)
+input_pickable = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
 shape = SubResource("CircleShape2D_cauldron")

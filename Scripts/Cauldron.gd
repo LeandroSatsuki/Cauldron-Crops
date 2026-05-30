@@ -13,6 +13,7 @@ var tempo_producao: float = 5.0
 func _ready() -> void:
 	if misturar_button:
 		misturar_button.pressed.connect(_on_misturar_button_pressed)
+	$Area2D.input_pickable = true
 	$Area2D.input_event.connect(_on_area_2d_input_event)
 	$BrewTimer.timeout.connect(_on_brew_timer_timeout)
 	
@@ -22,6 +23,7 @@ func _ready() -> void:
 
 func _on_area_2d_input_event(_viewport: Node, event: InputEvent, _shape_idx: int) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+		print("Caldeirão clicado")
 		if estado_atual == "IDLE":
 			popup_ui.visible = true
 			if resultado_label:
