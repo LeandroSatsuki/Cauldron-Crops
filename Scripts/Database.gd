@@ -34,10 +34,19 @@ var precos: Dictionary = {
 	"trigo": 15,
 	"tomate_sol": 25,
 	"abobora_sombria": 35,
-	"raiz_gelida": 20
+	"raiz_gelida": 20,
+	"palha_rara": 500,
+	"rama_encantada": 300
 }
 
-var custo_semente = {"semente_basica": 5, "semente_verao": 10, "semente_outono": 15, "semente_inverno": 20}
+var custo_semente = {
+	"semente_basica": 5,
+	"semente_verao": 10,
+	"semente_outono": 15,
+	"semente_inverno": 20,
+	"palha_rara": 500,
+	"rama_encantada": 300
+}
 
 var receitas_alquimia: Dictionary = {
 	"agua_trigo": "pocao_crescimento",

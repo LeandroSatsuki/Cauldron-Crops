@@ -42,6 +42,7 @@ func _ready() -> void:
 		comprar_verao_button.mouse_exited.connect(_on_comprar_verao_button_mouse_exited)
 	if comprar_golem_button:
 		comprar_golem_button.pressed.connect(_on_comprar_golem_button_pressed)
+		comprar_golem_button.text = "Comprar Golem Coletor (1 Palha Rara + 1 Rama Encantada)"
 		
 	# Inicializa
 	verificar_e_atualizar_inventario()
@@ -218,8 +219,17 @@ func _on_comprar_golem_button_pressed() -> void:
 	if EconomyManager.total_golems >= EconomyManager.max_golems:
 		print("Capacidade máxima de Golems atingida!")
 		return
-	if EconomyManager.remover_moedas(100):
-		EconomyManager.total_golems += 1
+		
+	var palha = GlobalInventory.inventario.get("palha_rara", 0)
+	var rama = GlobalInventory.inventario.get("rama_encantada", 0)
+	if palha >= 1 and rama >= 1:
+		if GlobalInventory.remover_item("palha_rara", 1) and GlobalInventory.remover_item("rama_encantada", 1):
+			EconomyManager.total_golems += 1
+			print("Golem comprado com sucesso!")
+		else:
+			print("Erro ao remover materiais do Golem!")
+	else:
+		print("Faltam materiais raros para o Golem!")
 
 func _on_comprar_trigo_button_mouse_entered() -> void:
 	if tooltip_panel:

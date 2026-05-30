@@ -48,3 +48,9 @@ func _gui_input(event: InputEvent) -> void:
 		elif event.button_index == MOUSE_BUTTON_RIGHT:
 			slot_clicado.emit(item_id, true, self)
 			accept_event()
+
+func _get_drag_data(at_position: Vector2) -> Variant:
+	var label = Label.new()
+	label.text = item_id
+	set_drag_preview(label)
+	return item_id

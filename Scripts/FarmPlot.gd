@@ -119,6 +119,18 @@ func _on_plot_clicked() -> void:
 				if ui and ui.has_method("criar_texto_flutuante"):
 					ui.criar_texto_flutuante("💥 RARO!", global_position + Vector2(0, -20), Color(0.5, 0.2, 0.9))
 				print("💥 SORTE GRANDE! Drop raro: Semente de Inverno!")
+				
+			if produto == "trigo" and randf() <= 0.005:
+				GlobalInventory.adicionar_item("palha_rara", 1)
+				if ui and ui.has_method("criar_texto_flutuante"):
+					ui.criar_texto_flutuante("Palha Rara!", global_position + Vector2(0, -40), Color(0.8, 0.2, 0.8))
+				print("💥 SORTE GRANDE! Drop raro: Palha Rara!")
+				
+			if produto == "abobora_sombria" and randf() <= 0.02:
+				GlobalInventory.adicionar_item("rama_encantada", 1)
+				if ui and ui.has_method("criar_texto_flutuante"):
+					ui.criar_texto_flutuante("Rama Encantada!", global_position + Vector2(0, -40), Color(0.8, 0.2, 0.8))
+				print("💥 SORTE GRANDE! Drop raro: Rama Encantada!")
 			
 			# Reseta o estado para VAZIO
 			estado_atual = State.VAZIO
