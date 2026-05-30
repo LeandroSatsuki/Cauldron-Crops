@@ -46,6 +46,7 @@ func abrir_popup():
 	popup_ui.visible = true
 	popup_ui.z_index = 100
 	popup_ui.move_to_front()
+	popup_ui.grab_click_focus() # Força o foco do mouse para a interface
 	print("DEBUG: PopupUI agora deve estar visível e no topo.")
 
 func _on_area_2d_input_event(viewport, event, shape_idx):
