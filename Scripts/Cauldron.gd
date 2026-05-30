@@ -121,9 +121,8 @@ func _on_misturar_button_pressed() -> void:
 			item_em_producao = "golem_coletor"
 			estado_atual = "BREWING"
 			popup_ui.visible = false
-			$BaseAnchor/SpriteCaldeirao.play("brewing")
+			_iniciar_processo_de_mistura()
 			$BrewTimer.start(tempo_producao)
-			_iniciar_pulsar_magico()
 			_limpar_slots()
 		else:
 			if removed_1:
@@ -146,9 +145,8 @@ func _on_misturar_button_pressed() -> void:
 			item_em_producao = resultado
 			estado_atual = "BREWING"
 			popup_ui.visible = false
-			$BaseAnchor/SpriteCaldeirao.play("brewing")
+			_iniciar_processo_de_mistura()
 			$BrewTimer.start(tempo_producao)
-			_iniciar_pulsar_magico()
 			_limpar_slots()
 		else:
 			if removed_1:
@@ -168,7 +166,16 @@ func _limpar_slots() -> void:
 		var lbl2 = drop_slot_2.get_node_or_null("Label")
 		if lbl2: lbl2.text = "Soltar item"
 
+func _iniciar_processo_de_mistura():
+	# Troca para o roxo imediatamente
+	$BaseAnchor/SpriteCaldeirao.play("brewing")
+	_iniciar_pulsar_magico()
+
 func _on_brew_timer_timeout() -> void:
+	$BaseAnchor/SpriteCaldeirao.play("idle") # Volta para o verde
+	$BaseAnchor/SpriteCaldeirao.scale = Vector2(0.5, 0.5)
+	estado_atual = "IDLE"
+	
 	if item_em_producao == "golem_coletor":
 		EconomyManager.total_golems += 1
 	elif item_em_producao != "":
@@ -179,9 +186,6 @@ func _on_brew_timer_timeout() -> void:
 		var nome_exibicao = "Golem" if item_em_producao == "golem_coletor" else item_em_producao
 		ui.criar_texto_flutuante("Sucesso: " + nome_exibicao + "!", $BaseAnchor/SpriteCaldeirao.global_position, Color.GREEN)
 		
-	$BaseAnchor/SpriteCaldeirao.scale = Vector2(0.5, 0.5)
-	$BaseAnchor/SpriteCaldeirao.play("idle")
-	estado_atual = "IDLE"
 	item_em_producao = ""
 
 
