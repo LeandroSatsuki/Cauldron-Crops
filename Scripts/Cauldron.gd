@@ -1,5 +1,7 @@
 extends Node2D
 
+const MOUSE_LEFT = MOUSE_BUTTON_LEFT
+
 @onready var drop_slot_1: Panel = $PopupUI/DropSlot1
 @onready var drop_slot_2: Panel = $PopupUI/DropSlot2
 @onready var misturar_button: Button = $PopupUI/MisturarButton
@@ -14,6 +16,7 @@ func _ready() -> void:
 	if misturar_button:
 		misturar_button.pressed.connect(_on_misturar_button_pressed)
 	$Area2D.input_pickable = true
+	$Area2D.input_event.connect(_on_area_2d_input_event)
 	$BrewTimer.timeout.connect(_on_brew_timer_timeout)
 	
 	var btn_fechar = $PopupUI/BtnFechar
@@ -36,18 +39,6 @@ func _process(_delta: float) -> void:
 	else:
 		$BaseAnchor/SpriteCaldeirao.offset.y = -103
 
-func _unhandled_input(event):
-	if event is InputEventMouseButton and event.pressed:
-		print("Clique detectado na tela na posição: ", event.position)
-		# O caldeirão está dentro de uma cena ou é um nó na cena principal?
-		# Vamos verificar se o clique está atingindo a área do caldeirão
-		var mouse_pos = get_global_mouse_position()
-		if $Area2D.get_node("CollisionShape2D").shape.get_rect().has_point($Area2D.to_local(mouse_pos)):
-			print("SUCESSO: Clique atingiu a área do Caldeirão!")
-			abrir_popup()
-		else:
-			print("FALHA: O clique não atingiu a forma de colisão do Caldeirão.")
-
 func abrir_popup() -> void:
 	$PopupUI.show()
 	print("Debug: Caldeirão clicado")
@@ -57,6 +48,12 @@ func abrir_popup() -> void:
 		if resultado_label:
 			resultado_label.text = "Resultado: ..."
 
+
+
+func _on_area_2d_input_event(viewport, event, shape_idx):
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_LEFT:
+		print("DEBUG: Caldeirão capturou o clique!")
+		abrir_popup()
 func _on_misturar_button_pressed() -> void:
 	if not drop_slot_1 or not drop_slot_2:
 		return
@@ -188,7 +185,6 @@ func _on_brew_timer_timeout() -> void:
 		var nome_exibicao = "Golem" if item_em_producao == "golem_coletor" else item_em_producao
 		ui.criar_texto_flutuante("Sucesso: " + nome_exibicao + "!", $BaseAnchor/SpriteCaldeirao.global_position, Color.GREEN)
 		
-	$ExplosaoMagica.emitting = true
 	$BaseAnchor/SpriteCaldeirao.play("idle")
 	estado_atual = "IDLE"
 	item_em_producao = ""

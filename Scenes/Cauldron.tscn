@@ -2,7 +2,6 @@
 
 [ext_resource type="Script" path="res://Scripts/Cauldron.gd" id="1_cauldrongd"]
 [ext_resource type="Script" path="res://Scripts/DropSlot.gd" id="2_dropslotgd"]
-[ext_resource type="Texture2D" path="res://Assets/caldeirao_clean_sheet_roxo.png" id="3_roxo"]
 [ext_resource type="Texture2D" path="res://Assets/caldeirao_clean_sheet_verde.png" id="4_verde"]
 [ext_resource type="Script" path="res://Scripts/Area2D_Caldeirao.gd" id="5_areagd"]
 
@@ -38,42 +37,6 @@ region = Rect2(512, 256, 256, 256)
 atlas = ExtResource("4_verde")
 region = Rect2(768, 256, 256, 256)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_r0"]
-atlas = ExtResource("3_roxo")
-region = Rect2(0, 0, 256, 256)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_r1"]
-atlas = ExtResource("3_roxo")
-region = Rect2(256, 0, 256, 256)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_r2"]
-atlas = ExtResource("3_roxo")
-region = Rect2(512, 0, 256, 256)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_r3"]
-atlas = ExtResource("3_roxo")
-region = Rect2(768, 0, 256, 256)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_r4"]
-atlas = ExtResource("3_roxo")
-region = Rect2(0, 256, 256, 256)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_r5"]
-atlas = ExtResource("3_roxo")
-region = Rect2(256, 256, 256, 256)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_r6"]
-atlas = ExtResource("3_roxo")
-region = Rect2(512, 256, 256, 256)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_r7"]
-atlas = ExtResource("3_roxo")
-region = Rect2(768, 256, 256, 256)
-
-[sub_resource type="Curve" id="Curve_smoke"]
-_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
-point_count = 2
-
 [sub_resource type="SpriteFrames" id="SpriteFrames_cauldron"]
 animations = [{
 "frames": [{
@@ -107,28 +70,28 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_r0")
+"texture": SubResource("AtlasTexture_v0")
 }, {
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_r1")
+"texture": SubResource("AtlasTexture_v1")
 }, {
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_r2")
+"texture": SubResource("AtlasTexture_v2")
 }, {
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_r3")
+"texture": SubResource("AtlasTexture_v3")
 }, {
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_r4")
+"texture": SubResource("AtlasTexture_v4")
 }, {
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_r5")
+"texture": SubResource("AtlasTexture_v5")
 }, {
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_r6")
+"texture": SubResource("AtlasTexture_v6")
 }, {
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_r7")
+"texture": SubResource("AtlasTexture_v7")
 }],
 "loop": true,
 "name": &"brewing",
@@ -136,23 +99,23 @@ animations = [{
 }]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_cauldron"]
-radius = 35.0
+radius = 70.0
 
 [node name="CauldronUI" type="Node2D"]
+scale = Vector2(0.5, 0.5)
 script = ExtResource("1_cauldrongd")
 
 [node name="BaseAnchor" type="Node2D" parent="."]
-position = Vector2(950, 450)
+position = Vector2(1900, 900)
 
 [node name="SpriteCaldeirao" type="AnimatedSprite2D" parent="BaseAnchor"]
 texture_filter = 1
-scale = Vector2(0.5, 0.5)
 sprite_frames = SubResource("SpriteFrames_cauldron")
 animation = &"idle"
 autoplay = "idle"
 
 [node name="Area2D" type="Area2D" parent="."]
-position = Vector2(950, 450)
+position = Vector2(1900, 900)
 input_pickable = true
 script = ExtResource("5_areagd")
 
@@ -161,30 +124,6 @@ shape = SubResource("CircleShape2D_cauldron")
 
 [node name="BrewTimer" type="Timer" parent="."]
 one_shot = true
-
-[node name="FumacaParticulas" type="CPUParticles2D" parent="."]
-position = Vector2(950, 410)
-amount = 15
-lifetime = 2.0
-gravity = Vector2(0, -50)
-scale_amount_min = 20.0
-scale_amount_max = 20.0
-scale_amount_curve = SubResource("Curve_smoke")
-color = Color(0.588235, 0.294118, 0.980392, 0.4)
-
-[node name="ExplosaoMagica" type="CPUParticles2D" parent="."]
-position = Vector2(950, 420)
-emitting = false
-amount = 30
-one_shot = true
-explosiveness = 1.0
-spread = 180.0
-gravity = Vector2(0, 0)
-initial_velocity_min = 100.0
-initial_velocity_max = 100.0
-scale_amount_min = 5.0
-scale_amount_max = 5.0
-color = Color(1, 0.843137, 0, 1)
 
 [node name="PopupUI" type="Panel" parent="."]
 visible = false

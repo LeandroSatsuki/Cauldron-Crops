@@ -7,5 +7,5 @@
 [node name="World" type="Node2D"]
 script = ExtResource("1_maingd")
 
+[node name="CauldronUI" parent="." instance=ExtResource("3_cauldronscene")]
 [node name="UI" parent="." instance=ExtResource("2_uiscene")]
-[node name="CauldronUI" parent="UI" instance=ExtResource("3_cauldronscene")]
