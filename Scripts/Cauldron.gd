@@ -23,7 +23,6 @@ func _ready() -> void:
 	if btn_fechar:
 		btn_fechar.pressed.connect(func(): 
 			popup_ui.visible = false
-			$PopupLayer/ScreenBlocker.hide()
 		)
 		
 	# Ajustar o offset do sprite (escala 0.5): offset em pixels de textura (não escalados)
@@ -31,7 +30,6 @@ func _ready() -> void:
 	
 	# Reset Visual
 	$PopupLayer/CenterContainer/PopupUI.hide()
-	$PopupLayer/ScreenBlocker.hide()
 	$PopupLayer/CenterContainer/PopupUI.mouse_filter = Control.MOUSE_FILTER_STOP
 	
 	# Shader Material
@@ -46,7 +44,6 @@ func _process(_delta: float) -> void:
 
 func abrir_popup():
 	print("DEBUG: PopupUI visível? ", popup_ui.visible)
-	$PopupLayer/ScreenBlocker.show()
 	popup_ui.show()
 	popup_ui.visible = true
 	popup_ui.z_index = 100
