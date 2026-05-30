@@ -37,6 +37,8 @@ var precos: Dictionary = {
 	"raiz_gelida": 20
 }
 
+var custo_semente = {"semente_basica": 5, "semente_verao": 10, "semente_outono": 15, "semente_inverno": 20}
+
 var receitas_alquimia: Dictionary = {
 	"agua_trigo": "pocao_crescimento",
 	"carvao_trigo": "pocao_aceleradora",

@@ -110,9 +110,21 @@ func atualizar_destaques() -> void:
 
 func _on_slot_clicado(item_id: String, clique_direito: bool) -> void:
 	if item_id.begins_with("semente_"):
-		GlobalInventory.semente_selecionada = item_id
-		print("Semente selecionada equipada: ", item_id)
-		atualizar_destaques()
+		if not clique_direito:
+			GlobalInventory.semente_selecionada = item_id
+			print("Semente selecionada equipada: ", item_id)
+			atualizar_destaques()
+		else:
+			var preco_revenda = int(Database.custo_semente.get(item_id, 0) * 0.6)
+			if preco_revenda > 0:
+				var qtd_atual = GlobalInventory.inventario.get(item_id, 0)
+				if qtd_atual >= 10:
+					if GlobalInventory.remover_item(item_id, 10):
+						var ganho = preco_revenda * 10
+						EconomyManager.adicionar_moedas(ganho)
+						criar_texto_flutuante("+" + str(ganho) + " Moedas", get_viewport().get_mouse_position(), Color.GREEN)
+				else:
+					print("Quantidade insuficiente de sementes para revenda!")
 	else:
 		if clique_direito:
 			# Venda 10x
@@ -173,6 +185,9 @@ func _on_comprar_semente_gui_input(event: InputEvent, semente_id: String, preco_
 				criar_texto_flutuante(texto_10x, get_viewport().get_mouse_position(), Color.YELLOW)
 
 func _on_comprar_golem_button_pressed() -> void:
+	if EconomyManager.total_golems >= EconomyManager.max_golems:
+		print("Capacidade máxima de Golems atingida!")
+		return
 	if EconomyManager.remover_moedas(100):
 		EconomyManager.total_golems += 1
 
