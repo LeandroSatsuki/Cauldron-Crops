@@ -14,6 +14,22 @@ var semente_inverno: Dictionary = {
 	"estacao_ideal": SeasonManager.Estacao.INVERNO
 }
 
+var semente_verao: Dictionary = {
+	"nome": "Tomate do Sol",
+	"tempo_crescimento_segundos": 5.0,
+	"produto_colheita": "tomate_sol",
+	"valor_venda": 25,
+	"estacao_ideal": SeasonManager.Estacao.VERAO
+}
+
+var semente_outono: Dictionary = {
+	"nome": "Abóbora Sombria",
+	"tempo_crescimento_segundos": 6.0,
+	"produto_colheita": "abobora_sombria",
+	"valor_venda": 35,
+	"estacao_ideal": SeasonManager.Estacao.OUTONO
+}
+
 var receitas_alquimia: Dictionary = {
 	"agua_trigo": "pocao_crescimento",
 	"carvao_trigo": "pocao_aceleradora",

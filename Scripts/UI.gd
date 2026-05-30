@@ -10,8 +10,12 @@ extends CanvasLayer
 @onready var usar_pocao_button: Button = $LeftPanel/UsarPocaoButton
 @onready var dormir_button: Button = $LeftPanel/DormirButton
 @onready var comprar_cosmetico_button: Button = $LeftPanel/ComprarCosmeticoButton
+@onready var comprar_trigo_button: Button = $LeftPanel/ComprarTrigoButton
+@onready var comprar_verao_button: Button = $LeftPanel/ComprarVeraoButton
 @onready var equipar_trigo_button: Button = $LeftPanel/EquiparTrigoButton
 @onready var equipar_inverno_button: Button = $LeftPanel/EquiparInvernoButton
+@onready var equipar_verao_button: Button = $LeftPanel/EquiparVeraoButton
+@onready var equipar_outono_button: Button = $LeftPanel/EquiparOutonoButton
 @onready var comprar_golem_button: Button = $LeftPanel/ComprarGolemButton
 
 @onready var trigo_label: Label = $InventoryBar/TrigoLabel
@@ -20,6 +24,8 @@ extends CanvasLayer
 @onready var agua_label: Label = $InventoryBar/AguaLabel
 @onready var semente_basica_label: Label = $InventoryBar/SementeBasicaLabel
 @onready var semente_inverno_label: Label = $InventoryBar/SementeInvernoLabel
+@onready var semente_verao_label: Label = $InventoryBar/SementeVeraoLabel
+@onready var semente_outono_label: Label = $InventoryBar/SementeOutonoLabel
 
 func _ready() -> void:
 	if vender_button:
@@ -30,10 +36,18 @@ func _ready() -> void:
 		dormir_button.pressed.connect(_on_dormir_button_pressed)
 	if comprar_cosmetico_button:
 		comprar_cosmetico_button.pressed.connect(_on_comprar_cosmetico_button_pressed)
+	if comprar_trigo_button:
+		comprar_trigo_button.pressed.connect(_on_comprar_trigo_button_pressed)
+	if comprar_verao_button:
+		comprar_verao_button.pressed.connect(_on_comprar_verao_button_pressed)
 	if equipar_trigo_button:
 		equipar_trigo_button.pressed.connect(_on_equipar_trigo_button_pressed)
 	if equipar_inverno_button:
 		equipar_inverno_button.pressed.connect(_on_equipar_inverno_button_pressed)
+	if equipar_verao_button:
+		equipar_verao_button.pressed.connect(_on_equipar_verao_button_pressed)
+	if equipar_outono_button:
+		equipar_outono_button.pressed.connect(_on_equipar_outono_button_pressed)
 	if comprar_golem_button:
 		comprar_golem_button.pressed.connect(_on_comprar_golem_button_pressed)
 
@@ -45,7 +59,14 @@ func _process(_delta: float) -> void:
 	if cargas_label:
 		cargas_label.text = "Cargas Mágicas: " + str(GlobalInventory.cargas_crescimento)
 	if semente_label:
-		semente_label.text = "Semente Atual: " + ("Trigo" if GlobalInventory.semente_selecionada == "semente_basica" else "Raiz")
+		var nome = "Trigo"
+		if GlobalInventory.semente_selecionada == "semente_inverno":
+			nome = "Raiz"
+		elif GlobalInventory.semente_selecionada == "semente_verao":
+			nome = "Tomate"
+		elif GlobalInventory.semente_selecionada == "semente_outono":
+			nome = "Abóbora"
+		semente_label.text = "Semente Atual: " + nome
 	if golems_label:
 		golems_label.text = "Golems Ativos: " + str(EconomyManager.total_golems)
 		
@@ -61,6 +82,10 @@ func _process(_delta: float) -> void:
 		semente_basica_label.text = "🌱 Semente Trigo: " + str(GlobalInventory.inventario.get("semente_basica", 0))
 	if semente_inverno_label:
 		semente_inverno_label.text = "❄️ Semente Raiz: " + str(GlobalInventory.inventario.get("semente_inverno", 0))
+	if semente_verao_label:
+		semente_verao_label.text = "☀️ Semente Tomate: " + str(GlobalInventory.inventario.get("semente_verao", 0))
+	if semente_outono_label:
+		semente_outono_label.text = "🍁 Semente Abóbora: " + str(GlobalInventory.inventario.get("semente_outono", 0))
 
 func _on_vender_button_pressed() -> void:
 	if GlobalInventory.remover_item("trigo", 1):
@@ -79,11 +104,27 @@ func _on_comprar_cosmetico_button_pressed() -> void:
 		print("Tema comprado e aplicado!")
 		RenderingServer.set_default_clear_color(Color(0.1, 0.4, 0.1))
 
+func _on_comprar_trigo_button_pressed() -> void:
+	if EconomyManager.remover_moedas(5):
+		GlobalInventory.adicionar_item("semente_basica", 1)
+		criar_texto_flutuante("+1 Semente Trigo", get_viewport().get_mouse_position(), Color.YELLOW)
+
+func _on_comprar_verao_button_pressed() -> void:
+	if EconomyManager.remover_moedas(10):
+		GlobalInventory.adicionar_item("semente_verao", 1)
+		criar_texto_flutuante("+1 Semente Tomate", get_viewport().get_mouse_position(), Color.YELLOW)
+
 func _on_equipar_trigo_button_pressed() -> void:
 	GlobalInventory.semente_selecionada = "semente_basica"
 
 func _on_equipar_inverno_button_pressed() -> void:
 	GlobalInventory.semente_selecionada = "semente_inverno"
+
+func _on_equipar_verao_button_pressed() -> void:
+	GlobalInventory.semente_selecionada = "semente_verao"
+
+func _on_equipar_outono_button_pressed() -> void:
+	GlobalInventory.semente_selecionada = "semente_outono"
 
 func _on_comprar_golem_button_pressed() -> void:
 	if EconomyManager.remover_moedas(100):

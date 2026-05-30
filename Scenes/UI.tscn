@@ -36,7 +36,7 @@ text = "Golems Ativos: 0"
 offset_left = 20.0
 offset_top = 200.0
 offset_right = 250.0
-offset_bottom = 550.0
+offset_bottom = 600.0
 theme_override_constants/separation = 10
 
 [node name="VenderButton" type="Button" parent="LeftPanel"]
@@ -55,6 +55,14 @@ text = "Dormir (Mudar Estação)"
 layout_mode = 2
 text = "Comprar Tema Verde (50 Moedas)"
 
+[node name="ComprarTrigoButton" type="Button" parent="LeftPanel"]
+layout_mode = 2
+text = "Comprar Semente Trigo (5 Moedas)"
+
+[node name="ComprarVeraoButton" type="Button" parent="LeftPanel"]
+layout_mode = 2
+text = "Comprar Semente Tomate (10 Moedas)"
+
 [node name="EquiparTrigoButton" type="Button" parent="LeftPanel"]
 layout_mode = 2
 text = "Equipar: Trigo (Primavera)"
@@ -63,6 +71,14 @@ text = "Equipar: Trigo (Primavera)"
 layout_mode = 2
 text = "Equipar: Raiz (Inverno)"
 
+[node name="EquiparVeraoButton" type="Button" parent="LeftPanel"]
+layout_mode = 2
+text = "Equipar: Tomate (Verão)"
+
+[node name="EquiparOutonoButton" type="Button" parent="LeftPanel"]
+layout_mode = 2
+text = "Equipar: Abóbora (Outono)"
+
 [node name="ComprarGolemButton" type="Button" parent="LeftPanel"]
 layout_mode = 2
 text = "Comprar Golem Coletor (100 Moedas)"
@@ -70,7 +86,7 @@ text = "Comprar Golem Coletor (100 Moedas)"
 [node name="InventoryBar" type="HBoxContainer" parent="."]
 offset_left = 300.0
 offset_top = 20.0
-offset_right = 1000.0
+offset_right = 1150.0
 offset_bottom = 50.0
 theme_override_constants/separation = 20
 
@@ -97,3 +113,11 @@ text = "🌱 Semente Trigo: 10"
 [node name="SementeInvernoLabel" type="Label" parent="InventoryBar"]
 layout_mode = 2
 text = "❄️ Semente Raiz: 0"
+
+[node name="SementeVeraoLabel" type="Label" parent="InventoryBar"]
+layout_mode = 2
+text = "☀️ Semente Tomate: 0"
+
+[node name="SementeOutonoLabel" type="Label" parent="InventoryBar"]
+layout_mode = 2
+text = "🍁 Semente Abóbora: 0"
