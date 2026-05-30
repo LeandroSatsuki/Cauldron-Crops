@@ -58,6 +58,10 @@ text = "Usar Poção (3 Cargas)"
 layout_mode = 2
 text = "Árvore de Alquimia"
 
+[node name="AbrirQuestsButton" type="Button" parent="LeftPanel"]
+layout_mode = 2
+text = "Mural de Demandas"
+
 [node name="Separator1" type="HSeparator" parent="LeftPanel"]
 layout_mode = 2
 

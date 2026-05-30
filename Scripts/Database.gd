@@ -59,6 +59,12 @@ var receitas_alquimia: Dictionary = {
 	"agua_raiz_gelida": "pocao_crescimento"
 }
 
+var quests_exemplos: Dictionary = {
+	"q1": {"estacao": "geral", "pedido_item": "trigo", "pedido_qtd": 10, "recompensa_tipo": "moedas", "recompensa_qtd": 300, "texto": "A Taverna precisa de Trigo!"},
+	"q2": {"estacao": 0, "pedido_item": "agua", "pedido_qtd": 5, "recompensa_tipo": "pontos_alquimia", "recompensa_qtd": 1, "texto": "Pesquisa de Primavera: Traga água limpa."},
+	"q3": {"estacao": 2, "pedido_item": "abobora_sombria", "pedido_qtd": 3, "recompensa_tipo": "semente_inverno", "recompensa_qtd": 2, "texto": "Festival de Outono! Precisamos de Abóboras."}
+}
+
 func fabricar_pocao(ingrediente1: String, ingrediente2: String) -> String:
 	var lista = [ingrediente1, ingrediente2]
 	lista.sort()

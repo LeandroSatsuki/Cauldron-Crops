@@ -17,6 +17,10 @@ var slot_scene = preload("res://Scenes/InventorySlot.tscn")
 var skill_tree_scene = preload("res://Scenes/SkillTree.tscn")
 var skill_tree: Panel
 
+@onready var abrir_quests_button: Button = $LeftPanel/AbrirQuestsButton
+var quest_board_scene = preload("res://Scenes/QuestBoard.tscn")
+var quest_board: Panel
+
 @onready var inventory_bar: HBoxContainer = $InventoryBar
 @onready var tooltip_panel: Panel = $TooltipPanel
 @onready var tooltip_texto: Label = $TooltipPanel/TooltipTexto
@@ -47,6 +51,11 @@ func _ready() -> void:
 	add_child(skill_tree)
 	if abrir_skill_tree_button:
 		abrir_skill_tree_button.pressed.connect(func(): skill_tree.visible = true)
+		
+	quest_board = quest_board_scene.instantiate()
+	add_child(quest_board)
+	if abrir_quests_button:
+		abrir_quests_button.pressed.connect(func(): quest_board.visible = true)
 		
 	# Inicializa
 	verificar_e_atualizar_inventario()
