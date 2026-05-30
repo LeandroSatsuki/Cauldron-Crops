@@ -86,10 +86,6 @@ layout_mode = 2
 text = "--- LOJA DE APRIMORAMENTOS ---"
 horizontal_alignment = 1
 
-[node name="ComprarGolemButton" type="Button" parent="LeftPanel"]
-layout_mode = 2
-text = "Comprar Golem Coletor (100 Moedas)"
-
 [node name="ComprarCosmeticoButton" type="Button" parent="LeftPanel"]
 layout_mode = 2
 text = "Comprar Tema Verde (50 Moedas)"

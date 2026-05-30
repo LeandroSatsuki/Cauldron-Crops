@@ -37,37 +37,60 @@ func _on_misturar_button_pressed() -> void:
 			resultado_label.text = "Ingredientes insuficientes!"
 		return
 		
-	# Consume items from GlobalInventory
-	var removed_1 = GlobalInventory.remover_item(item1, 1)
-	var removed_2 = GlobalInventory.remover_item(item2, 1)
-	
-	if not (removed_1 and removed_2):
-		if removed_1:
-			GlobalInventory.adicionar_item(item1, 1)
-		if removed_2:
-			GlobalInventory.adicionar_item(item2, 1)
-		if resultado_label:
-			resultado_label.text = "Erro ao consumir ingredientes!"
-		return
-		
+	# Determinar o resultado da combinação antes de consumir os ingredientes
 	var chave1 = item1 + "_" + item2
 	var chave2 = item2 + "_" + item1
 	var resultado = ""
+	var chave_combinacao = ""
 	
 	if Database.receitas_alquimia.has(chave1):
 		resultado = Database.receitas_alquimia[chave1]
+		chave_combinacao = chave1
 	elif Database.receitas_alquimia.has(chave2):
 		resultado = Database.receitas_alquimia[chave2]
+		chave_combinacao = chave2
 		
-	if resultado != "":
-		GlobalInventory.adicionar_item(resultado, 1)
+	if resultado == "golem_coletor":
+		if EconomyManager.total_golems >= EconomyManager.max_golems:
+			if resultado_label:
+				resultado_label.text = "Capacidade máxima de Golems atingida!"
+			return
 		
-		var chave_combinacao = chave1 if Database.receitas_alquimia.has(chave1) else chave2
-		if not GlobalInventory.receitas_descobertas.has(chave_combinacao):
-			GlobalInventory.receitas_descobertas.append(chave_combinacao)
-			
-		if resultado_label:
-			resultado_label.text = "Nova Descoberta: " + resultado
+		# Consome os ingredientes
+		var removed_1 = GlobalInventory.remover_item(item1, 1)
+		var removed_2 = GlobalInventory.remover_item(item2, 1)
+		if removed_1 and removed_2:
+			EconomyManager.total_golems += 1
+			if not GlobalInventory.receitas_descobertas.has(chave_combinacao):
+				GlobalInventory.receitas_descobertas.append(chave_combinacao)
+			if resultado_label:
+				resultado_label.text = "Sucesso: Golem Coletor despertou!"
+		else:
+			if removed_1:
+				GlobalInventory.adicionar_item(item1, 1)
+			if removed_2:
+				GlobalInventory.adicionar_item(item2, 1)
+			if resultado_label:
+				resultado_label.text = "Erro ao consumir ingredientes!"
 	else:
-		if resultado_label:
-			resultado_label.text = "Mistura falhou! Ingredientes perdidos."
+		# Comportamento normal das outras poções
+		var removed_1 = GlobalInventory.remover_item(item1, 1)
+		var removed_2 = GlobalInventory.remover_item(item2, 1)
+		
+		if removed_1 and removed_2:
+			if resultado != "":
+				GlobalInventory.adicionar_item(resultado, 1)
+				if not GlobalInventory.receitas_descobertas.has(chave_combinacao):
+					GlobalInventory.receitas_descobertas.append(chave_combinacao)
+				if resultado_label:
+					resultado_label.text = "Nova Descoberta: " + resultado
+			else:
+				if resultado_label:
+					resultado_label.text = "Mistura falhou! Ingredientes perdidos."
+		else:
+			if removed_1:
+				GlobalInventory.adicionar_item(item1, 1)
+			if removed_2:
+				GlobalInventory.adicionar_item(item2, 1)
+			if resultado_label:
+				resultado_label.text = "Erro ao consumir ingredientes!"

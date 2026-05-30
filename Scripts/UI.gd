@@ -13,7 +13,6 @@ var slot_scene = preload("res://Scenes/InventorySlot.tscn")
 @onready var comprar_cosmetico_button: Button = $LeftPanel/ComprarCosmeticoButton
 @onready var comprar_trigo_button: Button = $LeftPanel/GridSementes/ComprarTrigoButton
 @onready var comprar_verao_button: Button = $LeftPanel/GridSementes/ComprarVeraoButton
-@onready var comprar_golem_button: Button = $LeftPanel/ComprarGolemButton
 
 @onready var inventory_bar: HBoxContainer = $InventoryBar
 @onready var tooltip_panel: Panel = $TooltipPanel
@@ -40,9 +39,6 @@ func _ready() -> void:
 		comprar_verao_button.gui_input.connect(func(event): _on_comprar_semente_gui_input(event, "semente_verao", 10, "+1 Semente Tomate", "+10 Semente Tomate"))
 		comprar_verao_button.mouse_entered.connect(_on_comprar_verao_button_mouse_entered)
 		comprar_verao_button.mouse_exited.connect(_on_comprar_verao_button_mouse_exited)
-	if comprar_golem_button:
-		comprar_golem_button.pressed.connect(_on_comprar_golem_button_pressed)
-		comprar_golem_button.text = "Comprar Golem Coletor (1 Palha Rara + 1 Rama Encantada)"
 		
 	# Inicializa
 	verificar_e_atualizar_inventario()
@@ -215,21 +211,6 @@ func _on_comprar_semente_gui_input(event: InputEvent, semente_id: String, preco_
 				GlobalInventory.adicionar_item(semente_id, 10)
 				criar_texto_flutuante(texto_10x, get_viewport().get_mouse_position(), Color.YELLOW)
 
-func _on_comprar_golem_button_pressed() -> void:
-	if EconomyManager.total_golems >= EconomyManager.max_golems:
-		print("Capacidade máxima de Golems atingida!")
-		return
-		
-	var palha = GlobalInventory.inventario.get("palha_rara", 0)
-	var rama = GlobalInventory.inventario.get("rama_encantada", 0)
-	if palha >= 1 and rama >= 1:
-		if GlobalInventory.remover_item("palha_rara", 1) and GlobalInventory.remover_item("rama_encantada", 1):
-			EconomyManager.total_golems += 1
-			print("Golem comprado com sucesso!")
-		else:
-			print("Erro ao remover materiais do Golem!")
-	else:
-		print("Faltam materiais raros para o Golem!")
 
 func _on_comprar_trigo_button_mouse_entered() -> void:
 	if tooltip_panel:

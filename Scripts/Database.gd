@@ -53,7 +53,8 @@ var receitas_alquimia: Dictionary = {
 	"carvao_trigo": "pocao_aceleradora",
 	"agua_carvao": "essencia_sombria",
 	"tomate_sol_trigo": "adubo_flamejante",
-	"abobora_sombria_raiz_gelida": "elixir_estacional"
+	"abobora_sombria_raiz_gelida": "elixir_estacional",
+	"palha_rara_rama_encantada": "golem_coletor"
 }
 
 func fabricar_pocao(ingrediente1: String, ingrediente2: String) -> String:
