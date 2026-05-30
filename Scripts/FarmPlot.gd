@@ -94,7 +94,7 @@ func _on_plot_clicked() -> void:
 				push_error("Autoload GlobalInventory não possui o método adicionar_item()!")
 				return
 			
-			var ui = get_tree().current_scene.get_node_or_null("UI")
+			ui = get_tree().current_scene.get_node_or_null("UI")
 			if ui and ui.has_method("criar_texto_flutuante"):
 				var nome_exibicao = "Trigo" if produto == "trigo" else "Raiz"
 				ui.criar_texto_flutuante("+1 " + nome_exibicao, global_position, Color.YELLOW)
