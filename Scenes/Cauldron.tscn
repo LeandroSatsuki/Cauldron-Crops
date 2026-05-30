@@ -1,81 +1,163 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=24 format=3]
 
 [ext_resource type="Script" path="res://Scripts/Cauldron.gd" id="1_cauldrongd"]
 [ext_resource type="Script" path="res://Scripts/DropSlot.gd" id="2_dropslotgd"]
+[ext_resource type="Texture2D" path="res://Assets/caldeirao_roxo.png" id="3_roxo"]
+[ext_resource type="Texture2D" path="res://Assets/caldeirao_verde.png" id="4_verde"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_v0"]
+atlas = ExtResource("4_verde")
+region = Rect2(0, 0, 256, 256)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_v1"]
+atlas = ExtResource("4_verde")
+region = Rect2(256, 0, 256, 256)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_v2"]
+atlas = ExtResource("4_verde")
+region = Rect2(512, 0, 256, 256)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_v3"]
+atlas = ExtResource("4_verde")
+region = Rect2(768, 0, 256, 256)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_v4"]
+atlas = ExtResource("4_verde")
+region = Rect2(0, 256, 256, 256)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_v5"]
+atlas = ExtResource("4_verde")
+region = Rect2(256, 256, 256, 256)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_v6"]
+atlas = ExtResource("4_verde")
+region = Rect2(512, 256, 256, 256)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_v7"]
+atlas = ExtResource("4_verde")
+region = Rect2(768, 256, 256, 256)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_r0"]
+atlas = ExtResource("3_roxo")
+region = Rect2(0, 0, 256, 256)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_r1"]
+atlas = ExtResource("3_roxo")
+region = Rect2(256, 0, 256, 256)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_r2"]
+atlas = ExtResource("3_roxo")
+region = Rect2(512, 0, 256, 256)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_r3"]
+atlas = ExtResource("3_roxo")
+region = Rect2(768, 0, 256, 256)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_r4"]
+atlas = ExtResource("3_roxo")
+region = Rect2(0, 256, 256, 256)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_r5"]
+atlas = ExtResource("3_roxo")
+region = Rect2(256, 256, 256, 256)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_r6"]
+atlas = ExtResource("3_roxo")
+region = Rect2(512, 256, 256, 256)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_r7"]
+atlas = ExtResource("3_roxo")
+region = Rect2(768, 256, 256, 256)
 
 [sub_resource type="Curve" id="Curve_smoke"]
 _data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
 point_count = 2
 
-[node name="CauldronUI" type="Panel"]
-anchor_left = 1.0
-anchor_top = 0.5
-anchor_right = 1.0
-anchor_bottom = 0.5
-offset_left = -320.0
-offset_top = -150.0
-offset_right = -20.0
-offset_bottom = 150.0
+[sub_resource type="SpriteFrames" id="SpriteFrames_cauldron"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_v0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_v1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_v2")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_v3")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_v4")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_v5")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_v6")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_v7")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_r0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_r1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_r2")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_r3")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_r4")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_r5")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_r6")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_r7")
+}],
+"loop": true,
+"name": &"brewing",
+"speed": 8.0
+}]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_cauldron"]
+radius = 60.0
+
+[node name="CauldronUI" type="Node2D"]
 script = ExtResource("1_cauldrongd")
 
-[node name="DropSlot1" type="Panel" parent="."]
-layout_mode = 0
-offset_left = 40.0
-offset_top = 40.0
-offset_right = 120.0
-offset_bottom = 120.0
-script = ExtResource("2_dropslotgd")
+[node name="SpriteCaldeirao" type="AnimatedSprite2D" parent="."]
+texture_filter = 1
+position = Vector2(950, 450)
+sprite_frames = SubResource("SpriteFrames_cauldron")
+animation = &"idle"
+autoplay = "idle"
 
-[node name="Label" type="Label" parent="DropSlot1"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-text = "Soltar item"
-horizontal_alignment = 1
-vertical_alignment = 1
+[node name="Area2D" type="Area2D" parent="."]
+position = Vector2(950, 450)
 
-[node name="DropSlot2" type="Panel" parent="."]
-layout_mode = 0
-offset_left = 180.0
-offset_top = 40.0
-offset_right = 260.0
-offset_bottom = 120.0
-script = ExtResource("2_dropslotgd")
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+shape = SubResource("CircleShape2D_cauldron")
 
-[node name="Label" type="Label" parent="DropSlot2"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-text = "Soltar item"
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="MisturarButton" type="Button" parent="."]
-layout_mode = 0
-offset_left = 20.0
-offset_top = 150.0
-offset_right = 280.0
-offset_bottom = 200.0
-text = "Misturar Ingredientes"
-
-[node name="ResultadoLabel" type="Label" parent="."]
-layout_mode = 0
-offset_left = 20.0
-offset_top = 220.0
-offset_right = 280.0
-offset_bottom = 280.0
-text = "Resultado: ..."
-horizontal_alignment = 1
-vertical_alignment = 1
+[node name="BrewTimer" type="Timer" parent="."]
+one_shot = true
 
 [node name="FumacaParticulas" type="CPUParticles2D" parent="."]
-position = Vector2(150, 120)
+position = Vector2(950, 400)
 amount = 15
 lifetime = 2.0
 gravity = Vector2(0, -50)
@@ -85,7 +167,7 @@ scale_amount_curve = SubResource("Curve_smoke")
 color = Color(0.588235, 0.294118, 0.980392, 0.4)
 
 [node name="ExplosaoMagica" type="CPUParticles2D" parent="."]
-position = Vector2(150, 120)
+position = Vector2(950, 420)
 emitting = false
 amount = 30
 one_shot = true
@@ -97,3 +179,78 @@ initial_velocity_max = 100.0
 scale_amount_min = 5.0
 scale_amount_max = 5.0
 color = Color(1, 0.843137, 0, 1)
+
+[node name="PopupUI" type="Panel" parent="."]
+visible = false
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -320.0
+offset_top = -150.0
+offset_right = -20.0
+offset_bottom = 150.0
+
+[node name="DropSlot1" type="Panel" parent="PopupUI"]
+layout_mode = 0
+offset_left = 40.0
+offset_top = 40.0
+offset_right = 120.0
+offset_bottom = 120.0
+script = ExtResource("2_dropslotgd")
+
+[node name="Label" type="Label" parent="PopupUI/DropSlot1"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Soltar item"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="DropSlot2" type="Panel" parent="PopupUI"]
+layout_mode = 0
+offset_left = 180.0
+offset_top = 40.0
+offset_right = 260.0
+offset_bottom = 120.0
+script = ExtResource("2_dropslotgd")
+
+[node name="Label" type="Label" parent="PopupUI/DropSlot2"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Soltar item"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="MisturarButton" type="Button" parent="PopupUI"]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 150.0
+offset_right = 280.0
+offset_bottom = 200.0
+text = "Misturar Ingredientes"
+
+[node name="ResultadoLabel" type="Label" parent="PopupUI"]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 220.0
+offset_right = 280.0
+offset_bottom = 280.0
+text = "Resultado: ..."
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="BtnFechar" type="Button" parent="PopupUI"]
+layout_mode = 0
+offset_left = 270.0
+offset_top = 5.0
+offset_right = 295.0
+offset_bottom = 30.0
+text = "X"

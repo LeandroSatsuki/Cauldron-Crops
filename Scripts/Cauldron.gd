@@ -1,13 +1,31 @@
-extends Panel
+extends Node2D
 
-@onready var drop_slot_1: Panel = $DropSlot1
-@onready var drop_slot_2: Panel = $DropSlot2
-@onready var misturar_button: Button = $MisturarButton
-@onready var resultado_label: Label = $ResultadoLabel
+@onready var drop_slot_1: Panel = $PopupUI/DropSlot1
+@onready var drop_slot_2: Panel = $PopupUI/DropSlot2
+@onready var misturar_button: Button = $PopupUI/MisturarButton
+@onready var resultado_label: Label = $PopupUI/ResultadoLabel
+@onready var popup_ui: Panel = $PopupUI
+
+var estado_atual: String = "IDLE"
+var item_em_producao: String = ""
+var tempo_producao: float = 5.0
 
 func _ready() -> void:
 	if misturar_button:
 		misturar_button.pressed.connect(_on_misturar_button_pressed)
+	$Area2D.input_event.connect(_on_area_2d_input_event)
+	$BrewTimer.timeout.connect(_on_brew_timer_timeout)
+	
+	var btn_fechar = $PopupUI/BtnFechar
+	if btn_fechar:
+		btn_fechar.pressed.connect(func(): popup_ui.visible = false)
+
+func _on_area_2d_input_event(_viewport: Node, event: InputEvent, _shape_idx: int) -> void:
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+		if estado_atual == "IDLE":
+			popup_ui.visible = true
+			if resultado_label:
+				resultado_label.text = "Resultado: ..."
 
 func _on_misturar_button_pressed() -> void:
 	if not drop_slot_1 or not drop_slot_2:
@@ -50,6 +68,16 @@ func _on_misturar_button_pressed() -> void:
 		resultado = Database.receitas_alquimia[chave2]
 		chave_combinacao = chave2
 		
+	if resultado == "":
+		# Se a mistura falhar:
+		var removed_1 = GlobalInventory.remover_item(item1, 1)
+		var removed_2 = GlobalInventory.remover_item(item2, 1)
+		if removed_1 and removed_2:
+			if resultado_label:
+				resultado_label.text = "Mistura falhou! Ingredientes perdidos."
+			_limpar_slots()
+		return
+		
 	if resultado == "golem_coletor":
 		if EconomyManager.total_golems >= EconomyManager.max_golems:
 			if resultado_label:
@@ -60,13 +88,17 @@ func _on_misturar_button_pressed() -> void:
 		var removed_1 = GlobalInventory.remover_item(item1, 1)
 		var removed_2 = GlobalInventory.remover_item(item2, 1)
 		if removed_1 and removed_2:
-			EconomyManager.total_golems += 1
 			if not GlobalInventory.receitas_descobertas.has(chave_combinacao):
 				GlobalInventory.pontos_alquimia += 1
 				GlobalInventory.receitas_descobertas.append(chave_combinacao)
-			if resultado_label:
-				resultado_label.text = "Sucesso: Golem Coletor despertou!"
-			$ExplosaoMagica.emitting = true
+			
+			# Iniciar produção
+			item_em_producao = "golem_coletor"
+			estado_atual = "BREWING"
+			popup_ui.visible = false
+			$SpriteCaldeirao.play("brewing")
+			$BrewTimer.start(tempo_producao)
+			_limpar_slots()
 		else:
 			if removed_1:
 				GlobalInventory.adicionar_item(item1, 1)
@@ -80,17 +112,17 @@ func _on_misturar_button_pressed() -> void:
 		var removed_2 = GlobalInventory.remover_item(item2, 1)
 		
 		if removed_1 and removed_2:
-			if resultado != "":
-				GlobalInventory.adicionar_item(resultado, 1)
-				if not GlobalInventory.receitas_descobertas.has(chave_combinacao):
-					GlobalInventory.pontos_alquimia += 1
-					GlobalInventory.receitas_descobertas.append(chave_combinacao)
-				if resultado_label:
-					resultado_label.text = "Nova Descoberta: " + resultado
-				$ExplosaoMagica.emitting = true
-			else:
-				if resultado_label:
-					resultado_label.text = "Mistura falhou! Ingredientes perdidos."
+			if not GlobalInventory.receitas_descobertas.has(chave_combinacao):
+				GlobalInventory.pontos_alquimia += 1
+				GlobalInventory.receitas_descobertas.append(chave_combinacao)
+			
+			# Iniciar produção
+			item_em_producao = resultado
+			estado_atual = "BREWING"
+			popup_ui.visible = false
+			$SpriteCaldeirao.play("brewing")
+			$BrewTimer.start(tempo_producao)
+			_limpar_slots()
 		else:
 			if removed_1:
 				GlobalInventory.adicionar_item(item1, 1)
@@ -98,3 +130,29 @@ func _on_misturar_button_pressed() -> void:
 				GlobalInventory.adicionar_item(item2, 1)
 			if resultado_label:
 				resultado_label.text = "Erro ao consumir ingredientes!"
+
+func _limpar_slots() -> void:
+	if drop_slot_1:
+		drop_slot_1.item_vinculado = ""
+		var lbl1 = drop_slot_1.get_node_or_null("Label")
+		if lbl1: lbl1.text = "Soltar item"
+	if drop_slot_2:
+		drop_slot_2.item_vinculado = ""
+		var lbl2 = drop_slot_2.get_node_or_null("Label")
+		if lbl2: lbl2.text = "Soltar item"
+
+func _on_brew_timer_timeout() -> void:
+	if item_em_producao == "golem_coletor":
+		EconomyManager.total_golems += 1
+	elif item_em_producao != "":
+		GlobalInventory.adicionar_item(item_em_producao, 1)
+		
+	var ui = get_tree().current_scene.get_node_or_null("UI")
+	if ui and ui.has_method("criar_texto_flutuante"):
+		var nome_exibicao = "Golem" if item_em_producao == "golem_coletor" else item_em_producao
+		ui.criar_texto_flutuante("Sucesso: " + nome_exibicao + "!", $SpriteCaldeirao.global_position, Color.GREEN)
+		
+	$ExplosaoMagica.emitting = true
+	$SpriteCaldeirao.play("idle")
+	estado_atual = "IDLE"
+	item_em_producao = ""
