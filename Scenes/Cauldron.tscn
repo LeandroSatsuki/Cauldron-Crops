@@ -161,7 +161,7 @@ shape = SubResource("CircleShape2D_cauldron")
 one_shot = true
 
 [node name="PopupLayer" type="CanvasLayer" parent="."]
-layer = 0
+layer = 10
 
 [node name="ScreenBlocker" type="ColorRect" parent="PopupLayer"]
 anchors_preset = 15
