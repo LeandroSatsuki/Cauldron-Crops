@@ -14,7 +14,7 @@ func _ready() -> void:
 	if misturar_button:
 		misturar_button.pressed.connect(_on_misturar_button_pressed)
 	$Area2D.input_pickable = true
-	$Area2D.input_event.connect(_on_area_2d_input_event)
+	$Area2D.input_event.connect(_on_area2d_input_event)
 	$BrewTimer.timeout.connect(_on_brew_timer_timeout)
 	
 	var btn_fechar = $PopupUI/BtnFechar
@@ -24,8 +24,15 @@ func _ready() -> void:
 	# Ajustar o offset do sprite (escala 0.5): offset em pixels de textura (não escalados)
 	$BaseAnchor/SpriteCaldeirao.offset = Vector2(0, -103)
 
-func _on_area_2d_input_event(_viewport: Node, event: InputEvent, _shape_idx: int) -> void:
+func _process(_delta: float) -> void:
+	if $BaseAnchor/SpriteCaldeirao.frame >= 4:
+		$BaseAnchor/SpriteCaldeirao.offset.y = -70
+	else:
+		$BaseAnchor/SpriteCaldeirao.offset.y = -103
+
+func _on_area2d_input_event(_viewport: Node, event: InputEvent, _shape_idx: int) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+		print("Debug: Caldeirão clicado")
 		print("O caldeirão foi clicado com sucesso!")
 		if estado_atual == "IDLE":
 			popup_ui.visible = true
@@ -102,6 +109,9 @@ func _on_misturar_button_pressed() -> void:
 			estado_atual = "BREWING"
 			popup_ui.visible = false
 			$BaseAnchor/SpriteCaldeirao.play("brewing")
+			var tween = create_tween()
+			tween.tween_property($BaseAnchor/SpriteCaldeirao, "scale", Vector2(0.6, 0.4), 0.2)
+			tween.tween_property($BaseAnchor/SpriteCaldeirao, "scale", Vector2(0.5, 0.5), 0.2)
 			$BrewTimer.start(tempo_producao)
 			_limpar_slots()
 		else:
@@ -126,6 +136,9 @@ func _on_misturar_button_pressed() -> void:
 			estado_atual = "BREWING"
 			popup_ui.visible = false
 			$BaseAnchor/SpriteCaldeirao.play("brewing")
+			var tween = create_tween()
+			tween.tween_property($BaseAnchor/SpriteCaldeirao, "scale", Vector2(0.6, 0.4), 0.2)
+			tween.tween_property($BaseAnchor/SpriteCaldeirao, "scale", Vector2(0.5, 0.5), 0.2)
 			$BrewTimer.start(tempo_producao)
 			_limpar_slots()
 		else:
