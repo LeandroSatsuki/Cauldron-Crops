@@ -36,10 +36,17 @@ func _process(_delta: float) -> void:
 	else:
 		$BaseAnchor/SpriteCaldeirao.offset.y = -103
 
-func _unhandled_input(event: InputEvent) -> void:
-	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-		if $Area2D.get_overlapping_areas().size() > 0 or $Area2D.is_pixel_opaque(get_local_mouse_position()):
+func _unhandled_input(event):
+	if event is InputEventMouseButton and event.pressed:
+		print("Clique detectado na tela na posição: ", event.position)
+		# O caldeirão está dentro de uma cena ou é um nó na cena principal?
+		# Vamos verificar se o clique está atingindo a área do caldeirão
+		var mouse_pos = get_global_mouse_position()
+		if $Area2D.get_node("CollisionShape2D").shape.get_rect().has_point($Area2D.to_local(mouse_pos)):
+			print("SUCESSO: Clique atingiu a área do Caldeirão!")
 			abrir_popup()
+		else:
+			print("FALHA: O clique não atingiu a forma de colisão do Caldeirão.")
 
 func abrir_popup() -> void:
 	$PopupUI.show()
