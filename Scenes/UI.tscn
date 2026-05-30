@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://Scripts/UI.gd" id="1_uigd"]
+[ext_resource type="PackedScene" path="res://Scenes/SellMenu.tscn" id="2_sellscene"]
 
 [node name="UI" type="CanvasLayer"]
 script = ExtResource("1_uigd")
@@ -44,10 +45,6 @@ modulate = Color(1, 1, 0, 1)
 layout_mode = 2
 text = "--- GERENCIAMENTO ---"
 horizontal_alignment = 1
-
-[node name="VenderButton" type="Button" parent="LeftPanel"]
-layout_mode = 2
-text = "Vender Trigo"
 
 [node name="DormirButton" type="Button" parent="LeftPanel"]
 layout_mode = 2
@@ -120,3 +117,7 @@ offset_bottom = 185.0
 text = "Nome:
 Estação:
 Uso:"
+
+[node name="SellMenu" parent="." instance=ExtResource("2_sellscene")]
+visible = false
+layout_mode = 1

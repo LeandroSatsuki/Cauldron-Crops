@@ -30,6 +30,13 @@ var semente_outono: Dictionary = {
 	"estacao_ideal": SeasonManager.Estacao.OUTONO
 }
 
+var precos: Dictionary = {
+	"trigo": 15,
+	"tomate_sol": 25,
+	"abobora_sombria": 35,
+	"raiz_gelida": 20
+}
+
 var receitas_alquimia: Dictionary = {
 	"agua_trigo": "pocao_crescimento",
 	"carvao_trigo": "pocao_aceleradora",

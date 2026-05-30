@@ -8,7 +8,6 @@ var slot_scene = preload("res://Scenes/InventorySlot.tscn")
 @onready var semente_label: Label = $StatusPanel/SementeLabel
 @onready var golems_label: Label = $StatusPanel/GolemsLabel
 
-@onready var vender_button: Button = $LeftPanel/VenderButton
 @onready var usar_pocao_button: Button = $LeftPanel/UsarPocaoButton
 @onready var dormir_button: Button = $LeftPanel/DormirButton
 @onready var comprar_cosmetico_button: Button = $LeftPanel/ComprarCosmeticoButton
@@ -19,12 +18,11 @@ var slot_scene = preload("res://Scenes/InventorySlot.tscn")
 @onready var inventory_bar: HBoxContainer = $InventoryBar
 @onready var tooltip_panel: Panel = $TooltipPanel
 @onready var tooltip_texto: Label = $TooltipPanel/TooltipTexto
+@onready var sell_menu: PanelContainer = $SellMenu
 
 var ultimo_estado_inventario: Dictionary = {}
 
 func _ready() -> void:
-	if vender_button:
-		vender_button.pressed.connect(_on_vender_button_pressed)
 	if usar_pocao_button:
 		usar_pocao_button.pressed.connect(_on_usar_pocao_button_pressed)
 	if dormir_button:
@@ -103,6 +101,9 @@ func _on_slot_clicado(item_id: String) -> void:
 	if item_id.begins_with("semente_"):
 		GlobalInventory.semente_selecionada = item_id
 		print("Semente selecionada equipada: ", item_id)
+	else:
+		if sell_menu:
+			sell_menu.abrir(item_id, get_viewport().get_mouse_position())
 
 func obter_emoji_item(item_id: String) -> String:
 	match item_id:
@@ -121,11 +122,6 @@ func obter_emoji_item(item_id: String) -> String:
 		"elixir_estacional": return "🍶"
 		"agua": return "💧"
 	return "📦"
-
-func _on_vender_button_pressed() -> void:
-	if GlobalInventory.remover_item("trigo", 1):
-		EconomyManager.adicionar_moedas(15)
-		criar_texto_flutuante("+15 Moedas", moedas_label.global_position + Vector2(100, 0), Color.GREEN)
 
 func _on_usar_pocao_button_pressed() -> void:
 	if GlobalInventory.remover_item("pocao_crescimento", 1):
