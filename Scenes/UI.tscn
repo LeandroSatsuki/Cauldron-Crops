@@ -60,31 +60,6 @@ text = "Usar Poção (3 Cargas)"
 [node name="Separator1" type="HSeparator" parent="LeftPanel"]
 layout_mode = 2
 
-[node name="HeaderEquipar" type="Label" parent="LeftPanel"]
-modulate = Color(1, 1, 0, 1)
-layout_mode = 2
-text = "--- EQUIPAR SEMENTES ---"
-horizontal_alignment = 1
-
-[node name="EquiparTrigoButton" type="Button" parent="LeftPanel"]
-layout_mode = 2
-text = "Equipar: Trigo (Primavera)"
-
-[node name="EquiparVeraoButton" type="Button" parent="LeftPanel"]
-layout_mode = 2
-text = "Equipar: Tomate (Verão)"
-
-[node name="EquiparOutonoButton" type="Button" parent="LeftPanel"]
-layout_mode = 2
-text = "Equipar: Abóbora (Outono)"
-
-[node name="EquiparInvernoButton" type="Button" parent="LeftPanel"]
-layout_mode = 2
-text = "Equipar: Raiz (Inverno)"
-
-[node name="Separator2" type="HSeparator" parent="LeftPanel"]
-layout_mode = 2
-
 [node name="HeaderLoja" type="Label" parent="LeftPanel"]
 modulate = Color(1, 1, 0, 1)
 layout_mode = 2
@@ -126,40 +101,8 @@ text = "Comprar Tema Verde (50 Moedas)"
 offset_left = 300.0
 offset_top = 20.0
 offset_right = 1150.0
-offset_bottom = 50.0
-theme_override_constants/separation = 20
-
-[node name="TrigoLabel" type="Label" parent="InventoryBar"]
-layout_mode = 2
-text = "🌾 Trigo: 0"
-
-[node name="RaizLabel" type="Label" parent="InventoryBar"]
-layout_mode = 2
-text = "🧊 Raiz: 0"
-
-[node name="PocoesLabel" type="Label" parent="InventoryBar"]
-layout_mode = 2
-text = "🧪 Poções: 0"
-
-[node name="AguaLabel" type="Label" parent="InventoryBar"]
-layout_mode = 2
-text = "💧 Água: 10"
-
-[node name="SementeBasicaLabel" type="Label" parent="InventoryBar"]
-layout_mode = 2
-text = "🌱 Semente Trigo: 10"
-
-[node name="SementeInvernoLabel" type="Label" parent="InventoryBar"]
-layout_mode = 2
-text = "❄️ Semente Raiz: 0"
-
-[node name="SementeVeraoLabel" type="Label" parent="InventoryBar"]
-layout_mode = 2
-text = "☀️ Semente Tomate: 0"
-
-[node name="SementeOutonoLabel" type="Label" parent="InventoryBar"]
-layout_mode = 2
-text = "🍁 Semente Abóbora: 0"
+offset_bottom = 80.0
+theme_override_constants/separation = 10
 
 [node name="TooltipPanel" type="Panel" parent="."]
 visible = false
