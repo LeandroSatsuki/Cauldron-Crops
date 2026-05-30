@@ -6,6 +6,12 @@ var item_id: String = ""
 var quantidade: int = 0
 var tween_piscar: Tween
 
+var item_vinculado: String:
+	get:
+		return item_id
+	set(value):
+		item_id = value
+
 @onready var icon_label: Label = $ItemIconLabel
 @onready var qtd_label: Label = $QuantidadeLabel
 @onready var destaque: ReferenceRect = $Destaque
@@ -41,16 +47,24 @@ func set_destaque(ativo: bool) -> void:
 			tween_piscar.kill()
 
 func _gui_input(event: InputEvent) -> void:
-	if event is InputEventMouseButton and event.pressed:
-		if event.button_index == MOUSE_BUTTON_LEFT:
-			slot_clicado.emit(item_id, false, self)
-			accept_event()
-		elif event.button_index == MOUSE_BUTTON_RIGHT:
-			slot_clicado.emit(item_id, true, self)
-			accept_event()
+	if event is InputEventMouseButton:
+		if event.pressed:
+			if event.button_index == MOUSE_BUTTON_LEFT:
+				slot_clicado.emit(item_id, false, self)
+				# NÃO chame accept_event() aqui! Se você chamar accept_event(), o Drag & Drop não vai iniciar.
+			elif event.button_index == MOUSE_BUTTON_RIGHT:
+				slot_clicado.emit(item_id, true, self)
+				# NÃO chame accept_event() aqui!
 
 func _get_drag_data(at_position: Vector2) -> Variant:
-	var label = Label.new()
-	label.text = item_id
-	set_drag_preview(label)
-	return item_id
+	# Se o slot estiver vazio, não faz nada
+	if item_vinculado == "":
+		return null
+	
+	# Cria uma preview visual do item que você está arrastando
+	var preview = Label.new()
+	preview.text = item_vinculado
+	set_drag_preview(preview)
+	
+	# Retorna o nome do item como dado
+	return item_vinculado
