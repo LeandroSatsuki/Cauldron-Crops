@@ -127,7 +127,7 @@ shape = SubResource("CircleShape2D_cauldron")
 one_shot = true
 
 [node name="PopupLayer" type="CanvasLayer" parent="."]
-layer = 10
+layer = 0
 
 [node name="CenterContainer" type="CenterContainer" parent="PopupLayer"]
 anchors_preset = 15

@@ -53,29 +53,29 @@ func _ready() -> void:
 		
 	skill_tree = skill_tree_scene.instantiate()
 	add_child(skill_tree)
-	skill_tree.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	skill_tree.mouse_filter = Control.MOUSE_FILTER_PASS
 	skill_tree.visibility_changed.connect(func():
 		if skill_tree:
-			skill_tree.mouse_filter = Control.MOUSE_FILTER_STOP if skill_tree.visible else Control.MOUSE_FILTER_IGNORE
+			skill_tree.mouse_filter = Control.MOUSE_FILTER_STOP if skill_tree.visible else Control.MOUSE_FILTER_PASS
 	)
 	if abrir_skill_tree_button:
 		abrir_skill_tree_button.pressed.connect(func(): skill_tree.visible = true)
 		
 	quest_board = quest_board_scene.instantiate()
 	add_child(quest_board)
-	quest_board.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	quest_board.mouse_filter = Control.MOUSE_FILTER_PASS
 	quest_board.visibility_changed.connect(func():
 		if quest_board:
-			quest_board.mouse_filter = Control.MOUSE_FILTER_STOP if quest_board.visible else Control.MOUSE_FILTER_IGNORE
+			quest_board.mouse_filter = Control.MOUSE_FILTER_STOP if quest_board.visible else Control.MOUSE_FILTER_PASS
 	)
 	if abrir_quests_button:
 		abrir_quests_button.pressed.connect(_on_abrir_quests_pressed)
 		
 	if sell_menu:
-		sell_menu.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		sell_menu.mouse_filter = Control.MOUSE_FILTER_PASS
 		sell_menu.visibility_changed.connect(func():
 			if sell_menu:
-				sell_menu.mouse_filter = Control.MOUSE_FILTER_STOP if sell_menu.visible else Control.MOUSE_FILTER_IGNORE
+				sell_menu.mouse_filter = Control.MOUSE_FILTER_STOP if sell_menu.visible else Control.MOUSE_FILTER_PASS
 		)
 		
 	if QuestManager:
