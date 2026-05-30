@@ -12,6 +12,7 @@ func avancar_estacao() -> void:
 	else:
 		estacao_atual = (estacao_atual + 1) as Estacao
 	print("Nova Estação: ", obter_nome_estacao(), " | Ano: ", ano)
+	QuestManager.limpar_quests_ignoradas()
 	QuestManager.tentar_gerar_quest()
 
 func obter_nome_estacao() -> String:

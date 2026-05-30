@@ -31,6 +31,10 @@ var item_focado_id: String = ""
 var custo_dormir: int = 5
 var timer_reset_dormir: float = 0.0
 
+var quest_board_visivel: bool:
+	get:
+		return quest_board.visible if quest_board else false
+
 func _ready() -> void:
 	if usar_pocao_button:
 		usar_pocao_button.pressed.connect(_on_usar_pocao_button_pressed)
@@ -55,12 +59,7 @@ func _ready() -> void:
 	quest_board = quest_board_scene.instantiate()
 	add_child(quest_board)
 	if abrir_quests_button:
-		abrir_quests_button.pressed.connect(func():
-			quest_board.visible = true
-			var alerta = abrir_quests_button.get_node_or_null("AlertaQuest")
-			if alerta:
-				alerta.visible = false
-		)
+		abrir_quests_button.pressed.connect(_on_abrir_quests_pressed)
 		
 	if QuestManager:
 		QuestManager.quest_atualizada.connect(_on_nova_quest_recebida)
@@ -272,9 +271,15 @@ func criar_texto_flutuante(texto: String, posicao_global: Vector2, cor: Color) -
 	tween.parallel().tween_property(label, "modulate:a", 0.0, 1.0)
 	tween.tween_callback(label.queue_free)
 
+func _on_abrir_quests_pressed() -> void:
+	if quest_board:
+		quest_board.visible = true
+	var alerta = $LeftPanel/AbrirQuestsButton/AlertaQuest
+	if alerta:
+		alerta.visible = false
+
 func _on_nova_quest_recebida() -> void:
-	if quest_board and not quest_board.visible:
-		if abrir_quests_button:
-			var alerta = abrir_quests_button.get_node_or_null("AlertaQuest")
-			if alerta:
-				alerta.visible = true
+	if not quest_board_visivel:
+		var alerta = $LeftPanel/AbrirQuestsButton/AlertaQuest
+		if alerta:
+			alerta.visible = true

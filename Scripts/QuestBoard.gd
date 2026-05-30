@@ -51,11 +51,26 @@ func rebuild_ui() -> void:
 		btn_dispensar.text = "Dispensar"
 		btn_dispensar.pressed.connect(_on_dispensar_pressed.bind(quest))
 		hbox.add_child(btn_dispensar)
+		
+		if not quest.get("aceita", false):
+			var btn_aceitar = Button.new()
+			btn_aceitar.text = "Aceitar"
+			btn_aceitar.pressed.connect(_on_aceitar_pressed.bind(quest))
+			hbox.add_child(btn_aceitar)
 
 func _on_dispensar_pressed(quest: Dictionary) -> void:
 	if QuestManager:
 		QuestManager.quests_ativas.erase(quest)
 		QuestManager.quest_atualizada.emit()
+
+func _on_aceitar_pressed(quest: Dictionary) -> void:
+	if QuestManager:
+		for q in QuestManager.quests_ativas:
+			if q == quest:
+				q["aceita"] = true
+				break
+		QuestManager.quest_atualizada.emit()
+	rebuild_ui()
 
 func _on_entregar_pressed(quest: Dictionary) -> void:
 	var item_id = quest.get("pedido_item", "")
