@@ -1,6 +1,6 @@
 extends Button
 
-signal slot_clicado(id: String, clique_direito: bool)
+signal slot_clicado(item_id: String, is_right_click: bool, slot_node: Control)
 
 var item_id: String = ""
 var quantidade: int = 0
@@ -20,6 +20,7 @@ func configurar_slot(id: String, qtd: int, texto_exibicao: String) -> void:
 		icon_label.text = texto_exibicao
 	if qtd_label:
 		qtd_label.text = str(qtd)
+	self.tooltip_text = texto_exibicao
 
 func set_destaque(ativo: bool) -> void:
 	if not destaque:
@@ -42,8 +43,8 @@ func set_destaque(ativo: bool) -> void:
 func _gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.pressed:
 		if event.button_index == MOUSE_BUTTON_LEFT:
-			slot_clicado.emit(item_id, false)
+			slot_clicado.emit(item_id, false, self)
 			accept_event()
 		elif event.button_index == MOUSE_BUTTON_RIGHT:
-			slot_clicado.emit(item_id, true)
+			slot_clicado.emit(item_id, true, self)
 			accept_event()

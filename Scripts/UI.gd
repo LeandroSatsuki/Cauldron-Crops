@@ -21,6 +21,7 @@ var slot_scene = preload("res://Scenes/InventorySlot.tscn")
 @onready var sell_menu: PanelContainer = $SellMenu
 
 var ultimo_estado_inventario: Dictionary = {}
+var item_focado_id: String = ""
 
 func _ready() -> void:
 	if usar_pocao_button:
@@ -96,8 +97,10 @@ func atualizar_inventario_visual() -> void:
 			var emoji = obter_emoji_item(item_key)
 			slot.configurar_slot(item_key, qtd, emoji)
 			slot.slot_clicado.connect(_on_slot_clicado)
-			if GlobalInventory.semente_selecionada == item_key:
+			if item_key == GlobalInventory.semente_selecionada or item_key == item_focado_id:
 				slot.set_destaque(true)
+			else:
+				slot.set_destaque(false)
 			
 	atualizar_destaques()
 
@@ -105,12 +108,20 @@ func atualizar_destaques() -> void:
 	if not inventory_bar:
 		return
 	for slot in inventory_bar.get_children():
+		if slot.is_queued_for_deletion():
+			continue
 		if slot.has_method("set_destaque"):
-			slot.set_destaque(slot.item_id == GlobalInventory.semente_selecionada)
+			if slot.item_id == GlobalInventory.semente_selecionada or slot.item_id == item_focado_id:
+				slot.set_destaque(true)
+			else:
+				slot.set_destaque(false)
 
-func _on_slot_clicado(item_id: String, clique_direito: bool) -> void:
+func _on_slot_clicado(item_id: String, is_right_click: bool, slot_node: Control) -> void:
+	item_focado_id = item_id
+	atualizar_destaques()
+	
 	if item_id.begins_with("semente_"):
-		if not clique_direito:
+		if not is_right_click:
 			GlobalInventory.semente_selecionada = item_id
 			print("Semente selecionada equipada: ", item_id)
 			atualizar_destaques()
@@ -126,7 +137,7 @@ func _on_slot_clicado(item_id: String, clique_direito: bool) -> void:
 				else:
 					print("Quantidade insuficiente de sementes para revenda!")
 	else:
-		if clique_direito:
+		if is_right_click:
 			# Venda 10x
 			var preco = Database.precos.get(item_id, 0)
 			if preco > 0:
@@ -141,7 +152,8 @@ func _on_slot_clicado(item_id: String, clique_direito: bool) -> void:
 		else:
 			# Clique esquerdo -> abre SellMenu
 			if sell_menu:
-				sell_menu.abrir(item_id, get_viewport().get_mouse_position())
+				var pos_fixa = slot_node.global_position + Vector2(0, slot_node.size.y + 5)
+				sell_menu.abrir(item_id, pos_fixa)
 
 func obter_emoji_item(item_id: String) -> String:
 	match item_id:
