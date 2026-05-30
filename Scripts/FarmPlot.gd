@@ -1,5 +1,11 @@
 extends Area2D
 
+const TEX_SECA = preload("res://Assets/seca.png")
+const TEX_MOLHADA = preload("res://Assets/molhada.png")
+# Texturas futuras preparadas
+const TEX_SECA_ADUBADA = preload("res://Assets/seca_adubada.png")
+const TEX_MOLHADA_ADUBADA = preload("res://Assets/molhada_adubada.png")
+
 # Máquina de estados simples
 enum State {
 	VAZIO,
@@ -61,7 +67,7 @@ func _on_plot_clicked() -> void:
 					regado = true
 					_atualizar_visual()
 					print("Lote Regado!")
-					$Sprite2D.frame = 2
+					$Sprite2D.texture = TEX_MOLHADA
 					if estado_atual == State.CRESCENDO:
 						timer.start(timer.time_left * 0.8)
 			else:
@@ -156,7 +162,7 @@ func _on_plot_clicked() -> void:
 			# Reseta o estado para VAZIO
 			estado_atual = State.VAZIO
 			regado = false
-			$Sprite2D.frame = 0
+			$Sprite2D.texture = TEX_SECA
 			_atualizar_visual()
 			semente_atual = {}
 			semente_id_plantada = ""
@@ -193,7 +199,7 @@ func _atualizar_visual() -> void:
 	if visual_regado:
 		visual_regado.visible = regado
 	if has_node("Sprite2D"):
-		$Sprite2D.frame = 2 if regado else 0
+		$Sprite2D.texture = TEX_MOLHADA if regado else TEX_SECA
 	match estado_atual:
 		State.VAZIO:
 			color_rect.color = Color(0, 0, 0, 0)
