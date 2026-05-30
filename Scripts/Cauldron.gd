@@ -20,10 +20,13 @@ func _ready() -> void:
 	var btn_fechar = $PopupUI/BtnFechar
 	if btn_fechar:
 		btn_fechar.pressed.connect(func(): popup_ui.visible = false)
+		
+	# Ajustar o offset do sprite para alinhar a base do caldeirão com a BaseAnchor
+	$BaseAnchor/SpriteCaldeirao.offset = Vector2(0, -103)
 
 func _on_area_2d_input_event(_viewport: Node, event: InputEvent, _shape_idx: int) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-		print("Caldeirão clicado")
+		print("Popup clicado!")
 		if estado_atual == "IDLE":
 			popup_ui.visible = true
 			if resultado_label:
@@ -57,7 +60,7 @@ func _on_misturar_button_pressed() -> void:
 			resultado_label.text = "Ingredientes insuficientes!"
 		return
 		
-	# Determinar o resultado da combinação antes de consumir os ingredientes
+	# Determinar o resultado da combinação antes de consuming os ingredientes
 	var chave1 = item1 + "_" + item2
 	var chave2 = item2 + "_" + item1
 	var resultado = ""
@@ -98,7 +101,7 @@ func _on_misturar_button_pressed() -> void:
 			item_em_producao = "golem_coletor"
 			estado_atual = "BREWING"
 			popup_ui.visible = false
-			$SpriteCaldeirao.play("brewing")
+			$BaseAnchor/SpriteCaldeirao.play("brewing")
 			$BrewTimer.start(tempo_producao)
 			_limpar_slots()
 		else:
@@ -122,7 +125,7 @@ func _on_misturar_button_pressed() -> void:
 			item_em_producao = resultado
 			estado_atual = "BREWING"
 			popup_ui.visible = false
-			$SpriteCaldeirao.play("brewing")
+			$BaseAnchor/SpriteCaldeirao.play("brewing")
 			$BrewTimer.start(tempo_producao)
 			_limpar_slots()
 		else:
@@ -152,9 +155,9 @@ func _on_brew_timer_timeout() -> void:
 	var ui = get_tree().current_scene.get_node_or_null("UI")
 	if ui and ui.has_method("criar_texto_flutuante"):
 		var nome_exibicao = "Golem" if item_em_producao == "golem_coletor" else item_em_producao
-		ui.criar_texto_flutuante("Sucesso: " + nome_exibicao + "!", $SpriteCaldeirao.global_position, Color.GREEN)
+		ui.criar_texto_flutuante("Sucesso: " + nome_exibicao + "!", $BaseAnchor/SpriteCaldeirao.global_position, Color.GREEN)
 		
 	$ExplosaoMagica.emitting = true
-	$SpriteCaldeirao.play("idle")
+	$BaseAnchor/SpriteCaldeirao.play("idle")
 	estado_atual = "IDLE"
 	item_em_producao = ""
