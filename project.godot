@@ -23,6 +23,12 @@ EconomyManager="*res://Scripts/EconomyManager.gd"
 SeasonManager="*res://Scripts/SeasonManager.gd"
 GolemManager="*res://Scripts/GolemManager.gd"
 
+[display]
+
+window/size/viewport_width=1920
+window/size/viewport_height=1080
+window/size/mode=2
+
 [physics]
 
 3d/physics_engine="Jolt Physics"

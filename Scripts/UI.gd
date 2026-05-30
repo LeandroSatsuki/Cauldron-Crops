@@ -10,8 +10,8 @@ extends CanvasLayer
 @onready var usar_pocao_button: Button = $LeftPanel/UsarPocaoButton
 @onready var dormir_button: Button = $LeftPanel/DormirButton
 @onready var comprar_cosmetico_button: Button = $LeftPanel/ComprarCosmeticoButton
-@onready var comprar_trigo_button: Button = $LeftPanel/ComprarTrigoButton
-@onready var comprar_verao_button: Button = $LeftPanel/ComprarVeraoButton
+@onready var comprar_trigo_button: Button = $LeftPanel/GridSementes/ComprarTrigoButton
+@onready var comprar_verao_button: Button = $LeftPanel/GridSementes/ComprarVeraoButton
 @onready var equipar_trigo_button: Button = $LeftPanel/EquiparTrigoButton
 @onready var equipar_inverno_button: Button = $LeftPanel/EquiparInvernoButton
 @onready var equipar_verao_button: Button = $LeftPanel/EquiparVeraoButton
@@ -27,6 +27,9 @@ extends CanvasLayer
 @onready var semente_verao_label: Label = $InventoryBar/SementeVeraoLabel
 @onready var semente_outono_label: Label = $InventoryBar/SementeOutonoLabel
 
+@onready var tooltip_panel: Panel = $TooltipPanel
+@onready var tooltip_texto: Label = $TooltipPanel/TooltipTexto
+
 func _ready() -> void:
 	if vender_button:
 		vender_button.pressed.connect(_on_vender_button_pressed)
@@ -38,8 +41,12 @@ func _ready() -> void:
 		comprar_cosmetico_button.pressed.connect(_on_comprar_cosmetico_button_pressed)
 	if comprar_trigo_button:
 		comprar_trigo_button.pressed.connect(_on_comprar_trigo_button_pressed)
+		comprar_trigo_button.mouse_entered.connect(_on_comprar_trigo_button_mouse_entered)
+		comprar_trigo_button.mouse_exited.connect(_on_comprar_trigo_button_mouse_exited)
 	if comprar_verao_button:
 		comprar_verao_button.pressed.connect(_on_comprar_verao_button_pressed)
+		comprar_verao_button.mouse_entered.connect(_on_comprar_verao_button_mouse_entered)
+		comprar_verao_button.mouse_exited.connect(_on_comprar_verao_button_mouse_exited)
 	if equipar_trigo_button:
 		equipar_trigo_button.pressed.connect(_on_equipar_trigo_button_pressed)
 	if equipar_inverno_button:
@@ -129,6 +136,26 @@ func _on_equipar_outono_button_pressed() -> void:
 func _on_comprar_golem_button_pressed() -> void:
 	if EconomyManager.remover_moedas(100):
 		EconomyManager.total_golems += 1
+
+func _on_comprar_trigo_button_mouse_entered() -> void:
+	if tooltip_panel:
+		tooltip_panel.visible = true
+	if tooltip_texto:
+		tooltip_texto.text = "Semente de Trigo\nCusto: 5 Moedas\nEstação: Primavera\nUso: Adubo Flamejante"
+
+func _on_comprar_trigo_button_mouse_exited() -> void:
+	if tooltip_panel:
+		tooltip_panel.visible = false
+
+func _on_comprar_verao_button_mouse_entered() -> void:
+	if tooltip_panel:
+		tooltip_panel.visible = true
+	if tooltip_texto:
+		tooltip_texto.text = "Semente de Tomate\nCusto: 10 Moedas\nEstação: Verão\nUso: Adubo Flamejante"
+
+func _on_comprar_verao_button_mouse_exited() -> void:
+	if tooltip_panel:
+		tooltip_panel.visible = false
 
 func criar_texto_flutuante(texto: String, posicao_global: Vector2, cor: Color) -> void:
 	var label = Label.new()
