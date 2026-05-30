@@ -2,8 +2,8 @@
 
 [ext_resource type="Script" path="res://Scripts/Cauldron.gd" id="1_cauldrongd"]
 [ext_resource type="Script" path="res://Scripts/DropSlot.gd" id="2_dropslotgd"]
-[ext_resource type="Texture2D" path="res://Assets/caldeirao_mistic_squash_roxo.png" id="3_roxo"]
-[ext_resource type="Texture2D" path="res://Assets/caldeirao_mistic_squash_verde.png" id="4_verde"]
+[ext_resource type="Texture2D" path="res://Assets/caldeirao_clean_sheet_roxo.png" id="3_roxo"]
+[ext_resource type="Texture2D" path="res://Assets/caldeirao_clean_sheet_verde.png" id="4_verde"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_v0"]
 atlas = ExtResource("4_verde")
@@ -23,19 +23,19 @@ region = Rect2(768, 0, 256, 256)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_v4"]
 atlas = ExtResource("4_verde")
-region = Rect2(0, 223, 256, 256)
+region = Rect2(0, 256, 256, 256)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_v5"]
 atlas = ExtResource("4_verde")
-region = Rect2(256, 223, 256, 256)
+region = Rect2(256, 256, 256, 256)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_v6"]
 atlas = ExtResource("4_verde")
-region = Rect2(512, 223, 256, 256)
+region = Rect2(512, 256, 256, 256)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_v7"]
 atlas = ExtResource("4_verde")
-region = Rect2(768, 223, 256, 256)
+region = Rect2(768, 256, 256, 256)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_r0"]
 atlas = ExtResource("3_roxo")
@@ -55,19 +55,19 @@ region = Rect2(768, 0, 256, 256)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_r4"]
 atlas = ExtResource("3_roxo")
-region = Rect2(0, 223, 256, 256)
+region = Rect2(0, 256, 256, 256)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_r5"]
 atlas = ExtResource("3_roxo")
-region = Rect2(256, 223, 256, 256)
+region = Rect2(256, 256, 256, 256)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_r6"]
 atlas = ExtResource("3_roxo")
-region = Rect2(512, 223, 256, 256)
+region = Rect2(512, 256, 256, 256)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_r7"]
 atlas = ExtResource("3_roxo")
-region = Rect2(768, 223, 256, 256)
+region = Rect2(768, 256, 256, 256)
 
 [sub_resource type="Curve" id="Curve_smoke"]
 _data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
@@ -135,7 +135,7 @@ animations = [{
 }]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_cauldron"]
-radius = 60.0
+radius = 35.0
 
 [node name="CauldronUI" type="Node2D"]
 script = ExtResource("1_cauldrongd")
@@ -145,6 +145,7 @@ position = Vector2(950, 450)
 
 [node name="SpriteCaldeirao" type="AnimatedSprite2D" parent="BaseAnchor"]
 texture_filter = 1
+scale = Vector2(0.5, 0.5)
 sprite_frames = SubResource("SpriteFrames_cauldron")
 animation = &"idle"
 autoplay = "idle"
@@ -160,7 +161,7 @@ shape = SubResource("CircleShape2D_cauldron")
 one_shot = true
 
 [node name="FumacaParticulas" type="CPUParticles2D" parent="."]
-position = Vector2(950, 400)
+position = Vector2(950, 410)
 amount = 15
 lifetime = 2.0
 gravity = Vector2(0, -50)

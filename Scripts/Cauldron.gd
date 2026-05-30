@@ -21,12 +21,12 @@ func _ready() -> void:
 	if btn_fechar:
 		btn_fechar.pressed.connect(func(): popup_ui.visible = false)
 		
-	# Ajustar o offset do sprite para alinhar a base do caldeirão com a BaseAnchor
+	# Ajustar o offset do sprite (escala 0.5): offset em pixels de textura (não escalados)
 	$BaseAnchor/SpriteCaldeirao.offset = Vector2(0, -103)
 
 func _on_area_2d_input_event(_viewport: Node, event: InputEvent, _shape_idx: int) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-		print("Popup clicado!")
+		print("O caldeirão foi clicado com sucesso!")
 		if estado_atual == "IDLE":
 			popup_ui.visible = true
 			if resultado_label:
