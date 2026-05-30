@@ -43,4 +43,3 @@ func limpar_quests_ignoradas() -> void:
 		var q = quests_ativas[i]
 		if not q.get("aceita", false):
 			quests_ativas.remove_at(i)
-	quest_atualizada.emit()

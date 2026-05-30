@@ -39,3 +39,16 @@ offset_top = -32.0
 offset_right = 32.0
 offset_bottom = 32.0
 mouse_filter = 1
+
+[node name="DropRaroVFX" type="CPUParticles2D" parent="."]
+emitting = false
+amount = 20
+one_shot = true
+explosiveness = 0.9
+spread = 180.0
+gravity = Vector2(0, 50)
+initial_velocity_min = 80.0
+initial_velocity_max = 80.0
+scale_amount_min = 3.0
+scale_amount_max = 5.0
+color = Color(0.607843, 0.34902, 0.713726, 1)

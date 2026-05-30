@@ -66,6 +66,7 @@ func _on_misturar_button_pressed() -> void:
 				GlobalInventory.receitas_descobertas.append(chave_combinacao)
 			if resultado_label:
 				resultado_label.text = "Sucesso: Golem Coletor despertou!"
+			$ExplosaoMagica.emitting = true
 		else:
 			if removed_1:
 				GlobalInventory.adicionar_item(item1, 1)
@@ -86,6 +87,7 @@ func _on_misturar_button_pressed() -> void:
 					GlobalInventory.receitas_descobertas.append(chave_combinacao)
 				if resultado_label:
 					resultado_label.text = "Nova Descoberta: " + resultado
+				$ExplosaoMagica.emitting = true
 			else:
 				if resultado_label:
 					resultado_label.text = "Mistura falhou! Ingredientes perdidos."

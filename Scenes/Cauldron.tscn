@@ -1,7 +1,11 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://Scripts/Cauldron.gd" id="1_cauldrongd"]
 [ext_resource type="Script" path="res://Scripts/DropSlot.gd" id="2_dropslotgd"]
+
+[sub_resource type="Curve" id="Curve_smoke"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 2
 
 [node name="CauldronUI" type="Panel"]
 anchor_left = 1.0
@@ -69,3 +73,27 @@ offset_bottom = 280.0
 text = "Resultado: ..."
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="FumacaParticulas" type="CPUParticles2D" parent="."]
+position = Vector2(150, 120)
+amount = 15
+lifetime = 2.0
+gravity = Vector2(0, -50)
+scale_amount_min = 20.0
+scale_amount_max = 20.0
+scale_amount_curve = SubResource("Curve_smoke")
+color = Color(0.588235, 0.294118, 0.980392, 0.4)
+
+[node name="ExplosaoMagica" type="CPUParticles2D" parent="."]
+position = Vector2(150, 120)
+emitting = false
+amount = 30
+one_shot = true
+explosiveness = 1.0
+spread = 180.0
+gravity = Vector2(0, 0)
+initial_velocity_min = 100.0
+initial_velocity_max = 100.0
+scale_amount_min = 5.0
+scale_amount_max = 5.0
+color = Color(1, 0.843137, 0, 1)
