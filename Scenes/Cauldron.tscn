@@ -125,7 +125,11 @@ shape = SubResource("CircleShape2D_cauldron")
 [node name="BrewTimer" type="Timer" parent="."]
 one_shot = true
 
-[node name="PopupUI" type="Panel" parent="."]
+[node name="PopupLayer" type="CanvasLayer" parent="."]
+layer = 10
+
+[node name="PopupUI" type="Panel" parent="PopupLayer"]
+z_index = 10
 visible = false
 anchor_left = 1.0
 anchor_top = 0.5
@@ -136,7 +140,7 @@ offset_top = -150.0
 offset_right = -20.0
 offset_bottom = 150.0
 
-[node name="DropSlot1" type="Panel" parent="PopupUI"]
+[node name="DropSlot1" type="Panel" parent="PopupLayer/PopupUI"]
 layout_mode = 0
 offset_left = 40.0
 offset_top = 40.0
@@ -155,7 +159,7 @@ text = "Soltar item"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="DropSlot2" type="Panel" parent="PopupUI"]
+[node name="DropSlot2" type="Panel" parent="PopupLayer/PopupUI"]
 layout_mode = 0
 offset_left = 180.0
 offset_top = 40.0
@@ -174,7 +178,7 @@ text = "Soltar item"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="MisturarButton" type="Button" parent="PopupUI"]
+[node name="MisturarButton" type="Button" parent="PopupLayer/PopupUI"]
 layout_mode = 0
 offset_left = 20.0
 offset_top = 150.0
@@ -182,7 +186,7 @@ offset_right = 280.0
 offset_bottom = 200.0
 text = "Misturar Ingredientes"
 
-[node name="ResultadoLabel" type="Label" parent="PopupUI"]
+[node name="ResultadoLabel" type="Label" parent="PopupLayer/PopupUI"]
 layout_mode = 0
 offset_left = 20.0
 offset_top = 220.0
@@ -192,7 +196,7 @@ text = "Resultado: ..."
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="BtnFechar" type="Button" parent="PopupUI"]
+[node name="BtnFechar" type="Button" parent="PopupLayer/PopupUI"]
 layout_mode = 0
 offset_left = 270.0
 offset_top = 5.0
