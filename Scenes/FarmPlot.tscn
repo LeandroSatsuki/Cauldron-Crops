@@ -1,12 +1,20 @@
 [gd_scene format=3 uid="uid://bj5sla83koseg"]
 
 [ext_resource type="Script" uid="uid://b0bhjcjmm0cyq" path="res://Scripts/FarmPlot.gd" id="1_farmplot_script"]
+[ext_resource type="Texture2D" path="res://Assets/lote_sheet.png" id="2_lotesheet"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_farmplot"]
 size = Vector2(64, 64)
 
 [node name="FarmPlot" type="Area2D" unique_id=1661898718]
 script = ExtResource("1_farmplot_script")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture_filter = 1
+scale = Vector2(0.125, 0.125)
+texture = ExtResource("2_lotesheet")
+hframes = 2
+vframes = 2
 
 [node name="ColorRect" type="ColorRect" parent="." unique_id=275089934]
 offset_left = -32.0
@@ -29,7 +37,7 @@ offset_top = -32.0
 offset_right = 32.0
 offset_bottom = 32.0
 mouse_filter = 2
-color = Color(0, 0.4, 1, 0.3)
+color = Color(0, 0, 0, 0)
 
 [node name="TooltipArea" type="Control" parent="."]
 layout_mode = 3

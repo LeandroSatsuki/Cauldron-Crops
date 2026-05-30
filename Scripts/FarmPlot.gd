@@ -61,6 +61,7 @@ func _on_plot_clicked() -> void:
 					regado = true
 					_atualizar_visual()
 					print("Lote Regado!")
+					$Sprite2D.frame = 2
 					if estado_atual == State.CRESCENDO:
 						timer.start(timer.time_left * 0.8)
 			else:
@@ -155,6 +156,7 @@ func _on_plot_clicked() -> void:
 			# Reseta o estado para VAZIO
 			estado_atual = State.VAZIO
 			regado = false
+			$Sprite2D.frame = 0
 			_atualizar_visual()
 			semente_atual = {}
 			semente_id_plantada = ""
@@ -190,10 +192,12 @@ func _on_timer_timeout() -> void:
 func _atualizar_visual() -> void:
 	if visual_regado:
 		visual_regado.visible = regado
+	if has_node("Sprite2D"):
+		$Sprite2D.frame = 2 if regado else 0
 	match estado_atual:
 		State.VAZIO:
-			color_rect.color = Color(0.42, 0.26, 0.15)
+			color_rect.color = Color(0, 0, 0, 0)
 		State.CRESCENDO:
-			color_rect.color = Color(0.2, 0.5, 0.2)
+			color_rect.color = Color(0.2, 0.5, 0.2, 0.4)
 		State.PRONTO_PARA_COLHER:
-			color_rect.color = Color(0.8, 0.8, 0.2)
+			color_rect.color = Color(0.8, 0.8, 0.2, 0.4)
