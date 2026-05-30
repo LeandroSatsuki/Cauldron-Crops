@@ -33,7 +33,9 @@ var semente_outono: Dictionary = {
 var receitas_alquimia: Dictionary = {
 	"agua_trigo": "pocao_crescimento",
 	"carvao_trigo": "pocao_aceleradora",
-	"agua_carvao": "essencia_sombria"
+	"agua_carvao": "essencia_sombria",
+	"tomate_sol_trigo": "adubo_flamejante",
+	"abobora_sombria_raiz_gelida": "elixir_estacional"
 }
 
 func fabricar_pocao(ingrediente1: String, ingrediente2: String) -> String:

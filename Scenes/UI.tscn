@@ -36,40 +36,39 @@ text = "Golems Ativos: 0"
 offset_left = 20.0
 offset_top = 200.0
 offset_right = 250.0
-offset_bottom = 600.0
+offset_bottom = 800.0
 theme_override_constants/separation = 10
+
+[node name="HeaderAcoes" type="Label" parent="LeftPanel"]
+modulate = Color(1, 1, 0, 1)
+layout_mode = 2
+text = "--- GERENCIAMENTO ---"
+horizontal_alignment = 1
 
 [node name="VenderButton" type="Button" parent="LeftPanel"]
 layout_mode = 2
 text = "Vender Trigo"
 
-[node name="UsarPocaoButton" type="Button" parent="LeftPanel"]
-layout_mode = 2
-text = "Usar Poção (3 Cargas)"
-
 [node name="DormirButton" type="Button" parent="LeftPanel"]
 layout_mode = 2
 text = "Dormir (Mudar Estação)"
 
-[node name="ComprarCosmeticoButton" type="Button" parent="LeftPanel"]
+[node name="UsarPocaoButton" type="Button" parent="LeftPanel"]
 layout_mode = 2
-text = "Comprar Tema Verde (50 Moedas)"
+text = "Usar Poção (3 Cargas)"
 
-[node name="ComprarTrigoButton" type="Button" parent="LeftPanel"]
+[node name="Separator1" type="HSeparator" parent="LeftPanel"]
 layout_mode = 2
-text = "Comprar Semente Trigo (5 Moedas)"
 
-[node name="ComprarVeraoButton" type="Button" parent="LeftPanel"]
+[node name="HeaderEquipar" type="Label" parent="LeftPanel"]
+modulate = Color(1, 1, 0, 1)
 layout_mode = 2
-text = "Comprar Semente Tomate (10 Moedas)"
+text = "--- EQUIPAR SEMENTES ---"
+horizontal_alignment = 1
 
 [node name="EquiparTrigoButton" type="Button" parent="LeftPanel"]
 layout_mode = 2
 text = "Equipar: Trigo (Primavera)"
-
-[node name="EquiparInvernoButton" type="Button" parent="LeftPanel"]
-layout_mode = 2
-text = "Equipar: Raiz (Inverno)"
 
 [node name="EquiparVeraoButton" type="Button" parent="LeftPanel"]
 layout_mode = 2
@@ -79,9 +78,43 @@ text = "Equipar: Tomate (Verão)"
 layout_mode = 2
 text = "Equipar: Abóbora (Outono)"
 
+[node name="EquiparInvernoButton" type="Button" parent="LeftPanel"]
+layout_mode = 2
+text = "Equipar: Raiz (Inverno)"
+
+[node name="Separator2" type="HSeparator" parent="LeftPanel"]
+layout_mode = 2
+
+[node name="HeaderLoja" type="Label" parent="LeftPanel"]
+modulate = Color(1, 1, 0, 1)
+layout_mode = 2
+text = "--- LOJA DE RECURSOS ---"
+horizontal_alignment = 1
+
+[node name="ComprarTrigoButton" type="Button" parent="LeftPanel"]
+layout_mode = 2
+text = "Comprar Semente Trigo (5 Moedas)"
+
+[node name="ComprarVeraoButton" type="Button" parent="LeftPanel"]
+layout_mode = 2
+text = "Comprar Semente Tomate (10 Moedas)"
+
+[node name="Separator3" type="HSeparator" parent="LeftPanel"]
+layout_mode = 2
+
+[node name="HeaderUpgrades" type="Label" parent="LeftPanel"]
+modulate = Color(1, 1, 0, 1)
+layout_mode = 2
+text = "--- LOJA DE APRIMORAMENTOS ---"
+horizontal_alignment = 1
+
 [node name="ComprarGolemButton" type="Button" parent="LeftPanel"]
 layout_mode = 2
 text = "Comprar Golem Coletor (100 Moedas)"
+
+[node name="ComprarCosmeticoButton" type="Button" parent="LeftPanel"]
+layout_mode = 2
+text = "Comprar Tema Verde (50 Moedas)"
 
 [node name="InventoryBar" type="HBoxContainer" parent="."]
 offset_left = 300.0
