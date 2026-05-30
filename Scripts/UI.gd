@@ -55,7 +55,15 @@ func _ready() -> void:
 	quest_board = quest_board_scene.instantiate()
 	add_child(quest_board)
 	if abrir_quests_button:
-		abrir_quests_button.pressed.connect(func(): quest_board.visible = true)
+		abrir_quests_button.pressed.connect(func():
+			quest_board.visible = true
+			var alerta = abrir_quests_button.get_node_or_null("AlertaQuest")
+			if alerta:
+				alerta.visible = false
+		)
+		
+	if QuestManager:
+		QuestManager.quest_atualizada.connect(_on_nova_quest_recebida)
 		
 	# Inicializa
 	verificar_e_atualizar_inventario()
@@ -263,3 +271,10 @@ func criar_texto_flutuante(texto: String, posicao_global: Vector2, cor: Color) -
 	tween.tween_property(label, "global_position", posicao_global + Vector2(0, -50), 1.0)
 	tween.parallel().tween_property(label, "modulate:a", 0.0, 1.0)
 	tween.tween_callback(label.queue_free)
+
+func _on_nova_quest_recebida() -> void:
+	if quest_board and not quest_board.visible:
+		if abrir_quests_button:
+			var alerta = abrir_quests_button.get_node_or_null("AlertaQuest")
+			if alerta:
+				alerta.visible = true

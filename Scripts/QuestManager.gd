@@ -29,6 +29,7 @@ func tentar_gerar_quest() -> void:
 				if not ja_ativa:
 					var q_copy = q.duplicate()
 					q_copy["id"] = key
+					q_copy["aceita"] = false
 					candidatos.append(q_copy)
 					
 		if candidatos.size() > 0:
@@ -36,3 +37,10 @@ func tentar_gerar_quest() -> void:
 			quests_ativas.append(quest_sorteada)
 			quest_atualizada.emit()
 			print("Nova Quest Gerada: ", quest_sorteada.get("texto"))
+
+func limpar_quests_ignoradas() -> void:
+	for i in range(quests_ativas.size() - 1, -1, -1):
+		var q = quests_ativas[i]
+		if not q.get("aceita", false):
+			quests_ativas.remove_at(i)
+	quest_atualizada.emit()
