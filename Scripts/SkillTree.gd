@@ -1,12 +1,19 @@
 extends Panel
 
 @onready var points_label: Label = $PointsLabel
-@onready var btn_skill_golem: Button = $BtnSkillGolem
-@onready var btn_skill_agua: Button = $BtnSkillAgua
-@onready var btn_skill_dormir: Button = $BtnSkillDormir
+@onready var btn_skill_golem: Button = $TeiaSkills/BtnSkillGolem
+@onready var btn_skill_agua: Button = $TeiaSkills/BtnSkillAgua
+@onready var btn_skill_dormir: Button = $TeiaSkills/BtnSkillDormir
 @onready var btn_fechar: Button = $BtnFechar
 
 func _ready() -> void:
+	if btn_skill_agua:
+		btn_skill_agua.tooltip_text = "Nascente Infinita\nCusto: 1 Ponto\nEfeito: Expande a capacidade máxima do poço para 20 de água."
+	if btn_skill_dormir:
+		btn_skill_dormir.tooltip_text = "Sono Saudável\nCusto: 1 Ponto\nEfeito: Reduz o custo base do sono para 2 moedas e suaviza o multiplicador de spam."
+	if btn_skill_golem:
+		btn_skill_golem.tooltip_text = "Mestre dos Golems\nCusto: 2 Pontos\nEfeito: Aumenta o limite máximo de Golems ativos em +1."
+		
 	if btn_skill_golem:
 		btn_skill_golem.pressed.connect(_on_btn_skill_golem_pressed)
 	if btn_skill_agua:
