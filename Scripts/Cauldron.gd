@@ -41,11 +41,12 @@ func _process(_delta: float) -> void:
 		$BaseAnchor/SpriteCaldeirao.offset.y = -103
 
 func abrir_popup():
+	get_viewport().set_input_as_handled()
 	print("DEBUG: Executando abrir_popup()")
 	$PopupLayer/PopupUI.visible = true
 	$PopupLayer/PopupUI.process_mode = Node.PROCESS_MODE_INHERIT
 	$PopupLayer/PopupUI.show()
-	$PopupLayer/PopupUI.raise() # Move o nó para o topo da lista de renderização
+	$PopupLayer/PopupUI.move_to_front() # Move o nó para o topo da lista de renderização
 
 func _on_area_2d_input_event(viewport, event, shape_idx):
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_LEFT:
