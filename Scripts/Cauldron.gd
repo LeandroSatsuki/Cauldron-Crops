@@ -14,7 +14,6 @@ func _ready() -> void:
 	if misturar_button:
 		misturar_button.pressed.connect(_on_misturar_button_pressed)
 	$Area2D.input_pickable = true
-	$Area2D.input_event.connect(_on_area2d_input_event)
 	$BrewTimer.timeout.connect(_on_brew_timer_timeout)
 	
 	var btn_fechar = $PopupUI/BtnFechar
@@ -23,6 +22,13 @@ func _ready() -> void:
 		
 	# Ajustar o offset do sprite (escala 0.5): offset em pixels de textura (não escalados)
 	$BaseAnchor/SpriteCaldeirao.offset = Vector2(0, -103)
+	
+	# Reset Visual
+	$PopupUI.hide()
+	
+	# Shader Material
+	material = ShaderMaterial.new()
+	material.shader = load("res://Shaders/transparencia.gdshader")
 
 func _process(_delta: float) -> void:
 	if $BaseAnchor/SpriteCaldeirao.frame >= 4:
@@ -30,14 +36,19 @@ func _process(_delta: float) -> void:
 	else:
 		$BaseAnchor/SpriteCaldeirao.offset.y = -103
 
-func _on_area2d_input_event(_viewport: Node, event: InputEvent, _shape_idx: int) -> void:
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-		print("Debug: Caldeirão clicado")
-		print("O caldeirão foi clicado com sucesso!")
-		if estado_atual == "IDLE":
-			popup_ui.visible = true
-			if resultado_label:
-				resultado_label.text = "Resultado: ..."
+func _unhandled_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		if $Area2D.get_overlapping_areas().size() > 0 or $Area2D.is_pixel_opaque(get_local_mouse_position()):
+			abrir_popup()
+
+func abrir_popup() -> void:
+	$PopupUI.show()
+	print("Debug: Caldeirão clicado")
+	print("O caldeirão foi clicado com sucesso!")
+	if estado_atual == "IDLE":
+		popup_ui.visible = true
+		if resultado_label:
+			resultado_label.text = "Resultado: ..."
 
 func _on_misturar_button_pressed() -> void:
 	if not drop_slot_1 or not drop_slot_2:

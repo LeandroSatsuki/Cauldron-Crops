@@ -4,6 +4,7 @@
 [ext_resource type="Script" path="res://Scripts/DropSlot.gd" id="2_dropslotgd"]
 [ext_resource type="Texture2D" path="res://Assets/caldeirao_clean_sheet_roxo.png" id="3_roxo"]
 [ext_resource type="Texture2D" path="res://Assets/caldeirao_clean_sheet_verde.png" id="4_verde"]
+[ext_resource type="Script" path="res://Scripts/Area2D_Caldeirao.gd" id="5_areagd"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_v0"]
 atlas = ExtResource("4_verde")
@@ -153,6 +154,7 @@ autoplay = "idle"
 [node name="Area2D" type="Area2D" parent="."]
 position = Vector2(950, 450)
 input_pickable = true
+script = ExtResource("5_areagd")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
 shape = SubResource("CircleShape2D_cauldron")
