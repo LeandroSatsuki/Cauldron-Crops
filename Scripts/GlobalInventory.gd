@@ -1,6 +1,9 @@
 extends Node
 
-var inventario: Dictionary = {}
+var inventario: Dictionary = {
+	"semente_basica": 10,
+	"semente_inverno": 0
+}
 var cargas_crescimento: int = 0
 var semente_selecionada: String = "semente_basica"
 

@@ -1,18 +1,25 @@
 extends CanvasLayer
 
-@onready var moedas_label: Label = $LeftPanel/MoedasLabel
-@onready var estoque_label: Label = $LeftPanel/EstoqueLabel
+@onready var moedas_label: Label = $StatusPanel/MoedasLabel
+@onready var season_label: Label = $StatusPanel/SeasonLabel
+@onready var cargas_label: Label = $StatusPanel/CargasLabel
+@onready var semente_label: Label = $StatusPanel/SementeLabel
+@onready var golems_label: Label = $StatusPanel/GolemsLabel
+
 @onready var vender_button: Button = $LeftPanel/VenderButton
 @onready var usar_pocao_button: Button = $LeftPanel/UsarPocaoButton
-@onready var cargas_label: Label = $LeftPanel/CargasLabel
 @onready var dormir_button: Button = $LeftPanel/DormirButton
-@onready var season_label: Label = $LeftPanel/SeasonLabel
 @onready var comprar_cosmetico_button: Button = $LeftPanel/ComprarCosmeticoButton
-@onready var semente_label: Label = $LeftPanel/SementeLabel
 @onready var equipar_trigo_button: Button = $LeftPanel/EquiparTrigoButton
 @onready var equipar_inverno_button: Button = $LeftPanel/EquiparInvernoButton
 @onready var comprar_golem_button: Button = $LeftPanel/ComprarGolemButton
-@onready var golems_label: Label = $LeftPanel/GolemsLabel
+
+@onready var trigo_label: Label = $InventoryBar/TrigoLabel
+@onready var raiz_label: Label = $InventoryBar/RaizLabel
+@onready var pocoes_label: Label = $InventoryBar/PocoesLabel
+@onready var agua_label: Label = $InventoryBar/AguaLabel
+@onready var semente_basica_label: Label = $InventoryBar/SementeBasicaLabel
+@onready var semente_inverno_label: Label = $InventoryBar/SementeInvernoLabel
 
 func _ready() -> void:
 	if vender_button:
@@ -33,19 +40,32 @@ func _ready() -> void:
 func _process(_delta: float) -> void:
 	if moedas_label:
 		moedas_label.text = "Moedas: " + str(EconomyManager.moedas)
-	if estoque_label:
-		var trigo_count = GlobalInventory.inventario.get("trigo", 0)
-		estoque_label.text = "Trigo no Estoque: " + str(trigo_count)
-	if cargas_label:
-		cargas_label.text = "Cargas Mágicas: " + str(GlobalInventory.cargas_crescimento)
 	if season_label:
 		season_label.text = "Estação: " + SeasonManager.obter_nome_estacao() + " | Ano: " + str(SeasonManager.ano)
+	if cargas_label:
+		cargas_label.text = "Cargas Mágicas: " + str(GlobalInventory.cargas_crescimento)
+	if semente_label:
+		semente_label.text = "Semente Atual: " + ("Trigo" if GlobalInventory.semente_selecionada == "semente_basica" else "Raiz")
 	if golems_label:
 		golems_label.text = "Golems Ativos: " + str(EconomyManager.total_golems)
+		
+	if trigo_label:
+		trigo_label.text = "🌾 Trigo: " + str(GlobalInventory.inventario.get("trigo", 0))
+	if raiz_label:
+		raiz_label.text = "🧊 Raiz: " + str(GlobalInventory.inventario.get("raiz_gelida", 0))
+	if pocoes_label:
+		pocoes_label.text = "🧪 Poções: " + str(GlobalInventory.inventario.get("pocao_crescimento", 0))
+	if agua_label:
+		agua_label.text = "💧 Água: " + str(GlobalInventory.inventario.get("agua", 0))
+	if semente_basica_label:
+		semente_basica_label.text = "🌱 Semente Trigo: " + str(GlobalInventory.inventario.get("semente_basica", 0))
+	if semente_inverno_label:
+		semente_inverno_label.text = "❄️ Semente Raiz: " + str(GlobalInventory.inventario.get("semente_inverno", 0))
 
 func _on_vender_button_pressed() -> void:
 	if GlobalInventory.remover_item("trigo", 1):
 		EconomyManager.adicionar_moedas(15)
+		criar_texto_flutuante("+15 Moedas", moedas_label.global_position + Vector2(100, 0), Color.GREEN)
 
 func _on_usar_pocao_button_pressed() -> void:
 	if GlobalInventory.remover_item("pocao_crescimento", 1):
@@ -61,14 +81,22 @@ func _on_comprar_cosmetico_button_pressed() -> void:
 
 func _on_equipar_trigo_button_pressed() -> void:
 	GlobalInventory.semente_selecionada = "semente_basica"
-	if semente_label:
-		semente_label.text = "Semente Atual: Trigo"
 
 func _on_equipar_inverno_button_pressed() -> void:
 	GlobalInventory.semente_selecionada = "semente_inverno"
-	if semente_label:
-		semente_label.text = "Semente Atual: Raiz"
 
 func _on_comprar_golem_button_pressed() -> void:
 	if EconomyManager.remover_moedas(100):
 		EconomyManager.total_golems += 1
+
+func criar_texto_flutuante(texto: String, posicao_global: Vector2, cor: Color) -> void:
+	var label = Label.new()
+	label.text = texto
+	label.modulate = cor
+	label.global_position = posicao_global
+	add_child(label)
+	
+	var tween = create_tween()
+	tween.tween_property(label, "global_position", posicao_global + Vector2(0, -50), 1.0)
+	tween.parallel().tween_property(label, "modulate:a", 0.0, 1.0)
+	tween.tween_callback(label.queue_free)

@@ -5,20 +5,39 @@
 [node name="UI" type="CanvasLayer"]
 script = ExtResource("1_uigd")
 
-[node name="LeftPanel" type="VBoxContainer" parent="."]
+[node name="StatusPanel" type="VBoxContainer" parent="."]
 offset_left = 20.0
 offset_top = 20.0
 offset_right = 250.0
-offset_bottom = 350.0
-theme_override_constants/separation = 10
+offset_bottom = 180.0
+theme_override_constants/separation = 5
 
-[node name="MoedasLabel" type="Label" parent="LeftPanel"]
+[node name="MoedasLabel" type="Label" parent="StatusPanel"]
 layout_mode = 2
 text = "Moedas: 0"
 
-[node name="EstoqueLabel" type="Label" parent="LeftPanel"]
+[node name="SeasonLabel" type="Label" parent="StatusPanel"]
 layout_mode = 2
-text = "Trigo no Estoque: 0"
+text = "Estação: Primavera | Ano: 1"
+
+[node name="CargasLabel" type="Label" parent="StatusPanel"]
+layout_mode = 2
+text = "Cargas Mágicas: 0"
+
+[node name="SementeLabel" type="Label" parent="StatusPanel"]
+layout_mode = 2
+text = "Semente Atual: Trigo"
+
+[node name="GolemsLabel" type="Label" parent="StatusPanel"]
+layout_mode = 2
+text = "Golems Ativos: 0"
+
+[node name="LeftPanel" type="VBoxContainer" parent="."]
+offset_left = 20.0
+offset_top = 200.0
+offset_right = 250.0
+offset_bottom = 550.0
+theme_override_constants/separation = 10
 
 [node name="VenderButton" type="Button" parent="LeftPanel"]
 layout_mode = 2
@@ -28,25 +47,13 @@ text = "Vender Trigo"
 layout_mode = 2
 text = "Usar Poção (3 Cargas)"
 
-[node name="CargasLabel" type="Label" parent="LeftPanel"]
-layout_mode = 2
-text = "Cargas Mágicas: 0"
-
 [node name="DormirButton" type="Button" parent="LeftPanel"]
 layout_mode = 2
 text = "Dormir (Mudar Estação)"
 
-[node name="SeasonLabel" type="Label" parent="LeftPanel"]
-layout_mode = 2
-text = "Estação: Primavera | Ano: 1"
-
 [node name="ComprarCosmeticoButton" type="Button" parent="LeftPanel"]
 layout_mode = 2
 text = "Comprar Tema Verde (50 Moedas)"
-
-[node name="SementeLabel" type="Label" parent="LeftPanel"]
-layout_mode = 2
-text = "Semente Atual: Trigo"
 
 [node name="EquiparTrigoButton" type="Button" parent="LeftPanel"]
 layout_mode = 2
@@ -60,6 +67,33 @@ text = "Equipar: Raiz (Inverno)"
 layout_mode = 2
 text = "Comprar Golem Coletor (100 Moedas)"
 
-[node name="GolemsLabel" type="Label" parent="LeftPanel"]
+[node name="InventoryBar" type="HBoxContainer" parent="."]
+offset_left = 300.0
+offset_top = 20.0
+offset_right = 1000.0
+offset_bottom = 50.0
+theme_override_constants/separation = 20
+
+[node name="TrigoLabel" type="Label" parent="InventoryBar"]
 layout_mode = 2
-text = "Golems Ativos: 0"
+text = "🌾 Trigo: 0"
+
+[node name="RaizLabel" type="Label" parent="InventoryBar"]
+layout_mode = 2
+text = "🧊 Raiz: 0"
+
+[node name="PocoesLabel" type="Label" parent="InventoryBar"]
+layout_mode = 2
+text = "🧪 Poções: 0"
+
+[node name="AguaLabel" type="Label" parent="InventoryBar"]
+layout_mode = 2
+text = "💧 Água: 10"
+
+[node name="SementeBasicaLabel" type="Label" parent="InventoryBar"]
+layout_mode = 2
+text = "🌱 Semente Trigo: 10"
+
+[node name="SementeInvernoLabel" type="Label" parent="InventoryBar"]
+layout_mode = 2
+text = "❄️ Semente Raiz: 0"

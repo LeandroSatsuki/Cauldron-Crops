@@ -46,6 +46,10 @@ func _on_plot_clicked() -> void:
 				print("Semente fora de época! Essa planta não cresce nesta estação.")
 				return
 			
+			if not GlobalInventory.remover_item(semente_id, 1):
+				print("Sem sementes deste tipo no estoque!")
+				return
+			
 			var tempo = semente_atual.get("tempo_crescimento_segundos", 3.0)
 			
 			# Configura o Timer com o tempo_crescimento_segundos
@@ -71,9 +75,16 @@ func _on_plot_clicked() -> void:
 				push_error("Autoload GlobalInventory não possui o método adicionar_item()!")
 				return
 			
+			var ui = get_tree().current_scene.get_node_or_null("UI")
+			if ui and ui.has_method("criar_texto_flutuante"):
+				var nome_exibicao = "Trigo" if produto == "trigo" else "Raiz"
+				ui.criar_texto_flutuante("+1 " + nome_exibicao, global_position, Color.YELLOW)
+			
 			# Drop Raro
 			if randf() <= 0.15:
 				GlobalInventory.adicionar_item("semente_inverno", 1)
+				if ui and ui.has_method("criar_texto_flutuante"):
+					ui.criar_texto_flutuante("💥 RARO!", global_position + Vector2(0, -20), Color(0.5, 0.2, 0.9))
 				print("💥 SORTE GRANDE! Drop raro: Semente de Inverno!")
 			
 			# Reseta o estado para VAZIO
