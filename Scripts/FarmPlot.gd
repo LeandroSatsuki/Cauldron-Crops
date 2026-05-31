@@ -5,6 +5,8 @@ const TEX_MOLHADA = preload("res://Assets/molhada.png")
 # Texturas futuras preparadas
 const TEX_SECA_ADUBADA = preload("res://Assets/seca_adubada.png")
 const TEX_MOLHADA_ADUBADA = preload("res://Assets/molhada_adubada.png")
+const GRID_SIZE = 64 # Tamanho padrao do tile
+
 # Máquina de estados simples
 enum State {
 	VAZIO,
@@ -26,6 +28,11 @@ var regado: bool = false
 @onready var tooltip_area: Control = $TooltipArea
 
 func _ready() -> void:
+	# Trava o posicionamento no centro perfeito do grid
+	var snap_x = round(global_position.x / GRID_SIZE) * GRID_SIZE
+	var snap_y = round(global_position.y / GRID_SIZE) * GRID_SIZE
+	global_position = Vector2(snap_x, snap_y)
+
 	add_to_group("lotes_terra")
 	# Configura o timer como one-shot e conecta o sinal de timeout
 	if timer:
