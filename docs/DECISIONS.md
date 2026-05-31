@@ -125,3 +125,9 @@
 - Decisão: ligar `Golem.gd` à cena e fazer o golem procurar lote maduro, colher e depositar no Baú da Vila.
 - Motivo: validar o loop físico mínimo do coletor antes de upgrades e árvore de talentos.
 - Risco: o `GolemManager` segue desligado e o sistema ainda não tem pathfinding nem UI do baú.
+
+## Decisão 21 - UI simples do Baú da Vila
+- Problema: os itens depositados pelo golem ficavam invisíveis para o jogador.
+- Decisão: criar um painel simples para abrir o baú, listar o conteúdo e permitir `Retirar Tudo` para o inventário global.
+- Motivo: manter o baú separado do inventário do jogador e tornar o fluxo claro antes do salvamento.
+- Risco: retirada individual e persistência do baú ainda ficam para etapas futuras.

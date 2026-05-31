@@ -26,6 +26,12 @@ var quest_board: Panel
 var recipe_book_scene = preload("res://Scenes/RecipeBookUI.tscn")
 var recipe_book: Panel
 
+@onready var village_chest_panel: PanelContainer = $VillageChestPanel
+@onready var village_chest_contents: RichTextLabel = $VillageChestPanel/MarginContainer/VBoxChest/ChestContents
+@onready var village_chest_withdraw_button: Button = $VillageChestPanel/MarginContainer/VBoxChest/ButtonsRow/RetirarTudoButton
+@onready var village_chest_close_button: Button = $VillageChestPanel/MarginContainer/VBoxChest/ButtonsRow/FecharButton
+var village_chest_ref: VillageChest = null
+
 @onready var inventory_bar: HBoxContainer = $InventoryBar
 @onready var tooltip_panel: Panel = $TooltipPanel
 @onready var tooltip_texto: Label = $TooltipPanel/TooltipTexto
@@ -106,6 +112,14 @@ func _ready() -> void:
 		
 	if QuestManager:
 		QuestManager.quest_atualizada.connect(_on_nova_quest_recebida)
+
+	if village_chest_panel:
+		village_chest_panel.visible = false
+		village_chest_panel.mouse_filter = Control.MOUSE_FILTER_PASS
+	if village_chest_withdraw_button:
+		village_chest_withdraw_button.pressed.connect(_on_village_chest_withdraw_pressed)
+	if village_chest_close_button:
+		village_chest_close_button.pressed.connect(fechar_bau_vila)
 		
 	# Inicializa
 	verificar_e_atualizar_inventario()
@@ -136,6 +150,8 @@ func _process(delta: float) -> void:
 		golems_label.text = "Golems Ativos: " + str(EconomyManager.total_golems)
 		
 	verificar_e_atualizar_inventario()
+	if village_chest_panel and village_chest_panel.visible and village_chest_ref:
+		_atualizar_painel_bau_vila()
 
 func _aplicar_tema_pixel_ui(no: Node) -> void:
 	if no is Control:
@@ -330,6 +346,60 @@ func _on_nova_quest_recebida() -> void:
 		var alerta = $LeftPanel/AbrirQuestsButton/AlertaQuest
 		if alerta:
 			alerta.visible = true
+
+func abrir_bau_vila(bau: VillageChest) -> void:
+	if bau == null or not is_instance_valid(bau):
+		push_warning("UI: baú da vila inválido.")
+		return
+
+	village_chest_ref = bau
+	if village_chest_panel:
+		village_chest_panel.visible = true
+		village_chest_panel.mouse_filter = Control.MOUSE_FILTER_STOP
+	_atualizar_painel_bau_vila()
+
+func fechar_bau_vila() -> void:
+	if village_chest_panel:
+		village_chest_panel.visible = false
+		village_chest_panel.mouse_filter = Control.MOUSE_FILTER_PASS
+
+func _atualizar_painel_bau_vila() -> void:
+	if not village_chest_contents:
+		return
+
+	if village_chest_ref == null or not is_instance_valid(village_chest_ref):
+		village_chest_contents.text = "Baú vazio."
+		return
+
+	var conteudo: Dictionary = village_chest_ref.get_contents()
+	if conteudo.is_empty():
+		village_chest_contents.text = "Baú vazio."
+		return
+
+	var linhas: PackedStringArray = PackedStringArray()
+	for item_id in conteudo.keys():
+		var quantidade: int = int(conteudo[item_id])
+		if quantidade > 0:
+			linhas.append("%s x%d" % [str(item_id), quantidade])
+
+	if linhas.is_empty():
+		village_chest_contents.text = "Baú vazio."
+	else:
+		village_chest_contents.text = "\n".join(linhas)
+
+func _on_village_chest_withdraw_pressed() -> void:
+	if village_chest_ref == null or not is_instance_valid(village_chest_ref):
+		fechar_bau_vila()
+		return
+
+	var retirado: Dictionary = village_chest_ref.withdraw_all_to_global_inventory()
+	if retirado.is_empty():
+		if village_chest_contents:
+			village_chest_contents.text = "Baú vazio."
+		print("Baú vazio.")
+	else:
+		verificar_e_atualizar_inventario()
+		_atualizar_painel_bau_vila()
 
 func _on_abrir_livro_receitas_pressed() -> void:
 	abrir_livro_receitas(false)

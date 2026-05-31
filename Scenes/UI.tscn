@@ -150,3 +150,51 @@ Uso:"
 visible = false
 theme = ExtResource("3_pixeltheme")
 layout_mode = 1
+
+[node name="VillageChestPanel" type="PanelContainer" parent="."]
+visible = false
+theme = ExtResource("3_pixeltheme")
+offset_left = 470.0
+offset_top = 180.0
+offset_right = 820.0
+offset_bottom = 420.0
+
+[node name="MarginContainer" type="MarginContainer" parent="VillageChestPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="VBoxChest" type="VBoxContainer" parent="VillageChestPanel/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="TitleLabel" type="Label" parent="VillageChestPanel/MarginContainer/VBoxChest"]
+layout_mode = 2
+text = "Baú da Vila"
+horizontal_alignment = 1
+
+[node name="ChestContents" type="RichTextLabel" parent="VillageChestPanel/MarginContainer/VBoxChest"]
+custom_minimum_size = Vector2(300, 140)
+layout_mode = 2
+bbcode_enabled = true
+text = "Baú vazio."
+fit_content = true
+
+[node name="ButtonsRow" type="HBoxContainer" parent="VillageChestPanel/MarginContainer/VBoxChest"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="RetirarTudoButton" type="Button" parent="VillageChestPanel/MarginContainer/VBoxChest/ButtonsRow"]
+layout_mode = 2
+text = "Retirar Tudo"
+
+[node name="FecharButton" type="Button" parent="VillageChestPanel/MarginContainer/VBoxChest/ButtonsRow"]
+layout_mode = 2
+text = "Fechar"

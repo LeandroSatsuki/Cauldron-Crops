@@ -92,3 +92,10 @@
 - `FarmPlot` passou a oferecer uma colheita segura para o golem via `harvest_by_golem()`.
 - `GolemManager` continua desligado e a colheita invisível segue desativada.
 - O Baú da Vila ainda não tem UI nem salvamento.
+
+## 2026-05-31 - UI do Baú da Vila
+- Criação de uma interface simples para o Baú da Vila com lista textual de conteúdo.
+- Adição de clique no baú para abrir o painel pela UI principal.
+- Adição do botão `Retirar Tudo`, transferindo itens para o inventário global.
+- O baú continua separado do inventário do jogador; salvamento fica para depois.
+- A retirada individual ainda não existe nesta etapa.
