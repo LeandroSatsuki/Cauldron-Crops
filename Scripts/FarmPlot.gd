@@ -257,7 +257,7 @@ func atualizar_visual_planta(semente_id: String, estagio_crescimento: int):
 			$SpritePlanta.hframes = 1 # Garante que nao vai fatiar a nova imagem
 			$SpritePlanta.vframes = 1
 			$SpritePlanta.frame = 0
-			$SpritePlanta.scale = Vector2(1, 1) # Reseta a escala para o normal
-			$SpritePlanta.offset = Vector2(0, -15) # Ajuste basico de raiz
+			$SpritePlanta.scale = Vector2(0.25, 0.25) # Escala para caber no lote 64x64
+			$SpritePlanta.offset = Vector2(0, 0)
 	else:
 		print("AVISO: Imagem nao encontrada: ", caminho)
