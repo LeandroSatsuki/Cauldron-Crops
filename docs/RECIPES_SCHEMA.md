@@ -158,6 +158,15 @@ O relatorio deve mostrar:
 - ids que existem apenas no sistema legado;
 - uma base clara para planejar a migracao futura sem desligar nada ainda.
 
+## Uso Paralelo No Livro de Receitas
+O Livro de Receitas agora usa o `RecipeDatabase` apenas para exibir dados ricos quando o `RecipeData` correspondente existe e esta completo.
+
+Pontos importantes:
+- `Database.receitas_alquimia` continua sendo a fonte funcional do gameplay e da producao em lote.
+- `RecipeDatabase` entra apenas como camada de leitura e apresentacao.
+- Se um `RecipeData` faltar, estiver invalido ou incompleto, o livro cai automaticamente para a leitura antiga.
+- Isso permite validar o novo formato sem arriscar o fluxo principal do caldeirao.
+
 ## Resumo da Decisão
 - O formato atual funciona para protótipo.
 - Ele não escala bem.

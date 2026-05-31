@@ -21,6 +21,7 @@ var _last_inventory_snapshot: Dictionary = {}
 var _selected_recipe_id: String = ""
 var _craft_quantity: int = 1
 var cauldron_ref: Node = null
+var recipe_database: RecipeDatabase = null
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_STOP
@@ -42,6 +43,7 @@ func _ready() -> void:
 	if btn_produce:
 		btn_produce.pressed.connect(_on_produce_pressed)
 
+	_initialize_recipe_database()
 	_cache_inventory_snapshot()
 	_refresh_recipe_list()
 	_show_empty_state()
@@ -88,7 +90,7 @@ func _refresh_recipe_list() -> void:
 	recipe_list.visible = true
 
 	for recipe_id in discovered:
-		var display_name := _format_recipe_name(recipe_id)
+		var display_name := _get_recipe_display_name(recipe_id)
 		var index := recipe_list.add_item(display_name)
 		recipe_list.set_item_metadata(index, recipe_id)
 
@@ -146,10 +148,46 @@ func _show_recipe(recipe_id: String) -> void:
 		_show_empty_state()
 		return
 
+	var recipe_data := _get_valid_recipe_data(recipe_id)
+	if recipe_data != null:
+		_show_recipe_from_resource(recipe_id, recipe_data)
+		return
+
 	if not Database.receitas_alquimia.has(recipe_id):
 		_show_unavailable_recipe(recipe_id)
 		return
 
+	_show_recipe_legacy(recipe_id)
+
+func _show_recipe_from_resource(_recipe_id: String, recipe_data: RecipeData) -> void:
+	recipe_id_label.text = "Receita: " + recipe_data.nome
+	ingredients_label.text = "Ingredientes: " + _format_ingredients(recipe_data.ingredientes)
+	result_label.text = "Resultado: %sx %s\nTempo: %.1fs" % [
+		str(int(recipe_data.resultado_quantidade)),
+		_format_item_name(recipe_data.resultado_item),
+		float(recipe_data.tempo_producao)
+	]
+
+	var quantidade_maxima := _calcular_quantidade_maxima(recipe_data.ingredientes)
+	max_craft_label.text = "Quantidade maxima: " + str(quantidade_maxima)
+	if quantidade_maxima <= 0:
+		status_label.text = "Categoria: %s\n%s\nVoce nao tem ingredientes suficientes." % [
+			_format_category_name(recipe_data.categoria),
+			recipe_data.descricao
+		]
+		_craft_quantity = 0
+	else:
+		status_label.text = "Categoria: %s\n%s" % [
+			_format_category_name(recipe_data.categoria),
+			recipe_data.descricao
+		]
+		if _craft_quantity <= 0 or _craft_quantity > quantidade_maxima:
+			_craft_quantity = 1
+
+	_atualizar_controles_producao(quantidade_maxima)
+	_cache_inventory_snapshot()
+
+func _show_recipe_legacy(recipe_id: String) -> void:
 	var ingredientes := Database.obter_ingredientes_receita(recipe_id)
 	var resultado := str(Database.receitas_alquimia.get(recipe_id, ""))
 	recipe_id_label.text = "Receita: " + _format_recipe_name(recipe_id)
@@ -243,6 +281,57 @@ func _format_ingredients(ingredientes: Array) -> String:
 		partes.append("%s x %s" % [str(qtd), _format_item_name(ingrediente_id)])
 
 	return ", ".join(partes)
+
+func _format_category_name(categoria: String) -> String:
+	if categoria == "":
+		return "-"
+
+	var nome := categoria.replace("_", " ")
+	if nome.length() == 0:
+		return "-"
+
+	return nome.substr(0, 1).to_upper() + nome.substr(1, nome.length() - 1)
+
+func _get_recipe_display_name(recipe_id: String) -> String:
+	var recipe_data := _get_valid_recipe_data(recipe_id)
+	if recipe_data != null and recipe_data.nome.strip_edges() != "":
+		return recipe_data.nome
+
+	return _format_recipe_name(recipe_id)
+
+func _get_valid_recipe_data(recipe_id: String) -> RecipeData:
+	if recipe_database == null:
+		return null
+	if recipe_id == "" or not recipe_database.has_recipe(recipe_id):
+		return null
+
+	var recipe := recipe_database.get_recipe(recipe_id)
+	if recipe == null:
+		return null
+	if recipe.id.strip_edges() == "":
+		return null
+	if recipe.nome.strip_edges() == "":
+		return null
+	if recipe.descricao.strip_edges() == "":
+		return null
+	if recipe.categoria.strip_edges() == "":
+		return null
+	if recipe.ingredientes.is_empty():
+		return null
+	if recipe.resultado_item.strip_edges() == "":
+		return null
+	if int(recipe.resultado_quantidade) <= 0:
+		return null
+	if float(recipe.tempo_producao) <= 0.0:
+		return null
+	if int(recipe.versao_do_schema) < 1:
+		return null
+
+	return recipe
+
+func _initialize_recipe_database() -> void:
+	recipe_database = RecipeDatabase.new()
+	recipe_database.load_recipes()
 
 func _atualizar_controles_producao(quantidade_maxima: int) -> void:
 	if quantity_label:

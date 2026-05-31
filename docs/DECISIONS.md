@@ -95,3 +95,9 @@
 - Decisão: criar `RecipeDatabase.gd` somente para carregar, validar e comparar receitas.
 - Motivo: permitir a migração futura de forma segura, sem acoplar o caldeirao nesta etapa.
 - Risco: a manutenção temporaria de dois sistemas de receita continua exigindo disciplina na migracao.
+
+## Decisão 16 - Livro de Receitas em paralelo com fallback
+- Problema: o Livro de Receitas precisava mostrar dados ricos sem abandonar a fonte antiga.
+- Decisão: usar `RecipeDatabase` apenas para leitura e exibição complementar no Livro, mantendo `Database.receitas_alquimia` como fallback obrigatório.
+- Motivo: validar o novo formato sem mexer no caldeirao nem na producao em lote.
+- Risco: o jogo continua com dois caminhos de dados ativos até a migracao completa ser validada.

@@ -72,3 +72,9 @@
 - Carregamento de receitas `.tres` de `res://Data/recipes/` sem substituir o sistema antigo.
 - Validação basica de campos obrigatorios de `RecipeData`.
 - Comparacao dos ids de Resources com `Database.receitas_alquimia` para orientar a migracao futura.
+
+## 2026-05-31 - Livro de Receitas em paralelo
+- O Livro de Receitas passou a usar `RecipeDatabase` para exibir dados ricos quando o `RecipeData` existe e esta completo.
+- O fallback antigo com `Database.receitas_alquimia` continua obrigatório e ativo.
+- A produção em lote segue usando somente o sistema legado por enquanto.
+- A exibição rica melhora nome, descricao, categoria, ingredientes, resultado e tempo sem trocar o fluxo principal.
