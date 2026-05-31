@@ -6,6 +6,26 @@ const TEX_MOLHADA = preload("res://Assets/molhada.png")
 const TEX_SECA_ADUBADA = preload("res://Assets/seca_adubada.png")
 const TEX_MOLHADA_ADUBADA = preload("res://Assets/molhada_adubada.png")
 
+const SHEET_CROPS_1 = preload("res://Assets/crops_1.png")
+const SHEET_CROPS_2 = preload("res://Assets/crops_2.png")
+
+# Mapeamento: "nome_da_semente": [Referencia_da_Sheet, Coluna_na_Sheet]
+const CROP_DATA = {
+	"milho": [SHEET_CROPS_1, 0],
+	"tomate": [SHEET_CROPS_1, 1],
+	"abobora": [SHEET_CROPS_1, 2],
+	"rabanete": [SHEET_CROPS_1, 3],
+	"trigo": [SHEET_CROPS_2, 0],
+	"feijao": [SHEET_CROPS_2, 1],
+	"cebola": [SHEET_CROPS_2, 2],
+	"cenoura": [SHEET_CROPS_2, 3],
+	# Mapeamento para os IDs de sementes reais do jogo:
+	"semente_basica": [SHEET_CROPS_2, 0],   # trigo
+	"semente_verao": [SHEET_CROPS_1, 1],    # tomate
+	"semente_outono": [SHEET_CROPS_1, 2],   # abobora
+	"semente_inverno": [SHEET_CROPS_1, 3]   # rabanete (raiz_gelida)
+}
+
 # Máquina de estados simples
 enum State {
 	VAZIO,
@@ -51,6 +71,12 @@ func _process(_delta: float) -> void:
 			var tempo = "%0.1f" % timer.time_left
 			var status_agua = "Sim 💧" if regado else "Não 🥀"
 			tooltip_area.tooltip_text = "Planta: " + nome + "\nTempo: " + tempo + "s\nRegado: " + status_agua
+			
+			var wait_t = timer.wait_time
+			var left_t = timer.time_left
+			var progresso = (wait_t - left_t) / wait_t if wait_t > 0 else 0.0
+			var estagio = 1 if progresso >= 0.5 else 0
+			atualizar_visual_planta(semente_id_plantada, estagio)
 
 # Função para capturar cliques do mouse (usando _input_event)
 func _input_event(_viewport: Viewport, event: InputEvent, _shape_idx: int) -> void:
@@ -67,7 +93,7 @@ func _on_plot_clicked() -> void:
 					regado = true
 					_atualizar_visual()
 					print("Lote Regado!")
-					$Sprite2D.texture = TEX_MOLHADA
+					$SpriteTerra.texture = TEX_MOLHADA
 					if estado_atual == State.CRESCENDO:
 						timer.start(timer.time_left * 0.8)
 			else:
@@ -108,6 +134,7 @@ func _on_plot_clicked() -> void:
 			# Muda o estado para CRESCENDO
 			estado_atual = State.CRESCENDO
 			_atualizar_visual()
+			atualizar_visual_planta(semente_id_plantada, 0)
 			print("Semente plantada! Estado alterado para: CRESCENDO. Tempo de crescimento: ", tempo, " segundos.")
 
 		State.PRONTO_PARA_COLHER:
@@ -162,8 +189,9 @@ func _on_plot_clicked() -> void:
 			# Reseta o estado para VAZIO
 			estado_atual = State.VAZIO
 			regado = false
-			$Sprite2D.texture = TEX_SECA
+			$SpriteTerra.texture = TEX_SECA
 			_atualizar_visual()
+			atualizar_visual_planta("", 0)
 			semente_atual = {}
 			semente_id_plantada = ""
 			
@@ -188,22 +216,43 @@ func _on_timer_timeout() -> void:
 				semente_id_plantada = ""
 				estado_atual = State.VAZIO
 				_atualizar_visual()
+				atualizar_visual_planta("", 0)
 				print("A planta morreu de sede!")
 				return
 		
 		estado_atual = State.PRONTO_PARA_COLHER
 		_atualizar_visual()
+		atualizar_visual_planta(semente_id_plantada, 2)
 		print("O tempo de crescimento acabou! Estado alterado para: PRONTO_PARA_COLHER.")
 
 func _atualizar_visual() -> void:
 	if visual_regado:
 		visual_regado.visible = regado
-	if has_node("Sprite2D"):
-		$Sprite2D.texture = TEX_MOLHADA if regado else TEX_SECA
+	if has_node("SpriteTerra"):
+		$SpriteTerra.texture = TEX_MOLHADA if regado else TEX_SECA
 	match estado_atual:
 		State.VAZIO:
 			color_rect.color = Color(0, 0, 0, 0)
 		State.CRESCENDO:
-			color_rect.color = Color(0.2, 0.5, 0.2, 0.4)
+			color_rect.color = Color(0, 0, 0, 0)
 		State.PRONTO_PARA_COLHER:
-			color_rect.color = Color(0.8, 0.8, 0.2, 0.4)
+			color_rect.color = Color(0, 0, 0, 0)
+
+func atualizar_visual_planta(semente_id: String, estagio_crescimento: int):
+	# estagio_crescimento deve ser: 0 (broto), 1 (crescendo), 2 (maduro)
+	if semente_id == "" or not CROP_DATA.has(semente_id):
+		if has_node("SpritePlanta"):
+			$SpritePlanta.texture = null
+		return
+
+	var dados = CROP_DATA[semente_id]
+	var sheet_selecionada = dados[0]
+	var coluna = dados[1]
+
+	if has_node("SpritePlanta"):
+		$SpritePlanta.texture = sheet_selecionada
+
+		# Matemática do frame: (linha * total_colunas) + coluna atual
+		# Linha 0 = broto, Linha 1 = crescendo, Linha 2 = maduro
+		var frame_calculado = (estagio_crescimento * 4) + coluna
+		$SpritePlanta.frame = frame_calculado

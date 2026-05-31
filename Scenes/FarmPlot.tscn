@@ -9,10 +9,16 @@ size = Vector2(64, 64)
 [node name="FarmPlot" type="Area2D" unique_id=1661898718]
 script = ExtResource("1_farmplot_script")
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
+[node name="SpriteTerra" type="Sprite2D" parent="."]
 texture_filter = 1
 scale = Vector2(0.125, 0.125)
 texture = ExtResource("2_seca")
+
+[node name="SpritePlanta" type="Sprite2D" parent="."]
+texture_filter = 1
+scale = Vector2(0.25, 0.25)
+hframes = 4
+vframes = 3
 
 [node name="ColorRect" type="ColorRect" parent="." unique_id=275089934]
 offset_left = -32.0
