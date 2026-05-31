@@ -257,7 +257,22 @@ func atualizar_visual_planta(semente_id: String, estagio_crescimento: int):
 			$SpritePlanta.hframes = 1 # Garante que nao vai fatiar a nova imagem
 			$SpritePlanta.vframes = 1
 			$SpritePlanta.frame = 0
-			$SpritePlanta.scale = Vector2(0.25, 0.25) # Escala para caber no lote 64x64
-			$SpritePlanta.offset = Vector2(0, 0)
+			$SpritePlanta.scale = Vector2(0.25, 0.5) # Crescimento retangular (alta e fina)
+			
+			# Ajuste dinâmico de offset para alinhar a base de cada estágio ao solo
+			var offset_y = -128
+			if estagio_crescimento == 2:
+				var offsets_maduros = {
+					"trigo": -163,
+					"feijao": -163,
+					"cebola": -167,
+					"cenoura": -169,
+					"milho": -149,
+					"tomate": -152,
+					"abobora": -156,
+					"rabanete": -137
+				}
+				offset_y = offsets_maduros.get(id_base, -128)
+			$SpritePlanta.offset = Vector2(0, offset_y)
 	else:
 		print("AVISO: Imagem nao encontrada: ", caminho)
