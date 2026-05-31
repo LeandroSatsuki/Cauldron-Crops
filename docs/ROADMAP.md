@@ -1,0 +1,40 @@
+# Roadmap
+
+## Fase 0 - Estado Atual
+- O projeto já possui sistemas iniciais.
+- O golem automático foi desativado temporariamente para estabilizar testes manuais.
+
+## Fase 1 - Loop Mínimo Jogável
+- Plantar.
+- Colher.
+- Inventário.
+- Caldeirão.
+- Receita descoberta.
+- Feedback visual mínimo.
+
+## Fase 2 - Estabilização
+- Corrigir a UI do caldeirão.
+- Revisar o inventário.
+- Revisar a venda.
+- Corrigir o golem físico ou mantê-lo desativado.
+- Preparar o salvamento.
+
+## Fase 3 - Dados Escaláveis
+- Decidir o formato para crops, itens e receitas.
+- Avaliar `Resource .tres`, JSON ou CSV.
+- Criar um padrão de receitas.
+
+## Fase 4 - Conteúdo
+- Novas crops.
+- Novas receitas.
+- Missões.
+- Progressão.
+- Upgrades.
+
+## Fase 5 - Polimento
+- Arte final pixel art.
+- Áudio.
+- Animações.
+- Balanceamento.
+- UX.
+
