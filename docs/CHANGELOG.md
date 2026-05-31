@@ -54,3 +54,9 @@
 - Criação do tema provisório `res://Themes/pixel_ui_theme.tres`.
 - Decisão explícita de não usar fonte Minecraft nem clone direto.
 - A fonte foi verificada com textos em português contendo acentos.
+
+## 2026-05-31 - Esquema de receitas
+- Criação da documentação técnica `docs/RECIPES_SCHEMA.md`.
+- Registro do formato atual das receitas em `Database.gd`.
+- Comparação entre `Resource .tres`, JSON e CSV para a migração futura.
+- Recomendação documentada: manter o protótipo no formato atual por enquanto e migrar depois para `Resource .tres`.

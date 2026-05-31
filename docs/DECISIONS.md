@@ -76,3 +76,10 @@
 - Fonte: `res://Assets/fonts/PixelifySans-Regular.ttf`.
 - Licença: SIL Open Font License 1.1, registrada em `res://Assets/fonts/OFL.txt`.
 - Risco: o tema ainda é provisório e pode receber ajustes de tamanho/espacamento depois.
+
+## Decisão 13 - Receitas documentadas antes da migração
+- Problema: o formato atual de receitas funciona, mas não escala bem para um catálogo maior.
+- Decisão: documentar o esquema atual e a migração futura antes de alterar o código.
+- Motivo: evitar mudanças prematuras enquanto o loop principal já está estável.
+- Recomendação futura: migrar para `Resource .tres` como formato principal, mantendo JSON/CSV apenas como apoio se necessário.
+- Risco: a documentação não resolve a limitação estrutural sozinha; ela só prepara a migração futura.
