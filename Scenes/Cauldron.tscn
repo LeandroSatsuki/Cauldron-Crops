@@ -1,4 +1,4 @@
-[gd_scene load_steps=26 format=3]
+[gd_scene load_steps=27 format=3]
 
 [ext_resource type="Script" path="res://Scripts/Cauldron.gd" id="1_cauldrongd"]
 [ext_resource type="Script" path="res://Scripts/DropSlot.gd" id="2_dropslotgd"]
@@ -6,6 +6,7 @@
 [ext_resource type="Texture2D" path="res://Assets/caldeirao_clean_sheet_roxo.png" id="3_roxo"]
 [ext_resource type="Texture2D" path="res://Assets/caldeirao_clean_sheet_verde.png" id="4_verde"]
 [ext_resource type="Script" path="res://Scripts/Area2D_Caldeirao.gd" id="5_areagd"]
+[ext_resource type="Texture2D" path="res://Assets/inter_caldron01.png" id="7_bg"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_v0"]
 atlas = ExtResource("4_verde")
@@ -173,6 +174,7 @@ grow_vertical = 2
 mouse_filter = 2
 
 [node name="PopupUI" type="Panel" parent="PopupLayer/CenterContainer"]
+self_modulate = Color(1, 1, 1, 0)
 custom_minimum_size = Vector2(300, 300)
 layout_mode = 2
 z_index = 100
@@ -180,7 +182,18 @@ mouse_filter = 0
 visible = false
 script = ExtResource("6_popupbg")
 
+[node name="CustomBackground" type="TextureRect" parent="PopupLayer/CenterContainer/PopupUI"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("7_bg")
+
 [node name="DropSlot1" type="Panel" parent="PopupLayer/CenterContainer/PopupUI"]
+self_modulate = Color(1, 1, 1, 0)
 custom_minimum_size = Vector2(80, 80)
 layout_mode = 0
 mouse_filter = 0
@@ -201,6 +214,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="DropSlot2" type="Panel" parent="PopupLayer/CenterContainer/PopupUI"]
+self_modulate = Color(1, 1, 1, 0)
 custom_minimum_size = Vector2(80, 80)
 layout_mode = 0
 mouse_filter = 0
@@ -222,6 +236,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="MisturarButton" type="Button" parent="PopupLayer/CenterContainer/PopupUI"]
+self_modulate = Color(1, 1, 1, 0)
 layout_mode = 0
 offset_left = 20.0
 offset_top = 150.0
