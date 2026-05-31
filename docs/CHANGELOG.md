@@ -9,3 +9,9 @@
 - Correção do clique direito nos slots do inventário para permitir venda/ação secundária.
 - Adição de fallback de caminho para ícones de item em `InventorySlot` e `DropSlot`.
 - Melhoria das mensagens de aviso quando o item não possui imagem associada.
+
+## 2026-05-31 - Salvamento mínimo
+- Criação do `SaveManager` como Autoload para salvar e carregar progresso básico do protótipo.
+- Salvamento em `user://savegame.json`.
+- Inclusão de atalhos temporários de teste: `F5` para salvar e `F9` para carregar.
+- Escopo inicial do save: inventário, receitas descobertas, pontos de alquimia, moedas, estação, ano, água e quests simples.

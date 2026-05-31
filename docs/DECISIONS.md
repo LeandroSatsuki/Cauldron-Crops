@@ -23,3 +23,11 @@
 - Decisão: aceitar também `res://Assets/` como caminho de fallback para ícones.
 - Motivo: evitar falhas visuais e permitir que o protótipo continue funcionando mesmo com estrutura simples.
 - Risco: quando os ícones finais forem organizados em outra pasta, será preciso revisar esse fallback.
+
+## Decisão 5 - Salvamento mínimo com SaveManager
+- Problema: o protótipo precisava manter continuidade entre sessões sem virar um sistema grande.
+- Decisão: criar um `SaveManager` como Autoload e salvar apenas o progresso principal em `user://savegame.json`.
+- Motivo: permitir retomar testes do loop principal sem mexer em plantação, golems ou estrutura de dados.
+- Dados salvos agora: inventário, receitas descobertas, pontos de alquimia, moedas, estação, ano, água e quests simples.
+- Dados adiados: estado de lotes/plantações, golems e qualquer migração de dados para formatos externos.
+- Risco: o save atual não preserva o campo inteiro nem a automação completa; isso será tratado depois.
