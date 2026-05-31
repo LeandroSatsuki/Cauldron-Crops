@@ -112,9 +112,38 @@ Recomendação prática:
 - Quando for migrar, começar por um tipo de `Resource` para receita.
 - Se o time quiser edição em massa depois, exportar ferramentas auxiliares para JSON/CSV sem abandonar o Resource como formato principal.
 
+## Preparacao Estrutural Criada
+Para adiantar a migracao sem tocar no fluxo atual, o projeto ganhou:
+- `Scripts/data/RecipeData.gd`
+- `Data/recipes/pocao_crescimento_basica.tres`
+- `Data/recipes/golem_coletor.tres`
+
+Esses arquivos existem apenas como base estrutural. O caldeirao continua lendo `Database.receitas_alquimia`, e o novo `Resource` ainda nao esta ligado ao jogo nesta etapa.
+
+### Campos da primeira versao
+O `RecipeData` inicial inclui:
+- `id`
+- `nome`
+- `descricao`
+- `categoria`
+- `ingredientes`
+- `resultado_item`
+- `resultado_quantidade`
+- `tempo_producao`
+- `ordem_importa`
+- `desbloqueada_por_padrao`
+- `recompensa_pontos_alquimia`
+- `tags`
+- `versao_do_schema`
+
+### Proxima etapa sugerida
+Criar um `RecipeDatabase.gd` separado para:
+- carregar `Resource .tres`;
+- comparar o novo formato com o esquema antigo de `Database.gd`;
+- validar compatibilidade antes de trocar a fonte real do caldeirao.
+
 ## Resumo da Decisão
 - O formato atual funciona para protótipo.
 - Ele não escala bem.
 - `Resource .tres` é a melhor base para o futuro deste projeto.
 - JSON e CSV podem servir como ferramentas de apoio, mas não como formato principal inicial.
-

@@ -60,3 +60,9 @@
 - Registro do formato atual das receitas em `Database.gd`.
 - Comparação entre `Resource .tres`, JSON e CSV para a migração futura.
 - Recomendação documentada: manter o protótipo no formato atual por enquanto e migrar depois para `Resource .tres`.
+
+## 2026-05-31 - Estrutura inicial de Resource para receitas
+- Criação do `RecipeData` em `Scripts/data/RecipeData.gd` como base tipada para receitas.
+- Criação de duas receitas `.tres` de teste em `Data/recipes/` para validar a estrutura sem conectar o jogo ainda.
+- Manutenção do fluxo atual do caldeirao e do Livro de Receitas sem alteracoes.
+- Preparacao para um futuro `RecipeDatabase.gd` que consiga ler `Resource` e comparar com o sistema antigo.

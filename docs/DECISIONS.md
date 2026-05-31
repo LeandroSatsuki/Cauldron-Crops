@@ -83,3 +83,9 @@
 - Motivo: evitar mudanças prematuras enquanto o loop principal já está estável.
 - Recomendação futura: migrar para `Resource .tres` como formato principal, mantendo JSON/CSV apenas como apoio se necessário.
 - Risco: a documentação não resolve a limitação estrutural sozinha; ela só prepara a migração futura.
+
+## Decisão 14 - RecipeData criado sem acoplar ao jogo
+- Problema: o projeto precisava de uma base tipada para receitas sem quebrar o fluxo atual.
+- Decisão: criar `RecipeData` e receitas `.tres` de teste como camada estrutural paralela.
+- Motivo: preparar a migração futura enquanto o caldeirao continua lendo `Database.receitas_alquimia`.
+- Risco: dois formatos vivem ao mesmo tempo por enquanto, entao o acoplamento futuro precisara ser feito com cuidado.
