@@ -66,3 +66,9 @@
 - Criação de duas receitas `.tres` de teste em `Data/recipes/` para validar a estrutura sem conectar o jogo ainda.
 - Manutenção do fluxo atual do caldeirao e do Livro de Receitas sem alteracoes.
 - Preparacao para um futuro `RecipeDatabase.gd` que consiga ler `Resource` e comparar com o sistema antigo.
+
+## 2026-05-31 - Leitor estrutural de receitas
+- Criação de `Scripts/data/RecipeDatabase.gd` como leitor apenas de validação.
+- Carregamento de receitas `.tres` de `res://Data/recipes/` sem substituir o sistema antigo.
+- Validação basica de campos obrigatorios de `RecipeData`.
+- Comparacao dos ids de Resources com `Database.receitas_alquimia` para orientar a migracao futura.

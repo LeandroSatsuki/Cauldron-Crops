@@ -89,3 +89,9 @@
 - Decisão: criar `RecipeData` e receitas `.tres` de teste como camada estrutural paralela.
 - Motivo: preparar a migração futura enquanto o caldeirao continua lendo `Database.receitas_alquimia`.
 - Risco: dois formatos vivem ao mesmo tempo por enquanto, entao o acoplamento futuro precisara ser feito com cuidado.
+
+## Decisão 15 - RecipeDatabase apenas de leitura
+- Problema: o projeto precisava validar `Resource` de receitas sem trocar a fonte principal ainda.
+- Decisão: criar `RecipeDatabase.gd` somente para carregar, validar e comparar receitas.
+- Motivo: permitir a migração futura de forma segura, sem acoplar o caldeirao nesta etapa.
+- Risco: a manutenção temporaria de dois sistemas de receita continua exigindo disciplina na migracao.

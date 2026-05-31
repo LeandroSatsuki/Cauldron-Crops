@@ -142,6 +142,22 @@ Criar um `RecipeDatabase.gd` separado para:
 - comparar o novo formato com o esquema antigo de `Database.gd`;
 - validar compatibilidade antes de trocar a fonte real do caldeirao.
 
+## Leitor Estrutural Criado
+Foi criada uma camada de leitura apenas para preparacao:
+- `Scripts/data/RecipeDatabase.gd`
+
+Esse leitor:
+- carrega `.tres` de `res://Data/recipes/`;
+- valida campos basicos de `RecipeData`;
+- compara ids novos com `Database.receitas_alquimia`;
+- nao substitui o sistema antigo e nao se conecta ao caldeirao ainda.
+
+### Resultado esperado da comparacao
+O relatorio deve mostrar:
+- ids que existem apenas nos Resources;
+- ids que existem apenas no sistema legado;
+- uma base clara para planejar a migracao futura sem desligar nada ainda.
+
 ## Resumo da Decisão
 - O formato atual funciona para protótipo.
 - Ele não escala bem.
