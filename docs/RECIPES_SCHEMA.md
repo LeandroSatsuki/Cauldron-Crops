@@ -167,6 +167,14 @@ Pontos importantes:
 - Se um `RecipeData` faltar, estiver invalido ou incompleto, o livro cai automaticamente para a leitura antiga.
 - Isso permite validar o novo formato sem arriscar o fluxo principal do caldeirao.
 
+## Cobertura Atual
+Todas as receitas legadas atuais já possuem um `.tres` correspondente em `Data/recipes/`.
+
+Isso significa que:
+- o `RecipeDatabase` consegue cobrir o catálogo atual completo;
+- o Livro de Receitas pode exibir a versão rica quando houver `RecipeData`;
+- o jogo ainda continua usando `Database.receitas_alquimia` como fonte funcional da produção.
+
 ## Resumo da Decisão
 - O formato atual funciona para protótipo.
 - Ele não escala bem.

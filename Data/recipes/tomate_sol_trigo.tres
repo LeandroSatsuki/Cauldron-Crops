@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="RecipeData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://Scripts/data/RecipeData.gd" id="1_recipe_data"]
+
+[resource]
+script = ExtResource("1_recipe_data")
+id = "tomate_sol_trigo"
+nome = "Adubo Flamejante"
+descricao = "Mistura provisoria de tomate do sol e trigo para produzir adubo flamejante."
+categoria = "adubo"
+ingredientes = Array[String](["tomate_sol", "trigo"])
+resultado_item = "adubo_flamejante"
+resultado_quantidade = 1
+tempo_producao = 2.0
+ordem_importa = false
+desbloqueada_por_padrao = false
+recompensa_pontos_alquimia = 1
+tags = Array[String](["flamejante", "fertilizante"])
+versao_do_schema = 1

@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="RecipeData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://Scripts/data/RecipeData.gd" id="1_recipe_data"]
+
+[resource]
+script = ExtResource("1_recipe_data")
+id = "agua_tomate_sol"
+nome = "Semente de Outono"
+descricao = "Receita provisoria que transforma agua e tomate do sol em uma semente de outono."
+categoria = "semente"
+ingredientes = Array[String](["agua", "tomate_sol"])
+resultado_item = "semente_outono"
+resultado_quantidade = 1
+tempo_producao = 2.0
+ordem_importa = false
+desbloqueada_por_padrao = false
+recompensa_pontos_alquimia = 1
+tags = Array[String](["semente", "outono"])
+versao_do_schema = 1

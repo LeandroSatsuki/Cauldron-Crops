@@ -78,3 +78,9 @@
 - O fallback antigo com `Database.receitas_alquimia` continua obrigatório e ativo.
 - A produção em lote segue usando somente o sistema legado por enquanto.
 - A exibição rica melhora nome, descricao, categoria, ingredientes, resultado e tempo sem trocar o fluxo principal.
+
+## 2026-05-31 - Cobertura total das receitas legadas
+- Criação dos `.tres` faltantes em `Data/recipes/` para cobrir todas as receitas atuais do sistema legado.
+- O `RecipeDatabase` agora possui cobertura completa do catálogo legado atual.
+- `Database.gd` continua sendo a fonte funcional da produção e do caldeirão.
+- A camada `RecipeDatabase` segue sendo apenas leitura e apresentacao por enquanto.

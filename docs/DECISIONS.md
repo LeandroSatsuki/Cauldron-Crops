@@ -101,3 +101,9 @@
 - Decisão: usar `RecipeDatabase` apenas para leitura e exibição complementar no Livro, mantendo `Database.receitas_alquimia` como fallback obrigatório.
 - Motivo: validar o novo formato sem mexer no caldeirao nem na producao em lote.
 - Risco: o jogo continua com dois caminhos de dados ativos até a migracao completa ser validada.
+
+## Decisão 17 - Cobertura completa das receitas legadas
+- Problema: ainda faltavam `.tres` para parte do catálogo legado.
+- Decisão: criar `RecipeData` para todas as receitas que ainda só existiam em `Database.receitas_alquimia`.
+- Motivo: permitir cobertura completa do `RecipeDatabase` sem mexer no fluxo funcional do jogo.
+- Risco: a cobertura dos dados está completa, mas a fonte funcional principal ainda é o sistema legado até a migração final.
