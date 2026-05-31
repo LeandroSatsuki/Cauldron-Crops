@@ -9,6 +9,9 @@ func _ready() -> void:
 	if clickable_area and not clickable_area.input_event.is_connected(_on_clickable_area_input_event):
 		clickable_area.input_event.connect(_on_clickable_area_input_event)
 
+func _process(_delta: float) -> void:
+	z_index = int(global_position.y)
+
 func deposit_item(item_id: String, quantidade: int = 1) -> void:
 	if item_id == "" or quantidade <= 0:
 		return
@@ -39,7 +42,7 @@ func withdraw_all_to_global_inventory() -> Dictionary:
 	inventory.clear()
 	return retirado
 
-func _on_clickable_area_input_event(_viewport: Node, event: InputEvent, _shape_idx: int) -> void:
+func _on_clickable_area_input_event(_viewport: Viewport, event: InputEvent, _shape_idx: int) -> void:
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		var ui = get_tree().current_scene.get_node_or_null("UI")
 		if ui and ui.has_method("abrir_bau_vila"):

@@ -2,13 +2,23 @@
 
 [ext_resource type="Script" uid="uid://irr5dydf7tst" path="res://Scripts/Golem.gd" id="1_golemgd"]
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_sensor"]
+radius = 36.0
+
 [node name="Golem" type="Node2D" unique_id=1412478923]
 script = ExtResource("1_golemgd")
 
 [node name="ColorRect" type="ColorRect" parent="." unique_id=2024790360]
+z_index = 1
 custom_minimum_size = Vector2(32, 32)
 offset_left = -15.0
 offset_top = -14.0
 offset_right = 17.0
 offset_bottom = 18.0
 color = Color(0.101960786, 1, 1, 1)
+
+[node name="CropSensorArea" type="Area2D" parent="." unique_id=1226628076]
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CropSensorArea" unique_id=1842569519]
+shape = SubResource("CircleShape2D_sensor")

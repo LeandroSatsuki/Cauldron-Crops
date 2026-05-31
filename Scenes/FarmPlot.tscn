@@ -22,6 +22,9 @@ hframes = 5
 vframes = 3
 frame = 13
 
+[node name="GolemHarvestPoint" type="Marker2D" parent="."]
+position = Vector2(0, 24)
+
 [node name="ColorRect" type="ColorRect" parent="." unique_id=275089934]
 offset_left = -32.0
 offset_top = -32.0

@@ -99,3 +99,9 @@
 - Adição do botão `Retirar Tudo`, transferindo itens para o inventário global.
 - O baú continua separado do inventário do jogador; salvamento fica para depois.
 - A retirada individual ainda não existe nesta etapa.
+
+## 2026-05-31 - Presenca fisica do golem
+- Ajuste de ordem visual por Y para o golem, baú e lotes usando z_index dinâmico.
+- O golem agora usa um ponto de interação separado do centro visual da crop.
+- Criação de um sensor simples para fazer as crops balançarem quando o golem passa perto.
+- O movimento continua em linha reta; pathfinding completo fica para depois.

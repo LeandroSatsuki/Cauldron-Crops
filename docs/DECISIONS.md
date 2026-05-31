@@ -131,3 +131,9 @@
 - Decisão: criar um painel simples para abrir o baú, listar o conteúdo e permitir `Retirar Tudo` para o inventário global.
 - Motivo: manter o baú separado do inventário do jogador e tornar o fluxo claro antes do salvamento.
 - Risco: retirada individual e persistência do baú ainda ficam para etapas futuras.
+
+## Decisão 22 - Presenca fisica do golem
+- Problema: o golem parecia sem volume e passava visualmente por baixo de elementos do mundo.
+- Decisão: ajustar a ordenacao visual com z_index por Y, mover a interacao para um ponto lateral/abaixo do lote e adicionar um sensor simples de proximidade.
+- Motivo: melhorar a leitura espacial sem implementar pathfinding.
+- Risco: o movimento continua em linha reta e pode atravessar obstaculos; isso fica para uma etapa futura.

@@ -6,6 +6,8 @@ extends Node2D
 @export var deposit_duration: float = 0.3
 @export var carry_capacity: int = 1
 
+@onready var crop_sensor_area: Area2D = $CropSensorArea
+
 var state: String = "IDLE"
 var carried_item_id: String = ""
 var carried_quantity: int = 0
@@ -21,6 +23,12 @@ func _ready() -> void:
 	_think_timer.one_shot = false
 	_think_timer.timeout.connect(_on_think_timer_timeout)
 	add_child(_think_timer)
+
+	if crop_sensor_area and not crop_sensor_area.area_entered.is_connected(_on_crop_sensor_area_area_entered):
+		crop_sensor_area.area_entered.connect(_on_crop_sensor_area_area_entered)
+
+func _process(_delta: float) -> void:
+	z_index = int(global_position.y)
 
 func _on_think_timer_timeout() -> void:
 	if state != "IDLE":
@@ -41,7 +49,7 @@ func _procurar_lote() -> void:
 			if target_plot == null:
 				continue
 			state = "MOVING_TO_PLOT"
-			_mover_para(target_plot.global_position, Callable(self, "_chegar_ao_lote"))
+			_mover_para(_obter_posicao_interacao_lote(target_plot), Callable(self, "_chegar_ao_lote"))
 			return
 
 func _procurar_bau() -> void:
@@ -129,3 +137,12 @@ func _chegar_ao_bau() -> void:
 
 func _limpar_alvo_lote() -> void:
 	target_plot = null
+
+func _obter_posicao_interacao_lote(lote: Node2D) -> Vector2:
+	if lote and lote.has_method("get_golem_harvest_position"):
+		return lote.get_golem_harvest_position()
+	return lote.global_position if lote else global_position
+
+func _on_crop_sensor_area_area_entered(area: Area2D) -> void:
+	if area and area.has_method("rustle_from_golem"):
+		area.rustle_from_golem()

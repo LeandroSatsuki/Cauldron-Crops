@@ -21,12 +21,14 @@ var estado_atual: State = State.VAZIO
 var semente_atual: Dictionary = {}
 var semente_id_plantada: String = ""
 var pronto_para_colher: bool = false
+var is_rustling: bool = false
 
 @onready var timer: Timer = $Timer
 @onready var color_rect = $ColorRect
 var regado: bool = false
 @onready var visual_regado = $VisualRegado
 @onready var tooltip_area: Control = $TooltipArea
+@onready var golem_harvest_point: Marker2D = $GolemHarvestPoint
 
 func _ready() -> void:
 	# Trava o posicionamento no centro perfeito do grid
@@ -45,6 +47,7 @@ func _ready() -> void:
 	_atualizar_visual()
 
 func _process(_delta: float) -> void:
+	z_index = int(global_position.y)
 	if not tooltip_area:
 		return
 		
@@ -224,6 +227,11 @@ func harvest_by_golem() -> Dictionary:
 		"quantidade": 1
 	}
 
+func get_golem_harvest_position() -> Vector2:
+	if golem_harvest_point and is_instance_valid(golem_harvest_point):
+		return golem_harvest_point.global_position
+	return global_position + Vector2(0, 24)
+
 # Quando o Timer emitir o sinal de timeout: o estado muda para PRONTO_PARA_COLHER
 func _on_timer_timeout() -> void:
 	if estado_atual == State.CRESCENDO:
@@ -314,3 +322,29 @@ func _on_sway_area_body_entered(_body: Node2D) -> void:
 		tween.tween_property($SpritePlanta, "rotation_degrees", 10.0, 0.1)
 		tween.tween_property($SpritePlanta, "rotation_degrees", -10.0, 0.1)
 		tween.tween_property($SpritePlanta, "rotation_degrees", 0.0, 0.15)
+
+func rustle_from_golem() -> void:
+	if is_rustling:
+		return
+	if estado_atual == State.VAZIO:
+		return
+	if not has_node("SpritePlanta"):
+		return
+	if $SpritePlanta.texture == null:
+		return
+
+	is_rustling = true
+	var planta: Node2D = $SpritePlanta
+	var rot_original: float = planta.rotation_degrees
+	var pos_original: Vector2 = planta.position
+
+	var tween = create_tween()
+	tween.tween_property(planta, "rotation_degrees", rot_original + 8.0, 0.06)
+	tween.tween_property(planta, "rotation_degrees", rot_original - 8.0, 0.08)
+	tween.tween_property(planta, "rotation_degrees", rot_original, 0.06)
+	tween.tween_callback(func():
+		if is_instance_valid(planta):
+			planta.rotation_degrees = rot_original
+			planta.position = pos_original
+		is_rustling = false
+	)
