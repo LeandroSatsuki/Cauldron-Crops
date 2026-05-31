@@ -21,6 +21,10 @@ var skill_tree: Panel
 var quest_board_scene = preload("res://Scenes/QuestBoard.tscn")
 var quest_board: Panel
 
+@onready var abrir_livro_receitas_button: Button = $LeftPanel/AbrirLivroReceitasButton
+var recipe_book_scene = preload("res://Scenes/RecipeBookUI.tscn")
+var recipe_book: Panel
+
 @onready var inventory_bar: HBoxContainer = $InventoryBar
 @onready var tooltip_panel: Panel = $TooltipPanel
 @onready var tooltip_texto: Label = $TooltipPanel/TooltipTexto
@@ -70,6 +74,16 @@ func _ready() -> void:
 	)
 	if abrir_quests_button:
 		abrir_quests_button.pressed.connect(_on_abrir_quests_pressed)
+
+	recipe_book = recipe_book_scene.instantiate()
+	add_child(recipe_book)
+	recipe_book.mouse_filter = Control.MOUSE_FILTER_PASS
+	recipe_book.visibility_changed.connect(func():
+		if recipe_book:
+			recipe_book.mouse_filter = Control.MOUSE_FILTER_STOP if recipe_book.visible else Control.MOUSE_FILTER_PASS
+	)
+	if abrir_livro_receitas_button:
+		abrir_livro_receitas_button.pressed.connect(_on_abrir_livro_receitas_pressed)
 		
 	if sell_menu:
 		sell_menu.mouse_filter = Control.MOUSE_FILTER_PASS
@@ -300,3 +314,7 @@ func _on_nova_quest_recebida() -> void:
 		var alerta = $LeftPanel/AbrirQuestsButton/AlertaQuest
 		if alerta:
 			alerta.visible = true
+
+func _on_abrir_livro_receitas_pressed() -> void:
+	if recipe_book and recipe_book.has_method("abrir"):
+		recipe_book.abrir()

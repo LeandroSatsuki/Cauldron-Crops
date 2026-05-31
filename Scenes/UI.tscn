@@ -62,6 +62,10 @@ text = "Árvore de Alquimia"
 layout_mode = 2
 text = "Mural de Demandas"
 
+[node name="AbrirLivroReceitasButton" type="Button" parent="LeftPanel"]
+layout_mode = 2
+text = "Livro de Receitas"
+
 [node name="AlertaQuest" type="Label" parent="LeftPanel/AbrirQuestsButton"]
 visible = false
 layout_mode = 1

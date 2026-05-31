@@ -1,0 +1,116 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://Scripts/RecipeBookUI.gd" id="1_recipebookgd"]
+
+[node name="RecipeBookUI" type="Panel"]
+visible = false
+custom_minimum_size = Vector2(760, 460)
+mouse_filter = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -380.0
+offset_top = -230.0
+offset_right = 380.0
+offset_bottom = 230.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_recipebookgd")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 14
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 14
+
+[node name="VBoxRoot" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="HeaderBar" type="HBoxContainer" parent="MarginContainer/VBoxRoot"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="TitleLabel" type="Label" parent="MarginContainer/VBoxRoot/HeaderBar"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Livro de Receitas"
+
+[node name="BtnFechar" type="Button" parent="MarginContainer/VBoxRoot/HeaderBar"]
+layout_mode = 2
+text = "Fechar"
+
+[node name="Body" type="HBoxContainer" parent="MarginContainer/VBoxRoot"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 12
+
+[node name="LeftPanel" type="PanelContainer" parent="MarginContainer/VBoxRoot/Body"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="LeftBox" type="VBoxContainer" parent="MarginContainer/VBoxRoot/Body/LeftPanel"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="LeftTitle" type="Label" parent="MarginContainer/VBoxRoot/Body/LeftPanel/LeftBox"]
+layout_mode = 2
+text = "Receitas descobertas"
+
+[node name="RecipeList" type="ItemList" parent="MarginContainer/VBoxRoot/Body/LeftPanel/LeftBox"]
+layout_mode = 2
+size_flags_vertical = 3
+custom_minimum_size = Vector2(260, 320)
+allow_reselect = true
+same_column_width = true
+
+[node name="EmptyLabel" type="Label" parent="MarginContainer/VBoxRoot/Body/LeftPanel/LeftBox"]
+visible = false
+layout_mode = 2
+text = "Nenhuma receita descoberta ainda."
+
+[node name="RightPanel" type="PanelContainer" parent="MarginContainer/VBoxRoot/Body"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="RightBox" type="VBoxContainer" parent="MarginContainer/VBoxRoot/Body/RightPanel"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="RightTitle" type="Label" parent="MarginContainer/VBoxRoot/Body/RightPanel/RightBox"]
+layout_mode = 2
+text = "Detalhes"
+
+[node name="RecipeIdLabel" type="Label" parent="MarginContainer/VBoxRoot/Body/RightPanel/RightBox"]
+layout_mode = 2
+text = "Receita: -"
+
+[node name="IngredientsLabel" type="Label" parent="MarginContainer/VBoxRoot/Body/RightPanel/RightBox"]
+layout_mode = 2
+autowrap_mode = 2
+text = "Ingredientes: -"
+
+[node name="ResultLabel" type="Label" parent="MarginContainer/VBoxRoot/Body/RightPanel/RightBox"]
+layout_mode = 2
+autowrap_mode = 2
+text = "Resultado: -"
+
+[node name="MaxCraftLabel" type="Label" parent="MarginContainer/VBoxRoot/Body/RightPanel/RightBox"]
+layout_mode = 2
+autowrap_mode = 2
+text = "Quantidade maxima: -"
+
+[node name="StatusLabel" type="Label" parent="MarginContainer/VBoxRoot/Body/RightPanel/RightBox"]
+layout_mode = 2
+autowrap_mode = 2
+text = "Descubra uma receita no caldeirao para ver os detalhes."

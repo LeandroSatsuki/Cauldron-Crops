@@ -31,3 +31,10 @@
 - Dados salvos agora: inventário, receitas descobertas, pontos de alquimia, moedas, estação, ano, água e quests simples.
 - Dados adiados: estado de lotes/plantações, golems e qualquer migração de dados para formatos externos.
 - Risco: o save atual não preserva o campo inteiro nem a automação completa; isso será tratado depois.
+
+## Decisão 6 - Livro de receitas separado da produção em lote
+- Problema: o jogador precisava consultar receitas descobertas sem misturar isso com automação ou produção em série.
+- Decisão: criar uma primeira versão do Livro de Receitas apenas para consulta.
+- Motivo: manter o fluxo atual simples e preparar a base para produção em lote futura.
+- Limitação atual: o livro lê o formato existente de `Database.receitas_alquimia` com uma camada adaptadora simples.
+- Próxima etapa: adicionar produção em lote, barra de progresso e cancelamento quando o loop de consulta estiver estável.

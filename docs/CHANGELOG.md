@@ -15,3 +15,9 @@
 - Salvamento em `user://savegame.json`.
 - Inclusão de atalhos temporários de teste: `F5` para salvar e `F9` para carregar.
 - Escopo inicial do save: inventário, receitas descobertas, pontos de alquimia, moedas, estação, ano, água e quests simples.
+
+## 2026-05-31 - Livro de receitas
+- Criação da primeira versão do Livro de Receitas para consultar receitas descobertas.
+- Integração do livro na UI principal com botão dedicado.
+- Exibição de ingredientes, resultado e quantidade maxima fabricavel com base no inventário atual.
+- Consulta separada da produção em lote, que fica para uma etapa futura.
