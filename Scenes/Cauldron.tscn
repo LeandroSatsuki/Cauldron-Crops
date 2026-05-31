@@ -175,9 +175,9 @@ mouse_filter = 2
 [node name="PopupUI" type="Panel" parent="PopupLayer/CenterContainer" unique_id=2059349973]
 self_modulate = Color(1, 1, 1, 0)
 z_index = 100
-theme = ExtResource("7_pixeltheme")
 custom_minimum_size = Vector2(640, 420)
 layout_mode = 2
+theme = ExtResource("7_pixeltheme")
 script = ExtResource("6_popupbg")
 
 [node name="CustomBackground" type="NinePatchRect" parent="PopupLayer/CenterContainer/PopupUI" unique_id=483938224]
@@ -305,7 +305,6 @@ one_shot = true
 
 [node name="BatchProgressPanel" type="PanelContainer" parent="." unique_id=1134985521]
 visible = false
-theme = ExtResource("7_pixeltheme")
 z_index = 20
 custom_minimum_size = Vector2(340, 136)
 offset_left = 780.0
@@ -313,6 +312,7 @@ offset_top = 558.0
 offset_right = 780.0
 offset_bottom = 558.0
 mouse_filter = 2
+theme = ExtResource("7_pixeltheme")
 
 [node name="MarginContainer" type="MarginContainer" parent="BatchProgressPanel" unique_id=948156234]
 layout_mode = 2
