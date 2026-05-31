@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://cs1q0furekbnj" path="res://Scripts/Main.gd" id="1_maingd"]
 [ext_resource type="PackedScene" path="res://Scenes/UI.tscn" id="2_uiscene"]
 [ext_resource type="PackedScene" uid="uid://ccka0djblsc4a" path="res://Scenes/Cauldron.tscn" id="3_cauldronscene"]
+[ext_resource type="PackedScene" uid="uid://c8aef365l3meu" path="res://Scenes/Golem.tscn" id="4_rgh2o"]
 
 [node name="World" type="Node2D" unique_id=1433733631]
 script = ExtResource("1_maingd")
@@ -10,3 +11,6 @@ script = ExtResource("1_maingd")
 [node name="CauldronUI" parent="." unique_id=1614176975 instance=ExtResource("3_cauldronscene")]
 
 [node name="UI" parent="." unique_id=824803257 instance=ExtResource("2_uiscene")]
+
+[node name="Golem" parent="." unique_id=1412478923 instance=ExtResource("4_rgh2o")]
+position = Vector2(145, 690)

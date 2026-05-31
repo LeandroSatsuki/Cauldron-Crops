@@ -20,6 +20,7 @@ var estado_atual: State = State.VAZIO
 # Semente atual sendo cultivada
 var semente_atual: Dictionary = {}
 var semente_id_plantada: String = ""
+var pronto_para_colher: bool = false
 
 @onready var timer: Timer = $Timer
 @onready var color_rect = $ColorRect
@@ -34,6 +35,7 @@ func _ready() -> void:
 	global_position = Vector2(snap_x, snap_y)
 
 	add_to_group("lotes_terra")
+	add_to_group("lote_plantacao")
 	# Configura o timer como one-shot e conecta o sinal de timeout
 	if timer:
 		timer.one_shot = true
@@ -226,9 +228,13 @@ func _atualizar_visual() -> void:
 
 func atualizar_visual_planta(semente_id: String, estagio_crescimento: int):
 	if semente_id == "":
+		pronto_para_colher = false
 		if has_node("SpritePlanta"):
 			$SpritePlanta.texture = null
 		return
+
+	if estagio_crescimento == 2:
+		pronto_para_colher = true
 
 	var nomes_estagio = ["broto", "crescendo", "maduro"]
 	if estagio_crescimento < 0 or estagio_crescimento > 2:
