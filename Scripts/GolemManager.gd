@@ -1,8 +1,12 @@
 extends Node
 
+var automation_enabled: bool = false
 var tempo_acumulado: float = 0.0
 
 func _process(delta: float) -> void:
+	if not automation_enabled:
+		return
+
 	if EconomyManager.total_golems > 0:
 		tempo_acumulado += delta
 		if tempo_acumulado >= 4.0:
