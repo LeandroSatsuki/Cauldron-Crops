@@ -56,3 +56,15 @@
 - Decisão: adicionar um botão `Cancelar producao` dentro do painel de progresso do lote.
 - Motivo: deixar a ação explícita e reduzir dependência de interação escondida.
 - Risco: a interface continua provisoria e pode precisar de ajuste visual depois.
+
+## Decisão 10 - UI provisoria do caldeirao
+- Problema: a imagem antiga do popup apertava os novos campos e deixava a leitura ruim.
+- Decisão: substituir a decoração visual por um placeholder temporario e reorganizar o popup com mais folga.
+- Motivo: melhorar a usabilidade sem mexer na lógica do lote.
+- Risco: a arte final ainda precisa ser desenhada depois.
+
+## Decisão 11 - Fundo de rocha como NinePatchRect
+- Problema: o fundo visual precisava preencher o popup com mais consistência e legibilidade.
+- Decisão: usar um `NinePatchRect` com placeholder de rocha pixel art para o fundo do popup.
+- Motivo: garantir preenchimento estável do painel sem afetar os controles acima.
+- Risco: a arte final ainda será substituida depois, mantendo a UI provisoria por enquanto.

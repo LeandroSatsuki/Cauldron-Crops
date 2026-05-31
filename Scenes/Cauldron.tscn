@@ -5,8 +5,8 @@
 [ext_resource type="Texture2D" uid="uid://rn543opndc5e" path="res://Assets/caldeirao_clean_sheet_roxo.png" id="3_roxo"]
 [ext_resource type="Texture2D" uid="uid://c6kckca2mkrwr" path="res://Assets/caldeirao_clean_sheet_verde.png" id="4_verde"]
 [ext_resource type="Script" uid="uid://bqbyx5vb6s1b" path="res://Scripts/Area2D_Caldeirao.gd" id="5_areagd"]
+[ext_resource type="Texture2D" uid="uid://is41i8abvdnx" path="res://Assets/placeholder/placeholder_cauldron_ui_panel.png" id="6_jnwib"]
 [ext_resource type="Script" uid="uid://b6l38kew1p7lr" path="res://Scripts/PopupBackground.gd" id="6_popupbg"]
-[ext_resource type="Texture2D" uid="uid://c3qfwo5357l3e" path="res://Assets/inter_caldron01.png" id="7_bg"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_r0"]
 atlas = ExtResource("3_roxo")
@@ -174,37 +174,42 @@ mouse_filter = 2
 [node name="PopupUI" type="Panel" parent="PopupLayer/CenterContainer" unique_id=2059349973]
 self_modulate = Color(1, 1, 1, 0)
 z_index = 100
-custom_minimum_size = Vector2(300, 300)
+custom_minimum_size = Vector2(640, 420)
 layout_mode = 2
 script = ExtResource("6_popupbg")
 
-[node name="CustomBackground" type="TextureRect" parent="PopupLayer/CenterContainer/PopupUI" unique_id=483938224]
+[node name="CustomBackground" type="NinePatchRect" parent="PopupLayer/CenterContainer/PopupUI" unique_id=483938224]
+z_index = -1
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -114.0
-offset_top = -153.0
-offset_right = 157.0
-offset_bottom = 174.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 2
-texture = ExtResource("7_bg")
+texture = ExtResource("6_jnwib")
+patch_margin_left = 32
+patch_margin_top = 32
+patch_margin_right = 32
+patch_margin_bottom = 32
+
+[node name="TitleLabel" type="Label" parent="PopupLayer/CenterContainer/PopupUI" unique_id=1068745001]
+layout_mode = 0
+offset_left = -10.0
+offset_top = 87.0
+offset_right = 630.0
+offset_bottom = 113.0
+text = "Caldeirao"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="DropSlot1" type="Panel" parent="PopupLayer/CenterContainer/PopupUI" unique_id=1210423559]
 self_modulate = Color(1, 1, 1, 0)
 custom_minimum_size = Vector2(80, 80)
-layout_mode = 1
-anchors_preset = -1
-anchor_left = -0.093
-anchor_top = 0.097
-anchor_right = 0.407
-anchor_bottom = 0.5
-offset_left = -6.0999985
-offset_top = -6.1000004
-offset_right = 17.900002
-offset_bottom = 10.0
+layout_mode = 0
+offset_left = 84.0
+offset_top = 302.0
+offset_right = 208.0
+offset_bottom = 382.0
 script = ExtResource("2_dropslotgd")
 
 [node name="ItemIcon" type="TextureRect" parent="PopupLayer/CenterContainer/PopupUI/DropSlot1" unique_id=1701709050]
@@ -213,9 +218,9 @@ anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = -1.0
-offset_top = 2.0
+offset_top = 1.0
 offset_right = -1.0
-offset_bottom = 2.0
+offset_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 expand_mode = 1
@@ -225,10 +230,10 @@ stretch_mode = 5
 self_modulate = Color(1, 1, 1, 0)
 custom_minimum_size = Vector2(80, 80)
 layout_mode = 0
-offset_left = 205.0
-offset_top = 29.0
-offset_right = 378.0
-offset_bottom = 157.0
+offset_left = 226.0
+offset_top = 300.0
+offset_right = 352.0
+offset_bottom = 385.0
 script = ExtResource("2_dropslotgd")
 
 [node name="ItemIcon" type="TextureRect" parent="PopupLayer/CenterContainer/PopupUI/DropSlot2" unique_id=1498184108]
@@ -246,10 +251,10 @@ stretch_mode = 5
 [node name="MisturarButton" type="Button" parent="PopupLayer/CenterContainer/PopupUI" unique_id=384350575]
 self_modulate = Color(1, 1, 1, 0)
 layout_mode = 0
-offset_left = -22.0
-offset_top = 200.0
-offset_right = 365.0
-offset_bottom = 282.0
+offset_left = 230.0
+offset_top = 211.0
+offset_right = 406.0
+offset_bottom = 249.0
 text = "Misturar Ingredientes"
 
 [node name="ResultadoLabel2" type="Label" parent="PopupLayer/CenterContainer/PopupUI/MisturarButton" unique_id=1896481175]
@@ -257,10 +262,10 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 62.0
-offset_top = 126.0
-offset_right = -65.0
-offset_bottom = 104.0
+offset_left = 177.0
+offset_top = 145.0
+offset_right = 100.0
+offset_bottom = 130.0
 grow_horizontal = 2
 grow_vertical = 2
 text = "Resultado: ..."
@@ -269,28 +274,28 @@ vertical_alignment = 1
 
 [node name="ResultadoLabel" type="Label" parent="PopupLayer/CenterContainer/PopupUI" unique_id=1097126734]
 layout_mode = 0
-offset_left = 42.0
-offset_top = 212.0
-offset_right = 302.0
-offset_bottom = 272.0
+offset_left = 166.0
+offset_top = 217.0
+offset_right = 494.0
+offset_bottom = 247.0
 text = "MISTURAR CALDERÃO"
 horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="BtnFechar" type="Button" parent="PopupLayer/CenterContainer/PopupUI" unique_id=2121384545]
 layout_mode = 0
-offset_left = 445.0
-offset_top = -77.0
-offset_right = 487.0
-offset_bottom = -33.0
+offset_left = 638.0
+offset_top = -36.0
+offset_right = 682.0
+offset_bottom = 4.0
 text = "X"
 
 [node name="BtnLivroReceitas" type="Button" parent="PopupLayer/CenterContainer/PopupUI" unique_id=1934891122]
 layout_mode = 0
-offset_left = 312.0
-offset_top = -77.0
-offset_right = 437.0
-offset_bottom = -33.0
+offset_left = 386.0
+offset_top = 303.0
+offset_right = 478.0
+offset_bottom = 343.0
 text = "Receitas"
 
 [node name="BatchTimer" type="Timer" parent="." unique_id=154337144]
@@ -298,18 +303,16 @@ one_shot = true
 
 [node name="BatchProgressPanel" type="PanelContainer" parent="." unique_id=1134985521]
 visible = false
-custom_minimum_size = Vector2(320, 112)
-position = Vector2(790, 558)
-mouse_filter = 2
 z_index = 20
+custom_minimum_size = Vector2(340, 136)
+offset_left = 780.0
+offset_top = 558.0
+offset_right = 780.0
+offset_bottom = 558.0
+mouse_filter = 2
 
 [node name="MarginContainer" type="MarginContainer" parent="BatchProgressPanel" unique_id=948156234]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+layout_mode = 2
 theme_override_constants/margin_left = 10
 theme_override_constants/margin_top = 8
 theme_override_constants/margin_right = 10
@@ -324,11 +327,9 @@ layout_mode = 2
 text = "Producao em lote: -"
 
 [node name="BatchProgressBar" type="ProgressBar" parent="BatchProgressPanel/MarginContainer/VBoxBatch" unique_id=348567951]
-layout_mode = 2
 custom_minimum_size = Vector2(280, 18)
+layout_mode = 2
 max_value = 1.0
-value = 0.0
-show_percentage = true
 
 [node name="BtnCancelarProducao" type="Button" parent="BatchProgressPanel/MarginContainer/VBoxBatch" unique_id=2147483647]
 layout_mode = 2

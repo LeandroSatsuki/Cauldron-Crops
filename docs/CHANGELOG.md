@@ -35,3 +35,14 @@
 - O cancelamento por clique no caldeirão foi mantido como atalho secundário.
 - Redução dos prints de diagnóstico agora que o vínculo do caldeirão já está validado.
 - A interface de lote continua provisória, mas mais clara para teste manual.
+
+## 2026-05-31 - UI provisoria do caldeirao
+- Substituição da imagem decorativa antiga do popup por um placeholder temporário próprio do projeto.
+- Reorganização visual do popup do caldeirão para acomodar slots, botões, resultado e área de produção em lote com mais folga.
+- Nenhuma mudança na lógica da produção em lote.
+- A arte final do caldeirão continua para depois.
+
+## 2026-05-31 - Fundo de rocha da UI
+- Criação de um placeholder pixel art de rocha para o fundo do popup do caldeirão.
+- Aplicação do fundo como `NinePatchRect` para preencher o popup de forma estável.
+- Manutenção da UI e da lógica do caldeirão como provisórias, apenas com ajuste visual.
