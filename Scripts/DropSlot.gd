@@ -2,6 +2,7 @@ extends Panel
 
 # Variável para armazenar o ID do item
 var item_vinculado: String = ""
+@onready var icon_rect: TextureRect = $ItemIcon
 
 func _ready() -> void:
 	# Garantir que este painel capture cliques e eventos de drop
@@ -14,12 +15,16 @@ func _can_drop_data(_at_position, data) -> bool:
 func _drop_data(_at_position, data) -> void:
 	item_vinculado = data
 	
-	# Atualiza o label apenas se ele existir, sem travar o jogo
 	var label_node = get_node_or_null("Label")
 	if label_node:
-		label_node.text = data
-		# Opcional: Garante que o Label não bloqueie novos drops
+		label_node.text = "" # Limpa o texto "Soltar item"
 		label_node.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	
+	var caminho_imagem = "res://Assets/Items/" + data + ".png" # Caminho dinâmico baseado no ID
+	if ResourceLoader.exists(caminho_imagem):
+		icon_rect.texture = load(caminho_imagem)
+	else:
+		print("AVISO: Imagem não encontrada para o item: ", data)
 	
 	print("Slot do Caldeirão recebeu: ", data)
 

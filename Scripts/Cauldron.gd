@@ -46,7 +46,6 @@ func abrir_popup():
 	print("DEBUG: PopupUI visível? ", popup_ui.visible)
 	popup_ui.show()
 	popup_ui.visible = true
-	popup_ui.z_index = 100
 	popup_ui.move_to_front()
 	popup_ui.grab_click_focus() # Força o foco do mouse para a interface
 	print("DEBUG: PopupUI agora deve estar visível e no topo.")
@@ -164,10 +163,14 @@ func _limpar_slots() -> void:
 		drop_slot_1.item_vinculado = ""
 		var lbl1 = drop_slot_1.get_node_or_null("Label")
 		if lbl1: lbl1.text = "Soltar item"
+		var icon1 = drop_slot_1.get_node_or_null("ItemIcon")
+		if icon1: icon1.texture = null
 	if drop_slot_2:
 		drop_slot_2.item_vinculado = ""
 		var lbl2 = drop_slot_2.get_node_or_null("Label")
 		if lbl2: lbl2.text = "Soltar item"
+		var icon2 = drop_slot_2.get_node_or_null("ItemIcon")
+		if icon2: icon2.texture = null
 
 func _iniciar_processo_de_mistura():
 	# Troca para o roxo imediatamente

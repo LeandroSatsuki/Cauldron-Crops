@@ -64,8 +64,23 @@ func _get_drag_data(at_position):
 	if item_id == "":
 		return null
 	
-	var preview = Label.new()
-	preview.text = item_id
-	set_drag_preview(preview)
+	var preview = TextureRect.new()
+	var caminho = "res://Assets/Items/" + item_id + ".png"
 	
+	if ResourceLoader.exists(caminho):
+		preview.texture = load(caminho)
+		preview.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		preview.custom_minimum_size = Vector2(40, 40)
+		
+		# Centralizador
+		var control = Control.new()
+		preview.position = -preview.custom_minimum_size / 2
+		control.add_child(preview)
+		set_drag_preview(control)
+	else:
+		# Fallback de segurança se a imagem não existir
+		var text_preview = Label.new()
+		text_preview.text = item_id
+		set_drag_preview(text_preview)
+		
 	return item_id
