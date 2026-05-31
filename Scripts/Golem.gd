@@ -31,11 +31,18 @@ func _procurar_alvo() -> void:
 			break
 
 func _iniciar_movimento(destino: Vector2, callback: Callable) -> void:
-	# Calcula a distancia matematica exata para manter a velocidade constante
+	print("--- INICIANDO MOVIMENTO ---")
+	print("Posicao Atual do Golem: ", global_position)
+	print("Posicao Alvo (Planta): ", destino)
+	
 	var distancia_pixels = global_position.distance_to(destino)
 	var distancia_em_blocos = distancia_pixels / GRID_SIZE
 	var tempo_viagem = distancia_em_blocos * TEMPO_POR_BLOCO
-
+	
+	print("Distancia Calculada (Pixels): ", distancia_pixels)
+	print("Tempo de Viagem Calculado: ", tempo_viagem, " segundos")
+	print("---------------------------")
+	
 	var tween = create_tween()
 	tween.tween_property(self, "global_position", destino, tempo_viagem)
 	tween.tween_callback(callback)
