@@ -284,3 +284,52 @@ offset_top = -77.0
 offset_right = 487.0
 offset_bottom = -33.0
 text = "X"
+
+[node name="BtnLivroReceitas" type="Button" parent="PopupLayer/CenterContainer/PopupUI" unique_id=1934891122]
+layout_mode = 0
+offset_left = 312.0
+offset_top = -77.0
+offset_right = 437.0
+offset_bottom = -33.0
+text = "Receitas"
+
+[node name="BatchTimer" type="Timer" parent="." unique_id=154337144]
+one_shot = true
+
+[node name="BatchProgressPanel" type="PanelContainer" parent="." unique_id=1134985521]
+visible = false
+custom_minimum_size = Vector2(320, 112)
+position = Vector2(790, 558)
+mouse_filter = 2
+z_index = 20
+
+[node name="MarginContainer" type="MarginContainer" parent="BatchProgressPanel" unique_id=948156234]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 8
+
+[node name="VBoxBatch" type="VBoxContainer" parent="BatchProgressPanel/MarginContainer" unique_id=1649407742]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="BatchStatusLabel" type="Label" parent="BatchProgressPanel/MarginContainer/VBoxBatch" unique_id=1566817999]
+layout_mode = 2
+text = "Producao em lote: -"
+
+[node name="BatchProgressBar" type="ProgressBar" parent="BatchProgressPanel/MarginContainer/VBoxBatch" unique_id=348567951]
+layout_mode = 2
+custom_minimum_size = Vector2(280, 18)
+max_value = 1.0
+value = 0.0
+show_percentage = true
+
+[node name="BtnCancelarProducao" type="Button" parent="BatchProgressPanel/MarginContainer/VBoxBatch" unique_id=2147483647]
+layout_mode = 2
+text = "Cancelar producao"

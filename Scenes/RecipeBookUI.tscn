@@ -114,3 +114,39 @@ text = "Quantidade maxima: -"
 layout_mode = 2
 autowrap_mode = 2
 text = "Descubra uma receita no caldeirao para ver os detalhes."
+
+[node name="QuantityRow" type="HBoxContainer" parent="MarginContainer/VBoxRoot/Body/RightPanel/RightBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="BtnQuantidadeMenos" type="Button" parent="MarginContainer/VBoxRoot/Body/RightPanel/RightBox/QuantityRow"]
+layout_mode = 2
+text = "-"
+
+[node name="QuantityLabel" type="Label" parent="MarginContainer/VBoxRoot/Body/RightPanel/RightBox/QuantityRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Quantidade: 1"
+
+[node name="BtnQuantidadeMais" type="Button" parent="MarginContainer/VBoxRoot/Body/RightPanel/RightBox/QuantityRow"]
+layout_mode = 2
+text = "+"
+
+[node name="QuantityInputRow" type="HBoxContainer" parent="MarginContainer/VBoxRoot/Body/RightPanel/RightBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="QuantityInputLabel" type="Label" parent="MarginContainer/VBoxRoot/Body/RightPanel/RightBox/QuantityInputRow"]
+layout_mode = 2
+text = "Digite:"
+
+[node name="QuantityInput" type="LineEdit" parent="MarginContainer/VBoxRoot/Body/RightPanel/RightBox/QuantityInputRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(120, 0)
+text = "1"
+placeholder_text = "Quantidade"
+
+[node name="BtnProduzir" type="Button" parent="MarginContainer/VBoxRoot/Body/RightPanel/RightBox"]
+layout_mode = 2
+text = "Produzir em lote"

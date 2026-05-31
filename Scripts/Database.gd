@@ -1,5 +1,26 @@
 extends Node
 
+const RECEITA_ITEM_IDS := [
+	"agua",
+	"carvao",
+	"trigo",
+	"tomate_sol",
+	"abobora_sombria",
+	"raiz_gelida",
+	"palha_rara",
+	"rama_encantada",
+	"semente_basica",
+	"semente_inverno",
+	"semente_verao",
+	"semente_outono",
+	"pocao_crescimento",
+	"pocao_aceleradora",
+	"essencia_sombria",
+	"adubo_flamejante",
+	"elixir_estacional",
+	"golem_coletor"
+]
+
 var semente_basica: Dictionary = {
 	"tempo_crescimento_segundos": 3.0,
 	"produto_colheita": "trigo",
@@ -72,3 +93,15 @@ func fabricar_pocao(ingrediente1: String, ingrediente2: String) -> String:
 	if receitas_alquimia.has(chave):
 		return receitas_alquimia[chave]
 	return "falha_gororoba"
+
+func obter_ingredientes_receita(receita_id: String) -> Array:
+	for i in range(RECEITA_ITEM_IDS.size()):
+		for j in range(i, RECEITA_ITEM_IDS.size()):
+			var ingrediente_a := str(RECEITA_ITEM_IDS[i])
+			var ingrediente_b := str(RECEITA_ITEM_IDS[j])
+			if receita_id == "%s_%s" % [ingrediente_a, ingrediente_b]:
+				return [ingrediente_a, ingrediente_b]
+			if receita_id == "%s_%s" % [ingrediente_b, ingrediente_a]:
+				return [ingrediente_b, ingrediente_a]
+
+	return []

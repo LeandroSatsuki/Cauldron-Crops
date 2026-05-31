@@ -76,12 +76,20 @@ func _ready() -> void:
 		abrir_quests_button.pressed.connect(_on_abrir_quests_pressed)
 
 	recipe_book = recipe_book_scene.instantiate()
-	add_child(recipe_book)
+	var cauldron_popup_layer := get_tree().current_scene.get_node_or_null("CauldronUI/PopupLayer")
+	if cauldron_popup_layer:
+		cauldron_popup_layer.add_child(recipe_book)
+	else:
+		add_child(recipe_book)
 	recipe_book.mouse_filter = Control.MOUSE_FILTER_PASS
+	recipe_book.z_index = 200
 	recipe_book.visibility_changed.connect(func():
 		if recipe_book:
 			recipe_book.mouse_filter = Control.MOUSE_FILTER_STOP if recipe_book.visible else Control.MOUSE_FILTER_PASS
 	)
+	if recipe_book.has_signal("craft_requested"):
+		recipe_book.craft_requested.connect(_on_recipe_book_craft_requested)
+	_vincular_caldeirao_no_livro(_resolver_caldeirao(get_tree().current_scene.get_node_or_null("CauldronUI")))
 	if abrir_livro_receitas_button:
 		abrir_livro_receitas_button.pressed.connect(_on_abrir_livro_receitas_pressed)
 		
@@ -316,5 +324,93 @@ func _on_nova_quest_recebida() -> void:
 			alerta.visible = true
 
 func _on_abrir_livro_receitas_pressed() -> void:
+	abrir_livro_receitas(false)
+
+func abrir_livro_receitas(fechar_caldeirao: bool = false, cauldron: Node = null) -> void:
+	if not recipe_book:
+		_instanciar_livro_receitas()
+	if not recipe_book:
+		push_warning("Nao foi possivel abrir o Livro de Receitas: instancia nao encontrada.")
+		return
+
+	if fechar_caldeirao:
+		var cauldron_ui := cauldron
+		if not cauldron_ui:
+			cauldron_ui = get_tree().current_scene.get_node_or_null("CauldronUI")
+		if cauldron_ui and cauldron_ui.has_method("fechar_popup"):
+			cauldron_ui.fechar_popup()
+		elif fechar_caldeirao:
+			push_warning("Nao foi possivel fechar o popup do caldeirao ao abrir o Livro de Receitas.")
+
+	var cauldron_final := _resolver_caldeirao(cauldron)
+	if cauldron_final:
+		_vincular_caldeirao_no_livro(cauldron_final)
+	else:
+		push_warning("UI: nenhum caldeirao valido encontrado para o Livro de Receitas.")
+
 	if recipe_book and recipe_book.has_method("abrir"):
 		recipe_book.abrir()
+	else:
+		push_warning("Livro de Receitas nao pode ser aberto porque a instancia nao foi encontrada.")
+
+func fechar_livro_receitas() -> void:
+	if recipe_book and recipe_book.has_method("fechar"):
+		recipe_book.fechar()
+
+func _on_recipe_book_craft_requested(recipe_id: String, quantidade: int) -> void:
+	var cauldron_ui: Node = null
+	if recipe_book and recipe_book.has_method("get_cauldron_reference"):
+		cauldron_ui = recipe_book.get_cauldron_reference()
+	cauldron_ui = _resolver_caldeirao(cauldron_ui)
+	if not cauldron_ui:
+		push_warning("Nao foi possivel iniciar producao em lote: caldeirao nao encontrado.")
+		return
+
+	var sucesso := bool(cauldron_ui.iniciar_producao_em_lote(recipe_id, quantidade))
+	if sucesso:
+		fechar_livro_receitas()
+	else:
+		push_warning("A producao em lote falhou para a receita %s." % recipe_id)
+
+func _instanciar_livro_receitas() -> void:
+	recipe_book = recipe_book_scene.instantiate()
+	var cauldron_popup_layer := get_tree().current_scene.get_node_or_null("CauldronUI/PopupLayer")
+	if cauldron_popup_layer:
+		cauldron_popup_layer.add_child(recipe_book)
+	else:
+		add_child(recipe_book)
+	recipe_book.mouse_filter = Control.MOUSE_FILTER_PASS
+	recipe_book.z_index = 200
+	recipe_book.visibility_changed.connect(func():
+		if recipe_book:
+			recipe_book.mouse_filter = Control.MOUSE_FILTER_STOP if recipe_book.visible else Control.MOUSE_FILTER_PASS
+	)
+	if recipe_book.has_signal("craft_requested"):
+		recipe_book.craft_requested.connect(_on_recipe_book_craft_requested)
+	_vincular_caldeirao_no_livro(_resolver_caldeirao(get_tree().current_scene.get_node_or_null("CauldronUI")))
+
+func _vincular_caldeirao_no_livro(cauldron: Node) -> void:
+	if recipe_book == null or cauldron == null:
+		return
+
+	if not cauldron.has_method("iniciar_producao_em_lote"):
+		push_warning("UI: o no recebido como caldeirao nao possui iniciar_producao_em_lote: %s" % cauldron.get_path())
+		return
+
+	if recipe_book.has_method("set_cauldron"):
+		recipe_book.set_cauldron(cauldron)
+	elif recipe_book.has_method("set_cauldron_reference"):
+		recipe_book.set_cauldron_reference(cauldron)
+	else:
+		push_warning("UI: RecipeBookUI nao possui metodo para vincular caldeirao.")
+
+func _resolver_caldeirao(cauldron: Node = null) -> Node:
+	if cauldron != null and cauldron.has_method("iniciar_producao_em_lote"):
+		return cauldron
+
+	var cauldrons := get_tree().get_nodes_in_group("cauldrons")
+	for node in cauldrons:
+		if node != null and node.has_method("iniciar_producao_em_lote"):
+			return node
+
+	return null

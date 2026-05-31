@@ -38,3 +38,21 @@
 - Motivo: manter o fluxo atual simples e preparar a base para produção em lote futura.
 - Limitação atual: o livro lê o formato existente de `Database.receitas_alquimia` com uma camada adaptadora simples.
 - Próxima etapa: adicionar produção em lote, barra de progresso e cancelamento quando o loop de consulta estiver estável.
+
+## Decisão 7 - Livro de receitas como entrada para produção em lote
+- Problema: a consulta de receitas precisava virar ação prática sem criar uma segunda interface de produção.
+- Decisão: manter o Livro de Receitas como tela principal de consulta e usar ele para disparar produção em lote no caldeirão.
+- Motivo: preservar o fluxo mental do jogador e evitar duplicar controles.
+- Risco: o livro continua dependendo do formato atual de `Database.receitas_alquimia` e da camada adaptadora simples.
+
+## Decisão 8 - Cancelamento de lote devolve ingredientes restantes
+- Problema: o jogador precisava interromper uma produção em andamento sem perder tudo.
+- Decisão: permitir cancelamento por clique no caldeirão e devolver apenas os ingredientes que ainda não viraram resultado.
+- Motivo: dar controle ao teste manual e reduzir frustração durante prototipagem.
+- Risco: a lógica de cancelamento trata apenas o lote atual; estados mais complexos ficam para depois.
+
+## Decisão 9 - Cancelamento visível do lote
+- Problema: o cancelamento por clique no caldeirão não era óbvio o suficiente para teste manual.
+- Decisão: adicionar um botão `Cancelar producao` dentro do painel de progresso do lote.
+- Motivo: deixar a ação explícita e reduzir dependência de interação escondida.
+- Risco: a interface continua provisoria e pode precisar de ajuste visual depois.

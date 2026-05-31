@@ -21,3 +21,17 @@
 - Integração do livro na UI principal com botão dedicado.
 - Exibição de ingredientes, resultado e quantidade maxima fabricavel com base no inventário atual.
 - Consulta separada da produção em lote, que fica para uma etapa futura.
+
+## 2026-05-31 - Livro e lote
+- O Livro de Receitas passou a ficar acima do caldeirão para evitar conflito visual com o popup de mistura.
+- Adição de produção em lote a partir do Livro de Receitas.
+- Inclusão de barra de progresso abaixo do caldeirão para acompanhar o lote em andamento.
+- Clique no caldeirão agora cancela a produção em lote e devolve os ingredientes ainda não processados.
+- O Livro passou a atualizar a quantidade máxima fabricável conforme o inventário muda.
+
+## 2026-05-31 - Cancelamento visível do lote
+- Adição do botão `Cancelar producao` na área da barra de progresso do caldeirão.
+- O cancelamento agora devolve os ingredientes das unidades restantes do lote.
+- O cancelamento por clique no caldeirão foi mantido como atalho secundário.
+- Redução dos prints de diagnóstico agora que o vínculo do caldeirão já está validado.
+- A interface de lote continua provisória, mas mais clara para teste manual.
