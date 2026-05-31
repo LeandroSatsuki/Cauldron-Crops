@@ -5,27 +5,6 @@ const TEX_MOLHADA = preload("res://Assets/molhada.png")
 # Texturas futuras preparadas
 const TEX_SECA_ADUBADA = preload("res://Assets/seca_adubada.png")
 const TEX_MOLHADA_ADUBADA = preload("res://Assets/molhada_adubada.png")
-
-const SHEET_CROPS_1 = preload("res://Assets/crops_1.png")
-const SHEET_CROPS_2 = preload("res://Assets/crops_2.png")
-
-# Mapeamento: "nome_da_semente": [Referencia_da_Sheet, Coluna_na_Sheet]
-const CROP_DATA = {
-	"milho": [SHEET_CROPS_1, 0],
-	"tomate": [SHEET_CROPS_1, 1],
-	"abobora": [SHEET_CROPS_1, 2],
-	"rabanete": [SHEET_CROPS_1, 3],
-	"trigo": [SHEET_CROPS_2, 0],
-	"feijao": [SHEET_CROPS_2, 1],
-	"cebola": [SHEET_CROPS_2, 2],
-	"cenoura": [SHEET_CROPS_2, 3],
-	# Mapeamento para os IDs de sementes reais do jogo:
-	"semente_basica": [SHEET_CROPS_2, 0],   # trigo
-	"semente_verao": [SHEET_CROPS_1, 1],    # tomate
-	"semente_outono": [SHEET_CROPS_1, 2],   # abobora
-	"semente_inverno": [SHEET_CROPS_1, 3]   # rabanete (raiz_gelida)
-}
-
 # Máquina de estados simples
 enum State {
 	VAZIO,
@@ -239,20 +218,46 @@ func _atualizar_visual() -> void:
 			color_rect.color = Color(0, 0, 0, 0)
 
 func atualizar_visual_planta(semente_id: String, estagio_crescimento: int):
-	# estagio_crescimento deve ser: 0 (broto), 1 (crescendo), 2 (maduro)
-	if semente_id == "" or not CROP_DATA.has(semente_id):
+	if semente_id == "":
 		if has_node("SpritePlanta"):
 			$SpritePlanta.texture = null
 		return
 
-	var dados = CROP_DATA[semente_id]
-	var sheet_selecionada = dados[0]
-	var coluna = dados[1]
+	var nomes_estagio = ["broto", "crescendo", "maduro"]
+	if estagio_crescimento < 0 or estagio_crescimento > 2:
+		return
 
-	if has_node("SpritePlanta"):
-		$SpritePlanta.texture = sheet_selecionada
+	var sufixo = nomes_estagio[estagio_crescimento]
+	
+	# Mapeamento do ID da semente para o nome do arquivo gerado
+	var id_base = semente_id
+	var mapeamento = {
+		"semente_basica": "trigo",
+		"semente_verao": "tomate",
+		"semente_outono": "abobora",
+		"semente_inverno": "rabanete",
+		"trigo": "trigo",
+		"tomate": "tomate",
+		"abobora": "abobora",
+		"rabanete": "rabanete",
+		"milho": "milho",
+		"feijao": "feijao",
+		"cebola": "cebola",
+		"cenoura": "cenoura"
+	}
+	if mapeamento.has(semente_id):
+		id_base = mapeamento[semente_id]
+		
+	var caminho = "res://Assets/" + id_base + "_" + sufixo + ".png"
 
-		# Matemática do frame: (linha * total_colunas) + coluna atual
-		# Linha 0 = broto, Linha 1 = crescendo, Linha 2 = maduro
-		var frame_calculado = (estagio_crescimento * 4) + coluna
-		$SpritePlanta.frame = frame_calculado
+	if ResourceLoader.exists(caminho):
+		var textura = load(caminho)
+		if has_node("SpritePlanta"):
+			$SpritePlanta.texture = textura
+			$SpritePlanta.hframes = 1 # Garante que nao vai fatiar a nova imagem
+			$SpritePlanta.vframes = 1
+			$SpritePlanta.frame = 0
+			$SpritePlanta.scale = Vector2(1, 1) # Reseta a escala para o normal
+			$SpritePlanta.offset = Vector2(0, -15) # Ajuste basico de raiz
+	else:
+		print("AVISO: Imagem nao encontrada: ", caminho)

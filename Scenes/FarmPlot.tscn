@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://bj5sla83koseg"]
 
 [ext_resource type="Script" uid="uid://b0bhjcjmm0cyq" path="res://Scripts/FarmPlot.gd" id="1_farmplot_script"]
-[ext_resource type="Texture2D" path="res://Assets/seca.png" id="2_seca"]
+[ext_resource type="Texture2D" uid="uid://c3xt58l1b4y07" path="res://Assets/seca.png" id="2_seca"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_farmplot"]
 size = Vector2(64, 64)
@@ -9,16 +9,19 @@ size = Vector2(64, 64)
 [node name="FarmPlot" type="Area2D" unique_id=1661898718]
 script = ExtResource("1_farmplot_script")
 
-[node name="SpriteTerra" type="Sprite2D" parent="."]
+[node name="SpriteTerra" type="Sprite2D" parent="." unique_id=1216385600]
 texture_filter = 1
 scale = Vector2(0.125, 0.125)
 texture = ExtResource("2_seca")
 
-[node name="SpritePlanta" type="Sprite2D" parent="."]
+[node name="SpritePlanta" type="Sprite2D" parent="." unique_id=1283450992]
 texture_filter = 1
+position = Vector2(0, 0.1)
 scale = Vector2(0.25, 0.25)
+offset = Vector2(0, -30)
 hframes = 4
 vframes = 3
+frame = 11
 
 [node name="ColorRect" type="ColorRect" parent="." unique_id=275089934]
 offset_left = -32.0
@@ -34,8 +37,7 @@ shape = SubResource("RectangleShape2D_farmplot")
 [node name="Timer" type="Timer" parent="." unique_id=1509925768]
 one_shot = true
 
-[node name="VisualRegado" type="ColorRect" parent="."]
-visible = false
+[node name="VisualRegado" type="ColorRect" parent="." unique_id=1999632947]
 offset_left = -32.0
 offset_top = -32.0
 offset_right = 32.0
@@ -43,16 +45,16 @@ offset_bottom = 32.0
 mouse_filter = 2
 color = Color(0, 0, 0, 0)
 
-[node name="TooltipArea" type="Control" parent="."]
+[node name="TooltipArea" type="Control" parent="." unique_id=171530185]
 layout_mode = 3
 anchors_preset = 0
 offset_left = -32.0
-offset_top = -32.0
+offset_top = -64.0
 offset_right = 32.0
 offset_bottom = 32.0
 mouse_filter = 1
 
-[node name="DropRaroVFX" type="CPUParticles2D" parent="."]
+[node name="DropRaroVFX" type="CPUParticles2D" parent="." unique_id=256089909]
 emitting = false
 amount = 20
 one_shot = true
