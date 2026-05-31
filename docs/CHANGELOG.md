@@ -84,3 +84,11 @@
 - O `RecipeDatabase` agora possui cobertura completa do catálogo legado atual.
 - `Database.gd` continua sendo a fonte funcional da produção e do caldeirão.
 - A camada `RecipeDatabase` segue sendo apenas leitura e apresentacao por enquanto.
+
+## 2026-05-31 - Golem Coletor V1
+- Criação do Baú da Vila V1 como alvo físico simples para depósito.
+- Anexação do `Golem.gd` à cena do golem físico.
+- O golem físico agora procura lote maduro, colhe 1 item e deposita no baú.
+- `FarmPlot` passou a oferecer uma colheita segura para o golem via `harvest_by_golem()`.
+- `GolemManager` continua desligado e a colheita invisível segue desativada.
+- O Baú da Vila ainda não tem UI nem salvamento.

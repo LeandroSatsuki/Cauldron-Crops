@@ -107,3 +107,21 @@
 - Decisão: criar `RecipeData` para todas as receitas que ainda só existiam em `Database.receitas_alquimia`.
 - Motivo: permitir cobertura completa do `RecipeDatabase` sem mexer no fluxo funcional do jogo.
 - Risco: a cobertura dos dados está completa, mas a fonte funcional principal ainda é o sistema legado até a migração final.
+
+## Decisão 18 - Baú da Vila V1 sem UI
+- Problema: o golem precisava de um destino físico simples para depositar itens.
+- Decisão: criar um Baú da Vila V1 apenas como nó físico com inventário interno e console debug.
+- Motivo: validar o ciclo colheita -> transporte -> depósito antes de qualquer interface.
+- Risco: o baú ainda não tem UI, salvamento nem interação avançada.
+
+## Decisão 19 - Colheita segura do golem
+- Problema: a colheita automática antiga dependia de clique humano e era frágil para IA.
+- Decisão: criar `harvest_by_golem()` no `FarmPlot` para colher 1 item básico sem usar `_on_plot_clicked()`.
+- Motivo: separar a lógica do golem da lógica de interação manual.
+- Risco: bônus extras, sementes bônus e variações sazonais ficam para depois.
+
+## Decisão 20 - Golem físico V1 com depósito
+- Problema: o golem físico existia só como placeholder visual.
+- Decisão: ligar `Golem.gd` à cena e fazer o golem procurar lote maduro, colher e depositar no Baú da Vila.
+- Motivo: validar o loop físico mínimo do coletor antes de upgrades e árvore de talentos.
+- Risco: o `GolemManager` segue desligado e o sistema ainda não tem pathfinding nem UI do baú.

@@ -195,6 +195,35 @@ func _on_plot_clicked() -> void:
 				# Opcional: print informativo de que ainda está crescendo
 				print("A semente ainda está crescendo... Tempo restante: ", "%0.1f" % timer.time_left, "s")
 
+func harvest_by_golem() -> Dictionary:
+	if estado_atual != State.PRONTO_PARA_COLHER:
+		return {}
+
+	var produto: String = str(semente_atual.get("produto_colheita", "trigo"))
+	if produto == "":
+		return {}
+
+	if timer:
+		timer.stop()
+
+	# V1: o golem colhe apenas 1 item básico, sem bônus extras ou drops raros.
+	estado_atual = State.VAZIO
+	regado = false
+	semente_atual = {}
+	semente_id_plantada = ""
+	pronto_para_colher = false
+
+	if has_node("SpriteTerra"):
+		$SpriteTerra.texture = TEX_SECA
+
+	_atualizar_visual()
+	atualizar_visual_planta("", 0)
+
+	return {
+		"item_id": produto,
+		"quantidade": 1
+	}
+
 # Quando o Timer emitir o sinal de timeout: o estado muda para PRONTO_PARA_COLHER
 func _on_timer_timeout() -> void:
 	if estado_atual == State.CRESCENDO:
