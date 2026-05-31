@@ -264,9 +264,18 @@ func atualizar_visual_planta(semente_id: String, estagio_crescimento: int):
 			$SpritePlanta.hframes = 1 # Garante que nao vai fatiar a nova imagem
 			$SpritePlanta.vframes = 1
 			$SpritePlanta.frame = 0
-			$SpritePlanta.scale = Vector2(0.25, 0.5) # Crescimento retangular (alta e fina)
+			$SpritePlanta.scale = Vector2(0.18, 0.18) # Crescimento retangular (alta e fina)
 			# Como todas as imagens agora são recortadas rente às bordas (bounding box),
 			# a fórmula universal abaixo alinha a base da imagem exatamente com y = 0.
 			$SpritePlanta.offset = Vector2(0, -textura.get_height() / 2.0)
 	else:
 		print("AVISO: Imagem nao encontrada: ", caminho)
+
+func _on_sway_area_body_entered(_body: Node2D) -> void:
+	# Só balança se tiver uma textura de planta (ou seja, não é só terra pura)
+	if has_node("SpritePlanta") and $SpritePlanta.texture != null:
+		var tween = create_tween()
+		# Faz a planta inclinar 10 graus pra direita, 10 pra esquerda, e voltar ao zero
+		tween.tween_property($SpritePlanta, "rotation_degrees", 10.0, 0.1)
+		tween.tween_property($SpritePlanta, "rotation_degrees", -10.0, 0.1)
+		tween.tween_property($SpritePlanta, "rotation_degrees", 0.0, 0.15)
