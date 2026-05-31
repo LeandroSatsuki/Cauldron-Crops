@@ -68,3 +68,11 @@
 - Decisão: usar um `NinePatchRect` com placeholder de rocha pixel art para o fundo do popup.
 - Motivo: garantir preenchimento estável do painel sem afetar os controles acima.
 - Risco: a arte final ainda será substituida depois, mantendo a UI provisoria por enquanto.
+
+## Decisão 12 - Fonte pixel art provisoria
+- Problema: a UI precisava de uma tipografia mais próxima de um cozy pixel art, sem copiar a identidade de outro jogo.
+- Decisão: usar Pixelify Sans com um tema provisório compartilhado pelas principais interfaces.
+- Motivo: melhorar a leitura e o clima visual sem alterar lógica.
+- Fonte: `res://Assets/fonts/PixelifySans-Regular.ttf`.
+- Licença: SIL Open Font License 1.1, registrada em `res://Assets/fonts/OFL.txt`.
+- Risco: o tema ainda é provisório e pode receber ajustes de tamanho/espacamento depois.

@@ -1,6 +1,7 @@
 extends CanvasLayer
 
 var slot_scene = preload("res://Scenes/InventorySlot.tscn")
+var pixel_ui_theme = preload("res://Themes/pixel_ui_theme.tres")
 
 @onready var moedas_label: Label = $StatusPanel/MoedasLabel
 @onready var season_label: Label = $StatusPanel/SeasonLabel
@@ -57,6 +58,7 @@ func _ready() -> void:
 		
 	skill_tree = skill_tree_scene.instantiate()
 	add_child(skill_tree)
+	_aplicar_tema_pixel_ui(skill_tree)
 	skill_tree.mouse_filter = Control.MOUSE_FILTER_PASS
 	skill_tree.visibility_changed.connect(func():
 		if skill_tree:
@@ -67,6 +69,7 @@ func _ready() -> void:
 		
 	quest_board = quest_board_scene.instantiate()
 	add_child(quest_board)
+	_aplicar_tema_pixel_ui(quest_board)
 	quest_board.mouse_filter = Control.MOUSE_FILTER_PASS
 	quest_board.visibility_changed.connect(func():
 		if quest_board:
@@ -94,6 +97,7 @@ func _ready() -> void:
 		abrir_livro_receitas_button.pressed.connect(_on_abrir_livro_receitas_pressed)
 		
 	if sell_menu:
+		_aplicar_tema_pixel_ui(sell_menu)
 		sell_menu.mouse_filter = Control.MOUSE_FILTER_PASS
 		sell_menu.visibility_changed.connect(func():
 			if sell_menu:
@@ -132,6 +136,10 @@ func _process(delta: float) -> void:
 		golems_label.text = "Golems Ativos: " + str(EconomyManager.total_golems)
 		
 	verificar_e_atualizar_inventario()
+
+func _aplicar_tema_pixel_ui(no: Node) -> void:
+	if no is Control:
+		(no as Control).theme = pixel_ui_theme
 
 func verificar_e_atualizar_inventario() -> void:
 	var precisa_atualizar = false

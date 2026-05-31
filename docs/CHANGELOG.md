@@ -46,3 +46,11 @@
 - Criação de um placeholder pixel art de rocha para o fundo do popup do caldeirão.
 - Aplicação do fundo como `NinePatchRect` para preencher o popup de forma estável.
 - Manutenção da UI e da lógica do caldeirão como provisórias, apenas com ajuste visual.
+
+## 2026-05-31 - Fonte pixel art provisoria
+- Adoção da fonte Pixelify Sans para a interface principal, popup do caldeirão e Livro de Receitas.
+- Caminho da fonte: `res://Assets/fonts/PixelifySans-Regular.ttf`.
+- Licença registrada em `res://Assets/fonts/OFL.txt` sob SIL Open Font License 1.1.
+- Criação do tema provisório `res://Themes/pixel_ui_theme.tres`.
+- Decisão explícita de não usar fonte Minecraft nem clone direto.
+- A fonte foi verificada com textos em português contendo acentos.

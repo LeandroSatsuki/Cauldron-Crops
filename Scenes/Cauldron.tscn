@@ -7,6 +7,7 @@
 [ext_resource type="Script" uid="uid://bqbyx5vb6s1b" path="res://Scripts/Area2D_Caldeirao.gd" id="5_areagd"]
 [ext_resource type="Texture2D" uid="uid://is41i8abvdnx" path="res://Assets/placeholder/placeholder_cauldron_ui_panel.png" id="6_jnwib"]
 [ext_resource type="Script" uid="uid://b6l38kew1p7lr" path="res://Scripts/PopupBackground.gd" id="6_popupbg"]
+[ext_resource type="Theme" path="res://Themes/pixel_ui_theme.tres" id="7_pixeltheme"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_r0"]
 atlas = ExtResource("3_roxo")
@@ -174,6 +175,7 @@ mouse_filter = 2
 [node name="PopupUI" type="Panel" parent="PopupLayer/CenterContainer" unique_id=2059349973]
 self_modulate = Color(1, 1, 1, 0)
 z_index = 100
+theme = ExtResource("7_pixeltheme")
 custom_minimum_size = Vector2(640, 420)
 layout_mode = 2
 script = ExtResource("6_popupbg")
@@ -303,6 +305,7 @@ one_shot = true
 
 [node name="BatchProgressPanel" type="PanelContainer" parent="." unique_id=1134985521]
 visible = false
+theme = ExtResource("7_pixeltheme")
 z_index = 20
 custom_minimum_size = Vector2(340, 136)
 offset_left = 780.0

@@ -1,9 +1,11 @@
-[gd_scene format=3]
+[gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://Scripts/RecipeBookUI.gd" id="1_recipebookgd"]
+[ext_resource type="Theme" path="res://Themes/pixel_ui_theme.tres" id="2_pixeltheme"]
 
 [node name="RecipeBookUI" type="Panel"]
 visible = false
+theme = ExtResource("2_pixeltheme")
 custom_minimum_size = Vector2(760, 460)
 mouse_filter = 1
 anchors_preset = 8
