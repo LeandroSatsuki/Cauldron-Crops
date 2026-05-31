@@ -16,6 +16,18 @@ var item_vinculado: String:
 @onready var qtd_label: Label = $QuantidadeLabel
 @onready var destaque: ReferenceRect = $Destaque
 
+func _carregar_textura_item(id_item: String) -> Texture2D:
+	var caminhos := [
+		"res://Assets/Items/%s.png" % id_item,
+		"res://Assets/%s.png" % id_item
+	]
+
+	for caminho in caminhos:
+		if ResourceLoader.exists(caminho):
+			return load(caminho)
+
+	return null
+
 func _ready() -> void:
 	# A MÁGICA ESTÁ AQUI: Garantir que o destaque visual 
 	# NUNCA bloqueie os cliques do mouse quando estiver visível.
@@ -58,6 +70,9 @@ func _gui_input(event):
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		if event.pressed:
 			emit_signal("slot_clicado", item_id, false, self)
+	elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT:
+		if event.pressed:
+			emit_signal("slot_clicado", item_id, true, self)
 
 # O arrasto funciona independentemente da seleção
 func _get_drag_data(at_position):
@@ -65,10 +80,10 @@ func _get_drag_data(at_position):
 		return null
 	
 	var preview = TextureRect.new()
-	var caminho = "res://Assets/Items/" + item_id + ".png"
-	
-	if ResourceLoader.exists(caminho):
-		preview.texture = load(caminho)
+	var textura_item = _carregar_textura_item(item_id)
+
+	if textura_item:
+		preview.texture = textura_item
 		preview.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		preview.custom_minimum_size = Vector2(40, 40)
 		

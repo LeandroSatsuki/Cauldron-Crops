@@ -4,6 +4,18 @@ extends Panel
 var item_vinculado: String = ""
 @onready var icon_rect: TextureRect = $ItemIcon
 
+func _carregar_textura_item(id_item: String) -> Texture2D:
+	var caminhos := [
+		"res://Assets/Items/%s.png" % id_item,
+		"res://Assets/%s.png" % id_item
+	]
+
+	for caminho in caminhos:
+		if ResourceLoader.exists(caminho):
+			return load(caminho)
+
+	return null
+
 func _ready() -> void:
 	# Garantir que este painel capture cliques e eventos de drop
 	mouse_filter = Control.MOUSE_FILTER_STOP
@@ -20,11 +32,11 @@ func _drop_data(_at_position, data) -> void:
 		label_node.text = "" # Limpa o texto "Soltar item"
 		label_node.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	
-	var caminho_imagem = "res://Assets/Items/" + data + ".png" # Caminho dinâmico baseado no ID
-	if ResourceLoader.exists(caminho_imagem):
-		icon_rect.texture = load(caminho_imagem)
+	var textura_item = _carregar_textura_item(data)
+	if textura_item and icon_rect:
+		icon_rect.texture = textura_item
 	else:
-		print("AVISO: Imagem não encontrada para o item: ", data)
+		print("AVISO: Nenhuma imagem encontrada para o item '%s' em res://Assets/Items/ ou res://Assets/." % data)
 	
 	print("Slot do Caldeirão recebeu: ", data)
 

@@ -18,3 +18,8 @@
 - Decisão: criar documentação mínima antes de implementar novas mecânicas.
 - Motivo: manter continuidade e reduzir risco de bagunça.
 
+## Decisão 4 - Fallback de ícone no inventário
+- Problema: os slots de inventário e do caldeirão apontavam para `res://Assets/Items/`, mas essa pasta não existe no estado atual do projeto.
+- Decisão: aceitar também `res://Assets/` como caminho de fallback para ícones.
+- Motivo: evitar falhas visuais e permitir que o protótipo continue funcionando mesmo com estrutura simples.
+- Risco: quando os ícones finais forem organizados em outra pasta, será preciso revisar esse fallback.
