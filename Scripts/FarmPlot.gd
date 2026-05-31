@@ -131,61 +131,16 @@ func _on_plot_clicked() -> void:
 		State.PRONTO_PARA_COLHER:
 			# Se o lote for clicado no estado PRONTO_PARA_COLHER:
 			# Lê qual é o produto_colheita da semente atual
-			var produto = semente_atual.get("produto_colheita", "trigo")
-			
-			# Usa o Autoload GlobalInventory.adicionar_item() para guardar 1 unidade do produto
-			if GlobalInventory.has_method("adicionar_item"):
-				GlobalInventory.adicionar_item(produto)
-			else:
-				push_error("Autoload GlobalInventory não possui o método adicionar_item()!")
+			var produto: String = str(semente_atual.get("produto_colheita", "trigo"))
+			var recompensas: Array = _gerar_recompensas_colheita(produto)
+			if recompensas.is_empty():
+				push_warning("FarmPlot: colheita manual sem recompensas geradas.")
 				return
-				
-			# Bônus de Outono (Colheita Extra)
-			if SeasonManager.estacao_atual == SeasonManager.Estacao.OUTONO and randf() <= 0.20:
-				GlobalInventory.adicionar_item(produto, 1)
-				print("Bônus de Outono: Colheita em dobro!")
-				
-			# Bônus de Primavera (Semente Extra)
-			if SeasonManager.estacao_atual == SeasonManager.Estacao.PRIMAVERA and randf() <= 0.20:
-				GlobalInventory.adicionar_item(semente_id_plantada, 1)
-				print("Bônus de Primavera: Semente recuperada!")
-			
+
 			ui = get_tree().current_scene.get_node_or_null("UI")
-			if ui and ui.has_method("criar_texto_flutuante"):
-				var nome_exibicao = "Trigo" if produto == "trigo" else "Raiz"
-				ui.criar_texto_flutuante("+1 " + nome_exibicao, global_position, Color.YELLOW)
-			
-			# Drop Raro
-			if randf() <= 0.15:
-				GlobalInventory.adicionar_item("semente_inverno", 1)
-				if ui and ui.has_method("criar_texto_flutuante"):
-					ui.criar_texto_flutuante("💥 RARO!", global_position + Vector2(0, -20), Color(0.5, 0.2, 0.9))
-				print("💥 SORTE GRANDE! Drop raro: Semente de Inverno!")
-				$DropRaroVFX.emitting = true
-				
-			if produto == "trigo" and randf() <= 0.005:
-				GlobalInventory.adicionar_item("palha_rara", 1)
-				if ui and ui.has_method("criar_texto_flutuante"):
-					ui.criar_texto_flutuante("Palha Rara!", global_position + Vector2(0, -40), Color(0.8, 0.2, 0.8))
-				print("💥 SORTE GRANDE! Drop raro: Palha Rara!")
-				$DropRaroVFX.emitting = true
-				
-			if produto == "abobora_sombria" and randf() <= 0.02:
-				GlobalInventory.adicionar_item("rama_encantada", 1)
-				if ui and ui.has_method("criar_texto_flutuante"):
-					ui.criar_texto_flutuante("Rama Encantada!", global_position + Vector2(0, -40), Color(0.8, 0.2, 0.8))
-				print("💥 SORTE GRANDE! Drop raro: Rama Encantada!")
-				$DropRaroVFX.emitting = true
-			
-			# Reseta o estado para VAZIO
-			estado_atual = State.VAZIO
-			regado = false
-			$SpriteTerra.texture = TEX_SECA
-			_atualizar_visual()
-			atualizar_visual_planta("", 0)
-			semente_atual = {}
-			semente_id_plantada = ""
-			
+			_aplicar_recompensas_colheita(recompensas, ui, global_position, true)
+			_concluir_colheita()
+
 			# Dá um print de sucesso no console
 			print("Sucesso: Colheita realizada! Produto: '", produto, "' foi adicionado ao inventário. Lote agora está VAZIO.")
 
@@ -198,39 +153,180 @@ func _on_plot_clicked() -> void:
 				# Opcional: print informativo de que ainda está crescendo
 				print("A semente ainda está crescendo... Tempo restante: ", "%0.1f" % timer.time_left, "s")
 
-func harvest_by_golem() -> Dictionary:
+func harvest_by_golem() -> Array:
 	if estado_atual != State.PRONTO_PARA_COLHER:
-		return {}
+		return []
 
 	var produto: String = str(semente_atual.get("produto_colheita", "trigo"))
 	if produto == "":
-		return {}
+		return []
 
 	if timer:
 		timer.stop()
 
-	# V1: o golem colhe apenas 1 item básico, sem bônus extras ou drops raros.
+	var recompensas: Array = _gerar_recompensas_colheita(produto)
+	if recompensas.is_empty():
+		return []
+
+	_concluir_colheita()
+	return recompensas
+
+func get_golem_harvest_position() -> Vector2:
+	if golem_harvest_point and is_instance_valid(golem_harvest_point):
+		return golem_harvest_point.global_position
+	return global_position + Vector2(0, 24)
+
+func _gerar_recompensas_colheita(produto: String) -> Array:
+	var recompensas: Array = []
+	if produto == "":
+		return recompensas
+
+	_adicionar_recompensa_colheita(
+		recompensas,
+		produto,
+		1,
+		true,
+		"+1 " + _obter_nome_exibicao_item(produto),
+		Color.YELLOW
+	)
+
+	if SeasonManager.estacao_atual == SeasonManager.Estacao.OUTONO and randf() <= 0.20:
+		_adicionar_recompensa_colheita(recompensas, produto, 1)
+		print("Bônus de Outono: Colheita em dobro!")
+
+	if SeasonManager.estacao_atual == SeasonManager.Estacao.PRIMAVERA and randf() <= 0.20 and semente_id_plantada != "":
+		_adicionar_recompensa_colheita(recompensas, semente_id_plantada, 1)
+		print("Bônus de Primavera: Semente recuperada!")
+
+	if randf() <= 0.15:
+		_adicionar_recompensa_colheita(
+			recompensas,
+			"semente_inverno",
+			1,
+			true,
+			"💥 RARO!",
+			Color(0.5, 0.2, 0.9),
+			Vector2(0, -20)
+		)
+		print("💥 SORTE GRANDE! Drop raro: Semente de Inverno!")
+
+	if produto == "trigo" and randf() <= 0.005:
+		_adicionar_recompensa_colheita(
+			recompensas,
+			"palha_rara",
+			1,
+			true,
+			"Palha Rara!",
+			Color(0.8, 0.2, 0.8),
+			Vector2(0, -40)
+		)
+		print("💥 SORTE GRANDE! Drop raro: Palha Rara!")
+
+	if produto == "abobora_sombria" and randf() <= 0.02:
+		_adicionar_recompensa_colheita(
+			recompensas,
+			"rama_encantada",
+			1,
+			true,
+			"Rama Encantada!",
+			Color(0.8, 0.2, 0.8),
+			Vector2(0, -40)
+		)
+		print("💥 SORTE GRANDE! Drop raro: Rama Encantada!")
+
+	return recompensas
+
+func _adicionar_recompensa_colheita(
+	recompensas: Array,
+	item_id: String,
+	quantidade: int = 1,
+	mostrar_texto: bool = false,
+	texto_flutuante: String = "",
+	cor: Color = Color.WHITE,
+	offset: Vector2 = Vector2.ZERO
+) -> void:
+	if item_id == "" or quantidade <= 0:
+		return
+
+	recompensas.append({
+		"item_id": item_id,
+		"quantidade": quantidade,
+		"mostrar_texto": mostrar_texto,
+		"texto_flutuante": texto_flutuante,
+		"cor": cor,
+		"offset": offset
+	})
+
+func _aplicar_recompensas_colheita(recompensas: Array, ui: Node, origem_global: Vector2, mostrar_textos: bool = false) -> void:
+	if not GlobalInventory.has_method("adicionar_item"):
+		push_error("Autoload GlobalInventory não possui o método adicionar_item()!")
+		return
+
+	for recompensa_variant in recompensas:
+		if typeof(recompensa_variant) != TYPE_DICTIONARY:
+			continue
+
+		var recompensa: Dictionary = recompensa_variant
+		var item_id: String = str(recompensa.get("item_id", ""))
+		var quantidade: int = int(recompensa.get("quantidade", 0))
+		if item_id == "" or quantidade <= 0:
+			continue
+
+		GlobalInventory.adicionar_item(item_id, quantidade)
+
+		if not mostrar_textos:
+			continue
+		if not bool(recompensa.get("mostrar_texto", false)):
+			continue
+		if not ui or not ui.has_method("criar_texto_flutuante"):
+			continue
+
+		var texto_flutuante: String = str(recompensa.get("texto_flutuante", ""))
+		if texto_flutuante == "":
+			continue
+
+		var cor: Color = recompensa.get("cor", Color.WHITE)
+		var offset: Vector2 = recompensa.get("offset", Vector2.ZERO)
+		ui.criar_texto_flutuante(texto_flutuante, origem_global + offset, cor)
+
+		if item_id == "semente_inverno" or item_id == "palha_rara" or item_id == "rama_encantada":
+			var drop_vfx = get_node_or_null("DropRaroVFX")
+			if drop_vfx:
+				drop_vfx.emitting = true
+
+func _obter_nome_exibicao_item(item_id: String) -> String:
+	match item_id:
+		"trigo":
+			return "Trigo"
+		"raiz_gelida":
+			return "Raiz Gélida"
+		"tomate_sol":
+			return "Tomate Sol"
+		"abobora_sombria":
+			return "Abóbora Sombria"
+		"agua":
+			return "Água"
+		"semente_inverno":
+			return "Semente de Inverno"
+		"palha_rara":
+			return "Palha Rara"
+		"rama_encantada":
+			return "Rama Encantada"
+		_:
+			return item_id.replace("_", " ").capitalize()
+
+func _concluir_colheita() -> void:
 	estado_atual = State.VAZIO
 	regado = false
+	pronto_para_colher = false
 	semente_atual = {}
 	semente_id_plantada = ""
-	pronto_para_colher = false
 
 	if has_node("SpriteTerra"):
 		$SpriteTerra.texture = TEX_SECA
 
 	_atualizar_visual()
 	atualizar_visual_planta("", 0)
-
-	return {
-		"item_id": produto,
-		"quantidade": 1
-	}
-
-func get_golem_harvest_position() -> Vector2:
-	if golem_harvest_point and is_instance_valid(golem_harvest_point):
-		return golem_harvest_point.global_position
-	return global_position + Vector2(0, 24)
 
 # Quando o Timer emitir o sinal de timeout: o estado muda para PRONTO_PARA_COLHER
 func _on_timer_timeout() -> void:

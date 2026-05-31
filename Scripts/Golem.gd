@@ -9,8 +9,7 @@ extends Node2D
 @onready var crop_sensor_area: Area2D = $CropSensorArea
 
 var state: String = "IDLE"
-var carried_item_id: String = ""
-var carried_quantity: int = 0
+var carried_rewards: Array = []
 var target_plot: Node2D = null
 var target_chest: Node2D = null
 var _think_timer: Timer
@@ -34,7 +33,7 @@ func _on_think_timer_timeout() -> void:
 	if state != "IDLE":
 		return
 
-	if carried_quantity > 0 and carried_item_id != "":
+	if not carried_rewards.is_empty():
 		_procurar_bau()
 	else:
 		_procurar_lote()
@@ -96,22 +95,19 @@ func _chegar_ao_lote() -> void:
 		state = "IDLE"
 		return
 
-	var colheita: Dictionary = target_plot.harvest_by_golem()
+	var colheita: Array = target_plot.harvest_by_golem()
 	if colheita.is_empty():
 		push_warning("Golem: o lote não entregou colheita.")
 		_limpar_alvo_lote()
 		state = "IDLE"
 		return
 
-	carried_item_id = str(colheita.get("item_id", ""))
-	carried_quantity = min(int(colheita.get("quantidade", 0)), carry_capacity)
+	carried_rewards = colheita.duplicate(true)
 
 	_limpar_alvo_lote()
 
-	if carried_item_id == "" or carried_quantity <= 0:
+	if carried_rewards.is_empty():
 		push_warning("Golem: colheita inválida recebida do lote.")
-		carried_item_id = ""
-		carried_quantity = 0
 		state = "IDLE"
 		return
 
@@ -124,14 +120,30 @@ func _chegar_ao_bau() -> void:
 	state = "DEPOSITING"
 	await get_tree().create_timer(deposit_duration).timeout
 
+	var total_quantidade: int = 0
 	if is_instance_valid(target_chest) and target_chest.has_method("deposit_item"):
-		target_chest.deposit_item(carried_item_id, carried_quantity)
-		print("Golem: depositou %s x%d no Baú da Vila." % [carried_item_id, carried_quantity])
+		for recompensa_variant in carried_rewards:
+			if typeof(recompensa_variant) != TYPE_DICTIONARY:
+				continue
+
+			var recompensa: Dictionary = recompensa_variant
+			var item_id: String = str(recompensa.get("item_id", ""))
+			var quantidade: int = int(recompensa.get("quantidade", 0))
+			if item_id == "" or quantidade <= 0:
+				continue
+
+			target_chest.deposit_item(item_id, quantidade)
+			total_quantidade += quantidade
+			print("Golem: depositou %s x%d no Baú da Vila." % [item_id, quantidade])
 	else:
 		push_warning("Golem: baú inválido para depósito.")
 
-	carried_item_id = ""
-	carried_quantity = 0
+	if total_quantidade > 0:
+		var ui = get_tree().current_scene.get_node_or_null("UI")
+		if ui and ui.has_method("criar_texto_flutuante"):
+			ui.criar_texto_flutuante("+%d itens no Baú" % total_quantidade, target_chest.global_position if is_instance_valid(target_chest) else global_position, Color(0.4, 0.9, 1.0))
+
+	carried_rewards = []
 	target_chest = null
 	state = "IDLE"
 

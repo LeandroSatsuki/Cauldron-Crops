@@ -137,3 +137,9 @@
 - Decisão: ajustar a ordenacao visual com z_index por Y, mover a interacao para um ponto lateral/abaixo do lote e adicionar um sensor simples de proximidade.
 - Motivo: melhorar a leitura espacial sem implementar pathfinding.
 - Risco: o movimento continua em linha reta e pode atravessar obstaculos; isso fica para uma etapa futura.
+
+## Decisão 23 - Recompensas compartilhadas da colheita
+- Problema: a colheita manual já tinha bônus e drops raros, mas o golem ainda colhia só um item básico.
+- Decisão: centralizar a geração das recompensas em `FarmPlot` para que a colheita manual e a do golem usem o mesmo conjunto de bônus.
+- Motivo: manter paridade de jogo entre o que o jogador colhe na mão e o que o golem entrega ao Baú da Vila.
+- Risco: o golem agora pode depositar mais de um tipo de item por viagem, então o balanceamento futuro precisa considerar esse volume extra.

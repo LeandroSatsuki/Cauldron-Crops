@@ -29,6 +29,12 @@
 - Clique no caldeirão agora cancela a produção em lote e devolve os ingredientes ainda não processados.
 - O Livro passou a atualizar a quantidade máxima fabricável conforme o inventário muda.
 
+## 2026-05-31 - Colheita compartilhada
+- A lógica de recompensas da colheita passou a ser compartilhada entre a colheita manual e o Golem Coletor V1.
+- O golem agora deposita todos os bônus coletados no Baú da Vila, em vez de apenas um item básico.
+- A deposição do golem ganhou feedback flutuante resumido no mundo.
+- O fluxo principal continua igual para o jogador; a mudança só alinhou as recompensas entre manual e automatizado.
+
 ## 2026-05-31 - Cancelamento visível do lote
 - Adição do botão `Cancelar producao` na área da barra de progresso do caldeirão.
 - O cancelamento agora devolve os ingredientes das unidades restantes do lote.
