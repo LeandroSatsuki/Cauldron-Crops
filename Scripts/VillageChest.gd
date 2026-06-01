@@ -10,7 +10,7 @@ func _ready() -> void:
 		clickable_area.input_event.connect(_on_clickable_area_input_event)
 
 func _process(_delta: float) -> void:
-	z_index = int(global_position.y)
+	z_index = int(global_position.y) + 15
 
 func deposit_item(item_id: String, quantidade: int = 1) -> void:
 	if item_id == "" or quantidade <= 0:

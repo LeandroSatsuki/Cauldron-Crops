@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://coaingido2u6y"]
 
 [ext_resource type="Script" uid="uid://cs1q0furekbnj" path="res://Scripts/Main.gd" id="1_maingd"]
-[ext_resource type="PackedScene" path="res://Scenes/UI.tscn" id="2_uiscene"]
+[ext_resource type="PackedScene" uid="uid://dw5w54uf0bly5" path="res://Scenes/UI.tscn" id="2_uiscene"]
 [ext_resource type="PackedScene" uid="uid://ccka0djblsc4a" path="res://Scenes/Cauldron.tscn" id="3_cauldronscene"]
 [ext_resource type="PackedScene" uid="uid://c8aef365l3meu" path="res://Scenes/Golem.tscn" id="4_rgh2o"]
 [ext_resource type="PackedScene" path="res://Scenes/VillageChest.tscn" id="5_villagechestscene"]
@@ -9,12 +9,15 @@
 [node name="World" type="Node2D" unique_id=1433733631]
 script = ExtResource("1_maingd")
 
+[node name="NavigationRegion2D" type="NavigationRegion2D" parent="." unique_id=2147483643]
+
 [node name="CauldronUI" parent="." unique_id=1614176975 instance=ExtResource("3_cauldronscene")]
+position = Vector2(-64, 0)
 
 [node name="UI" parent="." unique_id=824803257 instance=ExtResource("2_uiscene")]
 
 [node name="Golem" parent="." unique_id=1412478923 instance=ExtResource("4_rgh2o")]
 position = Vector2(145, 690)
 
-[node name="VillageChest" parent="." instance=ExtResource("5_villagechestscene")]
+[node name="VillageChest" parent="." unique_id=432701269 instance=ExtResource("5_villagechestscene")]
 position = Vector2(285, 690)
