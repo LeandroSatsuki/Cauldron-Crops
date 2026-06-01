@@ -111,3 +111,35 @@
 - O golem agora usa um ponto de interação separado do centro visual da crop.
 - Criação de um sensor simples para fazer as crops balançarem quando o golem passa perto.
 - O movimento continua em linha reta; pathfinding completo fica para depois.
+
+## 2026-05-31 - Navegacao do golem
+- O golem passou a usar `NavigationAgent2D` para mover-se em direção a lotes e ao Baú da Vila.
+- O caldeirão ganhou obstáculo físico simples para evitar travessia direta no mundo.
+- A cena principal agora cria uma região de navegação simples cobrindo a área jogável inicial.
+- O ajuste visual manteve o golem acima do solo arado durante o deslocamento.
+- A solução é provisória e ainda não substitui um sistema completo de pathfinding com obstáculos refinados.
+
+## 2026-05-31 - Colisao fisica do golem
+- O golem físico passou a usar `CharacterBody2D` com colisão própria para respeitar obstáculos do mundo.
+- O caldeirão continua sendo tratado como obstáculo físico do cenário.
+- A navegação segue simples e apoiada por `NavigationAgent2D`, mas agora o corpo físico impede atravessar o caldeirão.
+- A ordem visual dos lotes continua baseada em Y, com o golem acima do solo arado sem usar rota manual em L.
+
+## 2026-05-31 - Desvio ao travar
+- O golem agora detecta quando ficou travado contra o caldeirão ou outro obstáculo.
+- Ao travar, ele calcula um desvio simples ao redor do caldeirão e tenta retomar o destino original.
+- O destino final e o callback da ação continuam preservados durante o desvio.
+- Se o travamento se repetir demais, a tentativa atual pode ser abortada com aviso.
+- O comportamento segue provisório e ainda depende de refinamento futuro da região de navegação.
+
+## 2026-05-31 - Camada visual do campo
+- A terra arada e a base do lote passaram a ficar em camada visual baixa, separada da planta.
+- O golem passou a usar um `z_index` levemente acima do campo para não ficar escondido pela terra arada.
+- Tooltip, VFX e efeitos de colheita continuam acima dos visuais principais do lote.
+- A ordenação por Y do protótipo foi mantida, só com offsets mais seguros para leitura.
+
+## 2026-05-31 - Terra fora da herança visual
+- A terra arada e o visual de solo deixaram de herdar a ordenação do `FarmPlot`.
+- Isso evita que lotes mais abaixo na tela cubram parcialmente o golem quando ele passa entre as plantações.
+- A crop continua com camada própria e os efeitos/tooltip seguem acima.
+- A solução ainda é provisória e pode virar um sistema formal de camadas depois.

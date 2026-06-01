@@ -44,10 +44,30 @@ func _ready() -> void:
 		timer.timeout.connect(_on_timer_timeout)
 	else:
 		push_error("Timer não encontrado na cena FarmPlot!")
+	_configurar_camadas_visuais()
 	_atualizar_visual()
 
 func _process(_delta: float) -> void:
-	z_index = int(global_position.y)
+	var base_z: int = int(global_position.y)
+	z_index = base_z
+	if color_rect:
+		color_rect.z_as_relative = false
+		color_rect.z_index = -100
+	if has_node("SpriteTerra"):
+		$SpriteTerra.z_as_relative = false
+		$SpriteTerra.z_index = -90
+	if visual_regado:
+		visual_regado.z_as_relative = false
+		visual_regado.z_index = -80
+	if has_node("SpritePlanta"):
+		$SpritePlanta.z_as_relative = true
+		$SpritePlanta.z_index = 1
+	if has_node("DropRaroVFX"):
+		$DropRaroVFX.z_as_relative = false
+		$DropRaroVFX.z_index = 2
+	if tooltip_area:
+		tooltip_area.z_as_relative = false
+		tooltip_area.z_index = 10
 	if not tooltip_area:
 		return
 		
@@ -409,6 +429,27 @@ func atualizar_visual_planta(semente_id: String, estagio_crescimento: int):
 			$SpritePlanta.offset = Vector2(0, -textura.get_height() / 2.0)
 	else:
 		print("AVISO: Imagem nao encontrada: ", caminho)
+
+func _configurar_camadas_visuais() -> void:
+	z_as_relative = false
+	if color_rect:
+		color_rect.z_as_relative = false
+		color_rect.z_index = -100
+	if has_node("SpriteTerra"):
+		$SpriteTerra.z_as_relative = false
+		$SpriteTerra.z_index = -90
+	if visual_regado:
+		visual_regado.z_as_relative = false
+		visual_regado.z_index = -80
+	if has_node("SpritePlanta"):
+		$SpritePlanta.z_as_relative = true
+		$SpritePlanta.z_index = 1
+	if has_node("DropRaroVFX"):
+		$DropRaroVFX.z_as_relative = false
+		$DropRaroVFX.z_index = 2
+	if tooltip_area:
+		tooltip_area.z_as_relative = false
+		tooltip_area.z_index = 10
 
 func _on_sway_area_body_entered(_body: Node2D) -> void:
 	# Só balança se tiver uma textura de planta (ou seja, não é só terra pura)

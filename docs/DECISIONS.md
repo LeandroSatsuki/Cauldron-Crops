@@ -143,3 +143,39 @@
 - Decisão: centralizar a geração das recompensas em `FarmPlot` para que a colheita manual e a do golem usem o mesmo conjunto de bônus.
 - Motivo: manter paridade de jogo entre o que o jogador colhe na mão e o que o golem entrega ao Baú da Vila.
 - Risco: o golem agora pode depositar mais de um tipo de item por viagem, então o balanceamento futuro precisa considerar esse volume extra.
+
+## Decisão 24 - Navegacao simples do golem
+- Problema: o golem ainda atravessava visualmente o caldeirão e não contornava obstáculos.
+- Decisão: substituir o Tween direto por navegação simples com `NavigationAgent2D` e rota por waypoints quando a linha cruza o caldeirão.
+- Motivo: dar um comportamento físico mais crível sem introduzir um sistema pesado de pathfinding agora.
+- Risco: a solução ainda é híbrida e simples; obstáculos mais complexos continuarão exigindo refinamento depois.
+
+## Decisão 25 - Caldeirão como obstáculo físico
+- Problema: o caldeirão precisava bloquear o caminho do golem no mundo.
+- Decisão: adicionar um obstáculo físico simples ao caldeirão e uma região de navegação básica na área jogável inicial.
+- Motivo: tornar a navegação do protótipo previsível sem mexer na UI do caldeirão.
+- Risco: o obstáculo é provisório e a área navegável ainda é ampla demais para um mapa com mais complexidade.
+
+## Decisão 26 - Golem com corpo físico
+- Problema: a navegação por `Node2D` ainda permitia leitura estranha e não respeitava colisão de forma confiável.
+- Decisão: usar `CharacterBody2D` no golem físico, mantendo `NavigationAgent2D` como guia de rota.
+- Motivo: impedir que o golem atravesse o caldeirão sem abrir escopo para pathfinding completo agora.
+- Risco: a navegação continua provisória e pode precisar de refinamento quando a fazenda crescer.
+
+## Decisão 27 - Desvio simples ao travar
+- Problema: mesmo com colisão física, o golem podia encostar no caldeirão e ficar preso sem reação útil.
+- Decisão: detectar travamento e calcular um waypoint de desvio simples ao redor do caldeirão antes de seguir o destino original.
+- Motivo: destravar o coletor sem restaurar a rota manual em L nem implementar pathfinding completo ainda.
+- Risco: o desvio é heurístico e pode precisar ser revisto quando a fazenda e os obstáculos crescerem.
+
+## Decisão 28 - Terra arada em camada baixa
+- Problema: o golem ainda podia parecer escondido pela terra arada e pela base visual dos lotes.
+- Decisão: manter a terra/base do lote em camada baixa e dar ao golem um offset visual levemente acima do campo.
+- Motivo: preservar a leitura espacial do protótipo sem mexer em coleta, depósito ou navegação.
+- Risco: o sistema de camadas ainda é provisório e pode receber refinamento quando a cena crescer.
+
+## Decisão 29 - Terra fora da herança do lote
+- Problema: lotes mais abaixo na tela ainda podiam cobrir parcialmente o golem por herança de z do `FarmPlot`.
+- Decisão: desligar a herança de z dos visuais de solo do lote e manter planta, VFX e tooltip com camadas próprias.
+- Motivo: impedir que o chão de lotes inferiores cubra o golem sem mexer no fluxo do jogo.
+- Risco: isso resolve a leitura atual, mas o sistema de camadas ainda continua provisório.
