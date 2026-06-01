@@ -143,3 +143,9 @@
 - Isso evita que lotes mais abaixo na tela cubram parcialmente o golem quando ele passa entre as plantações.
 - A crop continua com camada própria e os efeitos/tooltip seguem acima.
 - A solução ainda é provisória e pode virar um sistema formal de camadas depois.
+
+## 2026-06-01 - Save do Baú da Vila
+- O conteúdo do Baú da Vila passou a entrar no save mínimo em `village_chest_inventory`.
+- Saves antigos continuam compatíveis mesmo sem esse campo novo.
+- O estado dos lotes e das crops continua fora do salvamento por enquanto.
+- A UI do baú é atualizada novamente após o load quando a cena já está em jogo.

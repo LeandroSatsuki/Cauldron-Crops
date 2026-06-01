@@ -59,6 +59,10 @@ func load_game() -> bool:
 
 func _build_save_data() -> Dictionary:
 	var inventory_copy: Dictionary = GlobalInventory.inventario.duplicate(true)
+	var village_chest_inventory: Dictionary = {}
+	var village_chest := _get_village_chest()
+	if village_chest and village_chest.has_method("get_contents"):
+		village_chest_inventory = village_chest.get_contents()
 
 	return {
 		"version": SAVE_VERSION,
@@ -84,7 +88,8 @@ func _build_save_data() -> Dictionary:
 		"quests": {
 			"quests_ativas": QuestManager.quests_ativas.duplicate(true),
 			"max_quests": QuestManager.max_quests
-		}
+		},
+		"village_chest_inventory": village_chest_inventory
 	}
 
 func _apply_save_data(data: Dictionary) -> void:
@@ -121,6 +126,12 @@ func _apply_save_data(data: Dictionary) -> void:
 	QuestManager.max_quests = int(quests_data.get("max_quests", QuestManager.max_quests))
 	QuestManager.quest_atualizada.emit()
 
+	if data.has("village_chest_inventory"):
+		var village_chest_inventory: Dictionary = _safe_dictionary(data.get("village_chest_inventory", {}))
+		var village_chest := _get_village_chest()
+		if village_chest and village_chest.has_method("set_contents"):
+			village_chest.set_contents(village_chest_inventory)
+
 func _refresh_ui_after_load() -> void:
 	var scene := get_tree().current_scene
 	if scene == null:
@@ -129,6 +140,22 @@ func _refresh_ui_after_load() -> void:
 	var ui = scene.get_node_or_null("UI")
 	if ui and ui.has_method("verificar_e_atualizar_inventario"):
 		ui.verificar_e_atualizar_inventario()
+
+	var village_chest := _get_village_chest()
+	if ui and village_chest and ui.has_method("_atualizar_painel_bau_vila"):
+		ui.call("_atualizar_painel_bau_vila")
+
+func _get_village_chest() -> Node:
+	var tree: SceneTree = get_tree()
+	if tree == null:
+		return null
+
+	var chests: Array = tree.get_nodes_in_group("village_chest")
+	for chest in chests:
+		if is_instance_valid(chest):
+			return chest
+
+	return null
 
 func _safe_dictionary(value: Variant) -> Dictionary:
 	if typeof(value) == TYPE_DICTIONARY:

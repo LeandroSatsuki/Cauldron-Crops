@@ -24,7 +24,10 @@ func deposit_item(item_id: String, quantidade: int = 1) -> void:
 	])
 
 func get_contents() -> Dictionary:
-	return inventory.duplicate()
+	return inventory.duplicate(true)
+
+func set_contents(data: Dictionary) -> void:
+	inventory = data.duplicate(true)
 
 func withdraw_all_to_global_inventory() -> Dictionary:
 	if inventory.is_empty():

@@ -179,3 +179,9 @@
 - Decisão: desligar a herança de z dos visuais de solo do lote e manter planta, VFX e tooltip com camadas próprias.
 - Motivo: impedir que o chão de lotes inferiores cubra o golem sem mexer no fluxo do jogo.
 - Risco: isso resolve a leitura atual, mas o sistema de camadas ainda continua provisório.
+
+## Decisão 30 - Save mínimo do Baú da Vila
+- Problema: o conteúdo do Baú da Vila podia ser perdido ao fechar o jogo antes da retirada.
+- Decisão: salvar e restaurar o `inventory` do baú em `village_chest_inventory` dentro do `SaveManager`.
+- Motivo: manter o ciclo do golem e do baú persistente sem mexer ainda nos lotes, crops ou no salvamento completo do mundo.
+- Risco: o save continua mínimo e ainda não persiste o estado dos lotes/plantações.
