@@ -1,10 +1,9 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene format=3 uid="uid://d3fka51x0xrvb"]
 
-[ext_resource type="Script" path="res://Scripts/QuestBoard.gd" id="1_questboardgd"]
+[ext_resource type="Script" uid="uid://b1sjufhflrxa1" path="res://Scripts/QuestBoard.gd" id="1_questboardgd"]
 
-[node name="QuestBoard" type="Panel"]
+[node name="QuestBoard" type="Panel" unique_id=713136974]
 visible = false
-mouse_filter = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
@@ -16,9 +15,10 @@ offset_right = 300.0
 offset_bottom = 200.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 1
 script = ExtResource("1_questboardgd")
 
-[node name="TitleLabel" type="Label" parent="."]
+[node name="TitleLabel" type="Label" parent="." unique_id=608647626]
 layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
@@ -29,7 +29,7 @@ text = "Mural de Demandas"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="ListaQuests" type="VBoxContainer" parent="."]
+[node name="ListaQuests" type="VBoxContainer" parent="." unique_id=871625781]
 layout_mode = 0
 offset_left = 50.0
 offset_top = 70.0
@@ -37,7 +37,7 @@ offset_right = 550.0
 offset_bottom = 300.0
 theme_override_constants/separation = 15
 
-[node name="BtnFechar" type="Button" parent="."]
+[node name="BtnFechar" type="Button" parent="." unique_id=755645942]
 layout_mode = 1
 anchors_preset = 7
 anchor_left = 0.5

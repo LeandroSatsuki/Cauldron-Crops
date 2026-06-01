@@ -1,75 +1,71 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene format=3 uid="uid://dw5w54uf0bly5"]
 
-[ext_resource type="Script" path="res://Scripts/UI.gd" id="1_uigd"]
+[ext_resource type="Script" uid="uid://cpbky483ya1uj" path="res://Scripts/UI.gd" id="1_uigd"]
 [ext_resource type="PackedScene" path="res://Scenes/SellMenu.tscn" id="2_sellscene"]
 [ext_resource type="Theme" path="res://Themes/pixel_ui_theme.tres" id="3_pixeltheme"]
 
-[node name="UI" type="CanvasLayer"]
+[node name="UI" type="CanvasLayer" unique_id=570246364]
 script = ExtResource("1_uigd")
 
-[node name="StatusPanel" type="VBoxContainer" parent="."]
-theme = ExtResource("3_pixeltheme")
+[node name="StatusPanel" type="VBoxContainer" parent="." unique_id=2048173949]
 offset_left = 20.0
 offset_top = 20.0
 offset_right = 250.0
 offset_bottom = 180.0
+theme = ExtResource("3_pixeltheme")
 theme_override_constants/separation = 5
 
-[node name="MoedasLabel" type="Label" parent="StatusPanel"]
+[node name="MoedasLabel" type="Label" parent="StatusPanel" unique_id=1932157237]
 layout_mode = 2
 text = "Moedas: 0"
 
-[node name="SeasonLabel" type="Label" parent="StatusPanel"]
+[node name="SeasonLabel" type="Label" parent="StatusPanel" unique_id=966561422]
 layout_mode = 2
 text = "Estação: Primavera | Ano: 1"
 
-[node name="CargasLabel" type="Label" parent="StatusPanel"]
+[node name="CargasLabel" type="Label" parent="StatusPanel" unique_id=348134435]
 layout_mode = 2
 text = "Cargas Mágicas: 0"
 
-[node name="SementeLabel" type="Label" parent="StatusPanel"]
+[node name="SementeLabel" type="Label" parent="StatusPanel" unique_id=14489961]
 layout_mode = 2
 text = "Semente Atual: Trigo"
 
-[node name="GolemsLabel" type="Label" parent="StatusPanel"]
+[node name="GolemsLabel" type="Label" parent="StatusPanel" unique_id=1742243833]
 layout_mode = 2
 text = "Golems Ativos: 0"
 
-[node name="LeftPanel" type="VBoxContainer" parent="."]
-theme = ExtResource("3_pixeltheme")
+[node name="LeftPanel" type="VBoxContainer" parent="." unique_id=1703485619]
 offset_left = 20.0
 offset_top = 200.0
 offset_right = 250.0
 offset_bottom = 800.0
+theme = ExtResource("3_pixeltheme")
 theme_override_constants/separation = 10
 
-[node name="HeaderAcoes" type="Label" parent="LeftPanel"]
+[node name="HeaderAcoes" type="Label" parent="LeftPanel" unique_id=1722522138]
 modulate = Color(1, 1, 0, 1)
 layout_mode = 2
 text = "--- GERENCIAMENTO ---"
 horizontal_alignment = 1
 
-[node name="DormirButton" type="Button" parent="LeftPanel"]
+[node name="DormirButton" type="Button" parent="LeftPanel" unique_id=2091208078]
 layout_mode = 2
 text = "Dormir (Mudar Estação)"
 
-[node name="UsarPocaoButton" type="Button" parent="LeftPanel"]
+[node name="UsarPocaoButton" type="Button" parent="LeftPanel" unique_id=131889047]
 layout_mode = 2
 text = "Usar Poção (3 Cargas)"
 
-[node name="AbrirSkillTreeButton" type="Button" parent="LeftPanel"]
+[node name="AbrirSkillTreeButton" type="Button" parent="LeftPanel" unique_id=1432251359]
 layout_mode = 2
 text = "Árvore de Alquimia"
 
-[node name="AbrirQuestsButton" type="Button" parent="LeftPanel"]
+[node name="AbrirQuestsButton" type="Button" parent="LeftPanel" unique_id=2117830448]
 layout_mode = 2
 text = "Mural de Demandas"
 
-[node name="AbrirLivroReceitasButton" type="Button" parent="LeftPanel"]
-layout_mode = 2
-text = "Livro de Receitas"
-
-[node name="AlertaQuest" type="Label" parent="LeftPanel/AbrirQuestsButton"]
+[node name="AlertaQuest" type="Label" parent="LeftPanel/AbrirQuestsButton" unique_id=800257725]
 visible = false
 layout_mode = 1
 anchors_preset = 1
@@ -84,59 +80,63 @@ theme_override_colors/font_color = Color(0.945098, 0.768627, 0.0588235, 1)
 text = "❗"
 horizontal_alignment = 2
 
-[node name="Separator1" type="HSeparator" parent="LeftPanel"]
+[node name="AbrirLivroReceitasButton" type="Button" parent="LeftPanel" unique_id=1779835986]
+layout_mode = 2
+text = "Livro de Receitas"
+
+[node name="Separator1" type="HSeparator" parent="LeftPanel" unique_id=1773945761]
 layout_mode = 2
 
-[node name="HeaderLoja" type="Label" parent="LeftPanel"]
+[node name="HeaderLoja" type="Label" parent="LeftPanel" unique_id=1646114359]
 modulate = Color(1, 1, 0, 1)
 layout_mode = 2
 text = "--- LOJA DE RECURSOS ---"
 horizontal_alignment = 1
 
-[node name="GridSementes" type="HBoxContainer" parent="LeftPanel"]
+[node name="GridSementes" type="HBoxContainer" parent="LeftPanel" unique_id=248111658]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="ComprarTrigoButton" type="Button" parent="LeftPanel/GridSementes"]
+[node name="ComprarTrigoButton" type="Button" parent="LeftPanel/GridSementes" unique_id=602916330]
 custom_minimum_size = Vector2(50, 50)
 layout_mode = 2
 text = "🌾 $5"
 
-[node name="ComprarVeraoButton" type="Button" parent="LeftPanel/GridSementes"]
+[node name="ComprarVeraoButton" type="Button" parent="LeftPanel/GridSementes" unique_id=1539986390]
 custom_minimum_size = Vector2(50, 50)
 layout_mode = 2
 text = "🍅 $10"
 
-[node name="Separator3" type="HSeparator" parent="LeftPanel"]
+[node name="Separator3" type="HSeparator" parent="LeftPanel" unique_id=1108179252]
 layout_mode = 2
 
-[node name="HeaderUpgrades" type="Label" parent="LeftPanel"]
+[node name="HeaderUpgrades" type="Label" parent="LeftPanel" unique_id=1519303709]
 modulate = Color(1, 1, 0, 1)
 layout_mode = 2
 text = "--- LOJA DE APRIMORAMENTOS ---"
 horizontal_alignment = 1
 
-[node name="ComprarCosmeticoButton" type="Button" parent="LeftPanel"]
+[node name="ComprarCosmeticoButton" type="Button" parent="LeftPanel" unique_id=737885919]
 layout_mode = 2
 text = "Comprar Tema Verde (50 Moedas)"
 
-[node name="InventoryBar" type="HBoxContainer" parent="."]
-theme = ExtResource("3_pixeltheme")
+[node name="InventoryBar" type="HBoxContainer" parent="." unique_id=691947243]
 offset_left = 300.0
 offset_top = 20.0
 offset_right = 1150.0
 offset_bottom = 80.0
+theme = ExtResource("3_pixeltheme")
 theme_override_constants/separation = 10
 
-[node name="TooltipPanel" type="Panel" parent="."]
+[node name="TooltipPanel" type="Panel" parent="." unique_id=528137829]
 visible = false
-theme = ExtResource("3_pixeltheme")
 offset_left = 270.0
 offset_top = 350.0
 offset_right = 570.0
 offset_bottom = 550.0
+theme = ExtResource("3_pixeltheme")
 
-[node name="TooltipTexto" type="Label" parent="TooltipPanel"]
+[node name="TooltipTexto" type="Label" parent="TooltipPanel" unique_id=1500808006]
 layout_mode = 0
 offset_left = 15.0
 offset_top = 15.0
@@ -146,55 +146,48 @@ text = "Nome:
 Estação:
 Uso:"
 
-[node name="SellMenu" parent="." instance=ExtResource("2_sellscene")]
-visible = false
+[node name="SellMenu" parent="." unique_id=237673747 instance=ExtResource("2_sellscene")]
 theme = ExtResource("3_pixeltheme")
-layout_mode = 1
 
-[node name="VillageChestPanel" type="PanelContainer" parent="."]
+[node name="VillageChestPanel" type="PanelContainer" parent="." unique_id=574568525]
 visible = false
-theme = ExtResource("3_pixeltheme")
 offset_left = 470.0
 offset_top = 180.0
 offset_right = 820.0
 offset_bottom = 420.0
+theme = ExtResource("3_pixeltheme")
 
-[node name="MarginContainer" type="MarginContainer" parent="VillageChestPanel"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+[node name="MarginContainer" type="MarginContainer" parent="VillageChestPanel" unique_id=987751860]
+layout_mode = 2
 theme_override_constants/margin_left = 12
 theme_override_constants/margin_top = 12
 theme_override_constants/margin_right = 12
 theme_override_constants/margin_bottom = 12
 
-[node name="VBoxChest" type="VBoxContainer" parent="VillageChestPanel/MarginContainer"]
+[node name="VBoxChest" type="VBoxContainer" parent="VillageChestPanel/MarginContainer" unique_id=1968060145]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="TitleLabel" type="Label" parent="VillageChestPanel/MarginContainer/VBoxChest"]
+[node name="TitleLabel" type="Label" parent="VillageChestPanel/MarginContainer/VBoxChest" unique_id=989220907]
 layout_mode = 2
 text = "Baú da Vila"
 horizontal_alignment = 1
 
-[node name="ChestContents" type="RichTextLabel" parent="VillageChestPanel/MarginContainer/VBoxChest"]
+[node name="ChestContents" type="RichTextLabel" parent="VillageChestPanel/MarginContainer/VBoxChest" unique_id=280472735]
 custom_minimum_size = Vector2(300, 140)
 layout_mode = 2
 bbcode_enabled = true
 text = "Baú vazio."
 fit_content = true
 
-[node name="ButtonsRow" type="HBoxContainer" parent="VillageChestPanel/MarginContainer/VBoxChest"]
+[node name="ButtonsRow" type="HBoxContainer" parent="VillageChestPanel/MarginContainer/VBoxChest" unique_id=1191930841]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="RetirarTudoButton" type="Button" parent="VillageChestPanel/MarginContainer/VBoxChest/ButtonsRow"]
+[node name="RetirarTudoButton" type="Button" parent="VillageChestPanel/MarginContainer/VBoxChest/ButtonsRow" unique_id=1099312039]
 layout_mode = 2
 text = "Retirar Tudo"
 
-[node name="FecharButton" type="Button" parent="VillageChestPanel/MarginContainer/VBoxChest/ButtonsRow"]
+[node name="FecharButton" type="Button" parent="VillageChestPanel/MarginContainer/VBoxChest/ButtonsRow" unique_id=1208024200]
 layout_mode = 2
 text = "Fechar"
