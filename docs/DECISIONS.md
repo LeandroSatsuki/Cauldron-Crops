@@ -215,3 +215,9 @@
 - Decisão: salvar cada lote em um array ordenado pela ordem atual do grupo `lotes_terra` e restaurar por índice.
 - Motivo: manter a solução simples e estável para o protótipo, sem criar ids novos agora.
 - Risco: a estabilidade depende da ordem de instância dos lotes continuar previsível no protótipo.
+
+## Decisão 36 - Status do jogo V1 informativo
+- Problema: o protótipo precisava mostrar mais contexto geral durante os testes.
+- Decisão: expandir o `StatusPanel` existente para exibir moedas, estação, ano, água, alquimia, golems e estado do Baú da Vila.
+- Motivo: dar leitura rápida do estado atual sem criar uma UI nova ou interferir no fluxo do jogo.
+- Risco: o painel continua provisório e pode ser refinado ou substituido quando a interface final for desenhada.

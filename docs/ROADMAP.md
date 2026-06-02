@@ -18,6 +18,7 @@
 - Revisar a venda.
 - Corrigir o golem físico ou mantê-lo desativado.
 - Preparar o salvamento.
+- Expandir a UI de status para leitura rápida do estado geral.
 
 ## Fase 3 - Dados Escaláveis
 - Decidir o formato para crops, itens e receitas.
@@ -37,4 +38,4 @@
 - Animações.
 - Balanceamento.
 - UX.
-
+- Refinar a UI de status e os indicadores provisórios.

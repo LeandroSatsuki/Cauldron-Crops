@@ -8,6 +8,8 @@ var pixel_ui_theme = preload("res://Themes/pixel_ui_theme.tres")
 @onready var cargas_label: Label = $StatusPanel/CargasLabel
 @onready var semente_label: Label = $StatusPanel/SementeLabel
 @onready var golems_label: Label = $StatusPanel/GolemsLabel
+@onready var capacity_label: Label = $StatusPanel/CapacityLabel
+@onready var chest_status_label: Label = $StatusPanel/ChestStatusLabel
 
 @onready var usar_pocao_button: Button = $LeftPanel/UsarPocaoButton
 @onready var dormir_button: Button = $LeftPanel/DormirButton
@@ -53,6 +55,7 @@ var ultimo_estado_inventario: Dictionary = {}
 var item_focado_id: String = ""
 var custo_dormir: int = 5
 var timer_reset_dormir: float = 0.0
+var _status_update_accum: float = 0.0
 
 var quest_board_visivel: bool:
 	get:
@@ -159,6 +162,7 @@ func _ready() -> void:
 		
 	# Inicializa
 	verificar_e_atualizar_inventario()
+	atualizar_status_jogo()
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_F10:
@@ -190,6 +194,7 @@ func fechar_debug_panel() -> void:
 
 func _process(delta: float) -> void:
 	timer_reset_dormir += delta
+	_status_update_accum += delta
 	if timer_reset_dormir >= 60.0:
 		custo_dormir = 2 if "skill_dormir" in GlobalInventory.skills_desbloqueadas else 5
 	if dormir_button:
@@ -216,10 +221,46 @@ func _process(delta: float) -> void:
 	verificar_e_atualizar_inventario()
 	if village_chest_panel and village_chest_panel.visible and village_chest_ref:
 		_atualizar_painel_bau_vila()
+	if _status_update_accum >= 0.5:
+		_status_update_accum = 0.0
+		atualizar_status_jogo()
 
 func _aplicar_tema_pixel_ui(no: Node) -> void:
 	if no is Control:
 		(no as Control).theme = pixel_ui_theme
+
+func atualizar_status_jogo() -> void:
+	if moedas_label:
+		moedas_label.text = "Moedas: %d" % int(EconomyManager.moedas)
+	if season_label:
+		season_label.text = "Estação: %s | Ano %d" % [SeasonManager.obter_nome_estacao(), int(SeasonManager.ano)]
+	if cargas_label:
+		cargas_label.text = "Água: %d" % int(GlobalInventory.inventario.get("agua", 0))
+	if semente_label:
+		semente_label.text = "Alquimia: %d" % int(GlobalInventory.pontos_alquimia)
+	if golems_label:
+		golems_label.text = "Golems: %d/%d" % [int(EconomyManager.total_golems), int(EconomyManager.max_golems)]
+	if capacity_label:
+		capacity_label.text = "Capacidade: %d/%d" % [int(EconomyManager.total_golems), int(EconomyManager.max_golems)]
+	if chest_status_label:
+		chest_status_label.text = "Baú: %s" % _obter_status_bau_vila()
+
+func _obter_status_bau_vila() -> String:
+	var chests: Array = get_tree().get_nodes_in_group("village_chest")
+	for chest_variant in chests:
+		var chest: Node = chest_variant
+		if chest == null or not is_instance_valid(chest):
+			continue
+		if not chest.has_method("get_contents"):
+			continue
+		var conteudo_variant: Variant = chest.get_contents()
+		if typeof(conteudo_variant) != TYPE_DICTIONARY:
+			return "não encontrado"
+		var conteudo: Dictionary = conteudo_variant
+		if conteudo.is_empty():
+			return "vazio"
+		return "contém itens"
+	return "não encontrado"
 
 func verificar_e_atualizar_inventario() -> void:
 	var precisa_atualizar = false

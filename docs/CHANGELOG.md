@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-06-01 - Status do jogo V1
+- Expansão do `StatusPanel` existente na UI principal para mostrar moedas, estação, ano, água, alquimia, golems e estado do Baú da Vila.
+- A atualização do status é informativa e provisória, pensada para teste rápido do protótipo.
+- A barra de status não interfere no caldeirão, no Livro de Receitas ou no Debug Panel.
+
 ## 2026-06-01 - Save minimo dos lotes
 - O save passou a registrar o estado dos lotes de plantacao em um array ordenado por `lotes_terra`.
 - O carregamento restaura estado, semente, rega, tempo restante e estado de colheita sem quebrar saves antigos.
