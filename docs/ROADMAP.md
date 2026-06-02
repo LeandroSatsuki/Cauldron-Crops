@@ -27,6 +27,7 @@
 - Documentar a arquitetura futura de tempo real antes de conectar gameplay.
 - Criar a base do `TimeManager` sem integrar ao gameplay ainda.
 - Documentar o Farm System V2 antes de qualquer migração da fazenda.
+- Criar `FarmTileData` como estrutura isolada para o grid futuro.
 
 ## Fase 4 - Conteúdo
 - Novas crops.

@@ -132,6 +132,13 @@ Estrutura futura conceitual para representar cada tile da fazenda:
 - tempo restante;
 - dados de save.
 
+Base técnica inicial:
+
+- `Scripts/data/FarmTileData.gd`
+- recurso isolado para representar um tile futuro
+- ainda não usado no gameplay atual
+- serve como fundação para o grid e para o save futuro
+
 ## FarmGridManager
 
 Gerenciador futuro para controlar a fazenda baseada em grid:

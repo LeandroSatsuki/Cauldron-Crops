@@ -239,3 +239,9 @@
 - Decisão: documentar o Farm System V2 como evolução futura baseada em tiles/grid, sem substituir `FarmPlot` agora.
 - Motivo: preservar o protótipo estável enquanto se prepara a transição para Solo Vivo Alquímico, caldeirão expandido e integrações com pesca, fazendinhas e golems.
 - Risco: a migração futura vai exigir planejamento cuidadoso para não quebrar save, UI e fluxos já validados.
+
+## Decisão 40 - FarmTileData como Resource isolado
+- Problema: a futura fazenda em grid precisa de uma base de dados serializável sem mexer no sistema atual.
+- Decisão: criar `Scripts/data/FarmTileData.gd` como `Resource` isolado, sem conectar ao gameplay ainda.
+- Motivo: preparar a futura serialização do grid e manter o `FarmPlot` como sistema ativo enquanto isso.
+- Risco: enquanto o grid não existir, o recurso serve apenas como fundação técnica e documentação executável.

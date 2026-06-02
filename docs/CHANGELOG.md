@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-06-02 - FarmTileData base
+- Criação de `Scripts/data/FarmTileData.gd` como `Resource` isolado para representar tiles futuros do Farm System V2.
+- O recurso ainda não é usado no gameplay atual; `FarmPlot` continua sendo o sistema ativo.
+- A base já inclui campos de solo, crop, umidade, modificadores e dados de save para a futura fazenda em grid.
+
 ## 2026-06-02 - Farm System V2 documentado
 - Criação de `docs/FARM_SYSTEM_V2.md` para registrar a visão futura de fazenda baseada em tiles/grid.
 - A documentação define o conceito de Solo Vivo Alquímico, integração com caldeirão, pesca, fazendinhas e golems.
