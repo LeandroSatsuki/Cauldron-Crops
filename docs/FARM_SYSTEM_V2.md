@@ -179,6 +179,7 @@ Preview visual isolado:
 - `Scripts/dev/FarmGridPreview.gd`
 - mostra um grid 5x5 desenhado em memória
 - permite alternar estados de tile manualmente
+- permite alternar tipos de solo alquimico com clique direito
 - não substitui `FarmPlot`
 - não salva no `SaveManager`
 - não entra no gameplay principal

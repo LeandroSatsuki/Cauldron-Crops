@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-06-02 - Preview do FarmGrid com Solo Vivo
+- O preview isolado do FarmGrid passou a visualizar o tipo de solo alquimico com borda colorida.
+- Clique direito alterna `soil_type` em memória, sem mexer no `FarmPlot` ativo.
+- A cena continua apenas como laboratório visual para a fundação do Farm System V2.
+
 ## 2026-06-02 - Preview visual do FarmGrid
 - Criação de `Scenes/dev/FarmGridPreview.tscn` e `Scripts/dev/FarmGridPreview.gd` como preview visual isolado do grid futuro.
 - A cena desenha um grid 5x5 em memória, alterna estados de tile ao clique e não conecta nada ao gameplay principal.

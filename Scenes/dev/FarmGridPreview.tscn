@@ -12,5 +12,5 @@ text = "FarmGrid Preview V0"
 [node name="InfoLabel" type="Label" parent="."]
 position = Vector2(20, 44)
 size = Vector2(520, 48)
-text = "Clique nos tiles para alternar: grama -> arado -> molhado -> grama"
+text = "Clique esquerdo: grama -> arado -> molhado -> grama\nClique direito: alternar tipo de solo alquimico"
 autowrap_mode = 3

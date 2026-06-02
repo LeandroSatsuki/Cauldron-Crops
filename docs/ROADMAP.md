@@ -32,6 +32,7 @@
 - Criar smoke tests manuais para validar a fundação do grid.
 - Adicionar um botão temporário no Debug Panel para rodar o smoke test manual.
 - Criar uma cena de preview visual isolada para testar o FarmGrid em memória.
+- Visualizar tipos de solo alquímico no preview isolado do FarmGrid.
 
 ## Fase 4 - Conteúdo
 - Novas crops.

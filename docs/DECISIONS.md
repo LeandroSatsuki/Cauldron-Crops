@@ -150,6 +150,12 @@
 - Motivo: permitir experimentar desenho e interação de tiles sem conectar ao gameplay principal.
 - Risco: a cena é só de teste e não deve virar uma rota paralela de jogo.
 
+## Decisão 35 - Preview mostra Solo Vivo Alquimico
+- Problema: o preview precisava validar nao só o estado do tile, mas tambem o tipo de solo do Farm System V2.
+- Decisão: representar `soil_type` com bordas coloridas e alternancia por clique direito na cena isolada.
+- Motivo: facilitar leitura visual do Solo Vivo Alquimico sem assets adicionais.
+- Risco: a visualizacao continua provisoria e deve ser substituida quando a arte final chegar.
+
 ## Decisão 23 - Presenca fisica do golem
 - Problema: o golem parecia sem volume e passava visualmente por baixo de elementos do mundo.
 - Decisão: ajustar a ordenacao visual com z_index por Y, mover a interacao para um ponto lateral/abaixo do lote e adicionar um sensor simples de proximidade.
