@@ -234,6 +234,11 @@ layout_mode = 2
 text = "Ferramentas temporárias de teste. Não é UI final."
 autowrap_mode = 3
 
+[node name="DebugLastActionLabel" type="Label" parent="DebugPanel/MarginContainer/ScrollContainer/VBoxDebug"]
+layout_mode = 2
+text = "Última ação: nenhuma"
+autowrap_mode = 3
+
 [node name="SeparatorTop" type="HSeparator" parent="DebugPanel/MarginContainer/ScrollContainer/VBoxDebug"]
 layout_mode = 2
 
@@ -304,6 +309,10 @@ text = "Adicionar trigo ao Baú"
 [node name="BtnDebugClearChest" type="Button" parent="DebugPanel/MarginContainer/ScrollContainer/VBoxDebug"]
 layout_mode = 2
 text = "Limpar Baú"
+
+[node name="BtnDebugTestFarmGrid" type="Button" parent="DebugPanel/MarginContainer/ScrollContainer/VBoxDebug"]
+layout_mode = 2
+text = "Testar FarmGrid"
 
 [node name="BtnFechar" type="Button" parent="DebugPanel/MarginContainer/ScrollContainer/VBoxDebug"]
 layout_mode = 2

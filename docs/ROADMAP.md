@@ -30,6 +30,7 @@
 - Criar `FarmTileData` como estrutura isolada para o grid futuro.
 - Criar `FarmGridManager` como coordenador isolado do grid futuro.
 - Criar smoke tests manuais para validar a fundação do grid.
+- Adicionar um botão temporário no Debug Panel para rodar o smoke test manual.
 
 ## Fase 4 - Conteúdo
 - Novas crops.

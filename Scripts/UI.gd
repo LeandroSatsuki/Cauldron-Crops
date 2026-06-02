@@ -2,6 +2,7 @@ extends CanvasLayer
 
 var slot_scene = preload("res://Scenes/InventorySlot.tscn")
 var pixel_ui_theme = preload("res://Themes/pixel_ui_theme.tres")
+const FarmGridManagerSmokeTestScript = preload("res://Scripts/dev/FarmGridManagerSmokeTest.gd")
 
 @onready var moedas_label: Label = $StatusPanel/MoedasLabel
 @onready var season_label: Label = $StatusPanel/SeasonLabel
@@ -40,6 +41,7 @@ var village_chest_ref: VillageChest = null
 @onready var sell_menu: PanelContainer = $SellMenu
 
 @onready var debug_panel: PanelContainer = $DebugPanel
+@onready var debug_last_action_label: Label = $DebugPanel/MarginContainer/ScrollContainer/VBoxDebug/DebugLastActionLabel
 @onready var debug_add_seeds_button: Button = $DebugPanel/MarginContainer/ScrollContainer/VBoxDebug/BtnDebugAddSeeds
 @onready var debug_add_water_button: Button = $DebugPanel/MarginContainer/ScrollContainer/VBoxDebug/BtnDebugAddWater
 @onready var debug_add_basic_ingredients_button: Button = $DebugPanel/MarginContainer/ScrollContainer/VBoxDebug/BtnDebugAddIngredients
@@ -49,6 +51,7 @@ var village_chest_ref: VillageChest = null
 @onready var debug_load_button: Button = $DebugPanel/MarginContainer/ScrollContainer/VBoxDebug/BtnDebugLoad
 @onready var debug_add_wheat_chest_button: Button = $DebugPanel/MarginContainer/ScrollContainer/VBoxDebug/BtnDebugAddWheatChest
 @onready var debug_clear_chest_button: Button = $DebugPanel/MarginContainer/ScrollContainer/VBoxDebug/BtnDebugClearChest
+@onready var debug_test_farm_grid_button: Button = $DebugPanel/MarginContainer/ScrollContainer/VBoxDebug/BtnDebugTestFarmGrid
 @onready var debug_close_button: Button = $DebugPanel/MarginContainer/ScrollContainer/VBoxDebug/BtnFechar
 
 var ultimo_estado_inventario: Dictionary = {}
@@ -149,6 +152,11 @@ func _ready() -> void:
 		debug_add_wheat_chest_button.pressed.connect(_on_debug_add_wheat_to_chest_pressed)
 	if debug_clear_chest_button:
 		debug_clear_chest_button.pressed.connect(_on_debug_clear_chest_pressed)
+	if debug_test_farm_grid_button:
+		if not debug_test_farm_grid_button.pressed.is_connected(_on_debug_test_farm_grid_pressed):
+			debug_test_farm_grid_button.pressed.connect(_on_debug_test_farm_grid_pressed)
+	else:
+		push_warning("DebugPanel: BtnDebugTestFarmGrid nao encontrado.")
 	if debug_close_button:
 		debug_close_button.pressed.connect(fechar_debug_panel)
 
@@ -535,7 +543,19 @@ func _on_debug_clear_chest_pressed() -> void:
 
 	_atualizar_painel_bau_vila()
 
-func _atualizar_pos_debug_acao() -> void:
+func _on_debug_test_farm_grid_pressed() -> void:
+	print("Debug FarmGrid: botao clicado.")
+	var passou: bool = FarmGridManagerSmokeTestScript.run()
+	if passou:
+		print("Debug FarmGrid: smoke test passou.")
+		_atualizar_pos_debug_acao("FarmGrid test: passou")
+	else:
+		push_warning("Debug FarmGrid: smoke test falhou.")
+		_atualizar_pos_debug_acao("FarmGrid test: falhou")
+
+func _atualizar_pos_debug_acao(acao_texto: String = "") -> void:
+	if debug_last_action_label and acao_texto != "":
+		debug_last_action_label.text = "Última ação: %s" % acao_texto
 	verificar_e_atualizar_inventario()
 	if village_chest_panel and village_chest_panel.visible:
 		_atualizar_painel_bau_vila()

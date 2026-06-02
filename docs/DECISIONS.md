@@ -138,6 +138,12 @@
 - Motivo: manter o baú separado do inventário do jogador e tornar o fluxo claro antes do salvamento.
 - Risco: retirada individual e persistência do baú ainda ficam para etapas futuras.
 
+## Decisão 23 - Botão temporário de smoke test no Debug Panel
+- Problema: o `FarmGridManager` e o `FarmTileData` precisavam de uma forma rápida de validação manual sem tocar no gameplay.
+- Decisão: adicionar um botão temporário `Testar FarmGrid` no Debug Panel para executar `FarmGridManagerSmokeTest.run()`.
+- Motivo: permitir checagem em memória da fundação do grid sem acoplar a cena ou os lotes atuais.
+- Risco: a ferramenta é só de desenvolvimento e deve ser removida ou reorganizada quando o grid entrar de verdade no jogo.
+
 ## Decisão 23 - Presenca fisica do golem
 - Problema: o golem parecia sem volume e passava visualmente por baixo de elementos do mundo.
 - Decisão: ajustar a ordenacao visual com z_index por Y, mover a interacao para um ponto lateral/abaixo do lote e adicionar um sensor simples de proximidade.

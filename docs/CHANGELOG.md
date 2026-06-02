@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-06-02 - Debug runner do FarmGrid
+- Adição do botão temporário `Testar FarmGrid` no Debug Panel para executar `FarmGridManagerSmokeTest` manualmente.
+- O botão roda apenas o teste isolado em memória e mostra o resultado no console e na última ação do painel.
+- Nenhuma mecânica do jogo foi conectada; `FarmPlot` continua sendo o sistema ativo.
+
 ## 2026-06-02 - Smoke test do FarmGridManager
 - Criação de `Scripts/dev/FarmGridManagerSmokeTest.gd` como teste manual isolado para validar `FarmGridManager` e `FarmTileData` em memória.
 - O teste confirma criação de grid, acesso a tiles e serialização save/load sem conectar ao gameplay.

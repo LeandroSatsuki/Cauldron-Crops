@@ -166,6 +166,13 @@ Teste manual isolado:
 - não é gameplay
 - não roda automaticamente
 
+Ferramenta temporária no Debug Panel:
+
+- botão `Testar FarmGrid`
+- roda o smoke test em memória quando acionado
+- serve apenas para desenvolvimento e validação manual
+- não altera o `FarmPlot` atual nem o gameplay
+
 ## Migração dos Lotes Atuais
 
 O sistema atual de `FarmPlot` deve continuar por enquanto.

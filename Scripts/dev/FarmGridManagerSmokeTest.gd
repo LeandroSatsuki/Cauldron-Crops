@@ -2,7 +2,7 @@ extends RefCounted
 class_name FarmGridManagerSmokeTest
 
 static func run() -> bool:
-	print("FarmGridManagerSmokeTest: iniciando teste manual.")
+	print("FarmGridManagerSmokeTest: iniciando.")
 
 	var manager: FarmGridManager = FarmGridManager.new()
 	manager.create_grid(3, 3)
@@ -87,7 +87,7 @@ static func run() -> bool:
 		push_error("FarmGridManagerSmokeTest: total_growth_time não foi restaurado corretamente.")
 		return false
 
-	print("FarmGridManagerSmokeTest: teste concluído com sucesso.")
+	print("FarmGridManagerSmokeTest: sucesso.")
 	return true
 
 static func _get_tiles_count_from_save(save_data: Dictionary) -> int:
