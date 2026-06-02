@@ -26,6 +26,7 @@
 - Criar um padrão de receitas.
 - Documentar a arquitetura futura de tempo real antes de conectar gameplay.
 - Criar a base do `TimeManager` sem integrar ao gameplay ainda.
+- Documentar o Farm System V2 antes de qualquer migração da fazenda.
 
 ## Fase 4 - Conteúdo
 - Novas crops.
@@ -33,6 +34,7 @@
 - Missões.
 - Progressão.
 - Upgrades.
+- Conceber a futura transição de lotes fixos para grid/tile sem alterar o protótipo atual.
 
 ## Fase 5 - Polimento
 - Arte final pixel art.

@@ -233,3 +233,9 @@
 - Decisão: criar `Scripts/TimeManager.gd` como script solto, com modo real desligado por padrão e funções de debug internas.
 - Motivo: permitir evolução segura da arquitetura de tempo antes de conectar `SeasonManager`, `SaveManager`, plantações e UI.
 - Risco: enquanto o `TimeManager` não for integrado, ele serve só como base estrutural e ainda não altera o jogo.
+
+## Decisão 39 - Farm System V2 como planejamento
+- Problema: o sistema atual de lotes é funcional, mas limitado para a visão final de fazenda viva e alquímica.
+- Decisão: documentar o Farm System V2 como evolução futura baseada em tiles/grid, sem substituir `FarmPlot` agora.
+- Motivo: preservar o protótipo estável enquanto se prepara a transição para Solo Vivo Alquímico, caldeirão expandido e integrações com pesca, fazendinhas e golems.
+- Risco: a migração futura vai exigir planejamento cuidadoso para não quebrar save, UI e fluxos já validados.

@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-06-02 - Farm System V2 documentado
+- Criação de `docs/FARM_SYSTEM_V2.md` para registrar a visão futura de fazenda baseada em tiles/grid.
+- A documentação define o conceito de Solo Vivo Alquímico, integração com caldeirão, pesca, fazendinhas e golems.
+- O sistema atual de lotes continua sendo a base funcional do protótipo.
+
 ## 2026-06-02 - Base do TimeManager
 - Criação de `Scripts/TimeManager.gd` como fundação técnica para o sistema futuro de tempo real e debug.
 - O script ainda não está conectado ao gameplay, não é Autoload e mantém o modo real desligado por padrão.
