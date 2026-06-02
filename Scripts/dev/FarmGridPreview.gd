@@ -1,6 +1,12 @@
 extends Node2D
 
+enum ToolType {
+	NONE,
+	HOE
+}
+
 var grid_manager: FarmGridManager = null
+var active_tool: ToolType = ToolType.HOE
 var tile_size: int = 48
 var tile_gap: int = 2
 var origin: Vector2 = Vector2(100.0, 100.0)
@@ -30,6 +36,13 @@ func _draw() -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if grid_manager == null:
 		return
+
+	if event is InputEventKey:
+		var key_event: InputEventKey = event
+		if key_event.pressed and not key_event.echo and key_event.keycode == KEY_D:
+			_simular_decay_diario()
+			return
+
 	if event is not InputEventMouseButton:
 		return
 
@@ -50,10 +63,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 
 	if mouse_button_event.button_index == MOUSE_BUTTON_LEFT:
-		_advance_tile_state(tile)
-		grid_manager.set_tile(tile_position, tile)
-		queue_redraw()
-		print("FarmGridPreview: tile (%d, %d) mudou para %s" % [tile_position.x, tile_position.y, _get_tile_state_name(tile.tile_state)])
+		_usar_enxada(tile_position, tile)
 		return
 
 	if mouse_button_event.button_index == MOUSE_BUTTON_RIGHT:
@@ -63,19 +73,44 @@ func _unhandled_input(event: InputEvent) -> void:
 		print("FarmGridPreview: tile (%d, %d) mudou solo para %s" % [tile_position.x, tile_position.y, _get_soil_type_name(tile.soil_type)])
 		return
 
-func _advance_tile_state(tile: FarmTileData) -> void:
-	var novo_estado: FarmTileData.TileState = tile.tile_state
-	match tile.tile_state:
-		FarmTileData.TileState.GRAMA:
-			novo_estado = FarmTileData.TileState.ARADO
-		FarmTileData.TileState.ARADO:
-			novo_estado = FarmTileData.TileState.MOLHADO
-		FarmTileData.TileState.MOLHADO:
-			novo_estado = FarmTileData.TileState.GRAMA
-		_:
-			return
+func _usar_enxada(tile_position: Vector2i, tile: FarmTileData) -> void:
+	if active_tool != ToolType.HOE:
+		print("FarmGridPreview: ferramenta ativa nao pode arar o tile (%d, %d)." % [tile_position.x, tile_position.y])
+		return
 
-	tile.tile_state = novo_estado
+	if tile.tile_state == FarmTileData.TileState.BLOQUEADO:
+		print("FarmGridPreview: Enxada sem efeito no tile (%d, %d): BLOQUEADO." % [tile_position.x, tile_position.y])
+		return
+
+	if tile.tile_state == FarmTileData.TileState.GRAMA:
+		tile.tile_state = FarmTileData.TileState.ARADO
+		grid_manager.set_tile(tile_position, tile)
+		queue_redraw()
+		print("FarmGridPreview: Enxada usou no tile (%d, %d): GRAMA -> ARADO" % [tile_position.x, tile_position.y])
+		return
+
+	print("FarmGridPreview: Enxada sem efeito no tile (%d, %d): %s." % [tile_position.x, tile_position.y, _get_tile_state_name(tile.tile_state)])
+
+func _simular_decay_diario() -> void:
+	if grid_manager == null:
+		return
+
+	var tiles_limpos: int = 0
+	var tiles: Array = grid_manager.get_all_tiles()
+	for tile_variant in tiles:
+		if tile_variant is not FarmTileData:
+			continue
+
+		var tile: FarmTileData = tile_variant
+		if (tile.tile_state == FarmTileData.TileState.ARADO or tile.tile_state == FarmTileData.TileState.MOLHADO) and tile.crop_id == "":
+			tile.tile_state = FarmTileData.TileState.GRAMA
+			tile.is_watered = false
+			tile.moisture = 0.0
+			grid_manager.set_tile(tile.grid_position, tile)
+			tiles_limpos += 1
+
+	queue_redraw()
+	print("FarmGridPreview: decay diario limpou %d tile(s) arados sem semente." % tiles_limpos)
 
 func _advance_soil_type(tile: FarmTileData) -> void:
 	var novo_soil_type: FarmTileData.SoilType = tile.soil_type
@@ -187,3 +222,12 @@ func _get_soil_type_name(soil_type: FarmTileData.SoilType) -> String:
 			return "INSTAVEL"
 		_:
 			return "COMUM"
+
+func _get_active_tool_name() -> String:
+	match active_tool:
+		ToolType.HOE:
+			return "Enxada"
+		ToolType.NONE:
+			return "Nenhuma"
+		_:
+			return "Nenhuma"

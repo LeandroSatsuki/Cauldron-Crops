@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-06-02 - Preview do FarmGrid com Enxada e decay
+- O preview isolado do FarmGrid passou a testar uma ferramenta ativa simples, com `Enxada` como padrão para arar tiles de grama.
+- A cena também ganhou um `Decay Diario` em memória, que limpa tiles arados ou molhados sem crop e devolve o estado para grama.
+- Isso continua isolado, sem conectar o `FarmPlot` ao gameplay principal.
+
 ## 2026-06-02 - Preview do FarmGrid com Solo Vivo
 - O preview isolado do FarmGrid passou a visualizar o tipo de solo alquimico com borda colorida.
 - Clique direito alterna `soil_type` em memória, sem mexer no `FarmPlot` ativo.

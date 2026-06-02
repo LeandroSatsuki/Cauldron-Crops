@@ -180,6 +180,8 @@ Preview visual isolado:
 - mostra um grid 5x5 desenhado em memória
 - permite alternar estados de tile manualmente
 - permite alternar tipos de solo alquimico com clique direito
+- testa uma ferramenta ativa simples, com a Enxada como padrão
+- simula o Decay Diario em memoria para limpar tiles arados sem crop
 - não substitui `FarmPlot`
 - não salva no `SaveManager`
 - não entra no gameplay principal

@@ -156,6 +156,12 @@
 - Motivo: facilitar leitura visual do Solo Vivo Alquimico sem assets adicionais.
 - Risco: a visualizacao continua provisoria e deve ser substituida quando a arte final chegar.
 
+## Decisão 36 - Preview testa Enxada e decay diario
+- Problema: o preview precisava validar a futura regra de arar com ferramenta ativa e o retorno de terra arada sem crop na virada do dia.
+- Decisão: usar `Enxada` como ferramenta ativa padrão e simular o `Decay Diario` apenas em memória no preview.
+- Motivo: experimentar o comportamento sem criar tempo real nem alterar o `FarmPlot` ativo.
+- Risco: a regra ainda é conceitual e pode mudar quando o loop de fazenda em grid existir de verdade.
+
 ## Decisão 23 - Presenca fisica do golem
 - Problema: o golem parecia sem volume e passava visualmente por baixo de elementos do mundo.
 - Decisão: ajustar a ordenacao visual com z_index por Y, mover a interacao para um ponto lateral/abaixo do lote e adicionar um sensor simples de proximidade.

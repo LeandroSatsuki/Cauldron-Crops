@@ -33,6 +33,7 @@
 - Adicionar um botão temporário no Debug Panel para rodar o smoke test manual.
 - Criar uma cena de preview visual isolada para testar o FarmGrid em memória.
 - Visualizar tipos de solo alquímico no preview isolado do FarmGrid.
+- Testar ferramenta ativa Enxada e decay diario no preview isolado do FarmGrid.
 
 ## Fase 4 - Conteúdo
 - Novas crops.
