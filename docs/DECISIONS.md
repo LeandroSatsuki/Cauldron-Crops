@@ -221,3 +221,9 @@
 - Decisão: expandir o `StatusPanel` existente para exibir moedas, estação, ano, água, alquimia, golems e estado do Baú da Vila.
 - Motivo: dar leitura rápida do estado atual sem criar uma UI nova ou interferir no fluxo do jogo.
 - Risco: o painel continua provisório e pode ser refinado ou substituido quando a interface final for desenhada.
+
+## Decisão 37 - Tempo real futuro com modo debug
+- Problema: o jogo final precisa de um modelo de tempo coerente com sessões reais, mas o protótipo ainda depende de testes rápidos.
+- Decisão: documentar tempo real como direção final, porém manter o desenvolvimento em modo debug/controlável por enquanto.
+- Motivo: permitir um `TimeManager` futuro sem travar o fluxo de testes do protótipo.
+- Risco: o sistema de tempo real pode afetar crops, estações, quests, economia e salvamento se for ativado cedo demais.

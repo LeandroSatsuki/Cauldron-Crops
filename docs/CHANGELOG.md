@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-06-01 - Documento de tempo real
+- Criação do documento `docs/TIME_SYSTEM.md` para registrar a direção futura do tempo real do jogo.
+- O sistema final de tempo ficou documentado como tempo real, mas o protótipo continua em modo debug/controlável por enquanto.
+- Nenhuma lógica de tempo foi implementada nesta etapa.
+
 ## 2026-06-01 - Status do jogo V1
 - Expansão do `StatusPanel` existente na UI principal para mostrar moedas, estação, ano, água, alquimia, golems e estado do Baú da Vila.
 - A atualização do status é informativa e provisória, pensada para teste rápido do protótipo.

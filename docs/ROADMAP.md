@@ -24,6 +24,7 @@
 - Decidir o formato para crops, itens e receitas.
 - Avaliar `Resource .tres`, JSON ou CSV.
 - Criar um padrão de receitas.
+- Documentar a arquitetura futura de tempo real antes de conectar gameplay.
 
 ## Fase 4 - Conteúdo
 - Novas crops.
@@ -39,3 +40,4 @@
 - Balanceamento.
 - UX.
 - Refinar a UI de status e os indicadores provisórios.
+- Integrar o tempo real apenas quando o protótipo estiver estável.
