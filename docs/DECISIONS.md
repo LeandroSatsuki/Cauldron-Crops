@@ -251,3 +251,9 @@
 - Decisão: criar `Scripts/data/FarmGridManager.gd` como `RefCounted`, isolado e sem `Autoload`.
 - Motivo: permitir montagem, leitura e serialização de grids a partir de `FarmTileData` sem substituir `FarmPlot`.
 - Risco: o gerenciador ainda não participa do jogo real e pode precisar de ajustes quando o grid começar a ser usado de verdade.
+
+## Decisão 42 - Smoke test manual do grid
+- Problema: a base do grid precisava de uma validação rápida sem acoplar à cena do jogo.
+- Decisão: criar `Scripts/dev/FarmGridManagerSmokeTest.gd` como teste manual em memória.
+- Motivo: facilitar checagem de criação, alteração e serialização do grid sem mexer no gameplay.
+- Risco: o teste depende de execução manual e não substitui testes automatizados futuros.

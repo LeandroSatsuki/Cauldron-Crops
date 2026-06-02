@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-06-02 - Smoke test do FarmGridManager
+- Criação de `Scripts/dev/FarmGridManagerSmokeTest.gd` como teste manual isolado para validar `FarmGridManager` e `FarmTileData` em memória.
+- O teste confirma criação de grid, acesso a tiles e serialização save/load sem conectar ao gameplay.
+- Continua sendo uma ferramenta de desenvolvimento, não uma mecânica do jogo.
+
 ## 2026-06-02 - FarmGridManager base
 - Criação de `Scripts/data/FarmGridManager.gd` como gerenciador isolado de dados para o Farm System V2.
 - O gerenciador funciona como `RefCounted`, sem cena, sem Autoload e sem conexão com o gameplay atual.

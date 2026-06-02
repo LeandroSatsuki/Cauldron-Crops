@@ -159,6 +159,13 @@ Base técnica inicial:
 - não usado no gameplay atual
 - preparado para conversar com `FarmTileData` no futuro
 
+Teste manual isolado:
+
+- `Scripts/dev/FarmGridManagerSmokeTest.gd`
+- valida criação, consulta, save/load em memória
+- não é gameplay
+- não roda automaticamente
+
 ## Migração dos Lotes Atuais
 
 O sistema atual de `FarmPlot` deve continuar por enquanto.
@@ -176,6 +183,7 @@ Plano sugerido:
 
 ### Fase 4
 - Criar uma área pequena de teste separada.
+- Criar smoke tests manuais para validar a fundação antes da integração.
 
 ### Fase 5
 - Migrar parte da fazenda.

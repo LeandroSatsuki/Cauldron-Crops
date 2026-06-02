@@ -29,6 +29,7 @@
 - Documentar o Farm System V2 antes de qualquer migração da fazenda.
 - Criar `FarmTileData` como estrutura isolada para o grid futuro.
 - Criar `FarmGridManager` como coordenador isolado do grid futuro.
+- Criar smoke tests manuais para validar a fundação do grid.
 
 ## Fase 4 - Conteúdo
 - Novas crops.
