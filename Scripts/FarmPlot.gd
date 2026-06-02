@@ -22,6 +22,7 @@ var semente_atual: Dictionary = {}
 var semente_id_plantada: String = ""
 var pronto_para_colher: bool = false
 var is_rustling: bool = false
+var tempo_total_crescimento: float = 0.0
 
 @onready var timer: Timer = $Timer
 @onready var color_rect = $ColorRect
@@ -83,10 +84,10 @@ func _process(_delta: float) -> void:
 			var status_agua = "Sim 💧" if regado else "Não 🥀"
 			tooltip_area.tooltip_text = "Planta: " + nome + "\nTempo: " + tempo + "s\nRegado: " + status_agua
 			
-			var wait_t = timer.wait_time
-			var left_t = timer.time_left
-			var progresso = (wait_t - left_t) / wait_t if wait_t > 0 else 0.0
-			var estagio = 1 if progresso >= 0.5 else 0
+			var wait_t: float = tempo_total_crescimento if tempo_total_crescimento > 0.0 else timer.wait_time
+			var left_t: float = timer.time_left
+			var progresso: float = (wait_t - left_t) / wait_t if wait_t > 0.0 else 0.0
+			var estagio: int = 1 if progresso >= 0.5 else 0
 			atualizar_visual_planta(semente_id_plantada, estagio)
 
 # Função para capturar cliques do mouse (usando _input_event)
@@ -138,6 +139,7 @@ func _on_plot_clicked() -> void:
 			
 			# Configura o Timer com o tempo_crescimento_segundos
 			timer.wait_time = tempo
+			tempo_total_crescimento = tempo
 			
 			# Inicia o timer
 			timer.start()
@@ -203,6 +205,106 @@ func debug_force_ready_to_harvest() -> void:
 	_atualizar_visual()
 	atualizar_visual_planta(semente_id_plantada, 2)
 	print("Debug: lote forçado para colheita em ", get_path())
+
+func get_save_data() -> Dictionary:
+	var estado_salvo: int = int(estado_atual)
+	var tempo_restante: float = 0.0
+	var tempo_total: float = maxf(tempo_total_crescimento, 0.0)
+
+	if timer:
+		tempo_restante = maxf(timer.time_left, 0.0)
+		if tempo_total <= 0.0:
+			tempo_total = maxf(timer.wait_time, 0.0)
+
+	return {
+		"estado_atual": estado_salvo,
+		"semente_id_plantada": semente_id_plantada,
+		"regado": regado,
+		"tempo_restante": tempo_restante,
+		"tempo_total_crescimento": tempo_total,
+		"pronto_para_colher": pronto_para_colher
+	}
+
+func load_save_data(data: Dictionary) -> void:
+	if timer:
+		timer.stop()
+
+	if data.is_empty():
+		_concluir_colheita()
+		return
+
+	var estado_salvo: int = int(data.get("estado_atual", int(State.VAZIO)))
+	if estado_salvo < int(State.VAZIO) or estado_salvo > int(State.PRONTO_PARA_COLHER):
+		estado_salvo = int(State.VAZIO)
+
+	var semente_id_salva: String = str(data.get("semente_id_plantada", ""))
+	var regado_salvo: bool = bool(data.get("regado", false))
+	var pronto_salvo: bool = bool(data.get("pronto_para_colher", false))
+	var tempo_restante_salvo: float = maxf(float(data.get("tempo_restante", 0.0)), 0.0)
+	var tempo_total_salvo: float = maxf(float(data.get("tempo_total_crescimento", 0.0)), 0.0)
+
+	var estado_final: int = estado_salvo
+	if estado_final == int(State.VAZIO) and semente_id_salva != "":
+		if pronto_salvo:
+			estado_final = int(State.PRONTO_PARA_COLHER)
+		elif tempo_restante_salvo > 0.0:
+			estado_final = int(State.CRESCENDO)
+
+	if estado_final == int(State.VAZIO):
+		_concluir_colheita()
+		return
+
+	var semente_dados: Dictionary = _obter_dados_semente_por_id(semente_id_salva)
+	if semente_dados.is_empty():
+		push_warning("FarmPlot: semente nao encontrada para restauracao: %s" % semente_id_salva)
+		_concluir_colheita()
+		return
+
+	semente_atual = semente_dados
+	semente_id_plantada = semente_id_salva
+	regado = regado_salvo
+	tempo_total_crescimento = tempo_total_salvo
+	if tempo_total_crescimento <= 0.0:
+		tempo_total_crescimento = float(semente_atual.get("tempo_crescimento_segundos", 3.0))
+
+	match estado_final:
+		State.PRONTO_PARA_COLHER:
+			estado_atual = State.PRONTO_PARA_COLHER
+			pronto_para_colher = true
+			_atualizar_visual()
+			atualizar_visual_planta(semente_id_plantada, 2)
+		State.CRESCENDO:
+			estado_atual = State.CRESCENDO
+			pronto_para_colher = false
+			if tempo_restante_salvo <= 0.0:
+				estado_atual = State.PRONTO_PARA_COLHER
+				pronto_para_colher = true
+				_atualizar_visual()
+				atualizar_visual_planta(semente_id_plantada, 2)
+			else:
+				if timer:
+					timer.wait_time = tempo_restante_salvo
+					timer.start()
+				_atualizar_visual()
+				var wait_t: float = tempo_total_crescimento if tempo_total_crescimento > 0.0 else tempo_restante_salvo
+				var progresso: float = (wait_t - tempo_restante_salvo) / wait_t if wait_t > 0.0 else 0.0
+				var estagio: int = 1 if progresso >= 0.5 else 0
+				atualizar_visual_planta(semente_id_plantada, estagio)
+		_:
+			_concluir_colheita()
+
+func _obter_dados_semente_por_id(semente_id: String) -> Dictionary:
+	match semente_id:
+		"semente_basica":
+			return Database.semente_basica.duplicate(true)
+		"semente_inverno":
+			return Database.semente_inverno.duplicate(true)
+		"semente_verao":
+			return Database.semente_verao.duplicate(true)
+		"semente_outono":
+			return Database.semente_outono.duplicate(true)
+		_:
+			return {}
 
 func get_golem_harvest_position() -> Vector2:
 	if golem_harvest_point and is_instance_valid(golem_harvest_point):
@@ -354,6 +456,7 @@ func _concluir_colheita() -> void:
 	pronto_para_colher = false
 	semente_atual = {}
 	semente_id_plantada = ""
+	tempo_total_crescimento = 0.0
 
 	if has_node("SpriteTerra"):
 		$SpriteTerra.texture = TEX_SECA
@@ -368,6 +471,7 @@ func _on_timer_timeout() -> void:
 			if randf() <= 0.20:
 				semente_atual = {}
 				semente_id_plantada = ""
+				tempo_total_crescimento = 0.0
 				estado_atual = State.VAZIO
 				_atualizar_visual()
 				atualizar_visual_planta("", 0)

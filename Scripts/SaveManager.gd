@@ -64,6 +64,17 @@ func _build_save_data() -> Dictionary:
 	if village_chest and village_chest.has_method("get_contents"):
 		village_chest_inventory = village_chest.get_contents()
 
+	var farm_plots: Array = []
+	var tree: SceneTree = get_tree()
+	if tree != null:
+		var lotes_terra: Array = tree.get_nodes_in_group("lotes_terra")
+		for lote_variant in lotes_terra:
+			var lote: Node = lote_variant
+			if lote and lote.has_method("get_save_data"):
+				farm_plots.append(lote.get_save_data())
+			else:
+				farm_plots.append({})
+
 	return {
 		"version": SAVE_VERSION,
 		"inventory": {
@@ -89,7 +100,8 @@ func _build_save_data() -> Dictionary:
 			"quests_ativas": QuestManager.quests_ativas.duplicate(true),
 			"max_quests": QuestManager.max_quests
 		},
-		"village_chest_inventory": village_chest_inventory
+		"village_chest_inventory": village_chest_inventory,
+		"farm_plots": farm_plots
 	}
 
 func _apply_save_data(data: Dictionary) -> void:
@@ -131,6 +143,18 @@ func _apply_save_data(data: Dictionary) -> void:
 		var village_chest := _get_village_chest()
 		if village_chest and village_chest.has_method("set_contents"):
 			village_chest.set_contents(village_chest_inventory)
+
+	if data.has("farm_plots"):
+		var saved_plots: Array = _safe_array(data.get("farm_plots", []))
+		var tree: SceneTree = get_tree()
+		if tree != null:
+			var lotes_terra: Array = tree.get_nodes_in_group("lotes_terra")
+			var quantidade_aplicavel: int = min(lotes_terra.size(), saved_plots.size())
+			for index in range(quantidade_aplicavel):
+				var lote: Node = lotes_terra[index]
+				var plot_data_variant: Variant = saved_plots[index]
+				if lote and lote.has_method("load_save_data") and typeof(plot_data_variant) == TYPE_DICTIONARY:
+					lote.load_save_data(plot_data_variant)
 
 func _refresh_ui_after_load() -> void:
 	var scene := get_tree().current_scene

@@ -209,3 +209,9 @@
 - Decisão: padronizar `mouse_filter = Ignore` quando estão fechados e `Stop` apenas enquanto visíveis.
 - Motivo: deixar o caldeirao e o Livro de Receitas clicáveis sem precisar desmontar a UI de protótipo.
 - Risco: qualquer novo painel temporário precisa seguir a mesma regra para não voltar a bloquear interação.
+
+## Decisão 35 - Save minimo dos lotes por ordem do grupo
+- Problema: os lotes de plantacao podiam perder estado ao fechar o jogo.
+- Decisão: salvar cada lote em um array ordenado pela ordem atual do grupo `lotes_terra` e restaurar por índice.
+- Motivo: manter a solução simples e estável para o protótipo, sem criar ids novos agora.
+- Risco: a estabilidade depende da ordem de instância dos lotes continuar previsível no protótipo.

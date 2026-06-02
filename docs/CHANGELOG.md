@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-06-01 - Save minimo dos lotes
+- O save passou a registrar o estado dos lotes de plantacao em um array ordenado por `lotes_terra`.
+- O carregamento restaura estado, semente, rega, tempo restante e estado de colheita sem quebrar saves antigos.
+- O comportamento continua minimo e provisório; o mundo completo ainda não é salvo.
+
 ## 2026-06-01 - Popup da UI liberado
 - O popup do caldeirão passou a reativar o `PopupLayer` ao abrir, evitando que a interface fique escondida mesmo quando o clique chega ao handler.
 - O Livro de Receitas também passou a garantir que o `PopupLayer` do caldeirão esteja visível ao ser aberto, porque ele é instanciado dentro dessa camada.
