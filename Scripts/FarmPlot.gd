@@ -191,6 +191,19 @@ func harvest_by_golem() -> Array:
 	_concluir_colheita()
 	return recompensas
 
+func debug_force_ready_to_harvest() -> void:
+	if estado_atual == State.VAZIO:
+		return
+
+	if timer and not timer.is_stopped():
+		timer.stop()
+
+	estado_atual = State.PRONTO_PARA_COLHER
+	pronto_para_colher = true
+	_atualizar_visual()
+	atualizar_visual_planta(semente_id_plantada, 2)
+	print("Debug: lote forçado para colheita em ", get_path())
+
 func get_golem_harvest_position() -> Vector2:
 	if golem_harvest_point and is_instance_valid(golem_harvest_point):
 		return golem_harvest_point.global_position

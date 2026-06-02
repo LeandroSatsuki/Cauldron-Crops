@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-06-01 - Popup da UI liberado
+- O popup do caldeirão passou a reativar o `PopupLayer` ao abrir, evitando que a interface fique escondida mesmo quando o clique chega ao handler.
+- O Livro de Receitas também passou a garantir que o `PopupLayer` do caldeirão esteja visível ao ser aberto, porque ele é instanciado dentro dessa camada.
+- A lógica de abertura continua a mesma; a correção foi só de visibilidade e camada.
+
 ## 2026-05-31
 - Criação da documentação inicial do projeto.
 - Registro do estado atual do projeto para continuidade entre sessões.
@@ -149,3 +154,19 @@
 - Saves antigos continuam compatíveis mesmo sem esse campo novo.
 - O estado dos lotes e das crops continua fora do salvamento por enquanto.
 - A UI do baú é atualizada novamente após o load quando a cena já está em jogo.
+
+## 2026-06-01 - Debug Panel V1
+- Criação de um painel temporário de debug na UI principal para acelerar testes do protótipo.
+- O painel abre e fecha com `F10` e não aparece no fluxo normal do jogo.
+- Ferramentas incluídas para inventário, receitas, lotes, save e Baú da Vila.
+- O painel é apenas de protótipo e não substitui sistemas reais de progressão.
+
+## 2026-06-01 - Debug Panel e input
+- Ajuste do `DebugPanel` para não bloquear cliques do mundo quando está fechado.
+- O painel agora fica em `mouse_filter = Ignore` ao fechar e só captura input dentro da própria área quando aberto.
+- O fluxo normal de caldeirão e Livro de Receitas volta a receber clique normalmente com o painel fechado.
+
+## 2026-06-01 - UI e input
+- Os painéis temporários e modais da UI passaram a usar `mouse_filter = Ignore` quando fechados.
+- `RecipeBookUI`, `QuestBoard`, `SkillTree`, `SellMenu`, `VillageChestPanel` e `DebugPanel` só bloqueiam input quando estão visíveis.
+- A UI principal voltou a deixar o clique do mundo passar quando nenhum painel está aberto.

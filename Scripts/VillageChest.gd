@@ -29,6 +29,9 @@ func get_contents() -> Dictionary:
 func set_contents(data: Dictionary) -> void:
 	inventory = data.duplicate(true)
 
+func clear_contents() -> void:
+	inventory.clear()
+
 func withdraw_all_to_global_inventory() -> Dictionary:
 	if inventory.is_empty():
 		print("VillageChest: baú vazio, nada para retirar.")

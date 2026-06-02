@@ -37,6 +37,18 @@ var village_chest_ref: VillageChest = null
 @onready var tooltip_texto: Label = $TooltipPanel/TooltipTexto
 @onready var sell_menu: PanelContainer = $SellMenu
 
+@onready var debug_panel: PanelContainer = $DebugPanel
+@onready var debug_add_seeds_button: Button = $DebugPanel/MarginContainer/ScrollContainer/VBoxDebug/BtnDebugAddSeeds
+@onready var debug_add_water_button: Button = $DebugPanel/MarginContainer/ScrollContainer/VBoxDebug/BtnDebugAddWater
+@onready var debug_add_basic_ingredients_button: Button = $DebugPanel/MarginContainer/ScrollContainer/VBoxDebug/BtnDebugAddIngredients
+@onready var debug_discover_all_recipes_button: Button = $DebugPanel/MarginContainer/ScrollContainer/VBoxDebug/BtnDebugDiscoverAllRecipes
+@onready var debug_force_growth_button: Button = $DebugPanel/MarginContainer/ScrollContainer/VBoxDebug/BtnDebugForceGrowth
+@onready var debug_save_button: Button = $DebugPanel/MarginContainer/ScrollContainer/VBoxDebug/BtnDebugSave
+@onready var debug_load_button: Button = $DebugPanel/MarginContainer/ScrollContainer/VBoxDebug/BtnDebugLoad
+@onready var debug_add_wheat_chest_button: Button = $DebugPanel/MarginContainer/ScrollContainer/VBoxDebug/BtnDebugAddWheatChest
+@onready var debug_clear_chest_button: Button = $DebugPanel/MarginContainer/ScrollContainer/VBoxDebug/BtnDebugClearChest
+@onready var debug_close_button: Button = $DebugPanel/MarginContainer/ScrollContainer/VBoxDebug/BtnFechar
+
 var ultimo_estado_inventario: Dictionary = {}
 var item_focado_id: String = ""
 var custo_dormir: int = 5
@@ -65,10 +77,10 @@ func _ready() -> void:
 	skill_tree = skill_tree_scene.instantiate()
 	add_child(skill_tree)
 	_aplicar_tema_pixel_ui(skill_tree)
-	skill_tree.mouse_filter = Control.MOUSE_FILTER_PASS
+	skill_tree.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	skill_tree.visibility_changed.connect(func():
 		if skill_tree:
-			skill_tree.mouse_filter = Control.MOUSE_FILTER_STOP if skill_tree.visible else Control.MOUSE_FILTER_PASS
+			skill_tree.mouse_filter = Control.MOUSE_FILTER_STOP if skill_tree.visible else Control.MOUSE_FILTER_IGNORE
 	)
 	if abrir_skill_tree_button:
 		abrir_skill_tree_button.pressed.connect(func(): skill_tree.visible = true)
@@ -76,10 +88,10 @@ func _ready() -> void:
 	quest_board = quest_board_scene.instantiate()
 	add_child(quest_board)
 	_aplicar_tema_pixel_ui(quest_board)
-	quest_board.mouse_filter = Control.MOUSE_FILTER_PASS
+	quest_board.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	quest_board.visibility_changed.connect(func():
 		if quest_board:
-			quest_board.mouse_filter = Control.MOUSE_FILTER_STOP if quest_board.visible else Control.MOUSE_FILTER_PASS
+			quest_board.mouse_filter = Control.MOUSE_FILTER_STOP if quest_board.visible else Control.MOUSE_FILTER_IGNORE
 	)
 	if abrir_quests_button:
 		abrir_quests_button.pressed.connect(_on_abrir_quests_pressed)
@@ -90,11 +102,11 @@ func _ready() -> void:
 		cauldron_popup_layer.add_child(recipe_book)
 	else:
 		add_child(recipe_book)
-	recipe_book.mouse_filter = Control.MOUSE_FILTER_PASS
+	recipe_book.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	recipe_book.z_index = 200
 	recipe_book.visibility_changed.connect(func():
 		if recipe_book:
-			recipe_book.mouse_filter = Control.MOUSE_FILTER_STOP if recipe_book.visible else Control.MOUSE_FILTER_PASS
+			recipe_book.mouse_filter = Control.MOUSE_FILTER_STOP if recipe_book.visible else Control.MOUSE_FILTER_IGNORE
 	)
 	if recipe_book.has_signal("craft_requested"):
 		recipe_book.craft_requested.connect(_on_recipe_book_craft_requested)
@@ -104,18 +116,42 @@ func _ready() -> void:
 		
 	if sell_menu:
 		_aplicar_tema_pixel_ui(sell_menu)
-		sell_menu.mouse_filter = Control.MOUSE_FILTER_PASS
+		sell_menu.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		sell_menu.visibility_changed.connect(func():
 			if sell_menu:
-				sell_menu.mouse_filter = Control.MOUSE_FILTER_STOP if sell_menu.visible else Control.MOUSE_FILTER_PASS
+				sell_menu.mouse_filter = Control.MOUSE_FILTER_STOP if sell_menu.visible else Control.MOUSE_FILTER_IGNORE
 		)
 		
 	if QuestManager:
 		QuestManager.quest_atualizada.connect(_on_nova_quest_recebida)
 
+	if debug_panel:
+		debug_panel.visible = false
+		debug_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	if debug_add_seeds_button:
+		debug_add_seeds_button.pressed.connect(_on_debug_add_seeds_pressed)
+	if debug_add_water_button:
+		debug_add_water_button.pressed.connect(_on_debug_add_water_pressed)
+	if debug_add_basic_ingredients_button:
+		debug_add_basic_ingredients_button.pressed.connect(_on_debug_add_basic_ingredients_pressed)
+	if debug_discover_all_recipes_button:
+		debug_discover_all_recipes_button.pressed.connect(_on_debug_discover_all_recipes_pressed)
+	if debug_force_growth_button:
+		debug_force_growth_button.pressed.connect(_on_debug_force_growth_pressed)
+	if debug_save_button:
+		debug_save_button.pressed.connect(_on_debug_save_pressed)
+	if debug_load_button:
+		debug_load_button.pressed.connect(_on_debug_load_pressed)
+	if debug_add_wheat_chest_button:
+		debug_add_wheat_chest_button.pressed.connect(_on_debug_add_wheat_to_chest_pressed)
+	if debug_clear_chest_button:
+		debug_clear_chest_button.pressed.connect(_on_debug_clear_chest_pressed)
+	if debug_close_button:
+		debug_close_button.pressed.connect(fechar_debug_panel)
+
 	if village_chest_panel:
 		village_chest_panel.visible = false
-		village_chest_panel.mouse_filter = Control.MOUSE_FILTER_PASS
+		village_chest_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	if village_chest_withdraw_button:
 		village_chest_withdraw_button.pressed.connect(_on_village_chest_withdraw_pressed)
 	if village_chest_close_button:
@@ -123,6 +159,34 @@ func _ready() -> void:
 		
 	# Inicializa
 	verificar_e_atualizar_inventario()
+
+func _input(event: InputEvent) -> void:
+	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_F10:
+		_toggle_debug_panel()
+		get_viewport().set_input_as_handled()
+
+func _toggle_debug_panel() -> void:
+	if debug_panel and debug_panel.visible:
+		fechar_debug_panel()
+	else:
+		abrir_debug_panel()
+
+func abrir_debug_panel() -> void:
+	if not debug_panel:
+		return
+
+	debug_panel.visible = true
+	debug_panel.mouse_filter = Control.MOUSE_FILTER_STOP
+	debug_panel.move_to_front()
+	print("Debug: painel aberto.")
+
+func fechar_debug_panel() -> void:
+	if not debug_panel:
+		return
+
+	debug_panel.visible = false
+	debug_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	print("Debug: painel fechado.")
 
 func _process(delta: float) -> void:
 	timer_reset_dormir += delta
@@ -347,6 +411,105 @@ func _on_nova_quest_recebida() -> void:
 		if alerta:
 			alerta.visible = true
 
+func _on_debug_add_seeds_pressed() -> void:
+	GlobalInventory.adicionar_item("semente_basica", 10)
+	print("Debug: adicionou semente_basica x10.")
+	_atualizar_pos_debug_acao()
+
+func _on_debug_add_water_pressed() -> void:
+	GlobalInventory.adicionar_item("agua", 10)
+	print("Debug: adicionou agua x10.")
+	_atualizar_pos_debug_acao()
+
+func _on_debug_add_basic_ingredients_pressed() -> void:
+	GlobalInventory.adicionar_item("trigo", 10)
+	GlobalInventory.adicionar_item("carvao", 10)
+	GlobalInventory.adicionar_item("tomate_sol", 5)
+	GlobalInventory.adicionar_item("raiz_gelida", 5)
+	GlobalInventory.adicionar_item("palha_rara", 3)
+	GlobalInventory.adicionar_item("rama_encantada", 3)
+	print("Debug: adicionou ingredientes basicos ao inventario.")
+	_atualizar_pos_debug_acao()
+
+func _on_debug_discover_all_recipes_pressed() -> void:
+	var adicionadas: int = 0
+	for recipe_id_variant in Database.receitas_alquimia.keys():
+		var recipe_id: String = str(recipe_id_variant)
+		if recipe_id == "":
+			continue
+		if GlobalInventory.receitas_descobertas.has(recipe_id):
+			continue
+		GlobalInventory.receitas_descobertas.append(recipe_id)
+		adicionadas += 1
+
+	print("Debug: descobriu %d receitas." % adicionadas)
+
+func _on_debug_force_growth_pressed() -> void:
+	var lotes := get_tree().get_nodes_in_group("lotes_terra")
+	var afetados: int = 0
+	for lote in lotes:
+		if lote == null or not is_instance_valid(lote):
+			continue
+		if lote.has_method("debug_force_ready_to_harvest"):
+			lote.debug_force_ready_to_harvest()
+			afetados += 1
+
+	print("Debug: lotes forçados para colheita: %d." % afetados)
+
+func _on_debug_save_pressed() -> void:
+	if SaveManager and SaveManager.save_game():
+		print("Debug: jogo salvo.")
+	else:
+		push_warning("Debug: falha ao salvar o jogo.")
+
+func _on_debug_load_pressed() -> void:
+	if SaveManager and SaveManager.load_game():
+		print("Debug: jogo carregado.")
+		_atualizar_pos_debug_acao()
+	else:
+		push_warning("Debug: falha ao carregar o jogo.")
+
+func _on_debug_add_wheat_to_chest_pressed() -> void:
+	var chest := _obter_bau_da_vila_debug()
+	if chest == null:
+		push_warning("Debug: baú da vila não encontrado.")
+		return
+
+	chest.deposit_item("trigo", 10)
+	print("Debug: adicionou trigo x10 ao Baú da Vila.")
+	_atualizar_painel_bau_vila()
+
+func _on_debug_clear_chest_pressed() -> void:
+	var chest := _obter_bau_da_vila_debug()
+	if chest == null:
+		push_warning("Debug: baú da vila não encontrado.")
+		return
+
+	if chest.has_method("clear_contents"):
+		chest.clear_contents()
+		print("Debug: baú da vila limpo.")
+	else:
+		push_warning("Debug: o baú da vila não possui clear_contents().")
+		return
+
+	_atualizar_painel_bau_vila()
+
+func _atualizar_pos_debug_acao() -> void:
+	verificar_e_atualizar_inventario()
+	if village_chest_panel and village_chest_panel.visible:
+		_atualizar_painel_bau_vila()
+
+func _obter_bau_da_vila_debug() -> VillageChest:
+	if village_chest_ref and is_instance_valid(village_chest_ref):
+		return village_chest_ref
+
+	var chests: Array = get_tree().get_nodes_in_group("village_chest")
+	for chest in chests:
+		if chest != null and is_instance_valid(chest) and chest is VillageChest:
+			return chest
+
+	return null
+
 func abrir_bau_vila(bau: VillageChest) -> void:
 	if bau == null or not is_instance_valid(bau):
 		push_warning("UI: baú da vila inválido.")
@@ -402,6 +565,7 @@ func _on_village_chest_withdraw_pressed() -> void:
 		_atualizar_painel_bau_vila()
 
 func _on_abrir_livro_receitas_pressed() -> void:
+	print("DEBUG UI: botão livro de receitas clicado")
 	abrir_livro_receitas(false)
 
 func abrir_livro_receitas(fechar_caldeirao: bool = false, cauldron: Node = null) -> void:
@@ -425,6 +589,10 @@ func abrir_livro_receitas(fechar_caldeirao: bool = false, cauldron: Node = null)
 		_vincular_caldeirao_no_livro(cauldron_final)
 	else:
 		push_warning("UI: nenhum caldeirao valido encontrado para o Livro de Receitas.")
+
+	var cauldron_popup_layer := get_tree().current_scene.get_node_or_null("CauldronUI/PopupLayer")
+	if cauldron_popup_layer:
+		cauldron_popup_layer.visible = true
 
 	if recipe_book and recipe_book.has_method("abrir"):
 		recipe_book.abrir()
@@ -454,6 +622,7 @@ func _instanciar_livro_receitas() -> void:
 	recipe_book = recipe_book_scene.instantiate()
 	var cauldron_popup_layer := get_tree().current_scene.get_node_or_null("CauldronUI/PopupLayer")
 	if cauldron_popup_layer:
+		cauldron_popup_layer.visible = true
 		cauldron_popup_layer.add_child(recipe_book)
 	else:
 		add_child(recipe_book)

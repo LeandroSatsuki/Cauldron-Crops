@@ -84,104 +84,128 @@
 - Recomendação futura: migrar para `Resource .tres` como formato principal, mantendo JSON/CSV apenas como apoio se necessário.
 - Risco: a documentação não resolve a limitação estrutural sozinha; ela só prepara a migração futura.
 
-## Decisão 14 - RecipeData criado sem acoplar ao jogo
+## Decisão 14 - Popup da UI precisa ficar visivel ao abrir
+- Problema: o clique no caldeirao e a abertura do Livro chegavam aos handlers, mas a camada `PopupLayer` permanecia oculta.
+- Decisão: reativar o `PopupLayer` ao abrir o popup do caldeirao e ao abrir o Livro de Receitas.
+- Motivo: manter a estrutura atual de UI sem deixar a camada onde os painéis vivem invisivel.
+- Risco: o `PopupLayer` continua sendo uma solução provisoria de camada compartilhada.
+
+## Decisão 15 - RecipeData criado sem acoplar ao jogo
 - Problema: o projeto precisava de uma base tipada para receitas sem quebrar o fluxo atual.
 - Decisão: criar `RecipeData` e receitas `.tres` de teste como camada estrutural paralela.
 - Motivo: preparar a migração futura enquanto o caldeirao continua lendo `Database.receitas_alquimia`.
 - Risco: dois formatos vivem ao mesmo tempo por enquanto, entao o acoplamento futuro precisara ser feito com cuidado.
 
-## Decisão 15 - RecipeDatabase apenas de leitura
+## Decisão 16 - RecipeDatabase apenas de leitura
 - Problema: o projeto precisava validar `Resource` de receitas sem trocar a fonte principal ainda.
 - Decisão: criar `RecipeDatabase.gd` somente para carregar, validar e comparar receitas.
 - Motivo: permitir a migração futura de forma segura, sem acoplar o caldeirao nesta etapa.
 - Risco: a manutenção temporaria de dois sistemas de receita continua exigindo disciplina na migracao.
 
-## Decisão 16 - Livro de Receitas em paralelo com fallback
+## Decisão 17 - Livro de Receitas em paralelo com fallback
 - Problema: o Livro de Receitas precisava mostrar dados ricos sem abandonar a fonte antiga.
 - Decisão: usar `RecipeDatabase` apenas para leitura e exibição complementar no Livro, mantendo `Database.receitas_alquimia` como fallback obrigatório.
 - Motivo: validar o novo formato sem mexer no caldeirao nem na producao em lote.
 - Risco: o jogo continua com dois caminhos de dados ativos até a migracao completa ser validada.
 
-## Decisão 17 - Cobertura completa das receitas legadas
+## Decisão 18 - Cobertura completa das receitas legadas
 - Problema: ainda faltavam `.tres` para parte do catálogo legado.
 - Decisão: criar `RecipeData` para todas as receitas que ainda só existiam em `Database.receitas_alquimia`.
 - Motivo: permitir cobertura completa do `RecipeDatabase` sem mexer no fluxo funcional do jogo.
 - Risco: a cobertura dos dados está completa, mas a fonte funcional principal ainda é o sistema legado até a migração final.
 
-## Decisão 18 - Baú da Vila V1 sem UI
+## Decisão 19 - Baú da Vila V1 sem UI
 - Problema: o golem precisava de um destino físico simples para depositar itens.
 - Decisão: criar um Baú da Vila V1 apenas como nó físico com inventário interno e console debug.
 - Motivo: validar o ciclo colheita -> transporte -> depósito antes de qualquer interface.
 - Risco: o baú ainda não tem UI, salvamento nem interação avançada.
 
-## Decisão 19 - Colheita segura do golem
+## Decisão 20 - Colheita segura do golem
 - Problema: a colheita automática antiga dependia de clique humano e era frágil para IA.
 - Decisão: criar `harvest_by_golem()` no `FarmPlot` para colher 1 item básico sem usar `_on_plot_clicked()`.
 - Motivo: separar a lógica do golem da lógica de interação manual.
 - Risco: bônus extras, sementes bônus e variações sazonais ficam para depois.
 
-## Decisão 20 - Golem físico V1 com depósito
+## Decisão 21 - Golem físico V1 com depósito
 - Problema: o golem físico existia só como placeholder visual.
 - Decisão: ligar `Golem.gd` à cena e fazer o golem procurar lote maduro, colher e depositar no Baú da Vila.
 - Motivo: validar o loop físico mínimo do coletor antes de upgrades e árvore de talentos.
 - Risco: o `GolemManager` segue desligado e o sistema ainda não tem pathfinding nem UI do baú.
 
-## Decisão 21 - UI simples do Baú da Vila
+## Decisão 22 - UI simples do Baú da Vila
 - Problema: os itens depositados pelo golem ficavam invisíveis para o jogador.
 - Decisão: criar um painel simples para abrir o baú, listar o conteúdo e permitir `Retirar Tudo` para o inventário global.
 - Motivo: manter o baú separado do inventário do jogador e tornar o fluxo claro antes do salvamento.
 - Risco: retirada individual e persistência do baú ainda ficam para etapas futuras.
 
-## Decisão 22 - Presenca fisica do golem
+## Decisão 23 - Presenca fisica do golem
 - Problema: o golem parecia sem volume e passava visualmente por baixo de elementos do mundo.
 - Decisão: ajustar a ordenacao visual com z_index por Y, mover a interacao para um ponto lateral/abaixo do lote e adicionar um sensor simples de proximidade.
 - Motivo: melhorar a leitura espacial sem implementar pathfinding.
 - Risco: o movimento continua em linha reta e pode atravessar obstaculos; isso fica para uma etapa futura.
 
-## Decisão 23 - Recompensas compartilhadas da colheita
+## Decisão 24 - Recompensas compartilhadas da colheita
 - Problema: a colheita manual já tinha bônus e drops raros, mas o golem ainda colhia só um item básico.
 - Decisão: centralizar a geração das recompensas em `FarmPlot` para que a colheita manual e a do golem usem o mesmo conjunto de bônus.
 - Motivo: manter paridade de jogo entre o que o jogador colhe na mão e o que o golem entrega ao Baú da Vila.
 - Risco: o golem agora pode depositar mais de um tipo de item por viagem, então o balanceamento futuro precisa considerar esse volume extra.
 
-## Decisão 24 - Navegacao simples do golem
+## Decisão 25 - Navegacao simples do golem
 - Problema: o golem ainda atravessava visualmente o caldeirão e não contornava obstáculos.
 - Decisão: substituir o Tween direto por navegação simples com `NavigationAgent2D` e rota por waypoints quando a linha cruza o caldeirão.
 - Motivo: dar um comportamento físico mais crível sem introduzir um sistema pesado de pathfinding agora.
 - Risco: a solução ainda é híbrida e simples; obstáculos mais complexos continuarão exigindo refinamento depois.
 
-## Decisão 25 - Caldeirão como obstáculo físico
+## Decisão 26 - Caldeirão como obstáculo físico
 - Problema: o caldeirão precisava bloquear o caminho do golem no mundo.
 - Decisão: adicionar um obstáculo físico simples ao caldeirão e uma região de navegação básica na área jogável inicial.
 - Motivo: tornar a navegação do protótipo previsível sem mexer na UI do caldeirão.
 - Risco: o obstáculo é provisório e a área navegável ainda é ampla demais para um mapa com mais complexidade.
 
-## Decisão 26 - Golem com corpo físico
+## Decisão 27 - Golem com corpo físico
 - Problema: a navegação por `Node2D` ainda permitia leitura estranha e não respeitava colisão de forma confiável.
 - Decisão: usar `CharacterBody2D` no golem físico, mantendo `NavigationAgent2D` como guia de rota.
 - Motivo: impedir que o golem atravesse o caldeirão sem abrir escopo para pathfinding completo agora.
 - Risco: a navegação continua provisória e pode precisar de refinamento quando a fazenda crescer.
 
-## Decisão 27 - Desvio simples ao travar
+## Decisão 28 - Desvio simples ao travar
 - Problema: mesmo com colisão física, o golem podia encostar no caldeirão e ficar preso sem reação útil.
 - Decisão: detectar travamento e calcular um waypoint de desvio simples ao redor do caldeirão antes de seguir o destino original.
 - Motivo: destravar o coletor sem restaurar a rota manual em L nem implementar pathfinding completo ainda.
 - Risco: o desvio é heurístico e pode precisar ser revisto quando a fazenda e os obstáculos crescerem.
 
-## Decisão 28 - Terra arada em camada baixa
+## Decisão 29 - Terra arada em camada baixa
 - Problema: o golem ainda podia parecer escondido pela terra arada e pela base visual dos lotes.
 - Decisão: manter a terra/base do lote em camada baixa e dar ao golem um offset visual levemente acima do campo.
 - Motivo: preservar a leitura espacial do protótipo sem mexer em coleta, depósito ou navegação.
 - Risco: o sistema de camadas ainda é provisório e pode receber refinamento quando a cena crescer.
 
-## Decisão 29 - Terra fora da herança do lote
+## Decisão 30 - Terra fora da herança do lote
 - Problema: lotes mais abaixo na tela ainda podiam cobrir parcialmente o golem por herança de z do `FarmPlot`.
 - Decisão: desligar a herança de z dos visuais de solo do lote e manter planta, VFX e tooltip com camadas próprias.
 - Motivo: impedir que o chão de lotes inferiores cubra o golem sem mexer no fluxo do jogo.
 - Risco: isso resolve a leitura atual, mas o sistema de camadas ainda continua provisório.
 
-## Decisão 30 - Save mínimo do Baú da Vila
+## Decisão 31 - Save mínimo do Baú da Vila
 - Problema: o conteúdo do Baú da Vila podia ser perdido ao fechar o jogo antes da retirada.
 - Decisão: salvar e restaurar o `inventory` do baú em `village_chest_inventory` dentro do `SaveManager`.
 - Motivo: manter o ciclo do golem e do baú persistente sem mexer ainda nos lotes, crops ou no salvamento completo do mundo.
 - Risco: o save continua mínimo e ainda não persiste o estado dos lotes/plantações.
+
+## Decisão 32 - Debug Panel V1 temporario
+- Problema: os testes do protótipo estavam lentos para itens, receitas, lotes, save e Baú da Vila.
+- Decisão: criar um painel de debug oculto na UI principal, aberto por `F10`, com ferramentas temporárias de teste.
+- Motivo: acelerar a validação do protótipo sem transformar essas ações em mecânicas reais.
+- Risco: o painel precisa continuar claramente temporário para não poluir o fluxo normal do jogo.
+
+## Decisão 33 - Debug Panel nao bloqueia input fechado
+- Problema: o painel de debug podia interferir com cliques do mundo quando estava escondido.
+- Decisão: manter o `DebugPanel` em `mouse_filter = Ignore` enquanto fechado e só passar para `Stop` quando aberto.
+- Motivo: preservar o atalho de debug sem quebrar o clique no caldeirao, no Livro de Receitas ou em outras interacoes normais.
+- Risco: a regra de input precisa continuar simples para nao reintroduzir bloqueio quando o painel crescer.
+
+## Decisão 34 - Paineis fechados ignoram mouse
+- Problema: painéis modais e temporários da UI podiam continuar no caminho do clique do mundo.
+- Decisão: padronizar `mouse_filter = Ignore` quando estão fechados e `Stop` apenas enquanto visíveis.
+- Motivo: deixar o caldeirao e o Livro de Receitas clicáveis sem precisar desmontar a UI de protótipo.
+- Risco: qualquer novo painel temporário precisa seguir a mesma regra para não voltar a bloquear interação.

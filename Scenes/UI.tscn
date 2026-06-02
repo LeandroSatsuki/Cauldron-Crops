@@ -191,3 +191,112 @@ text = "Retirar Tudo"
 [node name="FecharButton" type="Button" parent="VillageChestPanel/MarginContainer/VBoxChest/ButtonsRow" unique_id=1208024200]
 layout_mode = 2
 text = "Fechar"
+
+[node name="DebugPanel" type="PanelContainer" parent="."]
+visible = false
+mouse_filter = 2
+offset_left = 860.0
+offset_top = 120.0
+offset_right = 1230.0
+offset_bottom = 760.0
+theme = ExtResource("3_pixeltheme")
+
+[node name="MarginContainer" type="MarginContainer" parent="DebugPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="ScrollContainer" type="ScrollContainer" parent="DebugPanel/MarginContainer"]
+layout_mode = 2
+custom_minimum_size = Vector2(330, 620)
+
+[node name="VBoxDebug" type="VBoxContainer" parent="DebugPanel/MarginContainer/ScrollContainer"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="TitleLabel" type="Label" parent="DebugPanel/MarginContainer/ScrollContainer/VBoxDebug"]
+layout_mode = 2
+text = "Debug Panel"
+horizontal_alignment = 1
+
+[node name="InfoLabel" type="Label" parent="DebugPanel/MarginContainer/ScrollContainer/VBoxDebug"]
+layout_mode = 2
+text = "Ferramentas temporárias de teste. Não é UI final."
+autowrap_mode = 3
+
+[node name="SeparatorTop" type="HSeparator" parent="DebugPanel/MarginContainer/ScrollContainer/VBoxDebug"]
+layout_mode = 2
+
+[node name="LabelInventario" type="Label" parent="DebugPanel/MarginContainer/ScrollContainer/VBoxDebug"]
+layout_mode = 2
+text = "Inventário"
+
+[node name="BtnDebugAddSeeds" type="Button" parent="DebugPanel/MarginContainer/ScrollContainer/VBoxDebug"]
+layout_mode = 2
+text = "Adicionar sementes básicas"
+
+[node name="BtnDebugAddWater" type="Button" parent="DebugPanel/MarginContainer/ScrollContainer/VBoxDebug"]
+layout_mode = 2
+text = "Adicionar água"
+
+[node name="BtnDebugAddIngredients" type="Button" parent="DebugPanel/MarginContainer/ScrollContainer/VBoxDebug"]
+layout_mode = 2
+text = "Adicionar ingredientes básicos"
+
+[node name="SeparatorRecipes" type="HSeparator" parent="DebugPanel/MarginContainer/ScrollContainer/VBoxDebug"]
+layout_mode = 2
+
+[node name="LabelReceitas" type="Label" parent="DebugPanel/MarginContainer/ScrollContainer/VBoxDebug"]
+layout_mode = 2
+text = "Receitas"
+
+[node name="BtnDebugDiscoverAllRecipes" type="Button" parent="DebugPanel/MarginContainer/ScrollContainer/VBoxDebug"]
+layout_mode = 2
+text = "Descobrir todas as receitas"
+
+[node name="SeparatorPlots" type="HSeparator" parent="DebugPanel/MarginContainer/ScrollContainer/VBoxDebug"]
+layout_mode = 2
+
+[node name="LabelLotes" type="Label" parent="DebugPanel/MarginContainer/ScrollContainer/VBoxDebug"]
+layout_mode = 2
+text = "Lotes"
+
+[node name="BtnDebugForceGrowth" type="Button" parent="DebugPanel/MarginContainer/ScrollContainer/VBoxDebug"]
+layout_mode = 2
+text = "Forçar crescimento dos lotes"
+
+[node name="SeparatorSave" type="HSeparator" parent="DebugPanel/MarginContainer/ScrollContainer/VBoxDebug"]
+layout_mode = 2
+
+[node name="LabelSave" type="Label" parent="DebugPanel/MarginContainer/ScrollContainer/VBoxDebug"]
+layout_mode = 2
+text = "Save"
+
+[node name="BtnDebugSave" type="Button" parent="DebugPanel/MarginContainer/ScrollContainer/VBoxDebug"]
+layout_mode = 2
+text = "Salvar"
+
+[node name="BtnDebugLoad" type="Button" parent="DebugPanel/MarginContainer/ScrollContainer/VBoxDebug"]
+layout_mode = 2
+text = "Carregar"
+
+[node name="SeparatorChest" type="HSeparator" parent="DebugPanel/MarginContainer/ScrollContainer/VBoxDebug"]
+layout_mode = 2
+
+[node name="LabelBau" type="Label" parent="DebugPanel/MarginContainer/ScrollContainer/VBoxDebug"]
+layout_mode = 2
+text = "Baú da Vila"
+
+[node name="BtnDebugAddWheatChest" type="Button" parent="DebugPanel/MarginContainer/ScrollContainer/VBoxDebug"]
+layout_mode = 2
+text = "Adicionar trigo ao Baú"
+
+[node name="BtnDebugClearChest" type="Button" parent="DebugPanel/MarginContainer/ScrollContainer/VBoxDebug"]
+layout_mode = 2
+text = "Limpar Baú"
+
+[node name="BtnFechar" type="Button" parent="DebugPanel/MarginContainer/ScrollContainer/VBoxDebug"]
+layout_mode = 2
+text = "Fechar"

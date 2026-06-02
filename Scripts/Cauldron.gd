@@ -67,6 +67,7 @@ func _process(_delta: float) -> void:
 		_atualizar_interface_lote()
 
 func abrir_popup():
+	$PopupLayer.visible = true
 	popup_ui.show()
 	popup_ui.visible = true
 	popup_ui.move_to_front()
@@ -74,12 +75,14 @@ func abrir_popup():
 
 func _on_area_2d_input_event(viewport, event, shape_idx):
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_LEFT:
+		print("DEBUG Cauldron: clique recebido")
 		if _batch_ativo:
 			cancelar_producao_em_lote()
 			return
 		abrir_popup()
 
 func _on_btn_livro_receitas_pressed() -> void:
+	print("DEBUG Cauldron: botão livro de receitas clicado")
 	var ui = get_tree().current_scene.get_node_or_null("UI")
 	if ui and ui.has_method("abrir_livro_receitas"):
 		ui.abrir_livro_receitas(true, self)
