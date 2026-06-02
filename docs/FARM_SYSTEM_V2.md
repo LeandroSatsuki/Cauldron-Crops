@@ -152,6 +152,13 @@ Gerenciador futuro para controlar a fazenda baseada em grid:
 - validar áreas bloqueadas;
 - lidar com expansão da fazenda.
 
+Base técnica inicial:
+
+- `Scripts/data/FarmGridManager.gd`
+- gerenciador isolado de dados
+- não usado no gameplay atual
+- preparado para conversar com `FarmTileData` no futuro
+
 ## Migração dos Lotes Atuais
 
 O sistema atual de `FarmPlot` deve continuar por enquanto.

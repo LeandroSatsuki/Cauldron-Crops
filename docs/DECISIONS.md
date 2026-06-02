@@ -245,3 +245,9 @@
 - Decisão: criar `Scripts/data/FarmTileData.gd` como `Resource` isolado, sem conectar ao gameplay ainda.
 - Motivo: preparar a futura serialização do grid e manter o `FarmPlot` como sistema ativo enquanto isso.
 - Risco: enquanto o grid não existir, o recurso serve apenas como fundação técnica e documentação executável.
+
+## Decisão 41 - FarmGridManager base sem cena
+- Problema: o grid futuro precisava de um coordenador de dados sem virar parte da cena ou do gameplay cedo demais.
+- Decisão: criar `Scripts/data/FarmGridManager.gd` como `RefCounted`, isolado e sem `Autoload`.
+- Motivo: permitir montagem, leitura e serialização de grids a partir de `FarmTileData` sem substituir `FarmPlot`.
+- Risco: o gerenciador ainda não participa do jogo real e pode precisar de ajustes quando o grid começar a ser usado de verdade.

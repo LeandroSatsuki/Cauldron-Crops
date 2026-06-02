@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-06-02 - FarmGridManager base
+- Criação de `Scripts/data/FarmGridManager.gd` como gerenciador isolado de dados para o Farm System V2.
+- O gerenciador funciona como `RefCounted`, sem cena, sem Autoload e sem conexão com o gameplay atual.
+- A estrutura já prepara criação, leitura e serialização futura de grids com `FarmTileData`.
+
 ## 2026-06-02 - FarmTileData base
 - Criação de `Scripts/data/FarmTileData.gd` como `Resource` isolado para representar tiles futuros do Farm System V2.
 - O recurso ainda não é usado no gameplay atual; `FarmPlot` continua sendo o sistema ativo.
