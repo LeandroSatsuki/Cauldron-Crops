@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-06-02 - Base do TimeManager
+- Criação de `Scripts/TimeManager.gd` como fundação técnica para o sistema futuro de tempo real e debug.
+- O script ainda não está conectado ao gameplay, não é Autoload e mantém o modo real desligado por padrão.
+- A integração com `SeasonManager`, `SaveManager`, plantações, golems e UI continua para fases futuras.
+
 ## 2026-06-01 - Documento de tempo real
 - Criação do documento `docs/TIME_SYSTEM.md` para registrar a direção futura do tempo real do jogo.
 - O sistema final de tempo ficou documentado como tempo real, mas o protótipo continua em modo debug/controlável por enquanto.

@@ -82,7 +82,7 @@ Exemplos de proteção futura:
 
 Estrutura futura prevista, sem implementação nesta etapa:
 
-* `TimeManager.gd` como Autoload.
+* `TimeManager.gd` como base futura do sistema.
 * Guardar data real do último login.
 * Guardar dia atual do jogo.
 * Guardar estação atual.
@@ -91,6 +91,18 @@ Estrutura futura prevista, sem implementação nesta etapa:
 * Processar viradas pendentes.
 * Expor modo debug.
 * Salvar e carregar estado pelo `SaveManager`.
+
+## TimeManager V0
+
+O arquivo `Scripts/TimeManager.gd` já existe como fundação técnica, mas ainda não está conectado ao gameplay.
+
+Nesta etapa:
+
+* `real_time_enabled` permanece `false` por padrão.
+* O script existe como unidade isolada, sem `Autoload`.
+* O `SeasonManager` continua sendo a fonte funcional das estações do protótipo.
+* O `TimeManager` ainda não chama `SeasonManager`, `SaveManager`, plantações, golems ou UI.
+* Os métodos de debug existem apenas como base para fases futuras.
 
 ## Plano de Implementação Futuro
 

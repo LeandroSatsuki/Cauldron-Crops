@@ -227,3 +227,9 @@
 - Decisão: documentar tempo real como direção final, porém manter o desenvolvimento em modo debug/controlável por enquanto.
 - Motivo: permitir um `TimeManager` futuro sem travar o fluxo de testes do protótipo.
 - Risco: o sistema de tempo real pode afetar crops, estações, quests, economia e salvamento se for ativado cedo demais.
+
+## Decisão 38 - TimeManager base sem Autoload
+- Problema: o projeto precisava de uma fundação técnica para o tempo futuro sem acoplar gameplay cedo demais.
+- Decisão: criar `Scripts/TimeManager.gd` como script solto, com modo real desligado por padrão e funções de debug internas.
+- Motivo: permitir evolução segura da arquitetura de tempo antes de conectar `SeasonManager`, `SaveManager`, plantações e UI.
+- Risco: enquanto o `TimeManager` não for integrado, ele serve só como base estrutural e ainda não altera o jogo.

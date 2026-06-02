@@ -25,6 +25,7 @@
 - Avaliar `Resource .tres`, JSON ou CSV.
 - Criar um padrão de receitas.
 - Documentar a arquitetura futura de tempo real antes de conectar gameplay.
+- Criar a base do `TimeManager` sem integrar ao gameplay ainda.
 
 ## Fase 4 - Conteúdo
 - Novas crops.
