@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-06-02 - Preview visual do FarmGrid
+- Criação de `Scenes/dev/FarmGridPreview.tscn` e `Scripts/dev/FarmGridPreview.gd` como preview visual isolado do grid futuro.
+- A cena desenha um grid 5x5 em memória, alterna estados de tile ao clique e não conecta nada ao gameplay principal.
+- O sistema atual de `FarmPlot` continua intocado e ativo no jogo normal.
+
 ## 2026-06-02 - Debug runner do FarmGrid
 - Adição do botão temporário `Testar FarmGrid` no Debug Panel para executar `FarmGridManagerSmokeTest` manualmente.
 - O botão roda apenas o teste isolado em memória e mostra o resultado no console e na última ação do painel.

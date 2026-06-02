@@ -173,6 +173,16 @@ Ferramenta temporária no Debug Panel:
 - serve apenas para desenvolvimento e validação manual
 - não altera o `FarmPlot` atual nem o gameplay
 
+Preview visual isolado:
+
+- `Scenes/dev/FarmGridPreview.tscn`
+- `Scripts/dev/FarmGridPreview.gd`
+- mostra um grid 5x5 desenhado em memória
+- permite alternar estados de tile manualmente
+- não substitui `FarmPlot`
+- não salva no `SaveManager`
+- não entra no gameplay principal
+
 ## Migração dos Lotes Atuais
 
 O sistema atual de `FarmPlot` deve continuar por enquanto.

@@ -1,0 +1,16 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://Scripts/dev/FarmGridPreview.gd" id="1_preview_script"]
+
+[node name="FarmGridPreview" type="Node2D"]
+script = ExtResource("1_preview_script")
+
+[node name="TitleLabel" type="Label" parent="."]
+position = Vector2(20, 20)
+text = "FarmGrid Preview V0"
+
+[node name="InfoLabel" type="Label" parent="."]
+position = Vector2(20, 44)
+size = Vector2(520, 48)
+text = "Clique nos tiles para alternar: grama -> arado -> molhado -> grama"
+autowrap_mode = 3

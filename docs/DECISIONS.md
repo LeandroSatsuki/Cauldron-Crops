@@ -144,6 +144,12 @@
 - Motivo: permitir checagem em memória da fundação do grid sem acoplar a cena ou os lotes atuais.
 - Risco: a ferramenta é só de desenvolvimento e deve ser removida ou reorganizada quando o grid entrar de verdade no jogo.
 
+## Decisão 34 - Preview visual isolado do FarmGrid
+- Problema: a fundação do grid precisava de uma visualização manual simples sem tocar no `FarmPlot` ativo.
+- Decisão: criar `Scenes/dev/FarmGridPreview.tscn` como cena isolada de preview visual para o grid futuro.
+- Motivo: permitir experimentar desenho e interação de tiles sem conectar ao gameplay principal.
+- Risco: a cena é só de teste e não deve virar uma rota paralela de jogo.
+
 ## Decisão 23 - Presenca fisica do golem
 - Problema: o golem parecia sem volume e passava visualmente por baixo de elementos do mundo.
 - Decisão: ajustar a ordenacao visual com z_index por Y, mover a interacao para um ponto lateral/abaixo do lote e adicionar um sensor simples de proximidade.
