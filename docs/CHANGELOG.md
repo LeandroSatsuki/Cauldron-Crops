@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-06-02 - Limpeza tecnica de logs
+- O `ToolManager` passou a evitar log repetido quando a mesma ferramenta ja estava selecionada.
+- O caldeirao teve removido o print temporario `DEBUG Cauldron: clique recebido`.
+- Nenhuma regra de gameplay foi alterada nessa limpeza.
+
 ## 2026-06-02 - Ferramenta Ativa V0 no jogo principal
 - O projeto ganhou a base de ferramenta ativa global com `ToolManager` como `Autoload`.
 - A primeira ferramenta real e apenas visual/global e a `Enxada`, selecionada por botao na UI e pela tecla `1`.

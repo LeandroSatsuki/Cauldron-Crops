@@ -8,6 +8,9 @@ enum ToolType {
 var active_tool: ToolType = ToolType.NONE
 
 func select_tool(tool: ToolType) -> void:
+	if active_tool == tool:
+		return
+
 	active_tool = tool
 	print("ToolManager: ferramenta ativa = %s" % get_tool_name(active_tool))
 

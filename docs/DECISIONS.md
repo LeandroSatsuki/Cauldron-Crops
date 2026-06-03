@@ -323,3 +323,9 @@
 - Decisão: criar `Scripts/ToolManager.gd` como `Autoload`, com a `Enxada` como primeira ferramenta real apenas para selecao visual/global.
 - Motivo: preparar a futura ponte entre UI, atalhos e sistemas de fazenda sem alterar o `FarmPlot` agora.
 - Risco: se essa base for ligada cedo demais ao clique no mundo, pode quebrar o prototipo atual ou confundir a selecao de ferramenta com gameplay real.
+
+## Decisão 45 - Limpeza tecnica de logs
+- Problema: a selecao de ferramenta repetia log quando a mesma opcao era acionada de novo, e o caldeirao ainda tinha um print temporario de debug.
+- Decisão: impedir log repetido no `ToolManager` quando a ferramenta ja estiver selecionada e remover o `DEBUG Cauldron: clique recebido`.
+- Motivo: reduzir ruído de console sem mudar o comportamento do jogo principal.
+- Risco: a limpeza so trata ruído de log; outras mensagens de debug podem continuar existindo por design em outras partes do projeto.
