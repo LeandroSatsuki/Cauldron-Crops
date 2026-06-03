@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-06-02 - Ferramenta Ativa V0 expandida
+- A seleção global de ferramentas no jogo principal passou a incluir `Enxada`, `Semente`, `Regador` e `Colheita`.
+- A troca acontece por botões na UI e pelas teclas `1`, `2`, `3` e `4`.
+- A seleção continua apenas visual/global e ainda não altera gameplay.
+
 ## 2026-06-02 - Limpeza tecnica de logs
 - O `ToolManager` passou a evitar log repetido quando a mesma ferramenta ja estava selecionada.
 - O caldeirao teve removido o print temporario `DEBUG Cauldron: clique recebido`.

@@ -134,8 +134,8 @@ Pendencia registrada:
 
 O jogo principal ganhou uma base de ferramenta ativa global com `ToolManager` como `Autoload`.
 
-- primeira ferramenta real: Enxada
-- selecao por botao e tecla `1`
+- ferramentas visuais globais: Enxada, Semente, Regador e Colheita
+- selecao por botoes e teclas `1`, `2`, `3`, `4`
 - apenas estado visual/global por enquanto
 - nao altera aragem, plantio ou colheita no gameplay
 - FarmPlot continua ativo

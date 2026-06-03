@@ -17,6 +17,9 @@ const FarmGridManagerSmokeTestScript = preload("res://Scripts/dev/FarmGridManage
 @onready var dormir_button: Button = $LeftPanel/DormirButton
 @onready var comprar_cosmetico_button: Button = $LeftPanel/ComprarCosmeticoButton
 @onready var tool_hoe_button: Button = $LeftPanel/BtnToolHoe
+@onready var tool_seed_button: Button = $LeftPanel/BtnToolSeed
+@onready var tool_watering_can_button: Button = $LeftPanel/BtnToolWateringCan
+@onready var tool_harvest_button: Button = $LeftPanel/BtnToolHarvest
 @onready var comprar_trigo_button: Button = $LeftPanel/GridSementes/ComprarTrigoButton
 @onready var comprar_verao_button: Button = $LeftPanel/GridSementes/ComprarVeraoButton
 @onready var abrir_skill_tree_button: Button = $LeftPanel/AbrirSkillTreeButton
@@ -76,6 +79,15 @@ func _ready() -> void:
 	if tool_hoe_button:
 		if not tool_hoe_button.pressed.is_connected(_on_tool_hoe_button_pressed):
 			tool_hoe_button.pressed.connect(_on_tool_hoe_button_pressed)
+	if tool_seed_button:
+		if not tool_seed_button.pressed.is_connected(_on_tool_seed_button_pressed):
+			tool_seed_button.pressed.connect(_on_tool_seed_button_pressed)
+	if tool_watering_can_button:
+		if not tool_watering_can_button.pressed.is_connected(_on_tool_watering_can_button_pressed):
+			tool_watering_can_button.pressed.connect(_on_tool_watering_can_button_pressed)
+	if tool_harvest_button:
+		if not tool_harvest_button.pressed.is_connected(_on_tool_harvest_button_pressed):
+			tool_harvest_button.pressed.connect(_on_tool_harvest_button_pressed)
 	if comprar_trigo_button:
 		comprar_trigo_button.gui_input.connect(func(event): _on_comprar_semente_gui_input(event, "semente_basica", 5, "+1 Semente Trigo", "+10 Semente Trigo"))
 		comprar_trigo_button.mouse_entered.connect(_on_comprar_trigo_button_mouse_entered)
@@ -183,6 +195,15 @@ func _input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 	elif event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_1:
 		_selecionar_enxada()
+		get_viewport().set_input_as_handled()
+	elif event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_2:
+		_selecionar_semente()
+		get_viewport().set_input_as_handled()
+	elif event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_3:
+		_selecionar_regador()
+		get_viewport().set_input_as_handled()
+	elif event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_4:
+		_selecionar_colheita()
 		get_viewport().set_input_as_handled()
 
 func _toggle_debug_panel() -> void:
@@ -573,6 +594,39 @@ func _selecionar_enxada() -> void:
 	else:
 		push_warning("UI: ToolManager nao encontrado.")
 	atualizar_status_jogo()
+
+func _selecionar_semente() -> void:
+	var tool_manager: Node = _obter_tool_manager()
+	if tool_manager != null and tool_manager.has_method("select_seed"):
+		tool_manager.call("select_seed")
+	else:
+		push_warning("UI: ToolManager nao encontrado.")
+	atualizar_status_jogo()
+
+func _selecionar_regador() -> void:
+	var tool_manager: Node = _obter_tool_manager()
+	if tool_manager != null and tool_manager.has_method("select_watering_can"):
+		tool_manager.call("select_watering_can")
+	else:
+		push_warning("UI: ToolManager nao encontrado.")
+	atualizar_status_jogo()
+
+func _selecionar_colheita() -> void:
+	var tool_manager: Node = _obter_tool_manager()
+	if tool_manager != null and tool_manager.has_method("select_harvest"):
+		tool_manager.call("select_harvest")
+	else:
+		push_warning("UI: ToolManager nao encontrado.")
+	atualizar_status_jogo()
+
+func _on_tool_seed_button_pressed() -> void:
+	_selecionar_semente()
+
+func _on_tool_watering_can_button_pressed() -> void:
+	_selecionar_regador()
+
+func _on_tool_harvest_button_pressed() -> void:
+	_selecionar_colheita()
 
 func _obter_nome_ferramenta_ativa() -> String:
 	var tool_manager: Node = _obter_tool_manager()

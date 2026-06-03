@@ -329,3 +329,9 @@
 - Decisão: impedir log repetido no `ToolManager` quando a ferramenta ja estiver selecionada e remover o `DEBUG Cauldron: clique recebido`.
 - Motivo: reduzir ruído de console sem mudar o comportamento do jogo principal.
 - Risco: a limpeza so trata ruído de log; outras mensagens de debug podem continuar existindo por design em outras partes do projeto.
+
+## Decisão 46 - Ferramentas visuais globais expandidas
+- Problema: a base de ferramenta ativa precisava deixar de ser apenas `Enxada` e passar a espelhar o conjunto visual validado no preview.
+- Decisão: expandir `ToolManager` e a UI principal para `Enxada`, `Semente`, `Regador` e `Colheita`, mantendo tudo sem ação real por enquanto.
+- Motivo: preparar a navegação global de ferramentas sem tocar no `FarmPlot` nem no `FarmGrid`.
+- Risco: a seleção global ainda não executa ação, então a UI pode sugerir mais capacidade do que o gameplay realmente oferece.

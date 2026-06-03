@@ -2,7 +2,10 @@ extends Node
 
 enum ToolType {
 	NONE,
-	HOE
+	HOE,
+	SEED,
+	WATERING_CAN,
+	HARVEST
 }
 
 var active_tool: ToolType = ToolType.NONE
@@ -17,6 +20,15 @@ func select_tool(tool: ToolType) -> void:
 func select_hoe() -> void:
 	select_tool(ToolType.HOE)
 
+func select_seed() -> void:
+	select_tool(ToolType.SEED)
+
+func select_watering_can() -> void:
+	select_tool(ToolType.WATERING_CAN)
+
+func select_harvest() -> void:
+	select_tool(ToolType.HARVEST)
+
 func clear_tool() -> void:
 	select_tool(ToolType.NONE)
 
@@ -25,6 +37,15 @@ func get_active_tool() -> ToolType:
 
 func is_hoe_selected() -> bool:
 	return active_tool == ToolType.HOE
+
+func is_seed_selected() -> bool:
+	return active_tool == ToolType.SEED
+
+func is_watering_can_selected() -> bool:
+	return active_tool == ToolType.WATERING_CAN
+
+func is_harvest_selected() -> bool:
+	return active_tool == ToolType.HARVEST
 
 func get_tool_name(tool: int = -1) -> String:
 	var tool_to_read: int = tool
@@ -36,5 +57,11 @@ func get_tool_name(tool: int = -1) -> String:
 			return "Nenhuma"
 		ToolType.HOE:
 			return "Enxada"
+		ToolType.SEED:
+			return "Semente"
+		ToolType.WATERING_CAN:
+			return "Regador"
+		ToolType.HARVEST:
+			return "Colheita"
 		_:
 			return "Desconhecida"

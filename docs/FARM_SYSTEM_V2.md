@@ -177,8 +177,8 @@ Ferramenta Ativa V0 no jogo principal:
 
 - `Scripts/ToolManager.gd`
 - registrado como `Autoload`
-- primeira ferramenta real: `Enxada`
-- seleção visual/global por botão e tecla `1`
+- ferramentas visuais globais: `Enxada`, `Semente`, `Regador`, `Colheita`
+- seleção visual/global por botões e teclas `1`, `2`, `3`, `4`
 - ainda não altera gameplay
 - `FarmPlot` continua ativo
 - `FarmGrid` continua isolado

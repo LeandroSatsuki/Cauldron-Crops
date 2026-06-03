@@ -65,6 +65,18 @@ horizontal_alignment = 1
 layout_mode = 2
 text = "Enxada"
 
+[node name="BtnToolSeed" type="Button" parent="LeftPanel" unique_id=1730000003]
+layout_mode = 2
+text = "Semente"
+
+[node name="BtnToolWateringCan" type="Button" parent="LeftPanel" unique_id=1730000004]
+layout_mode = 2
+text = "Regador"
+
+[node name="BtnToolHarvest" type="Button" parent="LeftPanel" unique_id=1730000005]
+layout_mode = 2
+text = "Colheita"
+
 [node name="DormirButton" type="Button" parent="LeftPanel" unique_id=2091208078]
 layout_mode = 2
 text = "Dormir (Mudar Estação)"
