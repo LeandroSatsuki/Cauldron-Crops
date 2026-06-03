@@ -35,6 +35,7 @@
 - Visualizar tipos de solo alquímico no preview isolado do FarmGrid.
 - Testar ferramenta ativa Enxada e decay diario no preview isolado do FarmGrid.
 - Testar ferramenta fake Semente para validar plantio e proteção contra decay.
+- Testar ferramenta fake Regador para validar molhar terra arada e plantio.
 
 ## Fase 4 - Conteúdo
 - Novas crops.

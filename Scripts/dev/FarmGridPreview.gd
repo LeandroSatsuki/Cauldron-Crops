@@ -3,7 +3,8 @@ extends Node2D
 enum ToolType {
 	NONE,
 	HOE,
-	SEED
+	SEED,
+	WATERING_CAN
 }
 
 @onready var tool_label: Label = $ToolLabel
@@ -42,6 +43,11 @@ func _draw() -> void:
 				var marker_rect: Rect2 = Rect2(center - Vector2(marker_size * 0.5, marker_size * 0.5), Vector2(marker_size, marker_size))
 				draw_rect(marker_rect, Color(0.95, 0.95, 0.30, 1.0), true)
 				draw_rect(marker_rect, Color(0.20, 0.20, 0.20, 1.0), false, 1.0)
+			if tile.tile_state == FarmTileData.TileState.PLANTADO and tile.is_watered:
+				var watered_marker_size: float = 8.0
+				var watered_marker_rect: Rect2 = Rect2(rect.position + Vector2(rect.size.x - watered_marker_size - 6.0, 6.0), Vector2(watered_marker_size, watered_marker_size))
+				draw_rect(watered_marker_rect, Color(0.35, 0.75, 1.0, 1.0), true)
+				draw_rect(watered_marker_rect, Color(0.08, 0.20, 0.30, 1.0), false, 1.0)
 
 func _unhandled_input(event: InputEvent) -> void:
 	if grid_manager == null:
@@ -57,6 +63,9 @@ func _unhandled_input(event: InputEvent) -> void:
 			return
 		if key_event.pressed and not key_event.echo and key_event.keycode == KEY_2:
 			_definir_ferramenta(ToolType.SEED)
+			return
+		if key_event.pressed and not key_event.echo and key_event.keycode == KEY_3:
+			_definir_ferramenta(ToolType.WATERING_CAN)
 			return
 
 	if event is not InputEventMouseButton:
@@ -95,6 +104,8 @@ func _usar_ferramenta_ativa(tile_position: Vector2i, tile: FarmTileData) -> void
 			_usar_enxada(tile_position, tile)
 		ToolType.SEED:
 			_usar_semente(tile_position, tile)
+		ToolType.WATERING_CAN:
+			_usar_regador(tile_position, tile)
 		_:
 			print("FarmGridPreview: nenhuma ferramenta ativa no tile (%d, %d)." % [tile_position.x, tile_position.y])
 
@@ -114,16 +125,39 @@ func _usar_enxada(tile_position: Vector2i, tile: FarmTileData) -> void:
 
 func _usar_semente(tile_position: Vector2i, tile: FarmTileData) -> void:
 	if (tile.tile_state == FarmTileData.TileState.ARADO or tile.tile_state == FarmTileData.TileState.MOLHADO) and tile.crop_id == "":
+		var estava_molhado: bool = tile.tile_state == FarmTileData.TileState.MOLHADO
 		tile.tile_state = FarmTileData.TileState.PLANTADO
 		tile.crop_id = "debug_crop"
 		tile.remaining_growth_time = 10.0
 		tile.total_growth_time = 10.0
+		tile.is_watered = estava_molhado
+		tile.moisture = 1.0 if tile.is_watered else 0.0
 		grid_manager.set_tile(tile_position, tile)
 		queue_redraw()
 		print("FarmGridPreview: Semente plantada no tile (%d, %d)." % [tile_position.x, tile_position.y])
 		return
 
 	print("FarmGridPreview: Semente sem efeito no tile (%d, %d): %s." % [tile_position.x, tile_position.y, _get_tile_state_name(tile.tile_state)])
+
+func _usar_regador(tile_position: Vector2i, tile: FarmTileData) -> void:
+	if tile.tile_state == FarmTileData.TileState.ARADO:
+		tile.tile_state = FarmTileData.TileState.MOLHADO
+		tile.is_watered = true
+		tile.moisture = 1.0
+		grid_manager.set_tile(tile_position, tile)
+		queue_redraw()
+		print("FarmGridPreview: Regador molhou o tile (%d, %d)." % [tile_position.x, tile_position.y])
+		return
+
+	if tile.tile_state == FarmTileData.TileState.PLANTADO:
+		tile.is_watered = true
+		tile.moisture = 1.0
+		grid_manager.set_tile(tile_position, tile)
+		queue_redraw()
+		print("FarmGridPreview: Regador molhou a plantacao no tile (%d, %d)." % [tile_position.x, tile_position.y])
+		return
+
+	print("FarmGridPreview: Regador sem efeito no tile (%d, %d): %s." % [tile_position.x, tile_position.y, _get_tile_state_name(tile.tile_state)])
 
 func _simular_decay_diario() -> void:
 	if grid_manager == null:
@@ -142,6 +176,10 @@ func _simular_decay_diario() -> void:
 			tile.moisture = 0.0
 			grid_manager.set_tile(tile.grid_position, tile)
 			tiles_limpos += 1
+		elif tile.tile_state == FarmTileData.TileState.PLANTADO and tile.crop_id != "":
+			tile.is_watered = false
+			tile.moisture = 0.0
+			grid_manager.set_tile(tile.grid_position, tile)
 
 	queue_redraw()
 	print("FarmGridPreview: decay diario limpou %d tile(s) arados sem semente." % tiles_limpos)
@@ -263,6 +301,8 @@ func _get_tool_name(tool: int) -> String:
 			return "Enxada"
 		ToolType.SEED:
 			return "Semente"
+		ToolType.WATERING_CAN:
+			return "Regador"
 		ToolType.NONE:
 			return "Nenhuma"
 		_:

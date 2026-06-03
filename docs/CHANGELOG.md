@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-06-02 - Preview do FarmGrid com Regador fake
+- O preview isolado do FarmGrid passou a testar uma ferramenta fake de `Regador`, com seleção por tecla `3`.
+- Tiles `ARADO` passam a virar `MOLHADO`, e tiles `PLANTADO` ganham estado de água visual no preview.
+- O decay diário agora pode retirar água de tiles plantados sem desmontar o plantio fake.
+- Tudo continua isolado e sem conexão com o `FarmPlot` ativo.
+
 ## 2026-06-02 - Preview do FarmGrid com Semente fake
 - O preview isolado do FarmGrid passou a testar uma ferramenta fake de `Semente`, além da `Enxada` para arar tiles.
 - A cena agora planta um crop de debug em memória, permitindo validar a regra de que tiles plantados não voltam para grama no decay diário.

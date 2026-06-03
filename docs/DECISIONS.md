@@ -168,6 +168,12 @@
 - Motivo: permitir testar plantio e proteção contra decay sem inventário real, sem Database e sem gameplay principal.
 - Risco: o crop fake existe só para validação e deve ser substituido por dados reais quando a fazenda em grid entrar de verdade.
 
+## Decisão 38 - Preview testa Regador fake
+- Problema: o preview precisava validar o próximo passo do loop de fazenda em grid, molhando terra arada e plantios de debug.
+- Decisão: adicionar uma ferramenta fake `Regador`, selecionada por tecla `3`, que molha tiles `ARADO` e `PLANTADO` em memória.
+- Motivo: testar água, umidade e estado molhado sem criar inventário, `PocoManager` ou gameplay principal.
+- Risco: a lógica de água continua provisória e pode ser ajustada quando o grid estiver realmente integrado.
+
 ## Decisão 23 - Presenca fisica do golem
 - Problema: o golem parecia sem volume e passava visualmente por baixo de elementos do mundo.
 - Decisão: ajustar a ordenacao visual com z_index por Y, mover a interacao para um ponto lateral/abaixo do lote e adicionar um sensor simples de proximidade.

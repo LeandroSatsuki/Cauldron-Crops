@@ -11,8 +11,8 @@ text = "FarmGrid Preview V0"
 
 [node name="InfoLabel" type="Label" parent="."]
 position = Vector2(20, 44)
-size = Vector2(640, 96)
-text = "1: Enxada | 2: Semente | D: Simular dia\nClique esquerdo: usar ferramenta ativa\nClique direito: alternar tipo de solo alquimico\nDecay: terra arada/molhada sem semente volta para grama"
+size = Vector2(720, 118)
+text = "1: Enxada | 2: Semente | 3: Regador | D: Simular dia\nClique esquerdo: usar ferramenta ativa\nClique direito: alternar tipo de solo alquimico\nDecay: terra arada/molhada sem semente volta para grama\nPlantados podem perder agua no decay diario"
 autowrap_mode = 3
 
 [node name="ToolLabel" type="Label" parent="."]
