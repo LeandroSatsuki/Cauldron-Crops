@@ -37,6 +37,7 @@
 - Testar ferramenta fake Semente para validar plantio e proteção contra decay.
 - Testar ferramenta fake Regador para validar molhar terra arada e plantio.
 - Testar crescimento fake em tiles irrigados com a tecla `G` e marcadores visuais por estagio.
+- Testar ferramenta fake Colheita para fechar o loop minimo no preview isolado do FarmGrid.
 
 ## Fase 4 - Conteúdo
 - Novas crops.

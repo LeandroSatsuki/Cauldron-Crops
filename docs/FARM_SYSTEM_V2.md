@@ -178,13 +178,14 @@ Preview visual isolado:
 - `Scenes/dev/FarmGridPreview.tscn`
 - `Scripts/dev/FarmGridPreview.gd`
 - mostra um grid 5x5 desenhado em memória
-- testa ferramenta ativa simples, com `Enxada`, `Semente` e `Regador` fake
+- testa ferramenta ativa simples, com `Enxada`, `Semente`, `Regador` e `Colheita` fake
 - permite alternar estados de tile manualmente
 - permite alternar tipos de solo alquimico com clique direito
 - permite simular crescimento fake em tiles plantados e irrigados com a tecla `G`
 - simula o Decay Diario em memoria para limpar tiles arados ou molhados sem crop
 - tiles plantados com crop fake nao voltam para grama no decay diario
 - tiles plantados podem perder agua no decay diario sem deixar de estar plantados
+- permite colher crop fake madura e devolver o tile para `ARADO`
 - o crescimento fake usa `remaining_growth_time` e avanca apenas quando o tile esta molhado
 - não substitui `FarmPlot`
 - não salva no `SaveManager`

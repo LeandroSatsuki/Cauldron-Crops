@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-06-02 - Preview do FarmGrid com colheita fake
+- O preview isolado do FarmGrid passou a testar uma ferramenta fake de `Colheita`, selecionada por tecla `4`.
+- Crop madura fake agora pode ser colhida em memoria, limpando o tile e devolvendo o estado para `ARADO`.
+- Isso completa o loop minimo do preview sem conectar nada ao `FarmPlot` ativo.
+
 ## 2026-06-02 - Preview do FarmGrid com crescimento fake
 - O preview isolado do FarmGrid passou a simular crescimento fake com a tecla `G`, avancando `remaining_growth_time` apenas em tiles plantados e irrigados.
 - O marcador visual do plantio agora muda de tamanho conforme o estagio de crescimento, sem conectar nada ao gameplay principal.

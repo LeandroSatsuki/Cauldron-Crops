@@ -4,7 +4,8 @@ enum ToolType {
 	NONE,
 	HOE,
 	SEED,
-	WATERING_CAN
+	WATERING_CAN,
+	HARVEST
 }
 
 const DEBUG_GROWTH_STEP: float = 2.5
@@ -73,6 +74,9 @@ func _unhandled_input(event: InputEvent) -> void:
 		if key_event.pressed and not key_event.echo and key_event.keycode == KEY_3:
 			_definir_ferramenta(ToolType.WATERING_CAN)
 			return
+		if key_event.pressed and not key_event.echo and key_event.keycode == KEY_4:
+			_definir_ferramenta(ToolType.HARVEST)
+			return
 
 	if event is not InputEventMouseButton:
 		return
@@ -112,6 +116,8 @@ func _usar_ferramenta_ativa(tile_position: Vector2i, tile: FarmTileData) -> void
 			_usar_semente(tile_position, tile)
 		ToolType.WATERING_CAN:
 			_usar_regador(tile_position, tile)
+		ToolType.HARVEST:
+			_usar_colheita(tile_position, tile)
 		_:
 			print("FarmGridPreview: nenhuma ferramenta ativa no tile (%d, %d)." % [tile_position.x, tile_position.y])
 
@@ -164,6 +170,25 @@ func _usar_regador(tile_position: Vector2i, tile: FarmTileData) -> void:
 		return
 
 	print("FarmGridPreview: Regador sem efeito no tile (%d, %d): %s." % [tile_position.x, tile_position.y, _get_tile_state_name(tile.tile_state)])
+
+func _usar_colheita(tile_position: Vector2i, tile: FarmTileData) -> void:
+	if tile.crop_id == "":
+		print("FarmGridPreview: Colheita sem efeito no tile (%d, %d): %s." % [tile_position.x, tile_position.y, _get_tile_state_name(tile.tile_state)])
+		return
+
+	if tile.remaining_growth_time > 0.0:
+		print("FarmGridPreview: crop ainda nao esta madura no tile (%d, %d)." % [tile_position.x, tile_position.y])
+		return
+
+	print("FarmGridPreview: colheu %s no tile (%d, %d)." % [tile.crop_id, tile_position.x, tile_position.y])
+	tile.crop_id = ""
+	tile.remaining_growth_time = 0.0
+	tile.total_growth_time = 0.0
+	tile.is_watered = false
+	tile.moisture = 0.0
+	tile.tile_state = FarmTileData.TileState.ARADO
+	grid_manager.set_tile(tile_position, tile)
+	queue_redraw()
 
 func _simular_decay_diario() -> void:
 	if grid_manager == null:
@@ -374,6 +399,8 @@ func _get_tool_name(tool: int) -> String:
 			return "Semente"
 		ToolType.WATERING_CAN:
 			return "Regador"
+		ToolType.HARVEST:
+			return "Colheita"
 		ToolType.NONE:
 			return "Nenhuma"
 		_:

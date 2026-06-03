@@ -180,6 +180,12 @@
 - Motivo: observar a curva de crescimento em memoria com uma regra simples e sem punir o jogador no prototipo.
 - Risco: o escalonamento visual e a quantidade de estagios podem mudar quando a fazenda em grid entrar de verdade.
 
+## Decisão 40 - Preview testa colheita fake
+- Problema: o preview precisava fechar o loop minimo da fazenda em grid com uma etapa de colheita sem inventario real.
+- Decisão: adicionar a tecla `4` para selecionar `Colheita` e colher apenas crops maduras, limpando o tile e devolvendo-o para `ARADO`.
+- Motivo: validar a transicao crescimento -> colheita -> preparo para novo plantio sem acoplar o sistema real de itens.
+- Risco: a regra de retorno para `ARADO` pode ser ajustada quando o loop de solo e plantio entrar no jogo principal.
+
 ## Decisão 23 - Presenca fisica do golem
 - Problema: o golem parecia sem volume e passava visualmente por baixo de elementos do mundo.
 - Decisão: ajustar a ordenacao visual com z_index por Y, mover a interacao para um ponto lateral/abaixo do lote e adicionar um sensor simples de proximidade.
