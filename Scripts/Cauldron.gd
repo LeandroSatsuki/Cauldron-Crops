@@ -75,7 +75,6 @@ func abrir_popup():
 
 func _on_area_2d_input_event(viewport, event, shape_idx):
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_LEFT:
-		print("DEBUG Cauldron: clique recebido")
 		if _batch_ativo:
 			cancelar_producao_em_lote()
 			return
