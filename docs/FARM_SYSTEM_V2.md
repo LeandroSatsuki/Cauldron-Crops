@@ -191,6 +191,14 @@ Preview visual isolado:
 - não salva no `SaveManager`
 - não entra no gameplay principal
 
+Checkpoint de arquitetura:
+
+- o preview ja validou o loop minimo do FarmGrid em memoria
+- as ferramentas continuam fake e isoladas
+- o `FarmPlot` continua sendo o sistema ativo do prototipo
+- a migracao real fica para fases futuras e seguras
+- a pendencia de logs globais em cenas dev continua registrada como item tecnico em aberto
+
 ## Migração dos Lotes Atuais
 
 O sistema atual de `FarmPlot` deve continuar por enquanto.

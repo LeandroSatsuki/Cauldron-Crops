@@ -186,6 +186,12 @@
 - Motivo: validar a transicao crescimento -> colheita -> preparo para novo plantio sem acoplar o sistema real de itens.
 - Risco: a regra de retorno para `ARADO` pode ser ajustada quando o loop de solo e plantio entrar no jogo principal.
 
+## Decisão 41 - Checkpoint do FarmGrid
+- Problema: o FarmGrid V2 precisava de um registro oficial do que ja foi validado e do que ainda e fake antes de qualquer integracao.
+- Decisão: criar um checkpoint de arquitetura documentando o preview, o loop minimo validado, os riscos e a pendencia de logs globais em cenas dev.
+- Motivo: manter o FarmGrid isolado enquanto o `FarmPlot` segue como sistema ativo e confiavel do prototipo.
+- Risco: o checkpoint nao resolve os logs globais; ele apenas registra a pendencia para investigacao futura.
+
 ## Decisão 23 - Presenca fisica do golem
 - Problema: o golem parecia sem volume e passava visualmente por baixo de elementos do mundo.
 - Decisão: ajustar a ordenacao visual com z_index por Y, mover a interacao para um ponto lateral/abaixo do lote e adicionar um sensor simples de proximidade.

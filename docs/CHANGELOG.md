@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-06-02 - Checkpoint do FarmGrid
+- O projeto registrou um checkpoint oficial para o FarmGrid V2, deixando claro o que o preview ja validou e o que continua fake.
+- O `FarmPlot` foi reafirmado como sistema ativo enquanto o grid permanece em laboratorio.
+- A pendencia de logs globais em cenas dev foi documentada como item tecnico em aberto.
+
 ## 2026-06-02 - Preview do FarmGrid com colheita fake
 - O preview isolado do FarmGrid passou a testar uma ferramenta fake de `Colheita`, selecionada por tecla `4`.
 - Crop madura fake agora pode ser colhida em memoria, limpando o tile e devolvendo o estado para `ARADO`.
