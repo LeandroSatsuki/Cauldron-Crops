@@ -16,10 +16,11 @@ const FarmGridManagerSmokeTestScript = preload("res://Scripts/dev/FarmGridManage
 @onready var usar_pocao_button: Button = $LeftPanel/UsarPocaoButton
 @onready var dormir_button: Button = $LeftPanel/DormirButton
 @onready var comprar_cosmetico_button: Button = $LeftPanel/ComprarCosmeticoButton
-@onready var tool_hoe_button: Button = $LeftPanel/BtnToolHoe
-@onready var tool_seed_button: Button = $LeftPanel/BtnToolSeed
-@onready var tool_watering_can_button: Button = $LeftPanel/BtnToolWateringCan
-@onready var tool_harvest_button: Button = $LeftPanel/BtnToolHarvest
+@onready var tool_bar_panel: HBoxContainer = $ToolBarPanel
+@onready var tool_hoe_button: Button = $ToolBarPanel/BtnToolHoe
+@onready var tool_seed_button: Button = $ToolBarPanel/BtnToolSeed
+@onready var tool_watering_can_button: Button = $ToolBarPanel/BtnToolWateringCan
+@onready var tool_harvest_button: Button = $ToolBarPanel/BtnToolHarvest
 @onready var comprar_trigo_button: Button = $LeftPanel/GridSementes/ComprarTrigoButton
 @onready var comprar_verao_button: Button = $LeftPanel/GridSementes/ComprarVeraoButton
 @onready var abrir_skill_tree_button: Button = $LeftPanel/AbrirSkillTreeButton
@@ -187,6 +188,7 @@ func _ready() -> void:
 		
 	# Inicializa
 	verificar_e_atualizar_inventario()
+	atualizar_toolbar_ferramentas()
 	atualizar_status_jogo()
 
 func _input(event: InputEvent) -> void:
@@ -283,6 +285,33 @@ func atualizar_status_jogo() -> void:
 		chest_status_label.text = "Baú: %s" % _obter_status_bau_vila()
 	if tool_label:
 		tool_label.text = "Ferramenta: %s" % _obter_nome_ferramenta_ativa()
+	atualizar_toolbar_ferramentas()
+
+func atualizar_toolbar_ferramentas() -> void:
+	if tool_bar_panel:
+		tool_bar_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+	_atualizar_texto_botao_ferramenta(tool_hoe_button, "1 Enxada", _is_tool_active(0))
+	_atualizar_texto_botao_ferramenta(tool_seed_button, "2 Semente", _is_tool_active(1))
+	_atualizar_texto_botao_ferramenta(tool_watering_can_button, "3 Regador", _is_tool_active(2))
+	_atualizar_texto_botao_ferramenta(tool_harvest_button, "4 Colheita", _is_tool_active(3))
+
+func _atualizar_texto_botao_ferramenta(button: Button, texto_base: String, ativa: bool) -> void:
+	if button == null:
+		return
+
+	if ativa:
+		button.text = "> %s" % texto_base
+	else:
+		button.text = texto_base
+
+func _is_tool_active(tool_index: int) -> bool:
+	var tool_manager: Node = _obter_tool_manager()
+	if tool_manager == null or not tool_manager.has_method("get_active_tool"):
+		return false
+
+	var active_tool_value: int = int(tool_manager.call("get_active_tool"))
+	return active_tool_value == tool_index
 
 func _obter_status_bau_vila() -> String:
 	var chests: Array = get_tree().get_nodes_in_group("village_chest")
@@ -593,6 +622,7 @@ func _selecionar_enxada() -> void:
 		tool_manager.call("select_hoe")
 	else:
 		push_warning("UI: ToolManager nao encontrado.")
+	atualizar_toolbar_ferramentas()
 	atualizar_status_jogo()
 
 func _selecionar_semente() -> void:
@@ -601,6 +631,7 @@ func _selecionar_semente() -> void:
 		tool_manager.call("select_seed")
 	else:
 		push_warning("UI: ToolManager nao encontrado.")
+	atualizar_toolbar_ferramentas()
 	atualizar_status_jogo()
 
 func _selecionar_regador() -> void:
@@ -609,6 +640,7 @@ func _selecionar_regador() -> void:
 		tool_manager.call("select_watering_can")
 	else:
 		push_warning("UI: ToolManager nao encontrado.")
+	atualizar_toolbar_ferramentas()
 	atualizar_status_jogo()
 
 func _selecionar_colheita() -> void:
@@ -617,6 +649,7 @@ func _selecionar_colheita() -> void:
 		tool_manager.call("select_harvest")
 	else:
 		push_warning("UI: ToolManager nao encontrado.")
+	atualizar_toolbar_ferramentas()
 	atualizar_status_jogo()
 
 func _on_tool_seed_button_pressed() -> void:
