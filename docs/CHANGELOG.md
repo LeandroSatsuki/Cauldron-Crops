@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-06-02 - Limpeza tecnica da UI
+- O print temporario `DEBUG UI: botão livro de receitas clicado` foi removido da UI principal.
+- Nenhuma regra de gameplay foi alterada; o Livro de Receitas continua abrindo normalmente.
+
 ## 2026-06-02 - Ferramenta Ativa V0 expandida
 - A seleção global de ferramentas no jogo principal passou a incluir `Enxada`, `Semente`, `Regador` e `Colheita`.
 - A troca acontece por botões na UI e pelas teclas `1`, `2`, `3` e `4`.

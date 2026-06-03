@@ -713,7 +713,6 @@ func _on_village_chest_withdraw_pressed() -> void:
 		_atualizar_painel_bau_vila()
 
 func _on_abrir_livro_receitas_pressed() -> void:
-	print("DEBUG UI: botão livro de receitas clicado")
 	abrir_livro_receitas(false)
 
 func abrir_livro_receitas(fechar_caldeirao: bool = false, cauldron: Node = null) -> void:

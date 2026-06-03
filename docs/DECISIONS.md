@@ -335,3 +335,9 @@
 - Decisão: expandir `ToolManager` e a UI principal para `Enxada`, `Semente`, `Regador` e `Colheita`, mantendo tudo sem ação real por enquanto.
 - Motivo: preparar a navegação global de ferramentas sem tocar no `FarmPlot` nem no `FarmGrid`.
 - Risco: a seleção global ainda não executa ação, então a UI pode sugerir mais capacidade do que o gameplay realmente oferece.
+
+## Decisão 47 - Limpeza tecnica da UI
+- Problema: a UI principal ainda exibia um print temporario ao abrir o Livro de Receitas, poluindo o console sem trazer valor de depuracao.
+- Decisão: remover apenas `DEBUG UI: botão livro de receitas clicado`, mantendo warnings uteis e o comportamento normal da interface.
+- Motivo: reduzir ruído de console sem mexer em fluxo de abertura, receitas ou gameplay.
+- Risco: outros prints temporarios podem ainda existir em partes antigas do projeto e precisarem de limpeza separada.
