@@ -311,3 +311,9 @@
 - Decisão: criar `Scripts/dev/FarmGridManagerSmokeTest.gd` como teste manual em memória.
 - Motivo: facilitar checagem de criação, alteração e serialização do grid sem mexer no gameplay.
 - Risco: o teste depende de execução manual e não substitui testes automatizados futuros.
+
+## Decisão 43 - PocoManager ignora cenas dev
+- Problema: cenas de desenvolvimento, como `FarmGridPreview`, estavam recebendo agua automaticamente pelo `PocoManager` global.
+- Decisão: adicionar uma guarda para que o `PocoManager` nao processe geracao automatica de agua quando a cena atual estiver em `res://Scenes/dev/`.
+- Motivo: limpar o ruido dos testes isolados sem remover o Autoload nem alterar o comportamento do jogo principal.
+- Risco: a filtragem depende do caminho da cena e precisa continuar alinhada com a organizacao das cenas dev.

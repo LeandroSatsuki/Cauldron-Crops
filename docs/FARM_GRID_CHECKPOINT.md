@@ -119,7 +119,8 @@ Pendencia registrada:
 
 - investigar a origem dos logs de agua
 - evitar que cenas dev sejam poluidas por sistemas globais
-- nao corrigir agora se nao estiver quebrando o gameplay
+- o `PocoManager` agora ignora `res://Scenes/dev/`, entao o ruido deve desaparecer nos previews
+- manter a verificacao de outros possiveis logs globais, se aparecerem no futuro
 
 ## Decisao atual
 

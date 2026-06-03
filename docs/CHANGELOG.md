@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-06-02 - PocoManager ignora cenas dev
+- O `PocoManager` passou a ignorar cenas em `res://Scenes/dev/`, evitando gerar agua automaticamente durante testes isolados.
+- O comportamento normal do jogo principal permanece igual, porque a guarda so vale para cenas de desenvolvimento.
+
 ## 2026-06-02 - Checkpoint do FarmGrid
 - O projeto registrou um checkpoint oficial para o FarmGrid V2, deixando claro o que o preview ja validou e o que continua fake.
 - O `FarmPlot` foi reafirmado como sistema ativo enquanto o grid permanece em laboratorio.
