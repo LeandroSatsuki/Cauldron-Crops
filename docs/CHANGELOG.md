@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-06-02 - Preview do FarmGrid com crescimento fake
+- O preview isolado do FarmGrid passou a simular crescimento fake com a tecla `G`, avancando `remaining_growth_time` apenas em tiles plantados e irrigados.
+- O marcador visual do plantio agora muda de tamanho conforme o estagio de crescimento, sem conectar nada ao gameplay principal.
+- O `Decay Diario` continua isolado e o `FarmPlot` segue intocado.
+
 ## 2026-06-02 - Preview do FarmGrid com Regador fake
 - O preview isolado do FarmGrid passou a testar uma ferramenta fake de `Regador`, com seleção por tecla `3`.
 - Tiles `ARADO` passam a virar `MOLHADO`, e tiles `PLANTADO` ganham estado de água visual no preview.

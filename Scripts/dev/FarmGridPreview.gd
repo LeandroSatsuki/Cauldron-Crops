@@ -7,6 +7,8 @@ enum ToolType {
 	WATERING_CAN
 }
 
+const DEBUG_GROWTH_STEP: float = 2.5
+
 @onready var tool_label: Label = $ToolLabel
 
 var grid_manager: FarmGridManager = null
@@ -39,9 +41,10 @@ func _draw() -> void:
 			draw_rect(rect, Color(0.08, 0.08, 0.08, 1.0), false, 1.0)
 			if tile.tile_state == FarmTileData.TileState.PLANTADO and tile.crop_id != "":
 				var center: Vector2 = rect.position + (rect.size * 0.5)
-				var marker_size: float = 10.0
+				var growth_stage: int = _get_growth_stage(tile)
+				var marker_size: float = _get_growth_marker_size(growth_stage)
 				var marker_rect: Rect2 = Rect2(center - Vector2(marker_size * 0.5, marker_size * 0.5), Vector2(marker_size, marker_size))
-				draw_rect(marker_rect, Color(0.95, 0.95, 0.30, 1.0), true)
+				draw_rect(marker_rect, _get_growth_marker_color(growth_stage), true)
 				draw_rect(marker_rect, Color(0.20, 0.20, 0.20, 1.0), false, 1.0)
 			if tile.tile_state == FarmTileData.TileState.PLANTADO and tile.is_watered:
 				var watered_marker_size: float = 8.0
@@ -57,6 +60,9 @@ func _unhandled_input(event: InputEvent) -> void:
 		var key_event: InputEventKey = event
 		if key_event.pressed and not key_event.echo and key_event.keycode == KEY_D:
 			_simular_decay_diario()
+			return
+		if key_event.pressed and not key_event.echo and key_event.keycode == KEY_G:
+			_simular_crescimento_debug()
 			return
 		if key_event.pressed and not key_event.echo and key_event.keycode == KEY_1:
 			_definir_ferramenta(ToolType.HOE)
@@ -184,6 +190,32 @@ func _simular_decay_diario() -> void:
 	queue_redraw()
 	print("FarmGridPreview: decay diario limpou %d tile(s) arados sem semente." % tiles_limpos)
 
+func _simular_crescimento_debug() -> void:
+	if grid_manager == null:
+		return
+
+	var tiles_crescidos: int = 0
+	var tiles: Array = grid_manager.get_all_tiles()
+	for tile_variant in tiles:
+		if tile_variant is not FarmTileData:
+			continue
+
+		var tile: FarmTileData = tile_variant
+		if tile.crop_id == "":
+			continue
+		if not tile.is_watered:
+			continue
+		if tile.remaining_growth_time <= 0.0:
+			continue
+
+		tile.remaining_growth_time = maxf(tile.remaining_growth_time - DEBUG_GROWTH_STEP, 0.0)
+		grid_manager.set_tile(tile.grid_position, tile)
+		tiles_crescidos += 1
+		print("FarmGridPreview: crescimento no tile (%d, %d) -> %.2f/%.2f" % [tile.grid_position.x, tile.grid_position.y, tile.remaining_growth_time, tile.total_growth_time])
+
+	queue_redraw()
+	print("FarmGridPreview: crescimento debug aplicado em %d tile(s) irrigados." % tiles_crescidos)
+
 func _advance_soil_type(tile: FarmTileData) -> void:
 	var novo_soil_type: FarmTileData.SoilType = tile.soil_type
 	match tile.soil_type:
@@ -294,6 +326,45 @@ func _get_soil_type_name(soil_type: FarmTileData.SoilType) -> String:
 			return "INSTAVEL"
 		_:
 			return "COMUM"
+
+func _get_growth_stage(tile: FarmTileData) -> int:
+	if tile == null:
+		return 0
+	if tile.crop_id == "":
+		return 0
+	if tile.remaining_growth_time <= 0.0:
+		return 3
+	if tile.total_growth_time <= 0.0:
+		return 1
+
+	var proporcao_restante: float = clampf(tile.remaining_growth_time / tile.total_growth_time, 0.0, 1.0)
+	if proporcao_restante > 0.66:
+		return 1
+	if proporcao_restante > 0.33:
+		return 2
+	return 3
+
+func _get_growth_marker_size(growth_stage: int) -> float:
+	match growth_stage:
+		1:
+			return 8.0
+		2:
+			return 12.0
+		3:
+			return 16.0
+		_:
+			return 0.0
+
+func _get_growth_marker_color(growth_stage: int) -> Color:
+	match growth_stage:
+		1:
+			return Color(0.90, 0.95, 0.40, 1.0)
+		2:
+			return Color(0.98, 0.86, 0.28, 1.0)
+		3:
+			return Color(0.98, 0.98, 0.70, 1.0)
+		_:
+			return Color(0.95, 0.95, 0.30, 1.0)
 
 func _get_tool_name(tool: int) -> String:
 	match tool:

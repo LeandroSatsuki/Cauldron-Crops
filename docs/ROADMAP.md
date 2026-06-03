@@ -36,6 +36,7 @@
 - Testar ferramenta ativa Enxada e decay diario no preview isolado do FarmGrid.
 - Testar ferramenta fake Semente para validar plantio e proteção contra decay.
 - Testar ferramenta fake Regador para validar molhar terra arada e plantio.
+- Testar crescimento fake em tiles irrigados com a tecla `G` e marcadores visuais por estagio.
 
 ## Fase 4 - Conteúdo
 - Novas crops.

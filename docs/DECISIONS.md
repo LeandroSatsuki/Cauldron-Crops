@@ -174,6 +174,12 @@
 - Motivo: testar água, umidade e estado molhado sem criar inventário, `PocoManager` ou gameplay principal.
 - Risco: a lógica de água continua provisória e pode ser ajustada quando o grid estiver realmente integrado.
 
+## Decisão 39 - Preview testa crescimento fake
+- Problema: o preview precisava validar a leitura de crescimento do crop sem criar tempo real, sistema de fases ou gameplay principal.
+- Decisão: adicionar a tecla `G` para avançar `remaining_growth_time` apenas em tiles plantados e irrigados, usando marcadores visuais maiores conforme o crop se aproxima da maturidade.
+- Motivo: observar a curva de crescimento em memoria com uma regra simples e sem punir o jogador no prototipo.
+- Risco: o escalonamento visual e a quantidade de estagios podem mudar quando a fazenda em grid entrar de verdade.
+
 ## Decisão 23 - Presenca fisica do golem
 - Problema: o golem parecia sem volume e passava visualmente por baixo de elementos do mundo.
 - Decisão: ajustar a ordenacao visual com z_index por Y, mover a interacao para um ponto lateral/abaixo do lote e adicionar um sensor simples de proximidade.
