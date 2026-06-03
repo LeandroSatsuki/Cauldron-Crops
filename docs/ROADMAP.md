@@ -39,6 +39,8 @@
 - Testar crescimento fake em tiles irrigados com a tecla `G` e marcadores visuais por estagio.
 - Testar ferramenta fake Colheita para fechar o loop minimo no preview isolado do FarmGrid.
 - Registrar o checkpoint oficial do FarmGrid e investigar os logs globais em cenas dev.
+- Criar a base da Ferramenta Ativa V0 no jogo principal com `ToolManager`.
+- Exibir a ferramenta ativa no StatusPanel e selecionar `Enxada` por botão e tecla `1`.
 
 ## Fase 4 - Conteúdo
 - Novas crops.

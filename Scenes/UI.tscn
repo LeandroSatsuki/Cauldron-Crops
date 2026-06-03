@@ -43,6 +43,10 @@ text = "Capacidade: 0/0"
 layout_mode = 2
 text = "Baú: não encontrado"
 
+[node name="ToolLabel" type="Label" parent="StatusPanel" unique_id=1730000001]
+layout_mode = 2
+text = "Ferramenta: Nenhuma"
+
 [node name="LeftPanel" type="VBoxContainer" parent="." unique_id=1703485619]
 offset_left = 20.0
 offset_top = 200.0
@@ -56,6 +60,10 @@ modulate = Color(1, 1, 0, 1)
 layout_mode = 2
 text = "--- GERENCIAMENTO ---"
 horizontal_alignment = 1
+
+[node name="BtnToolHoe" type="Button" parent="LeftPanel" unique_id=1730000002]
+layout_mode = 2
+text = "Enxada"
 
 [node name="DormirButton" type="Button" parent="LeftPanel" unique_id=2091208078]
 layout_mode = 2

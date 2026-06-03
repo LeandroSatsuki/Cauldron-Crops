@@ -317,3 +317,9 @@
 - Decisão: adicionar uma guarda para que o `PocoManager` nao processe geracao automatica de agua quando a cena atual estiver em `res://Scenes/dev/`.
 - Motivo: limpar o ruido dos testes isolados sem remover o Autoload nem alterar o comportamento do jogo principal.
 - Risco: a filtragem depende do caminho da cena e precisa continuar alinhada com a organizacao das cenas dev.
+
+## Decisão 44 - Ferramenta Ativa V0 no jogo principal
+- Problema: o jogo principal ainda nao tinha um estado global simples para a ferramenta ativa, embora o preview ja tivesse validado o conceito em laboratorio.
+- Decisão: criar `Scripts/ToolManager.gd` como `Autoload`, com a `Enxada` como primeira ferramenta real apenas para selecao visual/global.
+- Motivo: preparar a futura ponte entre UI, atalhos e sistemas de fazenda sem alterar o `FarmPlot` agora.
+- Risco: se essa base for ligada cedo demais ao clique no mundo, pode quebrar o prototipo atual ou confundir a selecao de ferramenta com gameplay real.

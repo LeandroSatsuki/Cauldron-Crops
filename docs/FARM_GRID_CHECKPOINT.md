@@ -129,3 +129,14 @@ Pendencia registrada:
 - FarmPlot continua como sistema ativo
 - integracao real fica para etapas futuras
 - nenhuma migracao agora
+
+## Ferramenta Ativa V0
+
+O jogo principal ganhou uma base de ferramenta ativa global com `ToolManager` como `Autoload`.
+
+- primeira ferramenta real: Enxada
+- selecao por botao e tecla `1`
+- apenas estado visual/global por enquanto
+- nao altera aragem, plantio ou colheita no gameplay
+- FarmPlot continua ativo
+- FarmGrid continua isolado

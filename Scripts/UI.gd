@@ -11,10 +11,12 @@ const FarmGridManagerSmokeTestScript = preload("res://Scripts/dev/FarmGridManage
 @onready var golems_label: Label = $StatusPanel/GolemsLabel
 @onready var capacity_label: Label = $StatusPanel/CapacityLabel
 @onready var chest_status_label: Label = $StatusPanel/ChestStatusLabel
+@onready var tool_label: Label = $StatusPanel/ToolLabel
 
 @onready var usar_pocao_button: Button = $LeftPanel/UsarPocaoButton
 @onready var dormir_button: Button = $LeftPanel/DormirButton
 @onready var comprar_cosmetico_button: Button = $LeftPanel/ComprarCosmeticoButton
+@onready var tool_hoe_button: Button = $LeftPanel/BtnToolHoe
 @onready var comprar_trigo_button: Button = $LeftPanel/GridSementes/ComprarTrigoButton
 @onready var comprar_verao_button: Button = $LeftPanel/GridSementes/ComprarVeraoButton
 @onready var abrir_skill_tree_button: Button = $LeftPanel/AbrirSkillTreeButton
@@ -71,6 +73,9 @@ func _ready() -> void:
 		dormir_button.pressed.connect(_on_dormir_button_pressed)
 	if comprar_cosmetico_button:
 		comprar_cosmetico_button.pressed.connect(_on_comprar_cosmetico_button_pressed)
+	if tool_hoe_button:
+		if not tool_hoe_button.pressed.is_connected(_on_tool_hoe_button_pressed):
+			tool_hoe_button.pressed.connect(_on_tool_hoe_button_pressed)
 	if comprar_trigo_button:
 		comprar_trigo_button.gui_input.connect(func(event): _on_comprar_semente_gui_input(event, "semente_basica", 5, "+1 Semente Trigo", "+10 Semente Trigo"))
 		comprar_trigo_button.mouse_entered.connect(_on_comprar_trigo_button_mouse_entered)
@@ -176,6 +181,9 @@ func _input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_F10:
 		_toggle_debug_panel()
 		get_viewport().set_input_as_handled()
+	elif event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_1:
+		_selecionar_enxada()
+		get_viewport().set_input_as_handled()
 
 func _toggle_debug_panel() -> void:
 	if debug_panel and debug_panel.visible:
@@ -252,6 +260,8 @@ func atualizar_status_jogo() -> void:
 		capacity_label.text = "Capacidade: %d/%d" % [int(EconomyManager.total_golems), int(EconomyManager.max_golems)]
 	if chest_status_label:
 		chest_status_label.text = "Baú: %s" % _obter_status_bau_vila()
+	if tool_label:
+		tool_label.text = "Ferramenta: %s" % _obter_nome_ferramenta_ativa()
 
 func _obter_status_bau_vila() -> String:
 	var chests: Array = get_tree().get_nodes_in_group("village_chest")
@@ -552,6 +562,29 @@ func _on_debug_test_farm_grid_pressed() -> void:
 	else:
 		push_warning("Debug FarmGrid: smoke test falhou.")
 		_atualizar_pos_debug_acao("FarmGrid test: falhou")
+
+func _on_tool_hoe_button_pressed() -> void:
+	_selecionar_enxada()
+
+func _selecionar_enxada() -> void:
+	var tool_manager: Node = _obter_tool_manager()
+	if tool_manager != null and tool_manager.has_method("select_hoe"):
+		tool_manager.call("select_hoe")
+	else:
+		push_warning("UI: ToolManager nao encontrado.")
+	atualizar_status_jogo()
+
+func _obter_nome_ferramenta_ativa() -> String:
+	var tool_manager: Node = _obter_tool_manager()
+	if tool_manager != null and tool_manager.has_method("get_tool_name"):
+		var ferramenta_nome: String = str(tool_manager.call("get_tool_name"))
+		return ferramenta_nome
+	return "Nenhuma"
+
+func _obter_tool_manager() -> Node:
+	if get_tree() == null:
+		return null
+	return get_tree().root.get_node_or_null("ToolManager")
 
 func _atualizar_pos_debug_acao(acao_texto: String = "") -> void:
 	if debug_last_action_label and acao_texto != "":

@@ -25,6 +25,7 @@ GolemManager="*res://Scripts/GolemManager.gd"
 PocoManager="*res://Scripts/PocoManager.gd"
 QuestManager="*res://Scripts/QuestManager.gd"
 SaveManager="*res://Scripts/SaveManager.gd"
+ToolManager="*res://Scripts/ToolManager.gd"
 
 [display]
 

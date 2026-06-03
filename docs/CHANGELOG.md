@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-06-02 - Ferramenta Ativa V0 no jogo principal
+- O projeto ganhou a base de ferramenta ativa global com `ToolManager` como `Autoload`.
+- A primeira ferramenta real e apenas visual/global e a `Enxada`, selecionada por botao na UI e pela tecla `1`.
+- Nada disso altera o `FarmPlot` nem o gameplay de arar ainda.
+
 ## 2026-06-02 - PocoManager ignora cenas dev
 - O `PocoManager` passou a ignorar cenas em `res://Scenes/dev/`, evitando gerar agua automaticamente durante testes isolados.
 - O comportamento normal do jogo principal permanece igual, porque a guarda so vale para cenas de desenvolvimento.
