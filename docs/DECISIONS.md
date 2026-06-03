@@ -162,6 +162,12 @@
 - Motivo: experimentar o comportamento sem criar tempo real nem alterar o `FarmPlot` ativo.
 - Risco: a regra ainda é conceitual e pode mudar quando o loop de fazenda em grid existir de verdade.
 
+## Decisão 37 - Preview testa Semente fake
+- Problema: o preview precisava validar a regra de que tiles plantados com semente não voltam para grama no decay diário.
+- Decisão: adicionar uma ferramenta fake `Semente` que planta um crop de debug em memória (`debug_crop`).
+- Motivo: permitir testar plantio e proteção contra decay sem inventário real, sem Database e sem gameplay principal.
+- Risco: o crop fake existe só para validação e deve ser substituido por dados reais quando a fazenda em grid entrar de verdade.
+
 ## Decisão 23 - Presenca fisica do golem
 - Problema: o golem parecia sem volume e passava visualmente por baixo de elementos do mundo.
 - Decisão: ajustar a ordenacao visual com z_index por Y, mover a interacao para um ponto lateral/abaixo do lote e adicionar um sensor simples de proximidade.

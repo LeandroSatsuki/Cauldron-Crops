@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-06-02 - Preview do FarmGrid com Semente fake
+- O preview isolado do FarmGrid passou a testar uma ferramenta fake de `Semente`, além da `Enxada` para arar tiles.
+- A cena agora planta um crop de debug em memória, permitindo validar a regra de que tiles plantados não voltam para grama no decay diário.
+- Isso continua isolado e sem conectar o `FarmPlot` ao gameplay principal.
+
 ## 2026-06-02 - Preview do FarmGrid com Enxada e decay
 - O preview isolado do FarmGrid passou a testar uma ferramenta ativa simples, com `Enxada` como padrão para arar tiles de grama.
 - A cena também ganhou um `Decay Diario` em memória, que limpa tiles arados ou molhados sem crop e devolve o estado para grama.

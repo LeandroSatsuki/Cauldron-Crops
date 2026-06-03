@@ -2,8 +2,11 @@ extends Node2D
 
 enum ToolType {
 	NONE,
-	HOE
+	HOE,
+	SEED
 }
+
+@onready var tool_label: Label = $ToolLabel
 
 var grid_manager: FarmGridManager = null
 var active_tool: ToolType = ToolType.HOE
@@ -15,6 +18,7 @@ func _ready() -> void:
 	grid_manager = FarmGridManager.new()
 	grid_manager.create_grid(5, 5)
 	set_process_unhandled_input(true)
+	_atualizar_texto_ferramenta()
 	queue_redraw()
 
 func _draw() -> void:
@@ -32,6 +36,12 @@ func _draw() -> void:
 			draw_rect(rect, _get_tile_state_color(tile.tile_state), true)
 			draw_rect(rect, _get_soil_type_color(tile.soil_type), false, 3.0)
 			draw_rect(rect, Color(0.08, 0.08, 0.08, 1.0), false, 1.0)
+			if tile.tile_state == FarmTileData.TileState.PLANTADO and tile.crop_id != "":
+				var center: Vector2 = rect.position + (rect.size * 0.5)
+				var marker_size: float = 10.0
+				var marker_rect: Rect2 = Rect2(center - Vector2(marker_size * 0.5, marker_size * 0.5), Vector2(marker_size, marker_size))
+				draw_rect(marker_rect, Color(0.95, 0.95, 0.30, 1.0), true)
+				draw_rect(marker_rect, Color(0.20, 0.20, 0.20, 1.0), false, 1.0)
 
 func _unhandled_input(event: InputEvent) -> void:
 	if grid_manager == null:
@@ -41,6 +51,12 @@ func _unhandled_input(event: InputEvent) -> void:
 		var key_event: InputEventKey = event
 		if key_event.pressed and not key_event.echo and key_event.keycode == KEY_D:
 			_simular_decay_diario()
+			return
+		if key_event.pressed and not key_event.echo and key_event.keycode == KEY_1:
+			_definir_ferramenta(ToolType.HOE)
+			return
+		if key_event.pressed and not key_event.echo and key_event.keycode == KEY_2:
+			_definir_ferramenta(ToolType.SEED)
 			return
 
 	if event is not InputEventMouseButton:
@@ -63,7 +79,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 
 	if mouse_button_event.button_index == MOUSE_BUTTON_LEFT:
-		_usar_enxada(tile_position, tile)
+		_usar_ferramenta_ativa(tile_position, tile)
 		return
 
 	if mouse_button_event.button_index == MOUSE_BUTTON_RIGHT:
@@ -73,11 +89,16 @@ func _unhandled_input(event: InputEvent) -> void:
 		print("FarmGridPreview: tile (%d, %d) mudou solo para %s" % [tile_position.x, tile_position.y, _get_soil_type_name(tile.soil_type)])
 		return
 
-func _usar_enxada(tile_position: Vector2i, tile: FarmTileData) -> void:
-	if active_tool != ToolType.HOE:
-		print("FarmGridPreview: ferramenta ativa nao pode arar o tile (%d, %d)." % [tile_position.x, tile_position.y])
-		return
+func _usar_ferramenta_ativa(tile_position: Vector2i, tile: FarmTileData) -> void:
+	match active_tool:
+		ToolType.HOE:
+			_usar_enxada(tile_position, tile)
+		ToolType.SEED:
+			_usar_semente(tile_position, tile)
+		_:
+			print("FarmGridPreview: nenhuma ferramenta ativa no tile (%d, %d)." % [tile_position.x, tile_position.y])
 
+func _usar_enxada(tile_position: Vector2i, tile: FarmTileData) -> void:
 	if tile.tile_state == FarmTileData.TileState.BLOQUEADO:
 		print("FarmGridPreview: Enxada sem efeito no tile (%d, %d): BLOQUEADO." % [tile_position.x, tile_position.y])
 		return
@@ -90,6 +111,19 @@ func _usar_enxada(tile_position: Vector2i, tile: FarmTileData) -> void:
 		return
 
 	print("FarmGridPreview: Enxada sem efeito no tile (%d, %d): %s." % [tile_position.x, tile_position.y, _get_tile_state_name(tile.tile_state)])
+
+func _usar_semente(tile_position: Vector2i, tile: FarmTileData) -> void:
+	if (tile.tile_state == FarmTileData.TileState.ARADO or tile.tile_state == FarmTileData.TileState.MOLHADO) and tile.crop_id == "":
+		tile.tile_state = FarmTileData.TileState.PLANTADO
+		tile.crop_id = "debug_crop"
+		tile.remaining_growth_time = 10.0
+		tile.total_growth_time = 10.0
+		grid_manager.set_tile(tile_position, tile)
+		queue_redraw()
+		print("FarmGridPreview: Semente plantada no tile (%d, %d)." % [tile_position.x, tile_position.y])
+		return
+
+	print("FarmGridPreview: Semente sem efeito no tile (%d, %d): %s." % [tile_position.x, tile_position.y, _get_tile_state_name(tile.tile_state)])
 
 func _simular_decay_diario() -> void:
 	if grid_manager == null:
@@ -223,11 +257,23 @@ func _get_soil_type_name(soil_type: FarmTileData.SoilType) -> String:
 		_:
 			return "COMUM"
 
-func _get_active_tool_name() -> String:
-	match active_tool:
+func _get_tool_name(tool: int) -> String:
+	match tool:
 		ToolType.HOE:
 			return "Enxada"
+		ToolType.SEED:
+			return "Semente"
 		ToolType.NONE:
 			return "Nenhuma"
 		_:
 			return "Nenhuma"
+
+func _definir_ferramenta(nova_ferramenta: ToolType) -> void:
+	active_tool = nova_ferramenta
+	_atualizar_texto_ferramenta()
+	queue_redraw()
+	print("FarmGridPreview: ferramenta ativa = %s" % _get_tool_name(active_tool))
+
+func _atualizar_texto_ferramenta() -> void:
+	if tool_label:
+		tool_label.text = "Ferramenta ativa: %s" % _get_tool_name(active_tool)

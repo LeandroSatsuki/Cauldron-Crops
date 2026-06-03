@@ -34,6 +34,7 @@
 - Criar uma cena de preview visual isolada para testar o FarmGrid em memória.
 - Visualizar tipos de solo alquímico no preview isolado do FarmGrid.
 - Testar ferramenta ativa Enxada e decay diario no preview isolado do FarmGrid.
+- Testar ferramenta fake Semente para validar plantio e proteção contra decay.
 
 ## Fase 4 - Conteúdo
 - Novas crops.
