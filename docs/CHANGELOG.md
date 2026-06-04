@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-06-03 - Visual da Area Preparavel
+- O `FarmPlot` passou a distinguir melhor solo natural, terra arada seca e terra arada molhada usando o visual ja existente.
+- Lotes nao arados agora usam uma aparencia natural provisoria mais esverdeada; terra arada seca/molhada continua com as texturas adubadas.
+- Nenhuma regra de save, golem ou FarmGrid foi alterada.
+
 ## 2026-06-03 - Area Preparavel V0
 - A cena principal passou a manter os 16 `FarmPlot` antigos na mesma ordem e posicao e adicionar novos lotes potenciais no final da sequencia.
 - A Enxada agora pode preparar esses lotes potenciais sem criar lotes livres por clique, e o save continua compatível por indice.

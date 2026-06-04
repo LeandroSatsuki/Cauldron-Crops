@@ -219,7 +219,9 @@ Area Preparavel V0:
 - novos lotes foram adicionados no final da ordem, sem instanciacao livre por clique
 - todos os lotes novos continuam iniciando com `arado = false`
 - o save continua por indice e permanece compativel com saves antigos
-- o visual de lote nao arado continua provisório e usa a base visual ja existente do `FarmPlot`
+- o visual de lote nao arado agora usa uma aparencia provisoria mais natural/esverdeada
+- terra arada seca e molhada continuam usando as texturas adubadas ja existentes
+- o visual continua provisório e sem novos assets
 
 Checkpoint de arquitetura:
 

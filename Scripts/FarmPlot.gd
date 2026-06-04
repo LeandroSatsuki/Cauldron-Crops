@@ -5,6 +5,7 @@ const TEX_MOLHADA = preload("res://Assets/molhada.png")
 # Texturas futuras preparadas
 const TEX_SECA_ADUBADA = preload("res://Assets/seca_adubada.png")
 const TEX_MOLHADA_ADUBADA = preload("res://Assets/molhada_adubada.png")
+const COR_SOLO_NATURAL = Color(0.235294, 0.345098, 0.172549, 1.0)
 const GRID_SIZE = 64 # Tamanho padrao do tile
 const TOOL_NONE := 0
 const TOOL_HOE := 1
@@ -549,22 +550,28 @@ func _on_timer_timeout() -> void:
 		print("O tempo de crescimento acabou! Estado alterado para: PRONTO_PARA_COLHER.")
 
 func _atualizar_visual() -> void:
+	if color_rect:
+		color_rect.color = _obter_cor_base_solo()
 	if visual_regado:
-		visual_regado.visible = regado
+		visual_regado.visible = regado and (arado or estado_atual != State.VAZIO)
 	if has_node("SpriteTerra"):
+		$SpriteTerra.visible = _deve_mostrar_textura_terra()
 		$SpriteTerra.texture = _obter_textura_terra()
-	match estado_atual:
-		State.VAZIO:
-			color_rect.color = Color(0, 0, 0, 0)
-		State.CRESCENDO:
-			color_rect.color = Color(0, 0, 0, 0)
-		State.PRONTO_PARA_COLHER:
-			color_rect.color = Color(0, 0, 0, 0)
 
 func _obter_textura_terra() -> Texture2D:
 	if arado:
 		return TEX_MOLHADA_ADUBADA if regado else TEX_SECA_ADUBADA
 	return TEX_MOLHADA if regado else TEX_SECA
+
+func _obter_cor_base_solo() -> Color:
+	if estado_atual == State.VAZIO and not arado:
+		return COR_SOLO_NATURAL
+	return Color(0, 0, 0, 0)
+
+func _deve_mostrar_textura_terra() -> bool:
+	if estado_atual == State.VAZIO and not arado:
+		return false
+	return true
 
 func atualizar_visual_planta(semente_id: String, estagio_crescimento: int):
 	if semente_id == "":

@@ -383,3 +383,9 @@
 - Decisão: manter os 16 `FarmPlot` originais na mesma ordem e adicionar lotes potenciais extras no final da sequencia, todos iniciando com `arado = false`.
 - Motivo: ampliar a area jogavel de forma segura, preservando saves antigos por ordem e evitando criar uma rota livre de instanciacao.
 - Risco: a area continua baseada em `FarmPlot` fixo e visual provisório, então futuras mudanças na grade precisam preservar a ordem append-only.
+
+## Decisão 54 - Visual da Area Preparavel
+- Problema: lote nao arado ainda parecia campo pronto demais, o que atrapalhava a leitura da Area Preparavel V0.
+- Decisão: usar uma aparencia provisoria mais natural/esverdeada quando o lote estiver vazio e nao arado, mantendo terra arada seca e molhada com as texturas adubadas ja existentes.
+- Motivo: deixar claro o estado do solo sem criar asset novo nem mexer em save, golem ou FarmGrid.
+- Risco: o visual natural ainda é provisório e pode precisar ser refinado quando a arte final da fazenda for definida.
