@@ -22,7 +22,15 @@ O jogo principal já possui um `FishingSpot` físico/clicável na fazenda.
 
 Esse ponto ainda é mínimo: ele só responde quando a `Vara de Pesca` está ativa e mostra feedback de lançamento.
 
-Não há boia, minigame, recompensas, áreas especiais ou integração com inventário nesta etapa.
+Ainda não há minigame, recompensas, áreas especiais ou integração com inventário nesta etapa.
+
+## Boia V0
+
+A primeira representação visual da pesca é uma boia simples no ponto clicado do lago.
+
+Ela é única: o jogo mantém apenas uma boia ativa por vez, e um novo clique com a Vara de Pesca reposiciona a mesma boia.
+
+Ainda não existe puxada, timing, resultado ou recompensa. A boia é apenas o primeiro estado visual da ação de pescar.
 
 ## Princípio principal
 

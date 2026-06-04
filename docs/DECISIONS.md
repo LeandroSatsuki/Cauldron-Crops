@@ -437,3 +437,9 @@
 - Decisão: criar um `FishingSpot` simples na cena principal que só responde ao clique quando a `Vara de Pesca` está ativa.
 - Motivo: validar o ponto físico da pesca com feedback mínimo antes de abrir boia, sincronia, recompensas e áreas especiais.
 - Risco: o lago existe apenas como base mínima por enquanto; a pescaria real e os efeitos mais ricos ficam para fases futuras.
+
+## Decisão 63 - Boia V0 única e reposicionável
+- Problema: o lago precisava de um primeiro estado visual da pesca sem multiplicar objetos ou criar fluxo de minigame cedo demais.
+- Decisão: representar a pescaria com uma única boia ativa, que é reposicionada quando o jogador clica novamente com a Vara de Pesca.
+- Motivo: manter o protótipo simples, legível e fácil de expandir para puxada, timing e recompensa depois.
+- Risco: a boia ainda não tem comportamento de jogo além de posição visual, então o sistema real de pesca continua para etapas futuras.

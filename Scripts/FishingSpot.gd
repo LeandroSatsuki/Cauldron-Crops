@@ -1,5 +1,7 @@
 extends Area2D
 
+@onready var bobber: Node2D = $Bobber
+
 const FEEDBACK_OFFSET: Vector2 = Vector2(0.0, -60.0)
 const FEEDBACK_COR: Color = Color(0.55, 0.93, 1.0, 1.0)
 
@@ -17,19 +19,33 @@ func _input_event(viewport: Viewport, event: InputEvent, shape_idx: int) -> void
 	viewport.set_input_as_handled()
 
 func _on_lake_clicked() -> void:
+	var click_global_position: Vector2 = get_global_mouse_position()
 	var tool_manager: Node = _obter_tool_manager()
 	if tool_manager == null or not tool_manager.has_method("is_fishing_rod_selected"):
-		_mostrar_feedback("Selecione a Vara de Pesca.")
+		_mostrar_feedback("Selecione a Vara de Pesca.", click_global_position)
 		return
 
 	if bool(tool_manager.call("is_fishing_rod_selected")):
-		_mostrar_feedback("Você lançou a vara.")
-		print("FishingSpot: vara lancada.")
+		_posicionar_boia(click_global_position)
 	else:
-		_mostrar_feedback("Selecione a Vara de Pesca.")
+		_mostrar_feedback("Selecione a Vara de Pesca.", click_global_position)
 
-func _mostrar_feedback(texto: String) -> void:
-	var feedback_position: Vector2 = global_position + FEEDBACK_OFFSET
+func _posicionar_boia(click_global_position: Vector2) -> void:
+	if bobber == null:
+		push_warning("FishingSpot: bobber nao encontrado.")
+		return
+
+	bobber.global_position = click_global_position
+	if bobber.visible:
+		_mostrar_feedback("Boia reposicionada.", click_global_position)
+		print("FishingSpot: boia reposicionada.")
+	else:
+		bobber.visible = true
+		_mostrar_feedback("Boia lançada.", click_global_position)
+		print("FishingSpot: boia lancada.")
+
+func _mostrar_feedback(texto: String, origem_global: Vector2) -> void:
+	var feedback_position: Vector2 = origem_global + FEEDBACK_OFFSET
 	var tree: SceneTree = get_tree()
 	if tree == null:
 		print(texto)

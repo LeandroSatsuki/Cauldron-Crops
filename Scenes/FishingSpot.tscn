@@ -14,5 +14,17 @@ z_index = -2
 color = Color(0.227451, 0.584314, 0.839216, 0.88)
 polygon = PackedVector2Array(Vector2(-120, -25), Vector2(-90, -75), Vector2(60, -75), Vector2(120, -20), Vector2(105, 40), Vector2(40, 75), Vector2(-55, 75), Vector2(-120, 25))
 
+[node name="Bobber" type="Node2D" parent="."]
+visible = false
+z_index = 1
+
+[node name="Body" type="Polygon2D" parent="Bobber"]
+color = Color(0.909804, 0.258824, 0.258824, 1)
+polygon = PackedVector2Array(Vector2(0, -7), Vector2(5, -5), Vector2(7, 0), Vector2(5, 5), Vector2(0, 7), Vector2(-5, 5), Vector2(-7, 0), Vector2(-5, -5))
+
+[node name="Highlight" type="Polygon2D" parent="Bobber"]
+color = Color(0.976471, 0.976471, 0.976471, 0.9)
+polygon = PackedVector2Array(Vector2(-2, -6), Vector2(1, -6), Vector2(2, -3), Vector2(-1, -3))
+
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape2D_fishing_spot")

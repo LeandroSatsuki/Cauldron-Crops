@@ -1,9 +1,14 @@
 # Changelog
 
+## 2026-06-04 - Boia V0 da pesca
+- O Lago da Fazenda V0 ganhou uma boia visual simples que aparece no ponto clicado quando a `Vara de Pesca` está ativa.
+- Clicar novamente com a Vara reposiciona a mesma boia, sem criar boias novas.
+- Ainda nao existe minigame, puxada, recompensa ou integração com inventário/caldeirão.
+
 ## 2026-06-04 - Lago da Fazenda V0
 - O jogo principal recebeu um `FishingSpot` físico/clicável como base do Lago da Fazenda V0.
 - O clique no lago agora responde com a `Vara de Pesca` ativa, exibindo apenas feedback de lancamento por enquanto.
-- Ainda nao existe boia, minigame, recompensa, areas especiais ou integracao com inventario/caldeirao.
+- Ainda nao existe minigame, recompensa, areas especiais ou integracao com inventario/caldeirao.
 
 ## 2026-06-04 - Vara de Pesca visual na toolbar
 - A toolbar principal recebeu a `Vara de Pesca` como ferramenta visual/global, com ícone provisório e tecla `4`.
