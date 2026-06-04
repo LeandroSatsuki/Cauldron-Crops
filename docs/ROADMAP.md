@@ -42,6 +42,7 @@
 - Criar a base da Ferramenta Ativa V0 no jogo principal com `ToolManager`.
 - Exibir a ferramenta ativa no StatusPanel e selecionar `Enxada` por botão e tecla `1`.
 - Expandir a seleção global para `Semente`, `Regador` e `Colheita` sem ações reais.
+- Aplicar icones provisorios na Barra de Ferramentas V0 sem alterar a selecao global.
 
 ## Fase 4 - Conteúdo
 - Novas crops.

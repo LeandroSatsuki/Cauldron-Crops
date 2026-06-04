@@ -120,13 +120,19 @@
 - Motivo: validar o ciclo colheita -> transporte -> depósito antes de qualquer interface.
 - Risco: o baú ainda não tem UI, salvamento nem interação avançada.
 
-## Decisão 20 - Colheita segura do golem
+## Decisão 20 - Icones provisorios na barra de ferramentas
+- Problema: a Barra de Ferramentas V0 precisava de leitura visual melhor sem alterar gameplay.
+- Decisão: aplicar icones provisórios em Enxada, Semente, Regador e Colheita mantendo botões do tipo `Button`.
+- Motivo: reforçar a identidade visual da toolbar sem trocar a selecao global nem a logica de ferramentas.
+- Risco: os icones sao provisórios e podem ser substituidos depois quando a arte final estiver pronta.
+
+## Decisão 21 - Colheita segura do golem
 - Problema: a colheita automática antiga dependia de clique humano e era frágil para IA.
 - Decisão: criar `harvest_by_golem()` no `FarmPlot` para colher 1 item básico sem usar `_on_plot_clicked()`.
 - Motivo: separar a lógica do golem da lógica de interação manual.
 - Risco: bônus extras, sementes bônus e variações sazonais ficam para depois.
 
-## Decisão 21 - Golem físico V1 com depósito
+## Decisão 22 - Golem físico V1 com depósito
 - Problema: o golem físico existia só como placeholder visual.
 - Decisão: ligar `Golem.gd` à cena e fazer o golem procurar lote maduro, colher e depositar no Baú da Vila.
 - Motivo: validar o loop físico mínimo do coletor antes de upgrades e árvore de talentos.

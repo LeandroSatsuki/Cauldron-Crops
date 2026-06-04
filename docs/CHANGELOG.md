@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-06-03 - Icones provisorios da barra de ferramentas
+- A Barra de Ferramentas V0 recebeu icones provisórios para Enxada, Semente, Regador e Colheita.
+- Os botões continuam apenas como selecao visual/global, sem acionar gameplay real.
+- O destaque textual e os atalhos permanecem funcionando como antes.
+
 ## 2026-06-02 - Limpeza tecnica da UI
 - O print temporario `DEBUG UI: botão livro de receitas clicado` foi removido da UI principal.
 - Nenhuma regra de gameplay foi alterada; o Livro de Receitas continua abrindo normalmente.
