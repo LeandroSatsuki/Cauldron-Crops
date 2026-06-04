@@ -12,6 +12,7 @@ var active_tool: ToolType = ToolType.NONE
 
 func select_tool(tool: ToolType) -> void:
 	if active_tool == tool:
+		clear_tool()
 		return
 
 	active_tool = tool
@@ -30,7 +31,11 @@ func select_harvest() -> void:
 	select_tool(ToolType.HARVEST)
 
 func clear_tool() -> void:
-	select_tool(ToolType.NONE)
+	if active_tool == ToolType.NONE:
+		return
+
+	active_tool = ToolType.NONE
+	print("ToolManager: ferramenta ativa = %s" % get_tool_name(active_tool))
 
 func get_active_tool() -> ToolType:
 	return active_tool

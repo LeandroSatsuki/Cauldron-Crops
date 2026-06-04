@@ -347,3 +347,9 @@
 - Decisão: remover apenas `DEBUG UI: botão livro de receitas clicado`, mantendo warnings uteis e o comportamento normal da interface.
 - Motivo: reduzir ruído de console sem mexer em fluxo de abertura, receitas ou gameplay.
 - Risco: outros prints temporarios podem ainda existir em partes antigas do projeto e precisarem de limpeza separada.
+
+## Decisão 48 - Toolbar principal sem Semente
+- Problema: a toolbar principal misturava uma ferramenta de teste com as ferramentas reais do jogo.
+- Decisão: manter `Semente` apenas no `FarmGridPreview` e deixar a toolbar principal com Enxada, Regador e Colheita.
+- Motivo: alinhar a UI principal ao design atual sem perder a semente fake do laboratório isolado.
+- Risco: a separação exige cuidado para não reaparecerem atalhos ou botões de Semente fora do preview.

@@ -18,7 +18,6 @@ const FarmGridManagerSmokeTestScript = preload("res://Scripts/dev/FarmGridManage
 @onready var comprar_cosmetico_button: Button = $LeftPanel/ComprarCosmeticoButton
 @onready var tool_bar_panel: HBoxContainer = $ToolBarPanel
 @onready var tool_hoe_button: Button = $ToolBarPanel/BtnToolHoe
-@onready var tool_seed_button: Button = $ToolBarPanel/BtnToolSeed
 @onready var tool_watering_can_button: Button = $ToolBarPanel/BtnToolWateringCan
 @onready var tool_harvest_button: Button = $ToolBarPanel/BtnToolHarvest
 @onready var comprar_trigo_button: Button = $LeftPanel/GridSementes/ComprarTrigoButton
@@ -80,9 +79,6 @@ func _ready() -> void:
 	if tool_hoe_button:
 		if not tool_hoe_button.pressed.is_connected(_on_tool_hoe_button_pressed):
 			tool_hoe_button.pressed.connect(_on_tool_hoe_button_pressed)
-	if tool_seed_button:
-		if not tool_seed_button.pressed.is_connected(_on_tool_seed_button_pressed):
-			tool_seed_button.pressed.connect(_on_tool_seed_button_pressed)
 	if tool_watering_can_button:
 		if not tool_watering_can_button.pressed.is_connected(_on_tool_watering_can_button_pressed):
 			tool_watering_can_button.pressed.connect(_on_tool_watering_can_button_pressed)
@@ -199,12 +195,9 @@ func _input(event: InputEvent) -> void:
 		_selecionar_enxada()
 		get_viewport().set_input_as_handled()
 	elif event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_2:
-		_selecionar_semente()
-		get_viewport().set_input_as_handled()
-	elif event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_3:
 		_selecionar_regador()
 		get_viewport().set_input_as_handled()
-	elif event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_4:
+	elif event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_3:
 		_selecionar_colheita()
 		get_viewport().set_input_as_handled()
 
@@ -291,10 +284,9 @@ func atualizar_toolbar_ferramentas() -> void:
 	if tool_bar_panel:
 		tool_bar_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
-	_atualizar_texto_botao_ferramenta(tool_hoe_button, "1 Enxada", _is_tool_active(0))
-	_atualizar_texto_botao_ferramenta(tool_seed_button, "2 Semente", _is_tool_active(1))
-	_atualizar_texto_botao_ferramenta(tool_watering_can_button, "3 Regador", _is_tool_active(2))
-	_atualizar_texto_botao_ferramenta(tool_harvest_button, "4 Colheita", _is_tool_active(3))
+	_atualizar_texto_botao_ferramenta(tool_hoe_button, "1 Enxada", _is_tool_active(1))
+	_atualizar_texto_botao_ferramenta(tool_watering_can_button, "2 Regador", _is_tool_active(3))
+	_atualizar_texto_botao_ferramenta(tool_harvest_button, "3 Colheita", _is_tool_active(4))
 
 func _atualizar_texto_botao_ferramenta(button: Button, texto_base: String, ativa: bool) -> void:
 	if button == null:
@@ -625,15 +617,6 @@ func _selecionar_enxada() -> void:
 	atualizar_toolbar_ferramentas()
 	atualizar_status_jogo()
 
-func _selecionar_semente() -> void:
-	var tool_manager: Node = _obter_tool_manager()
-	if tool_manager != null and tool_manager.has_method("select_seed"):
-		tool_manager.call("select_seed")
-	else:
-		push_warning("UI: ToolManager nao encontrado.")
-	atualizar_toolbar_ferramentas()
-	atualizar_status_jogo()
-
 func _selecionar_regador() -> void:
 	var tool_manager: Node = _obter_tool_manager()
 	if tool_manager != null and tool_manager.has_method("select_watering_can"):
@@ -651,9 +634,6 @@ func _selecionar_colheita() -> void:
 		push_warning("UI: ToolManager nao encontrado.")
 	atualizar_toolbar_ferramentas()
 	atualizar_status_jogo()
-
-func _on_tool_seed_button_pressed() -> void:
-	_selecionar_semente()
 
 func _on_tool_watering_can_button_pressed() -> void:
 	_selecionar_regador()

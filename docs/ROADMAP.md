@@ -43,6 +43,7 @@
 - Exibir a ferramenta ativa no StatusPanel e selecionar `Enxada` por botão e tecla `1`.
 - Expandir a seleção global para `Semente`, `Regador` e `Colheita` sem ações reais.
 - Aplicar icones provisorios na Barra de Ferramentas V0 sem alterar a selecao global.
+- Ajustar a toolbar principal para ficar só com Enxada, Regador e Colheita, mantendo Semente apenas no FarmGridPreview.
 
 ## Fase 4 - Conteúdo
 - Novas crops.

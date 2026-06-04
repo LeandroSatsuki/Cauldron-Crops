@@ -134,9 +134,11 @@ Pendencia registrada:
 
 O jogo principal ganhou uma base de ferramenta ativa global com `ToolManager` como `Autoload`.
 
-- ferramentas visuais globais: Enxada, Semente, Regador e Colheita
-- selecao por botoes e teclas `1`, `2`, `3`, `4`
+- ferramentas visuais globais: Enxada, Regador e Colheita
+- selecao por botoes e teclas `1`, `2`, `3`
 - apenas estado visual/global por enquanto
 - nao altera aragem, plantio ou colheita no gameplay
 - FarmPlot continua ativo
 - FarmGrid continua isolado
+- sementes continuam como itens do inventario no jogo principal
+- Semente permanece apenas no `FarmGridPreview` como ferramenta fake de teste

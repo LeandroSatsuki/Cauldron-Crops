@@ -177,11 +177,13 @@ Ferramenta Ativa V0 no jogo principal:
 
 - `Scripts/ToolManager.gd`
 - registrado como `Autoload`
-- ferramentas visuais globais: `Enxada`, `Semente`, `Regador`, `Colheita`
-- seleção visual/global por botões e teclas `1`, `2`, `3`, `4`
+- ferramentas visuais globais: `Enxada`, `Regador`, `Colheita`
+- seleção visual/global por botões e teclas `1`, `2`, `3`
 - ainda não altera gameplay
 - `FarmPlot` continua ativo
 - `FarmGrid` continua isolado
+- sementes continuam como itens do inventário e do plantio atual
+- `Semente` continua apenas no `FarmGridPreview` como ferramenta fake de teste
 
 Preview visual isolado:
 

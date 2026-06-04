@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-06-03 - Toolbar principal ajustada
+- A Barra de Ferramentas V0 do jogo principal passou a exibir apenas Enxada, Regador e Colheita.
+- Os botões de ferramenta agora funcionam como liga/desliga: selecionar a mesma ferramenta novamente volta para Nenhuma.
+- A Semente continua existindo apenas no FarmGridPreview como ferramenta fake de teste.
+
 ## 2026-06-03 - Icones provisorios da barra de ferramentas
 - A Barra de Ferramentas V0 recebeu icones provisórios para Enxada, Semente, Regador e Colheita.
 - Os botões continuam apenas como selecao visual/global, sem acionar gameplay real.
