@@ -468,8 +468,14 @@
 - Motivo: melhorar a usabilidade e evitar conflito com o FishingSpot sem transformar o protótipo em uma cópia literal de outro minigame.
 - Risco: a janela precisa continuar leve e previsível para não competir com o loop agrícola nem com a leitura do lago.
 
-## Decisão 67 - Encerrar pesca limpa a ferramenta ativa
-- Problema: o minigame podia fechar e deixar a `Vara de Pesca` ainda selecionada, facilitando um novo lançamento acidental.
-- Decisão: ao encerrar a sincronia, limpar a ferramenta ativa para `Nenhuma` quando a ferramenta atual ainda for a `Vara de Pesca`.
-- Motivo: evitar disparo involuntário de nova boia logo após o resultado fake.
-- Risco: a UI precisa continuar atualizando o status da ferramenta de forma consistente depois do reset.
+## Decisão 67 - Encerrar pesca preserva a Vara de Pesca
+- Problema: o minigame precisava fechar sem quebrar o fluxo de pesca contínua.
+- Decisão: ao encerrar a sincronia, forçar a `Vara de Pesca` como ferramenta ativa e deixar apenas o `FishingSpot` voltar para `IDLE`.
+- Motivo: permitir uma nova tentativa imediata no lago sem exigir re-seleção da ferramenta e sem depender do toggle de `select_fishing_rod()`.
+- Risco: a UI precisa continuar atualizando o status da ferramenta de forma consistente depois do reset do lago.
+
+## Decisão 68 - Recompensa Aquatica V0
+- Problema: o popup de sincronia já validava timing e feedback, mas ainda não gerava uma recompensa simples para o jogador.
+- Decisão: fazer o resultado do popup entregar `peixe_comum` para `Bom` e `escama_brilhante` para `Perfeito`, mantendo `Errou` sem item.
+- Motivo: deixar a pesca com um retorno inicial concreto no inventário sem conectar ainda caldeirão, receitas ou árvore de alquimia.
+- Risco: os nomes, o balanceamento e o catálogo de recompensas continuam provisórios e podem ser refinados depois.

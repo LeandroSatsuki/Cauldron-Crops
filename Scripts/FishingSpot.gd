@@ -149,7 +149,8 @@ func _abrir_pesca_sincronia(origem_global: Vector2) -> bool:
 
 func _on_fishing_minigame_closed() -> void:
 	_reset_fishing_state()
-	_clear_fishing_tool_if_active()
+	_force_fishing_rod_active()
+	_atualizar_ui_pos_fishing()
 
 func _reset_fishing_state() -> void:
 	fishing_minigame_ui = null
@@ -161,22 +162,21 @@ func _reset_fishing_state() -> void:
 	if fishing_bite_timer != null:
 		fishing_bite_timer.stop()
 
-func _clear_fishing_tool_if_active() -> void:
-	var tool_manager: Node = get_tree().root.get_node_or_null("ToolManager") if get_tree() != null and get_tree().root != null else null
+func _force_fishing_rod_active() -> void:
+	var tool_manager: Node = _obter_tool_manager()
 	if tool_manager == null:
 		return
+	if tool_manager.has_method("force_select_fishing_rod"):
+		tool_manager.call("force_select_fishing_rod")
 
-	if not tool_manager.has_method("is_fishing_rod_selected"):
+func _atualizar_ui_pos_fishing() -> void:
+	var ui: Node = _obter_ui_principal()
+	if ui == null:
 		return
-
-	if not tool_manager.has_method("clear_tool"):
-		return
-
-	if bool(tool_manager.call("is_fishing_rod_selected")):
-		tool_manager.call("clear_tool")
-		var ui: Node = _obter_ui_principal()
-		if ui != null and ui.has_method("atualizar_status_jogo"):
-			ui.call("atualizar_status_jogo")
+	if ui.has_method("atualizar_status_jogo"):
+		ui.call("atualizar_status_jogo")
+	if ui.has_method("atualizar_toolbar_ferramentas"):
+		ui.call("atualizar_toolbar_ferramentas")
 
 func _obter_ui_principal() -> Node:
 	var tree: SceneTree = get_tree()

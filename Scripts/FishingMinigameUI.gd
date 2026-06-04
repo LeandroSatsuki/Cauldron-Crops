@@ -13,6 +13,12 @@ const GOOD_TOLERANCE: float = 30.0
 const POPUP_MARGIN: float = 24.0
 const AUTO_CLOSE_DELAY: float = 1.5
 
+enum FishingResult {
+	MISS,
+	GOOD,
+	PERFECT
+}
+
 @onready var popup_panel: PanelContainer = $PopupPanel
 @onready var dimmer: ColorRect = $Dimmer
 @onready var title_label: Label = $PopupPanel/MarginContainer/VBoxContainer/TitleLabel
@@ -28,6 +34,8 @@ const AUTO_CLOSE_DELAY: float = 1.5
 var _rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var _ativo: bool = false
 var _resultado_travado: bool = false
+var _resultado_atual: FishingResult = FishingResult.MISS
+var _recompensa_aplicada: bool = false
 var _marker_position_x: float = 0.0
 var _marker_direction: float = 1.0
 
@@ -86,6 +94,8 @@ func _ready() -> void:
 func abrir_popup(origem_global: Vector2) -> Control:
 	_ativo = true
 	_resultado_travado = false
+	_resultado_atual = FishingResult.MISS
+	_recompensa_aplicada = false
 	_aplicar_estado_visivel(true)
 	if popup_panel:
 		popup_panel.custom_minimum_size = POPUP_SIZE
@@ -131,11 +141,17 @@ func _process(delta: float) -> void:
 
 	marker.position = Vector2(_marker_position_x, 0.0)
 
-func _unhandled_input(event: InputEvent) -> void:
+func _input(event: InputEvent) -> void:
 	if not _ativo or _resultado_travado:
 		return
 	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_SPACE:
 		_confirmar_tentativa()
+		get_viewport().set_input_as_handled()
+
+func _unhandled_input(event: InputEvent) -> void:
+	if not _ativo or _resultado_travado:
+		return
+	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_SPACE:
 		get_viewport().set_input_as_handled()
 
 func _on_popup_gui_input(event: InputEvent) -> void:
@@ -143,6 +159,7 @@ func _on_popup_gui_input(event: InputEvent) -> void:
 		return
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		_confirmar_tentativa()
+		accept_event()
 		get_viewport().set_input_as_handled()
 
 func _on_close_button_pressed() -> void:
@@ -155,14 +172,16 @@ func _confirmar_tentativa() -> void:
 	if close_button:
 		close_button.disabled = false
 
-	var resultado: String = _avaliar_resultado()
+	var resultado: FishingResult = _avaliar_resultado()
+	_resultado_atual = resultado
+	_aplicar_recompensa(resultado)
 	if result_label:
 		match resultado:
-			"Perfeito":
-				result_label.text = "Ressonância perfeita!"
+			FishingResult.PERFECT:
+				result_label.text = "Ressonância perfeita! Você encontrou uma escama brilhante."
 				result_label.modulate = Color(0.98, 0.92, 0.42, 1.0)
-			"Bom":
-				result_label.text = "Boa sincronia."
+			FishingResult.GOOD:
+				result_label.text = "Boa sincronia. Você pescou um peixe comum."
 				result_label.modulate = Color(0.55, 0.93, 1.0, 1.0)
 			_:
 				result_label.text = "O pulso se perdeu."
@@ -173,19 +192,52 @@ func _confirmar_tentativa() -> void:
 	if auto_close_timer:
 		auto_close_timer.start()
 
-func _avaliar_resultado() -> String:
+func _avaliar_resultado() -> FishingResult:
 	if marker == null:
-		return "Errou"
+		return FishingResult.MISS
 
 	var marcador_centro: float = _marker_position_x + (MARKER_SIZE.x * 0.5)
 	var zona_centro: float = BAR_HIT_ZONE_POSITION.x + (BAR_HIT_ZONE_SIZE.x * 0.5)
 	var distancia: float = abs(marcador_centro - zona_centro)
 
 	if distancia <= PERFECT_TOLERANCE:
-		return "Perfeito"
+		return FishingResult.PERFECT
 	if distancia <= GOOD_TOLERANCE:
-		return "Bom"
-	return "Errou"
+		return FishingResult.GOOD
+	return FishingResult.MISS
+
+func _aplicar_recompensa(resultado: FishingResult) -> void:
+	if _recompensa_aplicada:
+		return
+	_recompensa_aplicada = true
+
+	match resultado:
+		FishingResult.GOOD:
+			GlobalInventory.adicionar_item("peixe_comum", 1)
+			_atualizar_ui_pos_recompensa()
+		FishingResult.PERFECT:
+			GlobalInventory.adicionar_item("escama_brilhante", 1)
+			_atualizar_ui_pos_recompensa()
+		FishingResult.MISS:
+			pass
+
+func _atualizar_ui_pos_recompensa() -> void:
+	var ui: Node = _obter_ui_principal()
+	if ui == null:
+		return
+	if ui.has_method("verificar_e_atualizar_inventario"):
+		ui.call("verificar_e_atualizar_inventario")
+	if ui.has_method("atualizar_status_jogo"):
+		ui.call("atualizar_status_jogo")
+
+func _obter_ui_principal() -> Node:
+	var tree: SceneTree = get_tree()
+	if tree == null:
+		return null
+	var current_scene: Node = tree.current_scene
+	if current_scene == null:
+		return null
+	return current_scene.get_node_or_null("UI")
 
 func _resetar_barra() -> void:
 	_resultado_travado = false

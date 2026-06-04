@@ -70,7 +70,8 @@
 - Adicionar boia V0 única e reposicionável no ponto clicado do lago.
 - Adicionar puxada fake V0 com timer e estado visual da linha.
 - Consolidar o Popup de Sincronia V0 da pesca.
-- Criar recompensas aquáticas básicas.
+- Consolidar a Recompensa Aquática V0.
+- Garantir que o popup da pesca consuma Espaço e force a Vara ativa ao fechar.
 - Consolidar a Vara de Pesca como ferramenta visual/global na toolbar principal antes da pesca real.
 - Só depois conectar com inventário, caldeirão e árvore de alquimia.
 

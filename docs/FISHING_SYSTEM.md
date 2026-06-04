@@ -12,9 +12,9 @@ O objetivo é criar uma atividade calma, mágica e acessível, que converse com 
 
 A `Vara de Pesca` já existe como ferramenta visual/global na toolbar principal.
 
-Ela ainda não lança boia, não abre minigame e não gera recompensa real.
+A ferramenta já conversa com o V0 do lago, da boia, do popup de sincronia e das recompensas simples.
 
-A presença dela serve como base de interface para a futura pesca integrada ao lago da fazenda.
+A presença dela serve como base de interface para a futura pesca integrada ao lago da fazenda, e o V0 já conversa com o lago, a boia, o popup e recompensas simples.
 
 ## Lago da Fazenda V0
 
@@ -22,7 +22,7 @@ O jogo principal já possui um `FishingSpot` físico/clicável na fazenda.
 
 Esse ponto ainda é mínimo, mas já cobre o loop V0: ele responde quando a `Vara de Pesca` está ativa, mostra feedback de lançamento, mantém a boia e, quando a puxada fake acontece, abre o popup de sincronia V0.
 
-Ainda não há minigame, recompensas, áreas especiais ou integração com inventário nesta etapa.
+Ainda não há áreas especiais nem integração com caldeirão ou árvore de alquimia nesta etapa; o V0 já inclui boia, puxada fake, popup e recompensa simples.
 
 ## Boia V0
 
@@ -36,7 +36,7 @@ Ainda não existe puxada, timing, resultado ou recompensa. A boia é apenas o pr
 
 Depois de alguns segundos, a boia entra em um estado simples de puxada fake.
 
-Esse estado existe apenas como sinal visual de que algo mordeu a linha. Ainda não há minigame, recompensa, inventário ou integração com caldeirão.
+Esse estado existe apenas como sinal visual de que algo mordeu a linha. Ainda não há minigame completo, inventário especial ou integração com caldeirão, mas já existe uma recompensa aquática V0 simples.
 
 Se o jogador clicar novamente com a Vara de Pesca ativa enquanto a boia está nesse estado, o jogo abre o popup de sincronia V0, encerra o teste da boia e volta o lago para o estado inicial.
 
@@ -49,14 +49,26 @@ Esse popup é leve e serve só para validar a leitura do timing:
 - mostra uma barra horizontal;
 - mostra uma zona de acerto;
 - mostra um marcador em movimento;
-- aceita tecla `Espaço` e clique em qualquer área da janela;
+- aceita tecla `Espaço` e clique em qualquer área da janela, consumindo esse input para não vazar para outros handlers;
 - calcula um resultado simples: `O pulso se perdeu.`, `Boa sincronia.` ou `Ressonância perfeita!`;
-- não gera recompensa real;
+- gera recompensa aquática V0 simples no inventário real;
 - não conecta inventário, caldeirão ou árvore de alquimia.
 
 O popup continua sendo apenas o primeiro passo interativo da pesca. Ele valida o clique certo sem transformar o sistema em um minigame grande demais cedo demais.
 
-Quando o popup se encerra, a pesca volta para `Nenhuma` ferramenta se a `Vara de Pesca` ainda estiver ativa, evitando um novo lançamento acidental imediatamente após o resultado.
+Quando o popup se encerra, a `Vara de Pesca` permanece selecionada e o `FishingSpot` volta para `IDLE`, permitindo um novo lançamento imediato no lago. Para isso, o fechamento usa uma seleção forçada no `ToolManager`, sem depender do toggle de `select_fishing_rod()`.
+
+## Recompensa Aquática V0
+
+O resultado do popup já pode gerar recompensa simples no inventário real:
+
+- `Errou` / `MISS`: nenhum item;
+- `Bom` / `GOOD`: `peixe_comum` x1;
+- `Perfeito` / `PERFECT`: `escama_brilhante` x1.
+
+Esses itens entram em `GlobalInventory` e aparecem no inventário visual como parte do fluxo V0.
+
+O balanceamento, os nomes e a quantidade de recompensas continuam provisórios. Ainda não há conexão com caldeirão, receitas ou árvore de alquimia.
 
 ## Princípio principal
 
@@ -79,7 +91,7 @@ Fluxo futuro planejado:
 7. Resultado gera peixe ou ingrediente aquático.
 8. Recompensas podem alimentar inventário, caldeirão, receitas e árvore de alquimia no futuro.
 
-Hoje, o jogo principal já tem uma versão V0 desse passo 5, com popup simples de sincronia e resultados fake, mas ainda sem recompensa real.
+Hoje, o jogo principal já tem uma versão V0 desse passo 5, com popup simples de sincronia e resultados fake que já geram recompensas simples.
 
 Enquanto o popup está aberto, o Lago da Fazenda V0 bloqueia novo lançamento e pede para o jogador finalizar a pesca atual antes de começar outra.
 

@@ -1,15 +1,22 @@
 # Changelog
 
+## 2026-06-04 - Recompensa Aquática V0
+- O popup de sincronia da pesca passou a gerar recompensas simples no inventário real.
+- Bom agora adiciona `peixe_comum`; Perfeito agora adiciona `escama_brilhante`; Errou nao gera item.
+- A UI do inventário passa a refletir essas recompensas sem criar um sistema novo de inventário.
+- Ainda nao há conexão com caldeirao, receitas ou árvore de alquimia.
+
 ## 2026-06-04 - Input do popup de sincronia ajustado
-- O Popup de Sincronia V0 da pesca agora aceita tecla Espaço e clique em qualquer área da janela, e nao apenas em cima da barra.
+- O Popup de Sincronia V0 da pesca agora aceita tecla Espaço e clique em qualquer área da janela, consumindo esse input para não vazar para outros handlers.
 - O Lago da Fazenda V0 passa a bloquear novo lançamento enquanto a sincronia está aberta.
 - A identidade da Pesca de Ressonância foi reforçada com textos próprios e resultado fake.
-- Ao encerrar o minigame, a Vara de Pesca volta para Nenhuma para evitar novo lançamento acidental.
-- Nenhuma recompensa real foi adicionada.
+- Ao encerrar o minigame, a Vara de Pesca é forçada como ferramenta ativa para permitir pesca contínua.
+- A seleção forçada evita depender do toggle de `select_fishing_rod()`.
+- Nenhuma recompensa extra foi adicionada além do fluxo V0 simples.
 
 ## 2026-06-04 - Popup de Sincronia V0 da pesca
 - O Lago da Fazenda V0 agora abre um popup simples de Pesca de Ressonância quando a puxada fake está ativa e o jogador clica novamente com a Vara de Pesca.
-- O popup mostra barra, zona de acerto, marcador móvel e resultados Errou/Bom/Perfeito, sem recompensa real.
+- O popup mostra barra, zona de acerto, marcador móvel e resultados Errou/Bom/Perfeito, com recompensa simples no V0.
 - Nenhuma regra de gameplay foi alterada; o lago, a boia e o loop agrícola continuam intactos.
 
 ## 2026-06-04 - Limpeza de logs do lago

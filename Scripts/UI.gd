@@ -466,6 +466,8 @@ func obter_emoji_item(item_id: String) -> String:
 		"essencia_sombria": return "🔮"
 		"adubo_flamejante": return "🔥"
 		"elixir_estacional": return "🍶"
+		"peixe_comum": return "🐟"
+		"escama_brilhante": return "✨"
 		"agua": return "💧"
 	return "📦"
 

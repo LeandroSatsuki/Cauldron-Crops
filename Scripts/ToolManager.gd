@@ -34,6 +34,16 @@ func select_harvest() -> void:
 func select_fishing_rod() -> void:
 	select_tool(ToolType.FISHING_ROD)
 
+func force_select_tool(tool: ToolType) -> void:
+	if active_tool == tool:
+		return
+
+	active_tool = tool
+	print("ToolManager: ferramenta ativa = %s" % get_tool_name(active_tool))
+
+func force_select_fishing_rod() -> void:
+	force_select_tool(ToolType.FISHING_ROD)
+
 func clear_tool() -> void:
 	if active_tool == ToolType.NONE:
 		return
