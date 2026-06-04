@@ -1,5 +1,15 @@
 # Changelog
 
+## 2026-06-03 - Agua no StatusPanel e prioridade de ferramenta
+- O StatusPanel voltou a mostrar claramente `Água: X`, lendo diretamente `GlobalInventory.inventario["agua"]`.
+- A ferramenta ativa do `ToolManager` passou a ter prioridade sobre a semente selecionada no lote: Regador rega antes de qualquer plantio, e Enxada/Colheita bloqueiam plantio acidental.
+- A água continua fora da lista visual comum de inventário; ela segue só como contador no StatusPanel.
+
+## 2026-06-03 - Agua separada do inventario visual
+- A agua continua armazenada internamente em `GlobalInventory.inventario["agua"]`, mas deixou de aparecer como item comum na barra visual de inventário.
+- O StatusPanel passou a ser a referencia visual principal da água, mostrando o contador separado do restante do inventário.
+- Nenhuma regra de gameplay foi alterada; salvar, carregar, FarmPlot e PocoManager continuam usando a agua normalmente por baixo.
+
 ## 2026-06-03 - Toolbar principal ajustada
 - A Barra de Ferramentas V0 do jogo principal passou a exibir apenas Enxada, Regador e Colheita.
 - Os botões de ferramenta agora funcionam como liga/desliga: selecionar a mesma ferramenta novamente volta para Nenhuma.

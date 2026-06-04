@@ -353,3 +353,15 @@
 - Decisão: manter `Semente` apenas no `FarmGridPreview` e deixar a toolbar principal com Enxada, Regador e Colheita.
 - Motivo: alinhar a UI principal ao design atual sem perder a semente fake do laboratório isolado.
 - Risco: a separação exige cuidado para não reaparecerem atalhos ou botões de Semente fora do preview.
+
+## Decisão 49 - Agua fora da lista visual do inventario
+- Problema: a agua era exibida como item comum na barra visual de inventário, embora já tivesse leitura dedicada no StatusPanel.
+- Decisão: manter `GlobalInventory.inventario["agua"]` como fonte real, mas ocultar `agua` da lista visual de itens comuns.
+- Motivo: deixar o contador de agua no StatusPanel como referência principal, sem mexer em save, FarmPlot ou PocoManager.
+- Risco: qualquer nova UI que liste o inventário precisa lembrar desse filtro para não mostrar a água de novo.
+
+## Decisão 50 - Prioridade da ferramenta ativa no lote
+- Problema: com uma semente selecionada no inventário, o clique no lote podia plantar mesmo quando uma ferramenta ativa já havia sido escolhida.
+- Decisão: dar prioridade à ferramenta ativa do `ToolManager` sobre a semente selecionada no lote.
+- Motivo: evitar plantio acidental quando o jogador quer regar, usar enxada ou preparar a colheita.
+- Risco: como Enxada e Colheita ainda não executam ação real no `FarmPlot`, a interação vira bloqueio intencional até o comportamento dessas ferramentas existir de fato.

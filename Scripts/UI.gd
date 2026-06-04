@@ -237,7 +237,7 @@ func _process(delta: float) -> void:
 	if season_label:
 		season_label.text = "Estação: " + SeasonManager.obter_nome_estacao() + " | Ano: " + str(SeasonManager.ano)
 	if cargas_label:
-		cargas_label.text = "Cargas Mágicas: " + str(GlobalInventory.cargas_crescimento)
+		cargas_label.text = "Água: " + str(int(GlobalInventory.inventario.get("agua", 0)))
 	if semente_label:
 		var nome = "Trigo"
 		if GlobalInventory.semente_selecionada == "semente_inverno":
@@ -346,6 +346,8 @@ func atualizar_inventario_visual() -> void:
 		
 	# Cria slots
 	for item_key in GlobalInventory.inventario:
+		if item_key == "agua":
+			continue
 		var qtd = GlobalInventory.inventario[item_key]
 		if qtd > 0:
 			var slot = slot_scene.instantiate()

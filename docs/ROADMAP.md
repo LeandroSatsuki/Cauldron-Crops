@@ -44,6 +44,8 @@
 - Expandir a seleção global para `Semente`, `Regador` e `Colheita` sem ações reais.
 - Aplicar icones provisorios na Barra de Ferramentas V0 sem alterar a selecao global.
 - Ajustar a toolbar principal para ficar só com Enxada, Regador e Colheita, mantendo Semente apenas no FarmGridPreview.
+- Separar a agua da lista visual de inventário e usar o StatusPanel como referencia principal de agua.
+- Dar prioridade da ferramenta ativa sobre a semente selecionada no clique do FarmPlot.
 
 ## Fase 4 - Conteúdo
 - Novas crops.

@@ -6,6 +6,11 @@ const TEX_MOLHADA = preload("res://Assets/molhada.png")
 const TEX_SECA_ADUBADA = preload("res://Assets/seca_adubada.png")
 const TEX_MOLHADA_ADUBADA = preload("res://Assets/molhada_adubada.png")
 const GRID_SIZE = 64 # Tamanho padrao do tile
+const TOOL_NONE := 0
+const TOOL_HOE := 1
+const TOOL_SEED := 2
+const TOOL_WATERING_CAN := 3
+const TOOL_HARVEST := 4
 
 # Máquina de estados simples
 enum State {
@@ -96,20 +101,19 @@ func _input_event(_viewport: Viewport, event: InputEvent, _shape_idx: int) -> vo
 		_on_plot_clicked()
 
 func _on_plot_clicked() -> void:
+	var ferramenta_ativa: int = _obter_ferramenta_ativa()
+	if ferramenta_ativa != TOOL_NONE:
+		if ferramenta_ativa == TOOL_WATERING_CAN:
+			_regar_lote_por_ferramenta()
+			return
+		if ferramenta_ativa == TOOL_HOE or ferramenta_ativa == TOOL_HARVEST:
+			return
+
 	# Verificação de regar
 	var ui = get_tree().current_scene.get_node_or_null("UI")
 	if ui and ui.item_focado_id == "agua" and (estado_atual == State.VAZIO or estado_atual == State.CRESCENDO):
-		if GlobalInventory.inventario.get("agua", 0) >= 1:
-			if not regado:
-				if GlobalInventory.remover_item("agua", 1):
-					regado = true
-					_atualizar_visual()
-					print("Lote Regado!")
-					$SpriteTerra.texture = TEX_MOLHADA
-					if estado_atual == State.CRESCENDO:
-						timer.start(timer.time_left * 0.8)
-			else:
-				print("Lote já está regado!")
+		if _regar_lote_por_ferramenta():
+			return
 		return
 
 	match estado_atual:
@@ -174,6 +178,40 @@ func _on_plot_clicked() -> void:
 			else:
 				# Opcional: print informativo de que ainda está crescendo
 				print("A semente ainda está crescendo... Tempo restante: ", "%0.1f" % timer.time_left, "s")
+
+func _obter_ferramenta_ativa() -> int:
+	var tree: SceneTree = get_tree()
+	if tree == null:
+		return TOOL_NONE
+
+	var tool_manager: Node = tree.root.get_node_or_null("ToolManager")
+	if tool_manager == null or not tool_manager.has_method("get_active_tool"):
+		return TOOL_NONE
+
+	return int(tool_manager.call("get_active_tool"))
+
+func _regar_lote_por_ferramenta() -> bool:
+	if estado_atual != State.VAZIO and estado_atual != State.CRESCENDO:
+		return false
+
+	if GlobalInventory.inventario.get("agua", 0) < 1:
+		print("Sem agua para regar o lote!")
+		return true
+
+	if regado:
+		print("Lote já está regado!")
+		return true
+
+	if GlobalInventory.remover_item("agua", 1):
+		regado = true
+		_atualizar_visual()
+		print("Lote Regado!")
+		$SpriteTerra.texture = TEX_MOLHADA
+		if estado_atual == State.CRESCENDO:
+			timer.start(timer.time_left * 0.8)
+		return true
+
+	return true
 
 func harvest_by_golem() -> Array:
 	if estado_atual != State.PRONTO_PARA_COLHER:

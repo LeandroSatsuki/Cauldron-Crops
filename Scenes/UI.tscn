@@ -28,7 +28,7 @@ text = "Estação: Primavera | Ano: 1"
 
 [node name="CargasLabel" type="Label" parent="StatusPanel" unique_id=348134435]
 layout_mode = 2
-text = "Cargas Mágicas: 0"
+text = "Água: 0"
 
 [node name="SementeLabel" type="Label" parent="StatusPanel" unique_id=14489961]
 layout_mode = 2
