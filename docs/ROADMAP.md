@@ -24,6 +24,7 @@
 - Decidir o formato para crops, itens e receitas.
 - Avaliar `Resource .tres`, JSON ou CSV.
 - Criar um padrão de receitas.
+- Limpar logs temporários da pesca que já não servem mais para diagnóstico.
 - Documentar a arquitetura futura de tempo real antes de conectar gameplay.
 - Criar a base do `TimeManager` sem integrar ao gameplay ainda.
 - Documentar o Farm System V2 antes de qualquer migração da fazenda.

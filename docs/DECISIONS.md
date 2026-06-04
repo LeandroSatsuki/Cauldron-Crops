@@ -126,133 +126,139 @@
 - Motivo: reforçar a identidade visual da toolbar sem trocar a selecao global nem a logica de ferramentas.
 - Risco: os icones sao provisórios e podem ser substituidos depois quando a arte final estiver pronta.
 
-## Decisão 21 - Colheita segura do golem
+## Decisão 21 - Limpeza de logs do lago
+- Problema: os logs temporários de carregamento do Lago da Fazenda V0 já cumpriram seu papel de diagnóstico.
+- Decisão: remover apenas esses logs de inicialização, mantendo por enquanto os logs curtos de interação da pesca.
+- Motivo: reduzir ruído no console sem perder visibilidade durante os testes do fluxo de lançamento e puxada fake.
+- Risco: o lago continua dependendo de logs de interação para depuração rápida até a pesca V0 ser mais madura.
+
+## Decisão 22 - Colheita segura do golem
 - Problema: a colheita automática antiga dependia de clique humano e era frágil para IA.
 - Decisão: criar `harvest_by_golem()` no `FarmPlot` para colher 1 item básico sem usar `_on_plot_clicked()`.
 - Motivo: separar a lógica do golem da lógica de interação manual.
 - Risco: bônus extras, sementes bônus e variações sazonais ficam para depois.
 
-## Decisão 22 - Golem físico V1 com depósito
+## Decisão 23 - Golem físico V1 com depósito
 - Problema: o golem físico existia só como placeholder visual.
 - Decisão: ligar `Golem.gd` à cena e fazer o golem procurar lote maduro, colher e depositar no Baú da Vila.
 - Motivo: validar o loop físico mínimo do coletor antes de upgrades e árvore de talentos.
 - Risco: o `GolemManager` segue desligado e o sistema ainda não tem pathfinding nem UI do baú.
 
-## Decisão 22 - UI simples do Baú da Vila
+## Decisão 24 - UI simples do Baú da Vila
 - Problema: os itens depositados pelo golem ficavam invisíveis para o jogador.
 - Decisão: criar um painel simples para abrir o baú, listar o conteúdo e permitir `Retirar Tudo` para o inventário global.
 - Motivo: manter o baú separado do inventário do jogador e tornar o fluxo claro antes do salvamento.
 - Risco: retirada individual e persistência do baú ainda ficam para etapas futuras.
 
-## Decisão 23 - Botão temporário de smoke test no Debug Panel
+## Decisão 25 - Botão temporário de smoke test no Debug Panel
 - Problema: o `FarmGridManager` e o `FarmTileData` precisavam de uma forma rápida de validação manual sem tocar no gameplay.
 - Decisão: adicionar um botão temporário `Testar FarmGrid` no Debug Panel para executar `FarmGridManagerSmokeTest.run()`.
 - Motivo: permitir checagem em memória da fundação do grid sem acoplar a cena ou os lotes atuais.
 - Risco: a ferramenta é só de desenvolvimento e deve ser removida ou reorganizada quando o grid entrar de verdade no jogo.
 
-## Decisão 34 - Preview visual isolado do FarmGrid
+## Decisão 26 - Preview visual isolado do FarmGrid
 - Problema: a fundação do grid precisava de uma visualização manual simples sem tocar no `FarmPlot` ativo.
 - Decisão: criar `Scenes/dev/FarmGridPreview.tscn` como cena isolada de preview visual para o grid futuro.
 - Motivo: permitir experimentar desenho e interação de tiles sem conectar ao gameplay principal.
 - Risco: a cena é só de teste e não deve virar uma rota paralela de jogo.
 
-## Decisão 35 - Preview mostra Solo Vivo Alquimico
+## Decisão 27 - Preview mostra Solo Vivo Alquimico
 - Problema: o preview precisava validar nao só o estado do tile, mas tambem o tipo de solo do Farm System V2.
 - Decisão: representar `soil_type` com bordas coloridas e alternancia por clique direito na cena isolada.
 - Motivo: facilitar leitura visual do Solo Vivo Alquimico sem assets adicionais.
 - Risco: a visualizacao continua provisoria e deve ser substituida quando a arte final chegar.
 
-## Decisão 36 - Preview testa Enxada e decay diario
+## Decisão 28 - Preview testa Enxada e decay diario
 - Problema: o preview precisava validar a futura regra de arar com ferramenta ativa e o retorno de terra arada sem crop na virada do dia.
 - Decisão: usar `Enxada` como ferramenta ativa padrão e simular o `Decay Diario` apenas em memória no preview.
 - Motivo: experimentar o comportamento sem criar tempo real nem alterar o `FarmPlot` ativo.
 - Risco: a regra ainda é conceitual e pode mudar quando o loop de fazenda em grid existir de verdade.
 
-## Decisão 37 - Preview testa Semente fake
+## Decisão 29 - Preview testa Semente fake
 - Problema: o preview precisava validar a regra de que tiles plantados com semente não voltam para grama no decay diário.
 - Decisão: adicionar uma ferramenta fake `Semente` que planta um crop de debug em memória (`debug_crop`).
 - Motivo: permitir testar plantio e proteção contra decay sem inventário real, sem Database e sem gameplay principal.
 - Risco: o crop fake existe só para validação e deve ser substituido por dados reais quando a fazenda em grid entrar de verdade.
 
-## Decisão 38 - Preview testa Regador fake
+## Decisão 30 - Preview testa Regador fake
 - Problema: o preview precisava validar o próximo passo do loop de fazenda em grid, molhando terra arada e plantios de debug.
 - Decisão: adicionar uma ferramenta fake `Regador`, selecionada por tecla `3`, que molha tiles `ARADO` e `PLANTADO` em memória.
 - Motivo: testar água, umidade e estado molhado sem criar inventário, `PocoManager` ou gameplay principal.
 - Risco: a lógica de água continua provisória e pode ser ajustada quando o grid estiver realmente integrado.
 
-## Decisão 39 - Preview testa crescimento fake
+## Decisão 31 - Preview testa crescimento fake
 - Problema: o preview precisava validar a leitura de crescimento do crop sem criar tempo real, sistema de fases ou gameplay principal.
 - Decisão: adicionar a tecla `G` para avançar `remaining_growth_time` apenas em tiles plantados e irrigados, usando marcadores visuais maiores conforme o crop se aproxima da maturidade.
 - Motivo: observar a curva de crescimento em memoria com uma regra simples e sem punir o jogador no prototipo.
 - Risco: o escalonamento visual e a quantidade de estagios podem mudar quando a fazenda em grid entrar de verdade.
 
-## Decisão 40 - Preview testa colheita fake
+## Decisão 32 - Preview testa colheita fake
 - Problema: o preview precisava fechar o loop minimo da fazenda em grid com uma etapa de colheita sem inventario real.
 - Decisão: adicionar a tecla `4` para selecionar `Colheita` e colher apenas crops maduras, limpando o tile e devolvendo-o para `ARADO`.
 - Motivo: validar a transicao crescimento -> colheita -> preparo para novo plantio sem acoplar o sistema real de itens.
 - Risco: a regra de retorno para `ARADO` pode ser ajustada quando o loop de solo e plantio entrar no jogo principal.
 
-## Decisão 41 - Checkpoint do FarmGrid
+## Decisão 33 - Checkpoint do FarmGrid
 - Problema: o FarmGrid V2 precisava de um registro oficial do que ja foi validado e do que ainda e fake antes de qualquer integracao.
 - Decisão: criar um checkpoint de arquitetura documentando o preview, o loop minimo validado, os riscos e a pendencia de logs globais em cenas dev.
 - Motivo: manter o FarmGrid isolado enquanto o `FarmPlot` segue como sistema ativo e confiavel do prototipo.
 - Risco: o checkpoint nao resolve os logs globais; ele apenas registra a pendencia para investigacao futura.
 
-## Decisão 23 - Presenca fisica do golem
+## Decisão 34 - Presenca fisica do golem
 - Problema: o golem parecia sem volume e passava visualmente por baixo de elementos do mundo.
 - Decisão: ajustar a ordenacao visual com z_index por Y, mover a interacao para um ponto lateral/abaixo do lote e adicionar um sensor simples de proximidade.
 - Motivo: melhorar a leitura espacial sem implementar pathfinding.
 - Risco: o movimento continua em linha reta e pode atravessar obstaculos; isso fica para uma etapa futura.
 
-## Decisão 24 - Recompensas compartilhadas da colheita
+## Decisão 35 - Recompensas compartilhadas da colheita
 - Problema: a colheita manual já tinha bônus e drops raros, mas o golem ainda colhia só um item básico.
 - Decisão: centralizar a geração das recompensas em `FarmPlot` para que a colheita manual e a do golem usem o mesmo conjunto de bônus.
 - Motivo: manter paridade de jogo entre o que o jogador colhe na mão e o que o golem entrega ao Baú da Vila.
 - Risco: o golem agora pode depositar mais de um tipo de item por viagem, então o balanceamento futuro precisa considerar esse volume extra.
 
-## Decisão 25 - Navegacao simples do golem
+## Decisão 36 - Navegacao simples do golem
 - Problema: o golem ainda atravessava visualmente o caldeirão e não contornava obstáculos.
 - Decisão: substituir o Tween direto por navegação simples com `NavigationAgent2D` e rota por waypoints quando a linha cruza o caldeirão.
 - Motivo: dar um comportamento físico mais crível sem introduzir um sistema pesado de pathfinding agora.
 - Risco: a solução ainda é híbrida e simples; obstáculos mais complexos continuarão exigindo refinamento depois.
 
-## Decisão 26 - Caldeirão como obstáculo físico
+## Decisão 37 - Caldeirão como obstáculo físico
 - Problema: o caldeirão precisava bloquear o caminho do golem no mundo.
 - Decisão: adicionar um obstáculo físico simples ao caldeirão e uma região de navegação básica na área jogável inicial.
 - Motivo: tornar a navegação do protótipo previsível sem mexer na UI do caldeirão.
 - Risco: o obstáculo é provisório e a área navegável ainda é ampla demais para um mapa com mais complexidade.
 
-## Decisão 27 - Golem com corpo físico
+## Decisão 38 - Golem com corpo físico
 - Problema: a navegação por `Node2D` ainda permitia leitura estranha e não respeitava colisão de forma confiável.
 - Decisão: usar `CharacterBody2D` no golem físico, mantendo `NavigationAgent2D` como guia de rota.
 - Motivo: impedir que o golem atravesse o caldeirão sem abrir escopo para pathfinding completo agora.
 - Risco: a navegação continua provisória e pode precisar de refinamento quando a fazenda crescer.
 
-## Decisão 28 - Desvio simples ao travar
+## Decisão 39 - Desvio simples ao travar
 - Problema: mesmo com colisão física, o golem podia encostar no caldeirão e ficar preso sem reação útil.
 - Decisão: detectar travamento e calcular um waypoint de desvio simples ao redor do caldeirão antes de seguir o destino original.
 - Motivo: destravar o coletor sem restaurar a rota manual em L nem implementar pathfinding completo ainda.
 - Risco: o desvio é heurístico e pode precisar ser revisto quando a fazenda e os obstáculos crescerem.
 
-## Decisão 29 - Terra arada em camada baixa
+## Decisão 40 - Terra arada em camada baixa
 - Problema: o golem ainda podia parecer escondido pela terra arada e pela base visual dos lotes.
 - Decisão: manter a terra/base do lote em camada baixa e dar ao golem um offset visual levemente acima do campo.
 - Motivo: preservar a leitura espacial do protótipo sem mexer em coleta, depósito ou navegação.
 - Risco: o sistema de camadas ainda é provisório e pode receber refinamento quando a cena crescer.
 
-## Decisão 30 - Terra fora da herança do lote
+## Decisão 41 - Terra fora da herança do lote
 - Problema: lotes mais abaixo na tela ainda podiam cobrir parcialmente o golem por herança de z do `FarmPlot`.
 - Decisão: desligar a herança de z dos visuais de solo do lote e manter planta, VFX e tooltip com camadas próprias.
 - Motivo: impedir que o chão de lotes inferiores cubra o golem sem mexer no fluxo do jogo.
 - Risco: isso resolve a leitura atual, mas o sistema de camadas ainda continua provisório.
 
-## Decisão 31 - Save mínimo do Baú da Vila
+## Decisão 42 - Save mínimo do Baú da Vila
 - Problema: o conteúdo do Baú da Vila podia ser perdido ao fechar o jogo antes da retirada.
 - Decisão: salvar e restaurar o `inventory` do baú em `village_chest_inventory` dentro do `SaveManager`.
 - Motivo: manter o ciclo do golem e do baú persistente sem mexer ainda nos lotes, crops ou no salvamento completo do mundo.
 - Risco: o save continua mínimo e ainda não persiste o estado dos lotes/plantações.
 
-## Decisão 32 - Debug Panel V1 temporario
+## Decisão 43 - Debug Panel V1 temporario
 - Problema: os testes do protótipo estavam lentos para itens, receitas, lotes, save e Baú da Vila.
 - Decisão: criar um painel de debug oculto na UI principal, aberto por `F10`, com ferramentas temporárias de teste.
 - Motivo: acelerar a validação do protótipo sem transformar essas ações em mecânicas reais.

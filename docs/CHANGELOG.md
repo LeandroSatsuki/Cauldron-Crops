@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-06-04 - Limpeza de logs do lago
+- Os logs temporários de carregamento do Lago da Fazenda V0 foram removidos após a validação visual no jogo principal.
+- Os logs curtos de interação da pesca continuam por enquanto, para ajudar nos testes de lançamento, reposicionamento e puxada fake.
+- Nenhuma regra de gameplay foi alterada.
+
 ## 2026-06-04 - Puxada Fake V0 da pesca
 - O Lago da Fazenda V0 agora entra em um estado de puxada fake alguns segundos depois do lançamento da boia.
 - A boia muda visualmente e o jogo mostra que algo puxou a linha, mas ainda nao existe minigame nem recompensa.

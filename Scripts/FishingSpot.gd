@@ -21,8 +21,6 @@ var bobber_base_scale: Vector2 = Vector2.ONE
 func _ready() -> void:
 	add_to_group("fishing_spot")
 	input_pickable = true
-	var parent_name: String = get_parent().name if get_parent() != null else "null"
-	print("FishingSpot: ready. parent=", parent_name, " global_position=", global_position, " visible=", visible, " z_index=", z_index)
 	if bobber != null:
 		bobber_base_scale = bobber.scale
 	if fishing_bite_timer != null and not fishing_bite_timer.timeout.is_connected(_on_fishing_bite_timer_timeout):

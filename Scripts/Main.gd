@@ -90,7 +90,6 @@ func _garantir_lago_da_fazenda() -> void:
 	fishing_spot.position = FISHING_SPOT_POSITION
 	fishing_spot.visible = true
 	fishing_spot.z_index = FISHING_SPOT_Z_INDEX
-	print("Main: FishingSpot criado/configurado em ", fishing_spot.global_position)
 
 func _criar_lago_da_fazenda_fallback() -> Node2D:
 	var fishing_spot := Area2D.new()
