@@ -443,3 +443,9 @@
 - Decisão: representar a pescaria com uma única boia ativa, que é reposicionada quando o jogador clica novamente com a Vara de Pesca.
 - Motivo: manter o protótipo simples, legível e fácil de expandir para puxada, timing e recompensa depois.
 - Risco: a boia ainda não tem comportamento de jogo além de posição visual, então o sistema real de pesca continua para etapas futuras.
+
+## Decisão 64 - Puxada Fake V0 por timer
+- Problema: a boia precisava evoluir para um segundo estado visual sem abrir ainda o minigame de sincronia.
+- Decisão: usar um timer simples para mudar a boia para um estado de puxada fake após alguns segundos e encerrar o teste quando o jogador clicar de novo com a Vara ativa.
+- Motivo: validar a leitura da pesca em pequenos passos, mantendo a implementação controlada e sem recompensa.
+- Risco: o timer ainda não representa a mecânica final de pesca; ele é apenas a ponte visual para a etapa de sincronia futura.

@@ -313,6 +313,7 @@ O Fishing System é a direção futura para a pesca no jogo principal.
 - essas áreas especiais serão opcionais, não obrigatórias
 - a primeira implementação futura deve ser pequena, calma e integrada ao lago da fazenda
 - a Boia V0 já é o primeiro estado visual da pescaria no lago, sem minigame ou recompensa ainda
+- a Puxada Fake V0 pode representar o próximo estado visual da linha antes da sincronia real
 
 ### Pesca de Ressonancia
 

@@ -32,6 +32,14 @@ Ela é única: o jogo mantém apenas uma boia ativa por vez, e um novo clique co
 
 Ainda não existe puxada, timing, resultado ou recompensa. A boia é apenas o primeiro estado visual da ação de pescar.
 
+## Puxada Fake V0
+
+Depois de alguns segundos, a boia entra em um estado simples de puxada fake.
+
+Esse estado existe apenas como sinal visual de que algo mordeu a linha. Ainda não há minigame, recompensa, inventário ou integração com caldeirão.
+
+Se o jogador clicar novamente com a Vara de Pesca ativa enquanto a boia está nesse estado, o teste é encerrado e o protótipo volta para o estado inicial.
+
 ## Princípio principal
 
 O jogador poderá lançar a vara em qualquer área válida do lago.

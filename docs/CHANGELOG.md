@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-06-04 - Puxada Fake V0 da pesca
+- O Lago da Fazenda V0 agora entra em um estado de puxada fake alguns segundos depois do lançamento da boia.
+- A boia muda visualmente e o jogo mostra que algo puxou a linha, mas ainda nao existe minigame nem recompensa.
+- Se o jogador clicar de novo com a Vara ativa durante a puxada fake, o teste é encerrado e volta para o estado inicial.
+
 ## 2026-06-04 - Boia V0 da pesca
 - O Lago da Fazenda V0 ganhou uma boia visual simples que aparece no ponto clicado quando a `Vara de Pesca` está ativa.
 - Clicar novamente com a Vara reposiciona a mesma boia, sem criar boias novas.

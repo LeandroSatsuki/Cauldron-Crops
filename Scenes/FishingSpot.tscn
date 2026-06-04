@@ -3,20 +3,25 @@
 [ext_resource type="Script" path="res://Scripts/FishingSpot.gd" id="1_fishingspotgd"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_fishing_spot"]
-size = Vector2(240, 150)
+size = Vector2(340, 220)
 
 [node name="FishingSpot" type="Area2D"]
-z_index = -2
+z_index = 4
 script = ExtResource("1_fishingspotgd")
 
+[node name="LakeGlow" type="Polygon2D" parent="."]
+z_index = 3
+color = Color(0.0862745, 0.509804, 0.784314, 0.45)
+polygon = PackedVector2Array(Vector2(-170, -45), Vector2(-125, -105), Vector2(80, -110), Vector2(165, -35), Vector2(150, 55), Vector2(60, 110), Vector2(-70, 110), Vector2(-170, 45))
+
 [node name="LakeVisual" type="Polygon2D" parent="."]
-z_index = -2
-color = Color(0.227451, 0.584314, 0.839216, 0.88)
-polygon = PackedVector2Array(Vector2(-120, -25), Vector2(-90, -75), Vector2(60, -75), Vector2(120, -20), Vector2(105, 40), Vector2(40, 75), Vector2(-55, 75), Vector2(-120, 25))
+z_index = 4
+color = Color(0.12549, 0.705882, 0.921569, 0.96)
+polygon = PackedVector2Array(Vector2(-150, -35), Vector2(-110, -95), Vector2(60, -100), Vector2(145, -30), Vector2(130, 50), Vector2(50, 100), Vector2(-60, 100), Vector2(-150, 35))
 
 [node name="Bobber" type="Node2D" parent="."]
 visible = false
-z_index = 1
+z_index = 10
 
 [node name="Body" type="Polygon2D" parent="Bobber"]
 color = Color(0.909804, 0.258824, 0.258824, 1)
@@ -25,6 +30,10 @@ polygon = PackedVector2Array(Vector2(0, -7), Vector2(5, -5), Vector2(7, 0), Vect
 [node name="Highlight" type="Polygon2D" parent="Bobber"]
 color = Color(0.976471, 0.976471, 0.976471, 0.9)
 polygon = PackedVector2Array(Vector2(-2, -6), Vector2(1, -6), Vector2(2, -3), Vector2(-1, -3))
+
+[node name="FishingBiteTimer" type="Timer" parent="."]
+wait_time = 3.0
+one_shot = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape2D_fishing_spot")

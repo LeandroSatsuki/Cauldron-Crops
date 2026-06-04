@@ -67,6 +67,7 @@
 - Consolidar o Lago da Fazenda V0 como ponto físico/clicável da fazenda.
 - Refinar FishingSpot V0 sem sair do loop mínimo.
 - Adicionar boia V0 única e reposicionável no ponto clicado do lago.
+- Adicionar puxada fake V0 com timer e estado visual da linha.
 - Criar popup simples de sincronia.
 - Criar recompensas aquáticas básicas.
 - Consolidar a Vara de Pesca como ferramenta visual/global na toolbar principal antes da pesca real.
