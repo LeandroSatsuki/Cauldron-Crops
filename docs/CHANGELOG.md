@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-06-03 - Colheita V0 por ferramenta
+- A ferramenta `Colheita` passou a colher lotes prontos no jogo principal usando a mesma lógica manual de recompensa do `FarmPlot`.
+- Bonus e drops raros continuam sendo gerados pelo fluxo existente; o golem nao foi alterado.
+- Isso ainda nao conecta o FarmGrid ao gameplay e nao cria novo sistema de inventario.
+
 ## 2026-06-03 - Decay Diario V0 manual
 - O jogo principal ganhou um botao de Debug Panel para simular manualmente a virada do dia em lotes `arado` vazios.
 - Lotes vazios e arados voltam ao estado natural; lotes plantados ou prontos para colher permanecem intactos.

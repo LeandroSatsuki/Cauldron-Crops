@@ -395,3 +395,9 @@
 - Decisão: criar um botão manual no Debug Panel que aplica decay apenas em `FarmPlot` vazios e arados, preservando lotes plantados e prontos para colher.
 - Motivo: testar a regra de volta ao estado natural de forma controlada, sem mexer no `TimeManager`, no `SaveManager` ou no comportamento automático do jogo principal.
 - Risco: como ainda é manual/debug, a futura transição para tempo real vai precisar reaproveitar a mesma regra sem duplicar lógica.
+
+## Decisão 56 - Colheita V0 por ferramenta
+- Problema: a ferramenta `Colheita` existia na toolbar, mas ainda não acionava a colheita manual do `FarmPlot`.
+- Decisão: fazer a ferramenta `Colheita` reutilizar a mesma lógica manual de recompensa quando o lote estiver pronto, sem duplicar geração de drops e sem alterar o golem.
+- Motivo: deixar a ferramenta ativa coerente com o fluxo já existente, reaproveitando o caminho manual que já calcula recompensas, bônus e reset do lote.
+- Risco: como a Colheita ainda não cobre ações adicionais fora do estado pronto, qualquer expansão futura precisa manter o mesmo helper compartilhado.

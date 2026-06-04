@@ -43,6 +43,7 @@
 - Criar a base da Ferramenta Ativa V0 no jogo principal com `ToolManager`.
 - Exibir a ferramenta ativa no StatusPanel e selecionar `Enxada` por botão e tecla `1`.
 - Expandir a seleção global para `Semente`, `Regador` e `Colheita` sem ações reais.
+- Fazer `Colheita` agir de verdade no `FarmPlot` usando a recompensa manual já existente.
 - Aplicar icones provisorios na Barra de Ferramentas V0 sem alterar a selecao global.
 - Ajustar a toolbar principal para ficar só com Enxada, Regador e Colheita, mantendo Semente apenas no FarmGridPreview.
 - Separar a agua da lista visual de inventário e usar o StatusPanel como referencia principal de agua.

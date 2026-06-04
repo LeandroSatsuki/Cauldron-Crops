@@ -119,6 +119,11 @@ func _on_plot_clicked() -> void:
 			print("Lote arado!")
 			return
 		if ferramenta_ativa == TOOL_HARVEST:
+			if estado_atual == State.PRONTO_PARA_COLHER:
+				_colher_manualmente(true)
+				return
+			if estado_atual == State.CRESCENDO:
+				print("A planta ainda está crescendo... Tempo restante: ", "%0.1f" % timer.time_left, "s")
 			return
 
 	# Verificação de regar
@@ -171,20 +176,8 @@ func _on_plot_clicked() -> void:
 			print("Semente plantada! Estado alterado para: CRESCENDO. Tempo de crescimento: ", tempo, " segundos.")
 
 		State.PRONTO_PARA_COLHER:
-			# Se o lote for clicado no estado PRONTO_PARA_COLHER:
-			# Lê qual é o produto_colheita da semente atual
-			var produto: String = str(semente_atual.get("produto_colheita", "trigo"))
-			var recompensas: Array = _gerar_recompensas_colheita(produto)
-			if recompensas.is_empty():
-				push_warning("FarmPlot: colheita manual sem recompensas geradas.")
+			if not _colher_manualmente(true):
 				return
-
-			ui = get_tree().current_scene.get_node_or_null("UI")
-			_aplicar_recompensas_colheita(recompensas, ui, global_position, true)
-			_concluir_colheita()
-
-			# Dá um print de sucesso no console
-			print("Sucesso: Colheita realizada! Produto: '", produto, "' foi adicionado ao inventário. Lote agora está VAZIO.")
 
 		State.CRESCENDO:
 			if GlobalInventory.cargas_crescimento > 0:
@@ -246,6 +239,26 @@ func harvest_by_golem() -> Array:
 
 	_concluir_colheita()
 	return recompensas
+
+func _colher_manualmente(mostrar_textos: bool = true) -> bool:
+	if estado_atual != State.PRONTO_PARA_COLHER:
+		return false
+
+	var produto: String = str(semente_atual.get("produto_colheita", "trigo"))
+	var recompensas: Array = _gerar_recompensas_colheita(produto)
+	if recompensas.is_empty():
+		push_warning("FarmPlot: colheita manual sem recompensas geradas.")
+		return false
+
+	var ui: Node = null
+	var tree: SceneTree = get_tree()
+	if tree != null and tree.current_scene != null:
+		ui = tree.current_scene.get_node_or_null("UI")
+
+	_aplicar_recompensas_colheita(recompensas, ui, global_position, mostrar_textos)
+	_concluir_colheita()
+	print("Sucesso: Colheita realizada! Produto: '", produto, "' foi adicionado ao inventário. Lote agora está VAZIO.")
+	return true
 
 func debug_force_ready_to_harvest() -> void:
 	if estado_atual == State.VAZIO:

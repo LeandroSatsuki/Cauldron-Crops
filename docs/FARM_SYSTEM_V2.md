@@ -230,6 +230,13 @@ Decay Diario V0 no FarmPlot atual:
 - lotes plantados ou prontos para colher nao sao afetados por esse decay manual
 - ainda nao existe tempo real conectado a essa regra; a virada automatica continua para fase futura
 
+Colheita V0 por ferramenta no FarmPlot atual:
+
+- a ferramenta `Colheita` do jogo principal agora reaproveita a colheita manual do `FarmPlot`
+- o helper compartilhado continua gerando recompensas, bonus e drops raros pelo caminho atual
+- o golem permanece usando `harvest_by_golem()` sem alterações nesta etapa
+- sementes continuam como itens do inventario e o FarmGrid continua isolado
+
 Checkpoint de arquitetura:
 
 - o preview ja validou o loop minimo do FarmGrid em memoria
