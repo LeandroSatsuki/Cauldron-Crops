@@ -28,6 +28,7 @@ var semente_id_plantada: String = ""
 var pronto_para_colher: bool = false
 var is_rustling: bool = false
 var tempo_total_crescimento: float = 0.0
+var arado: bool = false
 
 @onready var timer: Timer = $Timer
 @onready var color_rect = $ColorRect
@@ -106,7 +107,17 @@ func _on_plot_clicked() -> void:
 		if ferramenta_ativa == TOOL_WATERING_CAN:
 			_regar_lote_por_ferramenta()
 			return
-		if ferramenta_ativa == TOOL_HOE or ferramenta_ativa == TOOL_HARVEST:
+		if ferramenta_ativa == TOOL_HOE:
+			if estado_atual != State.VAZIO:
+				return
+			if arado:
+				print("Lote ja esta arado.")
+				return
+			arado = true
+			_atualizar_visual()
+			print("Lote arado!")
+			return
+		if ferramenta_ativa == TOOL_HARVEST:
 			return
 
 	# Verificação de regar
@@ -128,6 +139,10 @@ func _on_plot_clicked() -> void:
 			
 			if semente_atual.get("estacao_ideal") != SeasonManager.estacao_atual:
 				print("Semente fora de época! Essa planta não cresce nesta estação.")
+				return
+
+			if not arado:
+				print("Are a terra antes de plantar.")
 				return
 			
 			if not GlobalInventory.remover_item(semente_id, 1):
@@ -258,6 +273,7 @@ func get_save_data() -> Dictionary:
 		"estado_atual": estado_salvo,
 		"semente_id_plantada": semente_id_plantada,
 		"regado": regado,
+		"arado": arado,
 		"tempo_restante": tempo_restante,
 		"tempo_total_crescimento": tempo_total,
 		"pronto_para_colher": pronto_para_colher
@@ -268,7 +284,7 @@ func load_save_data(data: Dictionary) -> void:
 		timer.stop()
 
 	if data.is_empty():
-		_concluir_colheita()
+		_concluir_colheita(false)
 		return
 
 	var estado_salvo: int = int(data.get("estado_atual", int(State.VAZIO)))
@@ -277,6 +293,7 @@ func load_save_data(data: Dictionary) -> void:
 
 	var semente_id_salva: String = str(data.get("semente_id_plantada", ""))
 	var regado_salvo: bool = bool(data.get("regado", false))
+	var arado_salvo: bool = bool(data.get("arado", false))
 	var pronto_salvo: bool = bool(data.get("pronto_para_colher", false))
 	var tempo_restante_salvo: float = maxf(float(data.get("tempo_restante", 0.0)), 0.0)
 	var tempo_total_salvo: float = maxf(float(data.get("tempo_total_crescimento", 0.0)), 0.0)
@@ -289,18 +306,27 @@ func load_save_data(data: Dictionary) -> void:
 			estado_final = int(State.CRESCENDO)
 
 	if estado_final == int(State.VAZIO):
-		_concluir_colheita()
+		estado_atual = State.VAZIO
+		pronto_para_colher = false
+		semente_atual = {}
+		semente_id_plantada = ""
+		regado = regado_salvo
+		arado = arado_salvo
+		tempo_total_crescimento = 0.0
+		_atualizar_visual()
+		atualizar_visual_planta("", 0)
 		return
 
 	var semente_dados: Dictionary = _obter_dados_semente_por_id(semente_id_salva)
 	if semente_dados.is_empty():
 		push_warning("FarmPlot: semente nao encontrada para restauracao: %s" % semente_id_salva)
-		_concluir_colheita()
+		_concluir_colheita(false)
 		return
 
 	semente_atual = semente_dados
 	semente_id_plantada = semente_id_salva
 	regado = regado_salvo
+	arado = arado_salvo or estado_final != int(State.VAZIO)
 	tempo_total_crescimento = tempo_total_salvo
 	if tempo_total_crescimento <= 0.0:
 		tempo_total_crescimento = float(semente_atual.get("tempo_crescimento_segundos", 3.0))
@@ -488,18 +514,19 @@ func _obter_nome_exibicao_item(item_id: String) -> String:
 		_:
 			return item_id.replace("_", " ").capitalize()
 
-func _concluir_colheita() -> void:
+func _concluir_colheita(preservar_arado: bool = true) -> void:
 	estado_atual = State.VAZIO
 	regado = false
 	pronto_para_colher = false
 	semente_atual = {}
 	semente_id_plantada = ""
 	tempo_total_crescimento = 0.0
+	if not preservar_arado:
+		arado = false
 
 	if has_node("SpriteTerra"):
-		$SpriteTerra.texture = TEX_SECA
+		_atualizar_visual()
 
-	_atualizar_visual()
 	atualizar_visual_planta("", 0)
 
 # Quando o Timer emitir o sinal de timeout: o estado muda para PRONTO_PARA_COLHER
@@ -525,7 +552,7 @@ func _atualizar_visual() -> void:
 	if visual_regado:
 		visual_regado.visible = regado
 	if has_node("SpriteTerra"):
-		$SpriteTerra.texture = TEX_MOLHADA if regado else TEX_SECA
+		$SpriteTerra.texture = _obter_textura_terra()
 	match estado_atual:
 		State.VAZIO:
 			color_rect.color = Color(0, 0, 0, 0)
@@ -533,6 +560,11 @@ func _atualizar_visual() -> void:
 			color_rect.color = Color(0, 0, 0, 0)
 		State.PRONTO_PARA_COLHER:
 			color_rect.color = Color(0, 0, 0, 0)
+
+func _obter_textura_terra() -> Texture2D:
+	if arado:
+		return TEX_MOLHADA_ADUBADA if regado else TEX_SECA_ADUBADA
+	return TEX_MOLHADA if regado else TEX_SECA
 
 func atualizar_visual_planta(semente_id: String, estagio_crescimento: int):
 	if semente_id == "":

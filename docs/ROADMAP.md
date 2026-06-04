@@ -47,6 +47,8 @@
 - Separar a agua da lista visual de inventário e usar o StatusPanel como referencia principal de agua.
 - Dar prioridade da ferramenta ativa sobre a semente selecionada no clique do FarmPlot.
 - Consolidar a separacao entre ferramentas, sementes e agua antes de qualquer migracao maior.
+- Aplicar a Enxada V0 experimental nos `FarmPlot` atuais, sem abrir aragem livre no mapa.
+- Fazer o plantio respeitar lote arado antes de qualquer migracao grande da fazenda em grid.
 
 ## Fase 4 - Conteúdo
 - Novas crops.

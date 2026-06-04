@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-06-03 - Enxada V0 no FarmPlot
+- A Enxada V0 passou a agir nos `FarmPlot` atuais: lote vazio pode ser preparado/arado e o estado é preservado no save.
+- O plantio agora respeita lote arado, evitando plantio acidental em terra ainda nao preparada quando a ferramenta ativa esta em `Nenhuma`.
+- Isso nao cria aragem livre nem conecta o FarmGrid ao gameplay; o `FarmGridPreview` continua isolado e a toolbar principal continua apenas como selecao global.
+
 ## 2026-06-03 - Separação entre ferramentas, sementes e água
 - Foi documentada a separação entre ferramentas como modo de ação, sementes como itens do inventário e água como recurso visual separado no StatusPanel.
 - O inventário visual continua escondendo a água, enquanto o `FarmPlot` e o `SaveManager` seguem usando `GlobalInventory.inventario["agua"]` internamente.

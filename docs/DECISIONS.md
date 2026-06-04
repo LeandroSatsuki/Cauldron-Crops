@@ -371,3 +371,9 @@
 - Decisão: tratar ferramentas como modo de ação global via `ToolManager`, sementes como itens do inventário no jogo principal e água como recurso visual no `StatusPanel` com armazenamento interno em `GlobalInventory.inventario["agua"]`.
 - Motivo: manter o protótipo legível sem quebrar o fluxo atual de plantio, rega, save e o laboratório isolado do FarmGrid.
 - Risco: qualquer nova UI ou sistema de interação precisa respeitar essa separação para não reintroduzir a mistura entre item, recurso e ferramenta.
+
+## Decisão 52 - Enxada V0 no FarmPlot atual
+- Problema: o jogo principal ainda precisava de uma primeira ação real da Enxada sem abrir aragem livre nem migrar para o FarmGrid.
+- Decisão: adicionar um flag simples de preparo no `FarmPlot`, permitir arar lote vazio com Enxada e exigir lote arado para plantio futuro, preservando o estado no save.
+- Motivo: introduzir a Enxada como ação real de forma controlada, mantendo `FarmPlot` ativo e o `FarmGrid` isolado.
+- Risco: a regra de plantio passa a depender do preparo do lote, então qualquer futura mudança no fluxo de sementes precisa respeitar esse estado.

@@ -203,6 +203,15 @@ Preview visual isolado:
 - não salva no `SaveManager`
 - não entra no gameplay principal
 
+Enxada V0 no FarmPlot atual:
+
+- a Enxada ganhou uma primeira ação real nos lotes atuais do jogo principal
+- lote vazio pode ser preparado/arado com a ferramenta ativa
+- o estado de preparo é salvo como `arado: bool` no `FarmPlot`
+- sementes só plantam em lote arado, evitando plantio acidental em terra nao preparada
+- isso ainda nao cria aragem livre e nao substitui o `FarmPlot`
+- o `FarmGrid` continua isolado e o preview continua sendo o laboratorio visual dessa transicao
+
 Checkpoint de arquitetura:
 
 - o preview ja validou o loop minimo do FarmGrid em memoria
