@@ -132,6 +132,81 @@ func _criar_lago_da_fazenda_fallback() -> Node2D:
 	])
 	fishing_spot.add_child(lake_visual)
 
+	var moving_area := Node2D.new()
+	moving_area.name = "MovingFishingArea"
+	moving_area.visible = true
+	moving_area.position = Vector2(44.0, -10.0)
+	moving_area.z_index = 25
+	fishing_spot.add_child(moving_area)
+
+	var moving_area_glow := Polygon2D.new()
+	moving_area_glow.name = "MovingFishingAreaGlow"
+	moving_area_glow.z_index = 26
+	moving_area_glow.color = Color(0.27451, 0.984314, 1.0, 0.52)
+	moving_area_glow.polygon = PackedVector2Array([
+		Vector2(-58, -12),
+		Vector2(-34, -42),
+		Vector2(18, -48),
+		Vector2(54, -24),
+		Vector2(58, 12),
+		Vector2(30, 44),
+		Vector2(-18, 48),
+		Vector2(-56, 22)
+	])
+	moving_area.add_child(moving_area_glow)
+
+	var moving_area_core := Polygon2D.new()
+	moving_area_core.name = "MovingFishingAreaCore"
+	moving_area_core.z_index = 27
+	moving_area_core.color = Color(0.337255, 0.976471, 0.960784, 0.76)
+	moving_area_core.polygon = PackedVector2Array([
+		Vector2(-44, -8),
+		Vector2(-24, -26),
+		Vector2(14, -30),
+		Vector2(40, -14),
+		Vector2(44, 8),
+		Vector2(22, 26),
+		Vector2(-12, 30),
+		Vector2(-40, 14)
+	])
+	moving_area.add_child(moving_area_core)
+
+	var moving_area_ring := Line2D.new()
+	moving_area_ring.name = "MovingFishingAreaRing"
+	moving_area_ring.z_index = 28
+	moving_area_ring.width = 8.0
+	moving_area_ring.default_color = Color(0.760784, 0.996078, 1.0, 0.92)
+	moving_area_ring.antialiased = true
+	moving_area_ring.closed = true
+	moving_area_ring.points = PackedVector2Array([
+		Vector2(0, -40),
+		Vector2(30, -28),
+		Vector2(42, 0),
+		Vector2(28, 30),
+		Vector2(0, 40),
+		Vector2(-30, 28),
+		Vector2(-42, 0),
+		Vector2(-28, -30)
+	])
+	moving_area.add_child(moving_area_ring)
+
+	var moving_area_sparkle := Polygon2D.new()
+	moving_area_sparkle.name = "MovingFishingAreaSparkle"
+	moving_area_sparkle.position = Vector2(20, -16)
+	moving_area_sparkle.z_index = 29
+	moving_area_sparkle.color = Color(0.980392, 1.0, 1.0, 0.92)
+	moving_area_sparkle.polygon = PackedVector2Array([
+		Vector2(0, -5),
+		Vector2(3, -2),
+		Vector2(5, 0),
+		Vector2(3, 2),
+		Vector2(0, 5),
+		Vector2(-3, 2),
+		Vector2(-5, 0),
+		Vector2(-3, -2)
+	])
+	moving_area.add_child(moving_area_sparkle)
+
 	var bobber := Node2D.new()
 	bobber.name = "Bobber"
 	bobber.visible = false
