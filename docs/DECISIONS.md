@@ -431,3 +431,9 @@
 - Decisão: incluir a `Vara de Pesca` como ferramenta visual/global no `ToolManager` e na toolbar do jogo principal, sem acionar pesca real ainda.
 - Motivo: preparar a navegação da interface e deixar claro para o jogador onde a pesca futura vai entrar, sem mexer no loop agrícola.
 - Risco: a presença da ferramenta pode sugerir funcionalidade ainda inexistente, então o feedback visual e a documentação precisam continuar deixando claro que a pesca real ainda não foi implementada.
+
+## Decisão 62 - Lago da Fazenda V0 clicável
+- Problema: a pesca precisava sair do papel e ganhar um ponto físico no mundo principal sem virar minigame completo.
+- Decisão: criar um `FishingSpot` simples na cena principal que só responde ao clique quando a `Vara de Pesca` está ativa.
+- Motivo: validar o ponto físico da pesca com feedback mínimo antes de abrir boia, sincronia, recompensas e áreas especiais.
+- Risco: o lago existe apenas como base mínima por enquanto; a pescaria real e os efeitos mais ricos ficam para fases futuras.

@@ -64,8 +64,8 @@
 - Documentar Fishing System.
 - Consolidar a Vara de Pesca como ferramenta visual/global no jogo principal.
 - Criar Vara de Pesca como ferramenta futura.
-- Criar Lago da Fazenda V0.
-- Criar FishingSpot V0.
+- Consolidar o Lago da Fazenda V0 como ponto físico/clicável da fazenda.
+- Refinar FishingSpot V0 sem sair do loop mínimo.
 - Criar popup simples de sincronia.
 - Criar recompensas aquáticas básicas.
 - Consolidar a Vara de Pesca como ferramenta visual/global na toolbar principal antes da pesca real.

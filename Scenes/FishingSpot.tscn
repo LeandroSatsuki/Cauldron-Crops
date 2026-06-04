@@ -1,0 +1,18 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://Scripts/FishingSpot.gd" id="1_fishingspotgd"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_fishing_spot"]
+size = Vector2(240, 150)
+
+[node name="FishingSpot" type="Area2D"]
+z_index = -2
+script = ExtResource("1_fishingspotgd")
+
+[node name="LakeVisual" type="Polygon2D" parent="."]
+z_index = -2
+color = Color(0.227451, 0.584314, 0.839216, 0.88)
+polygon = PackedVector2Array(Vector2(-120, -25), Vector2(-90, -75), Vector2(60, -75), Vector2(120, -20), Vector2(105, 40), Vector2(40, 75), Vector2(-55, 75), Vector2(-120, 25))
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_fishing_spot")

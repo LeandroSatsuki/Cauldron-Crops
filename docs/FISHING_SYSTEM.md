@@ -16,6 +16,14 @@ Ela ainda não lança boia, não abre minigame e não gera recompensa real.
 
 A presença dela serve como base de interface para a futura pesca integrada ao lago da fazenda.
 
+## Lago da Fazenda V0
+
+O jogo principal já possui um `FishingSpot` físico/clicável na fazenda.
+
+Esse ponto ainda é mínimo: ele só responde quando a `Vara de Pesca` está ativa e mostra feedback de lançamento.
+
+Não há boia, minigame, recompensas, áreas especiais ou integração com inventário nesta etapa.
+
 ## Princípio principal
 
 O jogador poderá lançar a vara em qualquer área válida do lago.

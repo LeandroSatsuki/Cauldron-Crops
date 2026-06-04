@@ -305,6 +305,7 @@ pesca -> caldeirão -> solo -> crops -> fazendinhas -> receitas -> golems -> exp
 
 O Fishing System é a direção futura para a pesca no jogo principal.
 
+- o Lago da Fazenda V0 já existe como ponto físico/clicável no mapa principal
 - a `Vara de Pesca` já existe como ferramenta visual/global na toolbar principal
 - a pesca vai acontecer no lago real da fazenda
 - o jogador poderá lançar a vara em qualquer área válida do lago
