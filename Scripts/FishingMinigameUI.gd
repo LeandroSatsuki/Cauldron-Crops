@@ -36,6 +36,7 @@ var _ativo: bool = false
 var _resultado_travado: bool = false
 var _resultado_atual: FishingResult = FishingResult.MISS
 var _recompensa_aplicada: bool = false
+var pesca_favorecida: bool = false
 var _marker_position_x: float = 0.0
 var _marker_direction: float = 1.0
 
@@ -116,6 +117,9 @@ func abrir_popup(origem_global: Vector2) -> Control:
 		auto_close_timer.stop()
 	return self
 
+func configurar_pesca_favorecida(valor: bool) -> void:
+	pesca_favorecida = valor
+
 func fechar_popup() -> void:
 	if not visible and not _ativo:
 		return
@@ -172,13 +176,21 @@ func _confirmar_tentativa() -> void:
 	if close_button:
 		close_button.disabled = false
 
-	var resultado: FishingResult = _avaliar_resultado()
-	_resultado_atual = resultado
-	_aplicar_recompensa(resultado)
+	var resultado_base: FishingResult = _avaliar_resultado()
+	var resultado_final: FishingResult = resultado_base
+	if pesca_favorecida and resultado_base == FishingResult.GOOD:
+		resultado_final = FishingResult.PERFECT
+	_resultado_atual = resultado_final
+	_aplicar_recompensa(resultado_final)
 	if result_label:
-		match resultado:
+		match resultado_final:
 			FishingResult.PERFECT:
-				result_label.text = "Ressonância perfeita! Você encontrou uma escama brilhante."
+				if pesca_favorecida and resultado_base == FishingResult.GOOD:
+					result_label.text = "A ondulação amplificou sua sincronia!"
+				elif pesca_favorecida:
+					result_label.text = "Ressonância perfeita na água viva!"
+				else:
+					result_label.text = "Ressonância perfeita! Você encontrou uma escama brilhante."
 				result_label.modulate = Color(0.98, 0.92, 0.42, 1.0)
 			FishingResult.GOOD:
 				result_label.text = "Boa sincronia. Você pescou um peixe comum."

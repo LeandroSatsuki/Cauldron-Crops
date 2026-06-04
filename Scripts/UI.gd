@@ -246,7 +246,7 @@ func fechar_debug_panel() -> void:
 	debug_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	print("Debug: painel fechado.")
 
-func abrir_pesca_sincronia(origem_global: Vector2) -> Control:
+func abrir_pesca_sincronia(origem_global: Vector2, pesca_favorecida: bool = false) -> Control:
 	if fishing_minigame_ui == null or not is_instance_valid(fishing_minigame_ui):
 		push_warning("UI: FishingMinigameUI nao encontrado.")
 		return null
@@ -254,6 +254,8 @@ func abrir_pesca_sincronia(origem_global: Vector2) -> Control:
 		push_warning("UI: FishingMinigameUI nao possui metodo abrir_popup.")
 		return null
 
+	if fishing_minigame_ui.has_method("configurar_pesca_favorecida"):
+		fishing_minigame_ui.call("configurar_pesca_favorecida", pesca_favorecida)
 	fishing_minigame_ui.call("abrir_popup", origem_global)
 	return fishing_minigame_ui
 

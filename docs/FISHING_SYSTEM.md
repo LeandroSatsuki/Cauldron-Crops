@@ -16,6 +16,8 @@ A ferramenta já conversa com o V0 do lago, da boia, do popup de sincronia e das
 
 A presença dela serve como base de interface para a futura pesca integrada ao lago da fazenda, e o V0 já conversa com o lago, a boia, o popup e recompensas simples.
 
+O Lago da Fazenda V0 já possui uma `Área com Movimento` visível, usada como ponto opcional para favorecer a sincronia e melhorar o resultado da recompensa.
+
 ## Lago da Fazenda V0
 
 O jogo principal já possui um `FishingSpot` físico/clicável na fazenda.
@@ -109,16 +111,15 @@ A mecânica deve ser calma, mágica e legível, não punitiva.
 
 O design deve ser mais simples e aconchegante do que um minigame rítmico complexo.
 
-## Áreas com movimento no lago
+## Áreas com Movimento V0
 
-Pontos de movimento aparecerão temporariamente.
+O Lago da Fazenda V0 já inclui um ponto visual de movimento claramente desenhado no runtime.
 
-Esses pontos podem ser ondulações, círculos, brilhos ou bolhas.
+Esse ponto pode aparecer como ondulação, brilho ou bolhas e é apenas um bônus opcional: ele não bloqueia pesca fora da área especial.
 
-Eles aumentam a chance de peixes melhores ou ingredientes aquáticos raros.
+Quando a boia é lançada dentro desse ponto, a próxima sincronia é favorecida. No V0 atual, isso significa que um resultado `GOOD` pode ser promovido para `PERFECT`.
 
 Essas áreas podem variar por estação, horário ou melhorias futuras.
-Elas não impedem pesca fora delas.
 
 Exemplo de chance conceitual:
 

@@ -1,5 +1,15 @@
 # Changelog
 
+## 2026-06-04 - Visibilidade da área com movimento corrigida
+- A `MovingFishingArea` do Lago da Fazenda V0 foi reforçada visualmente para aparecer de forma clara no runtime.
+- O ponto especial agora tem brilho, anel e pulso mais legíveis, sem mudar a lógica de boost da pesca.
+- A pesca fora da área especial continua funcionando normalmente.
+
+## 2026-06-04 - Áreas com Movimento V0 da pesca
+- O Lago da Fazenda V0 ganhou uma área especial visível com movimento sutil no cenário.
+- Lançar a boia dentro da área favorecida pode promover um resultado `GOOD` para `PERFECT` no popup de sincronia.
+- O resto do fluxo da pesca continua igual: boia, puxada fake, popup e recompensa V0 permanecem intactos.
+
 ## 2026-06-04 - Recompensa Aquática V0
 - O popup de sincronia da pesca passou a gerar recompensas simples no inventário real.
 - Bom agora adiciona `peixe_comum`; Perfeito agora adiciona `escama_brilhante`; Errou nao gera item.

@@ -479,3 +479,16 @@
 - Decisão: fazer o resultado do popup entregar `peixe_comum` para `Bom` e `escama_brilhante` para `Perfeito`, mantendo `Errou` sem item.
 - Motivo: deixar a pesca com um retorno inicial concreto no inventário sem conectar ainda caldeirão, receitas ou árvore de alquimia.
 - Risco: os nomes, o balanceamento e o catálogo de recompensas continuam provisórios e podem ser refinados depois.
+
+## Decisão 69 - Áreas com Movimento V0 da pesca
+- Problema: o lago já funcionava, mas ainda faltava um ponto visual especial que favorecesse a sincronia sem obrigar o jogador a pescá-lo.
+- Decisão: adicionar uma área com movimento V0 no Lago da Fazenda, com visual sutil e bônus simples no popup quando a boia é lançada dentro dela.
+- Motivo: reforçar a leitura de um ponto especial no lago sem transformar a pesca em um minigame punitivo.
+- Regra atual: o resultado `GOOD` pode ser promovido para `PERFECT` quando a boia é lançada dentro da área favorecida.
+- Risco: a área continua sendo um V0 provisório e pode receber nova arte, variação visual ou regras mais ricas depois.
+
+## Decisão 70 - Visibilidade da área com movimento
+- Problema: a área especial existia na lógica, mas ainda podia ficar difícil de enxergar no runtime.
+- Decisão: reforçar o desenho da `MovingFishingArea` com anel, brilho e pulso visual mais fortes, sem mudar o boost da pesca.
+- Motivo: garantir que o jogador veja claramente onde existe um ponto favorecido no lago.
+- Risco: o visual ainda é provisório e pode ser refinado ou substituído depois.
