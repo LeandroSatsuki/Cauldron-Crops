@@ -253,6 +253,11 @@ Feedback visual das ferramentas:
 - a mudança é só de comunicação visual; as regras de plantio, rega, colheita e save continuam as mesmas
 - o console ainda pode receber prints diagnósticos quando fizer sentido, mas o jogador também vê o retorno na tela
 
+Limpeza de logs repetitivos:
+
+- a agua continua no inventario real, mas seus logs foram filtrados para reduzir ruído de debug
+- o feedback visual passou a ser o canal principal para ações normais de lote, deixando o console mais útil para diagnostico real
+
 Checkpoint de arquitetura:
 
 - o preview ja validou o loop minimo do FarmGrid em memoria

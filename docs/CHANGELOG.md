@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-06-04 - Limpeza de logs repetitivos
+- O console foi limpo para reduzir ruído de ações comuns do jogador.
+- A água continua funcionando normalmente no inventário real, mas seus logs foram filtrados para nao poluir o debug.
+- O feedback visual do `FarmPlot` passou a ser a referencia principal para arar, regar, plantar e colher.
+
 ## 2026-06-03 - Feedback visual das ferramentas
 - Enxada, Regador, Colheita e os avisos principais do `FarmPlot` passaram a aparecer também como feedback flutuante na tela, além do console.
 - O comportamento do gameplay nao mudou; a mudanca foi de comunicacao visual para o jogador.

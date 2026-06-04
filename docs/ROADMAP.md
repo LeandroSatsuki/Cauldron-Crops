@@ -57,6 +57,7 @@
 - Ampliar feedback visual para ferramentas e avisos do FarmPlot sem poluir a interface.
 - Planejar feedback visual/flutuante para ações de ferramenta sem transformar a toolbar em inventário.
 - Continuar melhorando mensagens de erro e avisos do FarmPlot para reduzir ruído durante testes.
+- Seguir limpando logs repetitivos e revisar se outros recursos especiais merecem filtragem semelhante à agua.
 - Refinar o Decay Diário manual antes de ligar qualquer virada de dia automatizada.
 - Planejar a futura integração com tempo real sem quebrar o protótipo atual.
 - Manter o FarmGrid em laboratório até a migração ser planejada com segurança.

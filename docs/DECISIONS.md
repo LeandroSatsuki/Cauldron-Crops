@@ -413,3 +413,9 @@
 - Decisão: reaproveitar o texto flutuante existente da UI para mostrar feedback visual de Enxada, Regador, Colheita e avisos principais do lote.
 - Motivo: melhorar a leitura do jogo sem criar popup novo e sem alterar regras de plantio, rega, colheita ou save.
 - Risco: o feedback visual precisa continuar leve e consistente para não virar ruído ou sobreposição excessiva de mensagens.
+
+## Decisão 59 - Filtragem de logs de agua
+- Problema: os logs de `GlobalInventory` para `agua` geravam ruído constante no console, mesmo com a agua já aparecendo de forma dedicada no StatusPanel.
+- Decisão: filtrar logs de adição e remoção quando `item_id == "agua"`, mantendo os demais logs de inventário.
+- Motivo: reduzir ruído sem esconder o comportamento real do inventário para outros itens.
+- Risco: como o inventário ainda é útil para depuração, qualquer novo caso especial precisa ser revisado para não esconder bugs importantes.
