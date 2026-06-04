@@ -401,3 +401,9 @@
 - Decisão: fazer a ferramenta `Colheita` reutilizar a mesma lógica manual de recompensa quando o lote estiver pronto, sem duplicar geração de drops e sem alterar o golem.
 - Motivo: deixar a ferramenta ativa coerente com o fluxo já existente, reaproveitando o caminho manual que já calcula recompensas, bônus e reset do lote.
 - Risco: como a Colheita ainda não cobre ações adicionais fora do estado pronto, qualquer expansão futura precisa manter o mesmo helper compartilhado.
+
+## Decisão 57 - Checkpoint do loop de ferramentas
+- Problema: o loop atual de ferramentas, água e sementes já estava funcional no protótipo, mas sem um checkpoint curto reunindo as regras centrais.
+- Decisão: registrar o Loop de Ferramentas V0 como estado atual oficial do jogo principal, com ferramentas globais, sementes como item, água no StatusPanel e Decay Diário ainda manual/debug.
+- Motivo: deixar claro o contrato arquitetural antes de novas expansões, evitando misturar ferramenta, item e recurso de novo.
+- Risco: futuras mudanças em UI, plantio ou tempo real precisam respeitar esse checkpoint para não reabrir o acoplamento entre sistemas.

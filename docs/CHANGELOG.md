@@ -1,5 +1,14 @@
 # Changelog
 
+## Checkpoint - Loop de Ferramentas V0
+- O jogo principal agora opera com `ToolManager` como controle global de ferramenta ativa.
+- Ferramentas com ação real no `FarmPlot`: Enxada prepara lote vazio, Regador rega lote e Colheita colhe lote pronto.
+- Semente ficou como item do inventário no jogo principal; a Semente fake continua apenas no `FarmGridPreview`.
+- A prioridade de clique ficou: ferramenta ativa primeiro, semente selecionada depois, evitando plantio acidental.
+- Água aparece no `StatusPanel`, sai da lista visual comum de inventário e continua armazenada em `GlobalInventory.inventario["agua"]`.
+- O Decay Diário segue manual/debug pelo Debug Panel e limpa apenas lotes vazios e arados sem semente.
+- `FarmPlot` continua ativo, `FarmGrid` continua isolado e a Área Preparável V0 segue com lotes potenciais pré-instanciados.
+
 ## 2026-06-03 - Colheita V0 por ferramenta
 - A ferramenta `Colheita` passou a colher lotes prontos no jogo principal usando a mesma lógica manual de recompensa do `FarmPlot`.
 - Bonus e drops raros continuam sendo gerados pelo fluxo existente; o golem nao foi alterado.

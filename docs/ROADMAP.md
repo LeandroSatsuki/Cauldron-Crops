@@ -53,6 +53,12 @@
 - Fazer o plantio respeitar lote arado antes de qualquer migracao grande da fazenda em grid.
 - Expandir a area preparavel com lotes potenciais append-only, mantendo os 16 lotes originais intactos.
 - Refinar a leitura visual da area preparavel e do solo natural sem criar novos assets agora.
+- Consolidar o checkpoint do Loop de Ferramentas V0 antes de abrir novos caminhos de ação.
+- Planejar feedback visual/flutuante para ações de ferramenta sem transformar a toolbar em inventário.
+- Continuar melhorando mensagens de erro e avisos do FarmPlot para reduzir ruído durante testes.
+- Refinar o Decay Diário manual antes de ligar qualquer virada de dia automatizada.
+- Planejar a futura integração com tempo real sem quebrar o protótipo atual.
+- Manter o FarmGrid em laboratório até a migração ser planejada com segurança.
 
 ## Fase 4 - Conteúdo
 - Novas crops.

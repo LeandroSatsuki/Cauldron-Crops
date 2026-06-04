@@ -237,6 +237,16 @@ Colheita V0 por ferramenta no FarmPlot atual:
 - o golem permanece usando `harvest_by_golem()` sem alterações nesta etapa
 - sementes continuam como itens do inventario e o FarmGrid continua isolado
 
+Checkpoint - Loop de Ferramentas V0:
+
+- `ToolManager` é o controle global de ferramenta ativa do jogo principal
+- Enxada prepara lote vazio, Regador rega lote e Colheita colhe lote pronto
+- sementes continuam como item do inventário no jogo principal
+- água aparece no StatusPanel e continua armazenada em `GlobalInventory.inventario["agua"]`
+- a prioridade de clique favorece a ferramenta ativa antes da semente selecionada
+- o Decay Diário ainda é manual/debug e só limpa lotes vazios e arados sem semente
+- `FarmPlot` continua ativo, `FarmGrid` continua isolado e a Área Preparável V0 continua baseada em lotes pré-instanciados
+
 Checkpoint de arquitetura:
 
 - o preview ja validou o loop minimo do FarmGrid em memoria
