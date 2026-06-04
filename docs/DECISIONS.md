@@ -258,6 +258,12 @@
 - Motivo: manter o ciclo do golem e do baú persistente sem mexer ainda nos lotes, crops ou no salvamento completo do mundo.
 - Risco: o save continua mínimo e ainda não persiste o estado dos lotes/plantações.
 
+## Decisão 43 - Farm Expansion System e purificação da fazenda
+- Problema: a fazenda final precisava de um rumo estrutural maior do que apenas crescer sem fim ou virar um grid procedural cedo demais.
+- Decisão: definir a fazenda final como um mapa fixo, artesanal e dividido em áreas desbloqueáveis por purificação alquimica.
+- Motivo: manter o projeto com identidade forte, avanço narrativo claro e expansão controlada por sistemas já existentes.
+- Risco: a expansão agora depende de alinhamento entre caldeirao, itens, pesca e progressao narrativa; a implementacao completa fica para depois.
+
 ## Decisão 43 - Debug Panel V1 temporario
 - Problema: os testes do protótipo estavam lentos para itens, receitas, lotes, save e Baú da Vila.
 - Decisão: criar um painel de debug oculto na UI principal, aberto por `F10`, com ferramentas temporárias de teste.

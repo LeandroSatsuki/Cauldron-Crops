@@ -230,6 +230,16 @@ Decay Diario V0 no FarmPlot atual:
 - lotes plantados ou prontos para colher nao sao afetados por esse decay manual
 - ainda nao existe tempo real conectado a essa regra; a virada automatica continua para fase futura
 
+Farm Expansion System - Purificacao da Fazenda:
+
+- a fazenda final sera fixa, media/grande e dividida em areas planejadas
+- a expansao nao sera infinita, procedural ou livre no escopo atual
+- a progressao futura deve abrir areas bloqueadas ou corrompidas por meio de alquimia
+- cada area purificada pode liberar novos lotes, plantas, pesca, criaturas, ruinas ou receitas
+- o caldeirao passa a ser o centro da purificacao narrativa e mecanica
+- pesca e Catálogo de Itens ja preparam esse eixo com recursos e metadados para desbloqueios futuros
+- a implementacao completa fica para depois; a primeira versao futura deve ser um Obstaculo Magico V0
+
 Colheita V0 por ferramenta no FarmPlot atual:
 
 - a ferramenta `Colheita` do jogo principal agora reaproveita a colheita manual do `FarmPlot`

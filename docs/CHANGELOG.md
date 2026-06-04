@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-06-04 - Sistema de Expansão e Purificação da Fazenda
+- Foi documentada a direção central da fazenda final como um mapa fixo, artesanal e dividido em áreas desbloqueáveis por purificação alquimica.
+- A documentação agora liga caldeirao, pesca e Catálogo de Itens a esse futuro eixo de progressao sem implementar o sistema ainda.
+- Nenhum script, cena, asset ou `project.godot` foi alterado nesta etapa.
+
 ## 2026-06-04 - Catalogo de Itens V0
 - O projeto ganhou um catálogo central mínimo de itens em `Scripts/Database.gd`.
 - Pesca, crops e sementes existentes passaram a ter metadados básicos como nome, categoria, raridade, valor_base, tags e origem.

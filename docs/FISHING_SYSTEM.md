@@ -157,6 +157,8 @@ A pesca deve fornecer ingredientes para:
 
 Nesta etapa, a pesca não deve ser conectada ainda ao caldeirão.
 
+A longo prazo, peixes e itens aquáticos também podem alimentar a purificação de áreas da fazenda, funcionando como ingredientes para desbloqueios ligados à expansão do mapa.
+
 ## Relação com árvore de alquimia
 
 Possíveis upgrades futuros:

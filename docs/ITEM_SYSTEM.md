@@ -75,6 +75,20 @@ O catálogo deve ser a referência principal para:
 - expansão da pesca;
 - expansão das crops.
 
+## Relação com expansão e purificação
+
+O catálogo também prepara futuras áreas bloqueadas da fazenda, porque a purificação poderá consultar:
+
+- `valor_base`
+- `categoria`
+- `raridade`
+- `tags`
+- `pode_usar_em_receita`
+- `origem`
+- `descricao`
+
+Isso permite que obstáculos e bloqueios exijam itens com tags como `purificacao`, `aquatico`, `magico` ou `sazonal` sem espalhar hardcode pelo projeto.
+
 ## Observação
 
 Os dados ainda são provisórios. O objetivo do V0 é centralizar o que já existe para evitar hardcode espalhado demais.
