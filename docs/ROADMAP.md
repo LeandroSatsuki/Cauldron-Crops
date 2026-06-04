@@ -49,6 +49,7 @@
 - Consolidar a separacao entre ferramentas, sementes e agua antes de qualquer migracao maior.
 - Aplicar a Enxada V0 experimental nos `FarmPlot` atuais, sem abrir aragem livre no mapa.
 - Fazer o plantio respeitar lote arado antes de qualquer migracao grande da fazenda em grid.
+- Expandir a area preparavel com lotes potenciais append-only, mantendo os 16 lotes originais intactos.
 
 ## Fase 4 - Conteúdo
 - Novas crops.

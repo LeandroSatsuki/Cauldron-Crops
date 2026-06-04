@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-06-03 - Area Preparavel V0
+- A cena principal passou a manter os 16 `FarmPlot` antigos na mesma ordem e posicao e adicionar novos lotes potenciais no final da sequencia.
+- A Enxada agora pode preparar esses lotes potenciais sem criar lotes livres por clique, e o save continua compatível por indice.
+- O FarmGrid continua isolado; esta etapa ainda usa `FarmPlot` e uma grade fixa expandida.
+
 ## 2026-06-03 - Enxada V0 no FarmPlot
 - A Enxada V0 passou a agir nos `FarmPlot` atuais: lote vazio pode ser preparado/arado e o estado é preservado no save.
 - O plantio agora respeita lote arado, evitando plantio acidental em terra ainda nao preparada quando a ferramenta ativa esta em `Nenhuma`.

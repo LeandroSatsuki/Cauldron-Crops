@@ -377,3 +377,9 @@
 - Decisão: adicionar um flag simples de preparo no `FarmPlot`, permitir arar lote vazio com Enxada e exigir lote arado para plantio futuro, preservando o estado no save.
 - Motivo: introduzir a Enxada como ação real de forma controlada, mantendo `FarmPlot` ativo e o `FarmGrid` isolado.
 - Risco: a regra de plantio passa a depender do preparo do lote, então qualquer futura mudança no fluxo de sementes precisa respeitar esse estado.
+
+## Decisão 53 - Area Preparavel V0 com lotes potenciais
+- Problema: o jogador precisava sentir que novos campos podem ser criados sem instanciar lotes por clique nem migrar para o FarmGrid.
+- Decisão: manter os 16 `FarmPlot` originais na mesma ordem e adicionar lotes potenciais extras no final da sequencia, todos iniciando com `arado = false`.
+- Motivo: ampliar a area jogavel de forma segura, preservando saves antigos por ordem e evitando criar uma rota livre de instanciacao.
+- Risco: a area continua baseada em `FarmPlot` fixo e visual provisório, então futuras mudanças na grade precisam preservar a ordem append-only.

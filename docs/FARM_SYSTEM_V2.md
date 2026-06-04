@@ -212,6 +212,15 @@ Enxada V0 no FarmPlot atual:
 - isso ainda nao cria aragem livre e nao substitui o `FarmPlot`
 - o `FarmGrid` continua isolado e o preview continua sendo o laboratorio visual dessa transicao
 
+Area Preparavel V0:
+
+- a cena principal continua usando `FarmPlot`, mas agora com area ampliada por lotes potenciais preinstanciados
+- os 16 lotes originais foram preservados primeiro, na mesma ordem e posicao
+- novos lotes foram adicionados no final da ordem, sem instanciacao livre por clique
+- todos os lotes novos continuam iniciando com `arado = false`
+- o save continua por indice e permanece compativel com saves antigos
+- o visual de lote nao arado continua provisório e usa a base visual ja existente do `FarmPlot`
+
 Checkpoint de arquitetura:
 
 - o preview ja validou o loop minimo do FarmGrid em memoria
