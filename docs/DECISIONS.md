@@ -407,3 +407,9 @@
 - Decisão: registrar o Loop de Ferramentas V0 como estado atual oficial do jogo principal, com ferramentas globais, sementes como item, água no StatusPanel e Decay Diário ainda manual/debug.
 - Motivo: deixar claro o contrato arquitetural antes de novas expansões, evitando misturar ferramenta, item e recurso de novo.
 - Risco: futuras mudanças em UI, plantio ou tempo real precisam respeitar esse checkpoint para não reabrir o acoplamento entre sistemas.
+
+## Decisão 58 - Feedback visual das ferramentas
+- Problema: o loop já funcionava, mas parte das respostas das ferramentas e avisos do `FarmPlot` ficava restrita ao console.
+- Decisão: reaproveitar o texto flutuante existente da UI para mostrar feedback visual de Enxada, Regador, Colheita e avisos principais do lote.
+- Motivo: melhorar a leitura do jogo sem criar popup novo e sem alterar regras de plantio, rega, colheita ou save.
+- Risco: o feedback visual precisa continuar leve e consistente para não virar ruído ou sobreposição excessiva de mensagens.

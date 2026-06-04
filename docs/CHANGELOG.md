@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-06-03 - Feedback visual das ferramentas
+- Enxada, Regador, Colheita e os avisos principais do `FarmPlot` passaram a aparecer também como feedback flutuante na tela, além do console.
+- O comportamento do gameplay nao mudou; a mudanca foi de comunicacao visual para o jogador.
+- O `FarmPlot` continua ativo, o `FarmGrid` continua isolado e a UI reaproveita o helper de texto flutuante existente.
+
 ## Checkpoint - Loop de Ferramentas V0
 - O jogo principal agora opera com `ToolManager` como controle global de ferramenta ativa.
 - Ferramentas com ação real no `FarmPlot`: Enxada prepara lote vazio, Regador rega lote e Colheita colhe lote pronto.

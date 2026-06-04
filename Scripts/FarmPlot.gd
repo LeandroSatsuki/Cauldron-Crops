@@ -12,6 +12,7 @@ const TOOL_HOE := 1
 const TOOL_SEED := 2
 const TOOL_WATERING_CAN := 3
 const TOOL_HARVEST := 4
+const FEEDBACK_COR: Color = Color(1.0, 0.95, 0.6, 1.0)
 
 # Máquina de estados simples
 enum State {
@@ -110,20 +111,21 @@ func _on_plot_clicked() -> void:
 			return
 		if ferramenta_ativa == TOOL_HOE:
 			if estado_atual != State.VAZIO:
+				_mostrar_feedback("A ferramenta nao pode ser usada aqui.")
 				return
 			if arado:
-				print("Lote ja esta arado.")
+				_mostrar_feedback("Lote já está arado.")
 				return
 			arado = true
 			_atualizar_visual()
-			print("Lote arado!")
+			_mostrar_feedback("Lote arado!")
 			return
 		if ferramenta_ativa == TOOL_HARVEST:
 			if estado_atual == State.PRONTO_PARA_COLHER:
 				_colher_manualmente(true)
 				return
 			if estado_atual == State.CRESCENDO:
-				print("A planta ainda está crescendo... Tempo restante: ", "%0.1f" % timer.time_left, "s")
+				_mostrar_feedback("A planta ainda está crescendo.")
 			return
 
 	# Verificação de regar
@@ -148,7 +150,7 @@ func _on_plot_clicked() -> void:
 				return
 
 			if not arado:
-				print("Are a terra antes de plantar.")
+				_mostrar_feedback("Are a terra antes de plantar.")
 				return
 			
 			if not GlobalInventory.remover_item(semente_id, 1):
@@ -173,7 +175,7 @@ func _on_plot_clicked() -> void:
 			estado_atual = State.CRESCENDO
 			_atualizar_visual()
 			atualizar_visual_planta(semente_id_plantada, 0)
-			print("Semente plantada! Estado alterado para: CRESCENDO. Tempo de crescimento: ", tempo, " segundos.")
+			_mostrar_feedback("Semente plantada!")
 
 		State.PRONTO_PARA_COLHER:
 			if not _colher_manualmente(true):
@@ -185,8 +187,7 @@ func _on_plot_clicked() -> void:
 				timer.start(timer.time_left / 2.0)
 				print("Poção aplicada! Tempo reduzido pela metade.")
 			else:
-				# Opcional: print informativo de que ainda está crescendo
-				print("A semente ainda está crescendo... Tempo restante: ", "%0.1f" % timer.time_left, "s")
+				_mostrar_feedback("A planta ainda está crescendo.")
 
 func _obter_ferramenta_ativa() -> int:
 	var tree: SceneTree = get_tree()
@@ -204,17 +205,17 @@ func _regar_lote_por_ferramenta() -> bool:
 		return false
 
 	if GlobalInventory.inventario.get("agua", 0) < 1:
-		print("Sem agua para regar o lote!")
+		_mostrar_feedback("Sem água.")
 		return true
 
 	if regado:
-		print("Lote já está regado!")
+		_mostrar_feedback("Lote já está regado.")
 		return true
 
 	if GlobalInventory.remover_item("agua", 1):
 		regado = true
 		_atualizar_visual()
-		print("Lote Regado!")
+		_mostrar_feedback("Lote regado!")
 		$SpriteTerra.texture = TEX_MOLHADA
 		if estado_atual == State.CRESCENDO:
 			timer.start(timer.time_left * 0.8)
@@ -242,6 +243,10 @@ func harvest_by_golem() -> Array:
 
 func _colher_manualmente(mostrar_textos: bool = true) -> bool:
 	if estado_atual != State.PRONTO_PARA_COLHER:
+		if estado_atual == State.CRESCENDO:
+			_mostrar_feedback("A planta ainda está crescendo.")
+		elif estado_atual == State.VAZIO:
+			_mostrar_feedback("Nada para colher.")
 		return false
 
 	var produto: String = str(semente_atual.get("produto_colheita", "trigo"))
@@ -257,7 +262,7 @@ func _colher_manualmente(mostrar_textos: bool = true) -> bool:
 
 	_aplicar_recompensas_colheita(recompensas, ui, global_position, mostrar_textos)
 	_concluir_colheita()
-	print("Sucesso: Colheita realizada! Produto: '", produto, "' foi adicionado ao inventário. Lote agora está VAZIO.")
+	_mostrar_feedback("Colhido!")
 	return true
 
 func debug_force_ready_to_harvest() -> void:
@@ -296,6 +301,23 @@ func debug_apply_daily_decay() -> bool:
 	_atualizar_visual()
 	atualizar_visual_planta("", 0)
 	return true
+
+func _mostrar_feedback(texto: String) -> void:
+	if texto == "":
+		return
+
+	var tree: SceneTree = get_tree()
+	if tree == null or tree.current_scene == null:
+		print(texto)
+		return
+
+	var ui: Node = tree.current_scene.get_node_or_null("UI")
+	if ui != null and ui.has_method("criar_texto_flutuante"):
+		var origem: Vector2 = global_position + Vector2(0.0, -48.0)
+		ui.call("criar_texto_flutuante", texto, origem, FEEDBACK_COR)
+		return
+
+	print(texto)
 
 func get_save_data() -> Dictionary:
 	var estado_salvo: int = int(estado_atual)

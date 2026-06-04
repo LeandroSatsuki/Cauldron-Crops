@@ -247,6 +247,12 @@ Checkpoint - Loop de Ferramentas V0:
 - o Decay Diário ainda é manual/debug e só limpa lotes vazios e arados sem semente
 - `FarmPlot` continua ativo, `FarmGrid` continua isolado e a Área Preparável V0 continua baseada em lotes pré-instanciados
 
+Feedback visual das ferramentas:
+
+- o `FarmPlot` reaproveita o texto flutuante existente da UI para mostrar respostas de Enxada, Regador, Colheita e avisos principais
+- a mudança é só de comunicação visual; as regras de plantio, rega, colheita e save continuam as mesmas
+- o console ainda pode receber prints diagnósticos quando fizer sentido, mas o jogador também vê o retorno na tela
+
 Checkpoint de arquitetura:
 
 - o preview ja validou o loop minimo do FarmGrid em memoria
