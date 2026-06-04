@@ -34,6 +34,7 @@
 - Criar uma cena de preview visual isolada para testar o FarmGrid em memória.
 - Visualizar tipos de solo alquímico no preview isolado do FarmGrid.
 - Testar ferramenta ativa Enxada e decay diario no preview isolado do FarmGrid.
+- Adicionar Decay Diario V0 manual/debug no Debug Panel do jogo principal para validar lotes arados vazios.
 - Testar ferramenta fake Semente para validar plantio e proteção contra decay.
 - Testar ferramenta fake Regador para validar molhar terra arada e plantio.
 - Testar crescimento fake em tiles irrigados com a tecla `G` e marcadores visuais por estagio.

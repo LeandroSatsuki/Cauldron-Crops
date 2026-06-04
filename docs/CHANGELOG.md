@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-06-03 - Decay Diario V0 manual
+- O jogo principal ganhou um botao de Debug Panel para simular manualmente a virada do dia em lotes `arado` vazios.
+- Lotes vazios e arados voltam ao estado natural; lotes plantados ou prontos para colher permanecem intactos.
+- Isso ainda nao usa tempo real e nao altera o FarmGrid, o save ou o golem.
+
 ## 2026-06-03 - Visual da Area Preparavel
 - O `FarmPlot` passou a distinguir melhor solo natural, terra arada seca e terra arada molhada usando o visual ja existente.
 - Lotes nao arados agora usam uma aparencia natural provisoria mais esverdeada; terra arada seca/molhada continua com as texturas adubadas.

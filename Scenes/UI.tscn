@@ -313,6 +313,10 @@ text = "Lotes"
 layout_mode = 2
 text = "Forçar crescimento dos lotes"
 
+[node name="BtnDebugDailyDecay" type="Button" parent="DebugPanel/MarginContainer/ScrollContainer/VBoxDebug"]
+layout_mode = 2
+text = "Simular Decay Diário"
+
 [node name="SeparatorSave" type="HSeparator" parent="DebugPanel/MarginContainer/ScrollContainer/VBoxDebug"]
 layout_mode = 2
 

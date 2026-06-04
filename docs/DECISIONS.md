@@ -389,3 +389,9 @@
 - Decisão: usar uma aparencia provisoria mais natural/esverdeada quando o lote estiver vazio e nao arado, mantendo terra arada seca e molhada com as texturas adubadas ja existentes.
 - Motivo: deixar claro o estado do solo sem criar asset novo nem mexer em save, golem ou FarmGrid.
 - Risco: o visual natural ainda é provisório e pode precisar ser refinado quando a arte final da fazenda for definida.
+
+## Decisão 55 - Decay Diario V0 manual
+- Problema: o prototipo precisava validar a limpeza de lotes arados vazios sem conectar tempo real ou migrar para o FarmGrid.
+- Decisão: criar um botão manual no Debug Panel que aplica decay apenas em `FarmPlot` vazios e arados, preservando lotes plantados e prontos para colher.
+- Motivo: testar a regra de volta ao estado natural de forma controlada, sem mexer no `TimeManager`, no `SaveManager` ou no comportamento automático do jogo principal.
+- Risco: como ainda é manual/debug, a futura transição para tempo real vai precisar reaproveitar a mesma regra sem duplicar lógica.

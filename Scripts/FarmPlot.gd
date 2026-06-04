@@ -260,6 +260,30 @@ func debug_force_ready_to_harvest() -> void:
 	atualizar_visual_planta(semente_id_plantada, 2)
 	print("Debug: lote forçado para colheita em ", get_path())
 
+func debug_apply_daily_decay() -> bool:
+	if estado_atual != State.VAZIO:
+		return false
+	if not arado:
+		return false
+	if semente_id_plantada != "":
+		return false
+	if not semente_atual.is_empty():
+		return false
+
+	if timer:
+		timer.stop()
+
+	estado_atual = State.VAZIO
+	regado = false
+	pronto_para_colher = false
+	semente_atual = {}
+	semente_id_plantada = ""
+	tempo_total_crescimento = 0.0
+	arado = false
+	_atualizar_visual()
+	atualizar_visual_planta("", 0)
+	return true
+
 func get_save_data() -> Dictionary:
 	var estado_salvo: int = int(estado_atual)
 	var tempo_restante: float = 0.0

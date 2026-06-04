@@ -223,6 +223,13 @@ Area Preparavel V0:
 - terra arada seca e molhada continuam usando as texturas adubadas ja existentes
 - o visual continua provisório e sem novos assets
 
+Decay Diario V0 no FarmPlot atual:
+
+- o jogo principal agora pode simular manualmente a virada do dia via Debug Panel
+- lotes vazios e arados voltam ao estado natural quando não há semente plantada
+- lotes plantados ou prontos para colher nao sao afetados por esse decay manual
+- ainda nao existe tempo real conectado a essa regra; a virada automatica continua para fase futura
+
 Checkpoint de arquitetura:
 
 - o preview ja validou o loop minimo do FarmGrid em memoria

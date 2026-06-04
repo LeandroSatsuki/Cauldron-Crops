@@ -52,6 +52,7 @@ var village_chest_ref: VillageChest = null
 @onready var debug_add_basic_ingredients_button: Button = $DebugPanel/MarginContainer/ScrollContainer/VBoxDebug/BtnDebugAddIngredients
 @onready var debug_discover_all_recipes_button: Button = $DebugPanel/MarginContainer/ScrollContainer/VBoxDebug/BtnDebugDiscoverAllRecipes
 @onready var debug_force_growth_button: Button = $DebugPanel/MarginContainer/ScrollContainer/VBoxDebug/BtnDebugForceGrowth
+@onready var debug_daily_decay_button: Button = $DebugPanel/MarginContainer/ScrollContainer/VBoxDebug/BtnDebugDailyDecay
 @onready var debug_save_button: Button = $DebugPanel/MarginContainer/ScrollContainer/VBoxDebug/BtnDebugSave
 @onready var debug_load_button: Button = $DebugPanel/MarginContainer/ScrollContainer/VBoxDebug/BtnDebugLoad
 @onready var debug_add_wheat_chest_button: Button = $DebugPanel/MarginContainer/ScrollContainer/VBoxDebug/BtnDebugAddWheatChest
@@ -158,6 +159,9 @@ func _ready() -> void:
 		debug_discover_all_recipes_button.pressed.connect(_on_debug_discover_all_recipes_pressed)
 	if debug_force_growth_button:
 		debug_force_growth_button.pressed.connect(_on_debug_force_growth_pressed)
+	if debug_daily_decay_button:
+		if not debug_daily_decay_button.pressed.is_connected(_on_debug_daily_decay_pressed):
+			debug_daily_decay_button.pressed.connect(_on_debug_daily_decay_pressed)
 	if debug_save_button:
 		debug_save_button.pressed.connect(_on_debug_save_pressed)
 	if debug_load_button:
@@ -606,6 +610,27 @@ func _on_debug_test_farm_grid_pressed() -> void:
 	else:
 		push_warning("Debug FarmGrid: smoke test falhou.")
 		_atualizar_pos_debug_acao("FarmGrid test: falhou")
+
+func _on_debug_daily_decay_pressed() -> void:
+	var tree: SceneTree = get_tree()
+	if tree == null:
+		return
+
+	var lotes: Array = tree.get_nodes_in_group("lotes_terra")
+	var afetados: int = 0
+	for lote_variant in lotes:
+		if lote_variant == null or not is_instance_valid(lote_variant):
+			continue
+
+		var lote: Node = lote_variant
+		if not lote.has_method("debug_apply_daily_decay"):
+			continue
+
+		if bool(lote.call("debug_apply_daily_decay")):
+			afetados += 1
+
+	print("Debug: decay diario limpou %d lote(s) arados sem semente." % afetados)
+	_atualizar_pos_debug_acao("Decay diário: %d lote(s)" % afetados)
 
 func _on_tool_hoe_button_pressed() -> void:
 	_selecionar_enxada()
