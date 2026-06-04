@@ -5,7 +5,8 @@ enum ToolType {
 	HOE,
 	SEED,
 	WATERING_CAN,
-	HARVEST
+	HARVEST,
+	FISHING_ROD
 }
 
 var active_tool: ToolType = ToolType.NONE
@@ -30,6 +31,9 @@ func select_watering_can() -> void:
 func select_harvest() -> void:
 	select_tool(ToolType.HARVEST)
 
+func select_fishing_rod() -> void:
+	select_tool(ToolType.FISHING_ROD)
+
 func clear_tool() -> void:
 	if active_tool == ToolType.NONE:
 		return
@@ -52,6 +56,9 @@ func is_watering_can_selected() -> bool:
 func is_harvest_selected() -> bool:
 	return active_tool == ToolType.HARVEST
 
+func is_fishing_rod_selected() -> bool:
+	return active_tool == ToolType.FISHING_ROD
+
 func get_tool_name(tool: int = -1) -> String:
 	var tool_to_read: int = tool
 	if tool_to_read < 0:
@@ -68,5 +75,7 @@ func get_tool_name(tool: int = -1) -> String:
 			return "Regador"
 		ToolType.HARVEST:
 			return "Colheita"
+		ToolType.FISHING_ROD:
+			return "Vara de Pesca"
 		_:
 			return "Desconhecida"

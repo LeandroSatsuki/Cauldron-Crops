@@ -8,6 +8,14 @@ No design final, a pesca não deve ser tratada como laboratório em cena separad
 
 O objetivo é criar uma atividade calma, mágica e acessível, que converse com o restante do ecossistema alquímico do jogo sem quebrar o loop agrícola atual.
 
+## Base atual no jogo principal
+
+A `Vara de Pesca` já existe como ferramenta visual/global na toolbar principal.
+
+Ela ainda não lança boia, não abre minigame e não gera recompensa real.
+
+A presença dela serve como base de interface para a futura pesca integrada ao lago da fazenda.
+
 ## Princípio principal
 
 O jogador poderá lançar a vara em qualquer área válida do lago.

@@ -62,11 +62,13 @@
 - Planejar a futura integração com tempo real sem quebrar o protótipo atual.
 - Manter o FarmGrid em laboratório até a migração ser planejada com segurança.
 - Documentar Fishing System.
+- Consolidar a Vara de Pesca como ferramenta visual/global no jogo principal.
 - Criar Vara de Pesca como ferramenta futura.
 - Criar Lago da Fazenda V0.
 - Criar FishingSpot V0.
 - Criar popup simples de sincronia.
 - Criar recompensas aquáticas básicas.
+- Consolidar a Vara de Pesca como ferramenta visual/global na toolbar principal antes da pesca real.
 - Só depois conectar com inventário, caldeirão e árvore de alquimia.
 
 ## Fase 4 - Conteúdo

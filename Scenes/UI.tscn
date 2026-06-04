@@ -6,6 +6,7 @@
 [ext_resource type="Texture2D" path="res://Assets/Tools/tool_hoe.png" id="4_toolhoe"]
 [ext_resource type="Texture2D" path="res://Assets/Tools/tool_watering_can.png" id="5_toolwateringcan"]
 [ext_resource type="Texture2D" path="res://Assets/Tools/tool_harvest.png" id="6_toolharvest"]
+[ext_resource type="Texture2D" path="res://Assets/Tools/tool_fishing_rod.png" id="7_toolfishingrod"]
 
 [node name="UI" type="CanvasLayer" unique_id=570246364]
 script = ExtResource("1_uigd")
@@ -75,6 +76,12 @@ layout_mode = 2
 icon = ExtResource("6_toolharvest")
 tooltip_text = "Colheita"
 text = "3 Colheita"
+
+[node name="BtnToolFishingRod" type="Button" parent="ToolBarPanel" unique_id=1730000006]
+layout_mode = 2
+icon = ExtResource("7_toolfishingrod")
+tooltip_text = "Vara de Pesca"
+text = "4 Vara"
 
 [node name="LeftPanel" type="VBoxContainer" parent="." unique_id=1703485619]
 offset_left = 20.0

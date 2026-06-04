@@ -425,3 +425,9 @@
 - Decisão: registrar a pesca como sistema integrado ao lago real da fazenda, com Vara de Pesca, áreas opcionais de movimento e um minigame de sincronia leve.
 - Motivo: manter a pesca acessível, mágica e coerente com o ecossistema alquímico, sem quebrar o loop agrícola já estável.
 - Risco: a primeira implementação precisa ser pequena e controlada para não acoplar pesca, inventário, caldeirão e tempo real ao mesmo tempo.
+
+## Decisão 61 - Vara de Pesca como ferramenta visual global
+- Problema: a direção de pesca já estava definida, mas faltava uma base visual na toolbar principal para a ferramenta futura.
+- Decisão: incluir a `Vara de Pesca` como ferramenta visual/global no `ToolManager` e na toolbar do jogo principal, sem acionar pesca real ainda.
+- Motivo: preparar a navegação da interface e deixar claro para o jogador onde a pesca futura vai entrar, sem mexer no loop agrícola.
+- Risco: a presença da ferramenta pode sugerir funcionalidade ainda inexistente, então o feedback visual e a documentação precisam continuar deixando claro que a pesca real ainda não foi implementada.

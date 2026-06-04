@@ -177,8 +177,8 @@ Ferramenta Ativa V0 no jogo principal:
 
 - `Scripts/ToolManager.gd`
 - registrado como `Autoload`
-- ferramentas visuais globais: `Enxada`, `Regador`, `Colheita`
-- seleção visual/global por botões e teclas `1`, `2`, `3`
+- ferramentas visuais globais: `Enxada`, `Regador`, `Colheita`, `Vara de Pesca`
+- seleção visual/global por botões e teclas `1`, `2`, `3`, `4`
 - ainda não altera gameplay
 - `FarmPlot` continua ativo
 - `FarmGrid` continua isolado
@@ -305,6 +305,7 @@ pesca -> caldeirão -> solo -> crops -> fazendinhas -> receitas -> golems -> exp
 
 O Fishing System é a direção futura para a pesca no jogo principal.
 
+- a `Vara de Pesca` já existe como ferramenta visual/global na toolbar principal
 - a pesca vai acontecer no lago real da fazenda
 - o jogador poderá lançar a vara em qualquer área válida do lago
 - áreas com ondulação, brilho ou movimento aumentam a chance de recompensas melhores

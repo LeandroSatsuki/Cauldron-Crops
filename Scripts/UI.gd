@@ -20,6 +20,7 @@ const FarmGridManagerSmokeTestScript = preload("res://Scripts/dev/FarmGridManage
 @onready var tool_hoe_button: Button = $ToolBarPanel/BtnToolHoe
 @onready var tool_watering_can_button: Button = $ToolBarPanel/BtnToolWateringCan
 @onready var tool_harvest_button: Button = $ToolBarPanel/BtnToolHarvest
+@onready var tool_fishing_rod_button: Button = $ToolBarPanel/BtnToolFishingRod
 @onready var comprar_trigo_button: Button = $LeftPanel/GridSementes/ComprarTrigoButton
 @onready var comprar_verao_button: Button = $LeftPanel/GridSementes/ComprarVeraoButton
 @onready var abrir_skill_tree_button: Button = $LeftPanel/AbrirSkillTreeButton
@@ -86,6 +87,9 @@ func _ready() -> void:
 	if tool_harvest_button:
 		if not tool_harvest_button.pressed.is_connected(_on_tool_harvest_button_pressed):
 			tool_harvest_button.pressed.connect(_on_tool_harvest_button_pressed)
+	if tool_fishing_rod_button:
+		if not tool_fishing_rod_button.pressed.is_connected(_on_tool_fishing_rod_button_pressed):
+			tool_fishing_rod_button.pressed.connect(_on_tool_fishing_rod_button_pressed)
 	if comprar_trigo_button:
 		comprar_trigo_button.gui_input.connect(func(event): _on_comprar_semente_gui_input(event, "semente_basica", 5, "+1 Semente Trigo", "+10 Semente Trigo"))
 		comprar_trigo_button.mouse_entered.connect(_on_comprar_trigo_button_mouse_entered)
@@ -204,6 +208,9 @@ func _input(event: InputEvent) -> void:
 	elif event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_3:
 		_selecionar_colheita()
 		get_viewport().set_input_as_handled()
+	elif event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_4:
+		_selecionar_vara_de_pesca()
+		get_viewport().set_input_as_handled()
 
 func _toggle_debug_panel() -> void:
 	if debug_panel and debug_panel.visible:
@@ -288,9 +295,10 @@ func atualizar_toolbar_ferramentas() -> void:
 	if tool_bar_panel:
 		tool_bar_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
-	_atualizar_texto_botao_ferramenta(tool_hoe_button, "1 Enxada", _is_tool_active(1))
-	_atualizar_texto_botao_ferramenta(tool_watering_can_button, "2 Regador", _is_tool_active(3))
-	_atualizar_texto_botao_ferramenta(tool_harvest_button, "3 Colheita", _is_tool_active(4))
+	_atualizar_texto_botao_ferramenta(tool_hoe_button, "1 Enxada", _is_tool_active(ToolManager.ToolType.HOE))
+	_atualizar_texto_botao_ferramenta(tool_watering_can_button, "2 Regador", _is_tool_active(ToolManager.ToolType.WATERING_CAN))
+	_atualizar_texto_botao_ferramenta(tool_harvest_button, "3 Colheita", _is_tool_active(ToolManager.ToolType.HARVEST))
+	_atualizar_texto_botao_ferramenta(tool_fishing_rod_button, "4 Vara", _is_tool_active(ToolManager.ToolType.FISHING_ROD))
 
 func _atualizar_texto_botao_ferramenta(button: Button, texto_base: String, ativa: bool) -> void:
 	if button == null:
@@ -662,11 +670,23 @@ func _selecionar_colheita() -> void:
 	atualizar_toolbar_ferramentas()
 	atualizar_status_jogo()
 
+func _selecionar_vara_de_pesca() -> void:
+	var tool_manager: Node = _obter_tool_manager()
+	if tool_manager != null and tool_manager.has_method("select_fishing_rod"):
+		tool_manager.call("select_fishing_rod")
+	else:
+		push_warning("UI: ToolManager nao encontrado.")
+	atualizar_toolbar_ferramentas()
+	atualizar_status_jogo()
+
 func _on_tool_watering_can_button_pressed() -> void:
 	_selecionar_regador()
 
 func _on_tool_harvest_button_pressed() -> void:
 	_selecionar_colheita()
+
+func _on_tool_fishing_rod_button_pressed() -> void:
+	_selecionar_vara_de_pesca()
 
 func _obter_nome_ferramenta_ativa() -> String:
 	var tool_manager: Node = _obter_tool_manager()

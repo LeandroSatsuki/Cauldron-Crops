@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-06-04 - Vara de Pesca visual na toolbar
+- A toolbar principal recebeu a `Vara de Pesca` como ferramenta visual/global, com ícone provisório e tecla `4`.
+- A ferramenta ainda nao aciona pesca real; ela serve como base de selecao para o sistema futuro no lago da fazenda.
+- O estado visual e o StatusPanel continuam funcionando sem alterar o loop agricola.
+
 ## 2026-06-04 - Documento de pesca
 - Foi documentado o Fishing System - Pesca de Ressonancia como direção de gameplay para o lago da fazenda.
 - A pesca foi registrada como sistema integrado ao lago físico, com áreas especiais opcionais que aumentam a chance de recompensas melhores.
