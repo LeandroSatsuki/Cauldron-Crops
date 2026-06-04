@@ -391,6 +391,7 @@ func atualizar_inventario_visual() -> void:
 			
 			var emoji = obter_emoji_item(item_key)
 			slot.configurar_slot(item_key, qtd, emoji)
+			slot.tooltip_text = "%s\nQuantidade: %d" % [Database.obter_nome_item(item_key), qtd]
 			slot.slot_clicado.connect(_on_slot_clicado)
 			if item_key == GlobalInventory.semente_selecionada or item_key == item_focado_id:
 				slot.set_destaque(true)
@@ -454,6 +455,10 @@ func _on_slot_clicado(item_id: String, is_right_click: bool, slot_node: Control)
 				sell_menu.abrir(item_id, pos_fixa)
 
 func obter_emoji_item(item_id: String) -> String:
+	var icone_catalogo: String = Database.obter_icone_item(item_id)
+	if icone_catalogo != "" and icone_catalogo != "?":
+		return icone_catalogo
+
 	match item_id:
 		"trigo": return "🌾"
 		"raiz_gelida": return "🧊"

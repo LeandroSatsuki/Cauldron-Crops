@@ -492,3 +492,10 @@
 - Decisão: reforçar o desenho da `MovingFishingArea` com anel, brilho e pulso visual mais fortes, sem mudar o boost da pesca.
 - Motivo: garantir que o jogador veja claramente onde existe um ponto favorecido no lago.
 - Risco: o visual ainda é provisório e pode ser refinado ou substituído depois.
+
+## Decisão 71 - Catálogo de Itens V0
+- Problema: itens, crops e recompensas estavam ficando espalhados entre UI, pesca, cultivo e dados legados.
+- Decisão: centralizar metadados básicos em `Scripts/Database.gd`, reaproveitando o autoload que o projeto já usa.
+- Motivo: preparar nomes, ícones, raridade, venda e tags sem criar um sistema novo desnecessário agora.
+- Regra atual: a UI consulta o catálogo primeiro para ícones/emoji, e os IDs da pesca já estão registrados no mesmo catálogo.
+- Risco: os valores e descrições continuam provisórios e ainda podem mudar quando venda, receitas e filtros forem refinados.

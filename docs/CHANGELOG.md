@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-06-04 - Catalogo de Itens V0
+- O projeto ganhou um catálogo central mínimo de itens em `Scripts/Database.gd`.
+- Pesca, crops e sementes existentes passaram a ter metadados básicos como nome, categoria, raridade, valor_base, tags e origem.
+- A UI de inventário passou a consultar o catálogo primeiro para obter ícones/emoji dos itens.
+- Nenhuma receita nova foi criada e nenhum balanceamento final foi definido.
+
 ## 2026-06-04 - Visibilidade da área com movimento corrigida
 - A `MovingFishingArea` do Lago da Fazenda V0 foi reforçada visualmente para aparecer de forma clara no runtime.
 - O ponto especial agora tem brilho, anel e pulso mais legíveis, sem mudar a lógica de boost da pesca.

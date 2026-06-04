@@ -190,10 +190,10 @@ func _confirmar_tentativa() -> void:
 				elif pesca_favorecida:
 					result_label.text = "Ressonância perfeita na água viva!"
 				else:
-					result_label.text = "Ressonância perfeita! Você encontrou uma escama brilhante."
+					result_label.text = "Ressonância perfeita! Você encontrou %s." % Database.obter_nome_item("escama_brilhante")
 				result_label.modulate = Color(0.98, 0.92, 0.42, 1.0)
 			FishingResult.GOOD:
-				result_label.text = "Boa sincronia. Você pescou um peixe comum."
+				result_label.text = "Boa sincronia. Você pescou %s." % Database.obter_nome_item("peixe_comum")
 				result_label.modulate = Color(0.55, 0.93, 1.0, 1.0)
 			_:
 				result_label.text = "O pulso se perdeu."

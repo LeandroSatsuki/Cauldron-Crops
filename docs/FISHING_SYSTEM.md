@@ -70,6 +70,8 @@ O resultado do popup já pode gerar recompensa simples no inventário real:
 
 Esses itens entram em `GlobalInventory` e aparecem no inventário visual como parte do fluxo V0.
 
+Os dois itens de pesca também passaram a ter metadados no catálogo central de itens, para suportar nomes, ícones, raridade, venda futura e receitas futuras sem espalhar hardcode.
+
 O balanceamento, os nomes e a quantidade de recompensas continuam provisórios. Ainda não há conexão com caldeirão, receitas ou árvore de alquimia.
 
 ## Princípio principal
