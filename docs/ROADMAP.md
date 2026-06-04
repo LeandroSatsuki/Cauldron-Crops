@@ -69,7 +69,7 @@
 - Refinar FishingSpot V0 sem sair do loop mínimo.
 - Adicionar boia V0 única e reposicionável no ponto clicado do lago.
 - Adicionar puxada fake V0 com timer e estado visual da linha.
-- Criar popup simples de sincronia.
+- Consolidar o Popup de Sincronia V0 da pesca.
 - Criar recompensas aquáticas básicas.
 - Consolidar a Vara de Pesca como ferramenta visual/global na toolbar principal antes da pesca real.
 - Só depois conectar com inventário, caldeirão e árvore de alquimia.

@@ -313,7 +313,9 @@ O Fishing System é a direção futura para a pesca no jogo principal.
 - essas áreas especiais serão opcionais, não obrigatórias
 - a primeira implementação futura deve ser pequena, calma e integrada ao lago da fazenda
 - a Boia V0 já é o primeiro estado visual da pescaria no lago, sem minigame ou recompensa ainda
-- a Puxada Fake V0 pode representar o próximo estado visual da linha antes da sincronia real
+- a Puxada Fake V0 representa o estado visual anterior à sincronia real
+- o popup de sincronia V0 já existe como primeiro passo interativo da Pesca de Ressonancia, com barra, marcador, Espaço e clique em qualquer área
+- o feedback da sincronia V0 ainda é fake e nao gera recompensa real
 
 ### Pesca de Ressonancia
 
@@ -341,6 +343,8 @@ Possíveis recompensas provisórias:
 - a pesca pode alimentar caldeirão, receitas, missões e árvore de alquimia no futuro
 - a pesca não deve começar como laboratório isolado no design final
 - a primeira implementação de código precisa ser pequena e controlada
+- a pesca já possui um popup simples de sincronia, mas ainda não tem recompensa real ou integração profunda com sistemas de progressão
+- enquanto a sincronia está aberta, o lago bloqueia novo lançamento até o jogador encerrar a pesca atual
 
 ## Decisão Atual
 

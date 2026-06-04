@@ -455,3 +455,21 @@
 - Decisão: usar um timer simples para mudar a boia para um estado de puxada fake após alguns segundos e encerrar o teste quando o jogador clicar de novo com a Vara ativa.
 - Motivo: validar a leitura da pesca em pequenos passos, mantendo a implementação controlada e sem recompensa.
 - Risco: o timer ainda não representa a mecânica final de pesca; ele é apenas a ponte visual para a etapa de sincronia futura.
+
+## Decisão 65 - Popup de Sincronia V0 no lago
+- Problema: a puxada fake já estava validada, mas faltava um ponto de interação simples para testar a sincronia sem criar um minigame grande.
+- Decisão: abrir um popup leve de Pesca de Ressonância diretamente da UI principal quando a puxada fake estiver ativa e o jogador clicar de novo com a Vara de Pesca.
+- Motivo: manter a pesca integrada ao lago da fazenda, com feedback claro e sem acoplar recompensa, inventário ou caldeirão nesta fase.
+- Risco: o popup precisa continuar pequeno, legível e fácil de fechar para não competir com o loop agrícola.
+
+## Decisão 66 - Popup aceita Espaço e clique em qualquer área
+- Problema: o popup de sincronia estava preso ao clique exato na barra e permitia novo lançamento durante a etapa aberta.
+- Decisão: fazer o popup aceitar Espaço e clique em qualquer área da janela, e bloquear nova boia enquanto a sincronia estiver ativa.
+- Motivo: melhorar a usabilidade e evitar conflito com o FishingSpot sem transformar o protótipo em uma cópia literal de outro minigame.
+- Risco: a janela precisa continuar leve e previsível para não competir com o loop agrícola nem com a leitura do lago.
+
+## Decisão 67 - Encerrar pesca limpa a ferramenta ativa
+- Problema: o minigame podia fechar e deixar a `Vara de Pesca` ainda selecionada, facilitando um novo lançamento acidental.
+- Decisão: ao encerrar a sincronia, limpar a ferramenta ativa para `Nenhuma` quando a ferramenta atual ainda for a `Vara de Pesca`.
+- Motivo: evitar disparo involuntário de nova boia logo após o resultado fake.
+- Risco: a UI precisa continuar atualizando o status da ferramenta de forma consistente depois do reset.

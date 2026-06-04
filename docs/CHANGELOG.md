@@ -1,5 +1,17 @@
 # Changelog
 
+## 2026-06-04 - Input do popup de sincronia ajustado
+- O Popup de Sincronia V0 da pesca agora aceita tecla Espaço e clique em qualquer área da janela, e nao apenas em cima da barra.
+- O Lago da Fazenda V0 passa a bloquear novo lançamento enquanto a sincronia está aberta.
+- A identidade da Pesca de Ressonância foi reforçada com textos próprios e resultado fake.
+- Ao encerrar o minigame, a Vara de Pesca volta para Nenhuma para evitar novo lançamento acidental.
+- Nenhuma recompensa real foi adicionada.
+
+## 2026-06-04 - Popup de Sincronia V0 da pesca
+- O Lago da Fazenda V0 agora abre um popup simples de Pesca de Ressonância quando a puxada fake está ativa e o jogador clica novamente com a Vara de Pesca.
+- O popup mostra barra, zona de acerto, marcador móvel e resultados Errou/Bom/Perfeito, sem recompensa real.
+- Nenhuma regra de gameplay foi alterada; o lago, a boia e o loop agrícola continuam intactos.
+
 ## 2026-06-04 - Limpeza de logs do lago
 - Os logs temporários de carregamento do Lago da Fazenda V0 foram removidos após a validação visual no jogo principal.
 - Os logs curtos de interação da pesca continuam por enquanto, para ajudar nos testes de lançamento, reposicionamento e puxada fake.

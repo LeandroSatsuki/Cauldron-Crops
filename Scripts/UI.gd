@@ -35,6 +35,9 @@ var quest_board: Panel
 var recipe_book_scene = preload("res://Scenes/RecipeBookUI.tscn")
 var recipe_book: Panel
 
+var fishing_minigame_scene = preload("res://Scenes/FishingMinigameUI.tscn")
+var fishing_minigame_ui: Control
+
 @onready var village_chest_panel: PanelContainer = $VillageChestPanel
 @onready var village_chest_contents: RichTextLabel = $VillageChestPanel/MarginContainer/VBoxChest/ChestContents
 @onready var village_chest_withdraw_button: Button = $VillageChestPanel/MarginContainer/VBoxChest/ButtonsRow/RetirarTudoButton
@@ -146,6 +149,14 @@ func _ready() -> void:
 			if sell_menu:
 				sell_menu.mouse_filter = Control.MOUSE_FILTER_STOP if sell_menu.visible else Control.MOUSE_FILTER_IGNORE
 		)
+
+	fishing_minigame_ui = fishing_minigame_scene.instantiate()
+	add_child(fishing_minigame_ui)
+	_aplicar_tema_pixel_ui(fishing_minigame_ui)
+	if fishing_minigame_ui:
+		fishing_minigame_ui.z_index = 500
+		fishing_minigame_ui.visible = false
+		fishing_minigame_ui.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		
 	if QuestManager:
 		QuestManager.quest_atualizada.connect(_on_nova_quest_recebida)
@@ -234,6 +245,17 @@ func fechar_debug_panel() -> void:
 	debug_panel.visible = false
 	debug_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	print("Debug: painel fechado.")
+
+func abrir_pesca_sincronia(origem_global: Vector2) -> Control:
+	if fishing_minigame_ui == null or not is_instance_valid(fishing_minigame_ui):
+		push_warning("UI: FishingMinigameUI nao encontrado.")
+		return null
+	if not fishing_minigame_ui.has_method("abrir_popup"):
+		push_warning("UI: FishingMinigameUI nao possui metodo abrir_popup.")
+		return null
+
+	fishing_minigame_ui.call("abrir_popup", origem_global)
+	return fishing_minigame_ui
 
 func _process(delta: float) -> void:
 	timer_reset_dormir += delta

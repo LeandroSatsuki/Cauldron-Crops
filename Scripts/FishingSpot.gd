@@ -3,7 +3,8 @@ extends Area2D
 enum FishingState {
 	IDLE,
 	BOBBER_CAST,
-	FISH_BITING
+	FISH_BITING,
+	MINIGAME_ACTIVE
 }
 
 @onready var bobber: Node2D = $Bobber
@@ -17,6 +18,7 @@ const BOBBER_BITING_SCALE: Vector2 = Vector2(1.15, 1.15)
 
 var fishing_state: FishingState = FishingState.IDLE
 var bobber_base_scale: Vector2 = Vector2.ONE
+var fishing_minigame_ui: Node = null
 
 func _ready() -> void:
 	add_to_group("fishing_spot")
@@ -41,6 +43,10 @@ func _input_event(viewport: Viewport, event: InputEvent, shape_idx: int) -> void
 
 func _on_lake_clicked() -> void:
 	var click_global_position: Vector2 = get_global_mouse_position()
+	if fishing_state == FishingState.MINIGAME_ACTIVE:
+		_mostrar_feedback("Finalize a pesca atual.", click_global_position)
+		return
+
 	var tool_manager: Node = _obter_tool_manager()
 	if tool_manager == null or not tool_manager.has_method("is_fishing_rod_selected"):
 		_mostrar_feedback("Selecione a Vara de Pesca.", click_global_position)
@@ -48,9 +54,10 @@ func _on_lake_clicked() -> void:
 
 	if bool(tool_manager.call("is_fishing_rod_selected")):
 		if fishing_state == FishingState.FISH_BITING:
-			_mostrar_feedback("A pesca de sincronia ainda não foi implementada.", click_global_position)
-			print("FishingSpot: puxada fake aguardando minigame.")
-			_definir_estado(FishingState.IDLE)
+			if _abrir_pesca_sincronia(click_global_position):
+				_definir_estado(FishingState.MINIGAME_ACTIVE)
+			else:
+				_mostrar_feedback("Nao foi possivel abrir a sincronia.", click_global_position)
 			return
 
 		_posicionar_boia(click_global_position)
@@ -107,24 +114,78 @@ func _definir_estado(novo_estado: FishingState) -> void:
 				bobber_base_scale.y * BOBBER_BITING_SCALE.y
 			)
 			bobber.modulate = BOBBER_BITING_MODULATE
+		FishingState.MINIGAME_ACTIVE:
+			bobber.visible = false
+			bobber.scale = bobber_base_scale
+			bobber.modulate = BOBBER_READY_MODULATE
+			if fishing_bite_timer != null:
+				fishing_bite_timer.stop()
 
 func _mostrar_feedback(texto: String, origem_global: Vector2) -> void:
 	var feedback_position: Vector2 = origem_global + FEEDBACK_OFFSET
-	var tree: SceneTree = get_tree()
-	if tree == null:
-		print(texto)
-		return
-
-	var current_scene: Node = tree.current_scene
-	if current_scene == null:
-		print(texto)
-		return
-
-	var ui: Node = current_scene.get_node_or_null("UI")
+	var ui: Node = _obter_ui_principal()
 	if ui != null and ui.has_method("criar_texto_flutuante"):
 		ui.call("criar_texto_flutuante", texto, feedback_position, FEEDBACK_COR)
 	else:
 		print(texto)
+
+func _abrir_pesca_sincronia(origem_global: Vector2) -> bool:
+	var ui: Node = _obter_ui_principal()
+	if ui == null:
+		push_warning("FishingSpot: UI principal nao encontrada para pesca de sincronia.")
+		return false
+	if not ui.has_method("abrir_pesca_sincronia"):
+		push_warning("FishingSpot: UI principal nao possui abrir_pesca_sincronia.")
+		return false
+	var popup: Variant = ui.call("abrir_pesca_sincronia", origem_global)
+	if popup == null:
+		return false
+	if popup is Node:
+		fishing_minigame_ui = popup
+		if fishing_minigame_ui.has_signal("minigame_closed") and not fishing_minigame_ui.minigame_closed.is_connected(_on_fishing_minigame_closed):
+			fishing_minigame_ui.minigame_closed.connect(_on_fishing_minigame_closed)
+		return true
+	return false
+
+func _on_fishing_minigame_closed() -> void:
+	_reset_fishing_state()
+	_clear_fishing_tool_if_active()
+
+func _reset_fishing_state() -> void:
+	fishing_minigame_ui = null
+	_definir_estado(FishingState.IDLE)
+	if bobber != null:
+		bobber.visible = false
+		bobber.scale = bobber_base_scale
+		bobber.modulate = BOBBER_READY_MODULATE
+	if fishing_bite_timer != null:
+		fishing_bite_timer.stop()
+
+func _clear_fishing_tool_if_active() -> void:
+	var tool_manager: Node = get_tree().root.get_node_or_null("ToolManager") if get_tree() != null and get_tree().root != null else null
+	if tool_manager == null:
+		return
+
+	if not tool_manager.has_method("is_fishing_rod_selected"):
+		return
+
+	if not tool_manager.has_method("clear_tool"):
+		return
+
+	if bool(tool_manager.call("is_fishing_rod_selected")):
+		tool_manager.call("clear_tool")
+		var ui: Node = _obter_ui_principal()
+		if ui != null and ui.has_method("atualizar_status_jogo"):
+			ui.call("atualizar_status_jogo")
+
+func _obter_ui_principal() -> Node:
+	var tree: SceneTree = get_tree()
+	if tree == null:
+		return null
+	var current_scene: Node = tree.current_scene
+	if current_scene == null:
+		return null
+	return current_scene.get_node_or_null("UI")
 
 func _obter_tool_manager() -> Node:
 	var tree: SceneTree = get_tree()

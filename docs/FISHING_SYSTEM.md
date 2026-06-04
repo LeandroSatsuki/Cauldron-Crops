@@ -20,7 +20,7 @@ A presença dela serve como base de interface para a futura pesca integrada ao l
 
 O jogo principal já possui um `FishingSpot` físico/clicável na fazenda.
 
-Esse ponto ainda é mínimo: ele só responde quando a `Vara de Pesca` está ativa e mostra feedback de lançamento.
+Esse ponto ainda é mínimo, mas já cobre o loop V0: ele responde quando a `Vara de Pesca` está ativa, mostra feedback de lançamento, mantém a boia e, quando a puxada fake acontece, abre o popup de sincronia V0.
 
 Ainda não há minigame, recompensas, áreas especiais ou integração com inventário nesta etapa.
 
@@ -38,7 +38,25 @@ Depois de alguns segundos, a boia entra em um estado simples de puxada fake.
 
 Esse estado existe apenas como sinal visual de que algo mordeu a linha. Ainda não há minigame, recompensa, inventário ou integração com caldeirão.
 
-Se o jogador clicar novamente com a Vara de Pesca ativa enquanto a boia está nesse estado, o teste é encerrado e o protótipo volta para o estado inicial.
+Se o jogador clicar novamente com a Vara de Pesca ativa enquanto a boia está nesse estado, o jogo abre o popup de sincronia V0, encerra o teste da boia e volta o lago para o estado inicial.
+
+## Popup de Sincronia V0
+
+Quando a puxada fake está ativa e o jogador clica de novo com a `Vara de Pesca`, o jogo abre um popup simples de Pesca de Ressonância.
+
+Esse popup é leve e serve só para validar a leitura do timing:
+
+- mostra uma barra horizontal;
+- mostra uma zona de acerto;
+- mostra um marcador em movimento;
+- aceita tecla `Espaço` e clique em qualquer área da janela;
+- calcula um resultado simples: `O pulso se perdeu.`, `Boa sincronia.` ou `Ressonância perfeita!`;
+- não gera recompensa real;
+- não conecta inventário, caldeirão ou árvore de alquimia.
+
+O popup continua sendo apenas o primeiro passo interativo da pesca. Ele valida o clique certo sem transformar o sistema em um minigame grande demais cedo demais.
+
+Quando o popup se encerra, a pesca volta para `Nenhuma` ferramenta se a `Vara de Pesca` ainda estiver ativa, evitando um novo lançamento acidental imediatamente após o resultado.
 
 ## Princípio principal
 
@@ -60,6 +78,10 @@ Fluxo futuro planejado:
 6. Jogador clica no momento certo.
 7. Resultado gera peixe ou ingrediente aquático.
 8. Recompensas podem alimentar inventário, caldeirão, receitas e árvore de alquimia no futuro.
+
+Hoje, o jogo principal já tem uma versão V0 desse passo 5, com popup simples de sincronia e resultados fake, mas ainda sem recompensa real.
+
+Enquanto o popup está aberto, o Lago da Fazenda V0 bloqueia novo lançamento e pede para o jogador finalizar a pesca atual antes de começar outra.
 
 ## Pesca de Ressonância
 

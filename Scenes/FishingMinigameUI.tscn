@@ -1,0 +1,86 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://Scripts/FishingMinigameUI.gd" id="1_fishingminigameui"]
+
+[node name="FishingMinigameUI" type="Control"]
+visible = false
+mouse_filter = 2
+script = ExtResource("1_fishingminigameui")
+
+[node name="Dimmer" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+color = Color(0.027451, 0.0627451, 0.101961, 0.36)
+
+[node name="PopupPanel" type="PanelContainer" parent="."]
+custom_minimum_size = Vector2(560, 260)
+mouse_filter = 0
+
+[node name="MarginContainer" type="MarginContainer" parent="PopupPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 560.0
+offset_bottom = 260.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PopupPanel/MarginContainer"]
+layout_mode = 2
+offset_right = 560.0
+offset_bottom = 260.0
+theme_override_constants/separation = 8
+
+[node name="TitleLabel" type="Label" parent="PopupPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Pesca de Ressonância"
+horizontal_alignment = 1
+
+[node name="InstructionLabel" type="Label" parent="PopupPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Clique no momento certo."
+horizontal_alignment = 1
+
+[node name="BarArea" type="Control" parent="PopupPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+custom_minimum_size = Vector2(440, 36)
+mouse_filter = 0
+
+[node name="BarBackground" type="ColorRect" parent="PopupPanel/MarginContainer/VBoxContainer/BarArea"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+color = Color(0.0823529, 0.180392, 0.270588, 0.92)
+
+[node name="HitZone" type="ColorRect" parent="PopupPanel/MarginContainer/VBoxContainer/BarArea"]
+position = Vector2(176, 0)
+custom_minimum_size = Vector2(88, 36)
+mouse_filter = 2
+color = Color(0.337255, 0.921569, 0.792157, 0.56)
+
+[node name="Marker" type="ColorRect" parent="PopupPanel/MarginContainer/VBoxContainer/BarArea"]
+custom_minimum_size = Vector2(8, 36)
+mouse_filter = 2
+color = Color(1, 0.835294, 0.278431, 0.97)
+
+[node name="ResultLabel" type="Label" parent="PopupPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Resultado: aguardando..."
+horizontal_alignment = 1
+
+[node name="ButtonsRow" type="HBoxContainer" parent="PopupPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 8
+
+[node name="CloseButton" type="Button" parent="PopupPanel/MarginContainer/VBoxContainer/ButtonsRow"]
+layout_mode = 2
+custom_minimum_size = Vector2(120, 28)
+text = "Fechar"
+
+[node name="AutoCloseTimer" type="Timer" parent="."]
+wait_time = 1.5
+one_shot = true
