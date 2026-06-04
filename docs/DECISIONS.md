@@ -365,3 +365,9 @@
 - Decisão: dar prioridade à ferramenta ativa do `ToolManager` sobre a semente selecionada no lote.
 - Motivo: evitar plantio acidental quando o jogador quer regar, usar enxada ou preparar a colheita.
 - Risco: como Enxada e Colheita ainda não executam ação real no `FarmPlot`, a interação vira bloqueio intencional até o comportamento dessas ferramentas existir de fato.
+
+## Decisão 51 - Separação entre ferramentas, sementes e água
+- Problema: ferramentas, sementes e água estavam misturadas demais entre UI, inventário e interação de lote, deixando a leitura do jogo menos clara.
+- Decisão: tratar ferramentas como modo de ação global via `ToolManager`, sementes como itens do inventário no jogo principal e água como recurso visual no `StatusPanel` com armazenamento interno em `GlobalInventory.inventario["agua"]`.
+- Motivo: manter o protótipo legível sem quebrar o fluxo atual de plantio, rega, save e o laboratório isolado do FarmGrid.
+- Risco: qualquer nova UI ou sistema de interação precisa respeitar essa separação para não reintroduzir a mistura entre item, recurso e ferramenta.

@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-06-03 - Separação entre ferramentas, sementes e água
+- Foi documentada a separação entre ferramentas como modo de ação, sementes como itens do inventário e água como recurso visual separado no StatusPanel.
+- O inventário visual continua escondendo a água, enquanto o `FarmPlot` e o `SaveManager` seguem usando `GlobalInventory.inventario["agua"]` internamente.
+- Nenhum script ou cena foi alterado nesta anotação; a mudança aqui é só de arquitetura/documentação.
+
 ## 2026-06-03 - Agua no StatusPanel e prioridade de ferramenta
 - O StatusPanel voltou a mostrar claramente `Água: X`, lendo diretamente `GlobalInventory.inventario["agua"]`.
 - A ferramenta ativa do `ToolManager` passou a ter prioridade sobre a semente selecionada no lote: Regador rega antes de qualquer plantio, e Enxada/Colheita bloqueiam plantio acidental.
