@@ -419,3 +419,9 @@
 - Decisão: filtrar logs de adição e remoção quando `item_id == "agua"`, mantendo os demais logs de inventário.
 - Motivo: reduzir ruído sem esconder o comportamento real do inventário para outros itens.
 - Risco: como o inventário ainda é útil para depuração, qualquer novo caso especial precisa ser revisado para não esconder bugs importantes.
+
+## Decisão 60 - Fishing System - Pesca de Ressonancia
+- Problema: o jogo precisava de uma direção clara para pesca sem tratar o sistema como uma cena de laboratório isolada.
+- Decisão: registrar a pesca como sistema integrado ao lago real da fazenda, com Vara de Pesca, áreas opcionais de movimento e um minigame de sincronia leve.
+- Motivo: manter a pesca acessível, mágica e coerente com o ecossistema alquímico, sem quebrar o loop agrícola já estável.
+- Risco: a primeira implementação precisa ser pequena e controlada para não acoplar pesca, inventário, caldeirão e tempo real ao mesmo tempo.

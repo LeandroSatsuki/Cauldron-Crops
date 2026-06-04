@@ -61,6 +61,13 @@
 - Refinar o Decay Diário manual antes de ligar qualquer virada de dia automatizada.
 - Planejar a futura integração com tempo real sem quebrar o protótipo atual.
 - Manter o FarmGrid em laboratório até a migração ser planejada com segurança.
+- Documentar Fishing System.
+- Criar Vara de Pesca como ferramenta futura.
+- Criar Lago da Fazenda V0.
+- Criar FishingSpot V0.
+- Criar popup simples de sincronia.
+- Criar recompensas aquáticas básicas.
+- Só depois conectar com inventário, caldeirão e árvore de alquimia.
 
 ## Fase 4 - Conteúdo
 - Novas crops.

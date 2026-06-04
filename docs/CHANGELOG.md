@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-06-04 - Documento de pesca
+- Foi documentado o Fishing System - Pesca de Ressonancia como direção de gameplay para o lago da fazenda.
+- A pesca foi registrada como sistema integrado ao lago físico, com áreas especiais opcionais que aumentam a chance de recompensas melhores.
+- A implementação ainda não foi feita; esta etapa é apenas de documentação.
+
 ## 2026-06-04 - Limpeza de logs repetitivos
 - O console foi limpo para reduzir ruído de ações comuns do jogador.
 - A água continua funcionando normalmente no inventário real, mas seus logs foram filtrados para nao poluir o debug.

@@ -301,6 +301,43 @@ Loop futuro:
 
 pesca -> caldeirão -> solo -> crops -> fazendinhas -> receitas -> golems -> expansão
 
+## Fishing System - Pesca de Ressonancia
+
+O Fishing System é a direção futura para a pesca no jogo principal.
+
+- a pesca vai acontecer no lago real da fazenda
+- o jogador poderá lançar a vara em qualquer área válida do lago
+- áreas com ondulação, brilho ou movimento aumentam a chance de recompensas melhores
+- essas áreas especiais serão opcionais, não obrigatórias
+- a primeira implementação futura deve ser pequena, calma e integrada ao lago da fazenda
+
+### Pesca de Ressonancia
+
+A mecânica planejada é uma sincronia leve e aconchegante:
+
+- a água pulsa
+- a boia reage
+- o jogador clica no momento certo
+- melhores acertos aumentam a qualidade da recompensa
+
+### Recompensas futuras
+
+Possíveis recompensas provisórias:
+
+- `peixe_comum`
+- `peixe_luminoso`
+- `escama_brilhante`
+- `gota_lunar`
+- `lodo_de_lago`
+- `peixe_sazonal`
+- `ingrediente_aquatico_raro`
+
+### Relação com o resto do jogo
+
+- a pesca pode alimentar caldeirão, receitas, missões e árvore de alquimia no futuro
+- a pesca não deve começar como laboratório isolado no design final
+- a primeira implementação de código precisa ser pequena e controlada
+
 ## Decisão Atual
 
 - A ideia está aprovada como direção futura.
