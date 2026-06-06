@@ -239,6 +239,12 @@ layout_mode = 2
 text = "Selecione uma área bloqueada."
 autowrap_mode = 2
 
+[node name="HintLabel" type="Label" parent="PurificationPanel/MarginContainer/VBoxPurification/HeaderBar" unique_id=1900000013]
+layout_mode = 2
+text = "Entregar tudo disponível só entrega recursos. Purificar Área é a etapa final."
+autowrap_mode = 2
+theme_override_colors/font_color = Color(0.8, 0.88, 1, 1)
+
 [node name="ScrollContainer" type="ScrollContainer" parent="PurificationPanel/MarginContainer/VBoxPurification" unique_id=1900000007]
 layout_mode = 2
 size_flags_vertical = 3

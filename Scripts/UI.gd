@@ -46,6 +46,7 @@ var village_chest_ref: VillageChest = null
 
 @onready var purification_panel: PanelContainer = $PurificationPanel
 @onready var purification_status_label: Label = $PurificationPanel/MarginContainer/VBoxPurification/HeaderBar/StatusLabel
+@onready var purification_hint_label: Label = $PurificationPanel/MarginContainer/VBoxPurification/HeaderBar/HintLabel
 @onready var purification_requirements_list: VBoxContainer = $PurificationPanel/MarginContainer/VBoxPurification/ScrollContainer/RequirementsList
 @onready var purification_deliver_all_button: Button = $PurificationPanel/MarginContainer/VBoxPurification/ButtonsRow/BtnEntregarTudo
 @onready var purification_purify_button: Button = $PurificationPanel/MarginContainer/VBoxPurification/ButtonsRow/BtnPurificarArea
@@ -872,6 +873,8 @@ func fechar_painel_purificacao() -> void:
 		purification_panel.visible = false
 		purification_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	purification_obstacle_ref = null
+	if purification_purify_button:
+		purification_purify_button.self_modulate = Color(1, 1, 1, 1)
 
 func atualizar_painel_purificacao() -> void:
 	if purification_panel == null:
@@ -881,10 +884,13 @@ func atualizar_painel_purificacao() -> void:
 	if obstacle == null:
 		if purification_status_label:
 			purification_status_label.text = "Selecione uma área bloqueada."
+		if purification_hint_label:
+			purification_hint_label.text = "Entregar tudo disponível só entrega recursos. Purificar Área é a etapa final."
 		if purification_deliver_all_button:
 			purification_deliver_all_button.disabled = true
 		if purification_purify_button:
 			purification_purify_button.disabled = true
+			purification_purify_button.self_modulate = Color(1, 1, 1, 1)
 		_limpar_lista_requisitos_purificacao()
 		return
 
@@ -957,9 +963,9 @@ func atualizar_painel_purificacao() -> void:
 		if purification_requirements_list:
 			purification_requirements_list.add_child(row)
 
-	var status_text := "Entregue os itens para liberar a purificação."
+	var status_text := "Entregue todos os requisitos para purificar esta área."
 	if missing.is_empty():
-		status_text = "Todos os requisitos foram entregues. Clique em Purificar Área."
+		status_text = "Requisitos completos. Clique em Purificar Área."
 	else:
 		var missing_parts: Array[String] = []
 		for requirement_variant in requirements:
@@ -977,14 +983,21 @@ func atualizar_painel_purificacao() -> void:
 				item_name = item_id
 			missing_parts.append("%s x%d" % [item_name, missing_quantity])
 		if not missing_parts.is_empty():
-			status_text = "Faltam: %s." % ", ".join(missing_parts)
+			status_text += "\nFaltam: %s." % ", ".join(missing_parts)
 
 	if purification_status_label:
 		purification_status_label.text = status_text
+	if purification_hint_label:
+		if missing.is_empty():
+			purification_hint_label.text = "Entregar tudo disponível já foi aplicado. Purificar Área conclui a liberação da área."
+		else:
+			purification_hint_label.text = "Entregar tudo disponível só entrega recursos. Purificar Área não é executado automaticamente."
 	if purification_deliver_all_button:
 		purification_deliver_all_button.disabled = requirements.is_empty()
 	if purification_purify_button:
-		purification_purify_button.disabled = not bool(obstacle.has_method("can_purify") and obstacle.call("can_purify"))
+		var pode_purificar := bool(obstacle.has_method("can_purify") and obstacle.call("can_purify"))
+		purification_purify_button.disabled = not pode_purificar
+		purification_purify_button.self_modulate = Color(1.0, 0.95, 0.75, 1.0) if pode_purificar else Color(1, 1, 1, 1)
 
 func _obter_obstaculo_purificacao_ativo() -> Node:
 	if purification_obstacle_ref != null and is_instance_valid(purification_obstacle_ref):

@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-06-06 - Painel de Purificação mais claro
+- O Painel de Purificação agora diferencia visualmente a entrega de recursos da ação final de purificar.
+- Quando faltam requisitos, o painel orienta o jogador com uma mensagem direta para entregar tudo antes de purificar.
+- Quando os requisitos ficam completos, o painel passa a indicar explicitamente que a próxima ação é clicar em `Purificar Área`.
+- O botão `Purificar Área` recebe destaque visual simples quando fica habilitado.
+- A lógica central de purificação, o save e o desbloqueio da área permanecem inalterados.
+
 ## 2026-06-06 - Expansão V0 da fazenda reforçada
 - O jogo principal mantém o pocket fixo 2x2 de `FarmPlot` atrás da Área Bloqueada V0, sem envolver `FarmGridPreview`.
 - `Main.gd` agora expõe uma sincronização explícita para reaplicar o estado da área bloqueada após o carregamento do save.

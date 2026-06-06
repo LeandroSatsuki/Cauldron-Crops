@@ -164,6 +164,7 @@ Nesta V0:
 - a lista V0 inclui `pocao_purificadora_fraca`, `escama_brilhante` e `trigo`;
 - a poção purificadora fraca continua sendo apenas um requisito, não o custo inteiro;
 - ao clicar na área bloqueada, o jogo abre um `PurificationPanel` com o progresso;
+- o painel deixa claro que `Entregar tudo disponível` apenas entrega recursos e que `Purificar Área` é a ação final;
 - os requisitos podem ser entregues parcialmente por item e o progresso fica salvo por obstáculo em `farm_expansion.purification_progress`;
 - o botão `Purificar Área` só fica disponível quando tudo estiver completo;
 - ao purificar, o obstáculo some/desativa, a área roxa desaparece e o pocket é liberado;

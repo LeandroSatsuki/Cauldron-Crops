@@ -1,5 +1,11 @@
 # Decisions
 
+## Decisão 47 - UX do Painel de Purificação separa entrega e finalização
+- Problema: o botão `Entregar tudo disponível` podia passar a impressão de que a área seria purificada automaticamente.
+- Decisão: reforçar o Painel de Purificação com mensagens de estado mais claras e um destaque visual simples no botão `Purificar Área` quando ele estiver habilitado.
+- Motivo: deixar explícito que a entrega só preenche os requisitos e que a purificação continua sendo uma ação final separada.
+- Risco: a UI ficou um pouco mais verbal, então pode precisar de ajuste fino de texto se o painel ganhar mais requisitos no futuro.
+
 ## Decisão 1 - Golem automático desativado temporariamente
 - Problema: `GolemManager.gd` colhia automaticamente e conflitada com o golem físico.
 - Decisão: manter o código, mas desligar a automação com flag.
