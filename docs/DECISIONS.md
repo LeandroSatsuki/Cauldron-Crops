@@ -270,6 +270,12 @@
 - Motivo: validar o ciclo pesca -> agricultura -> purificação -> persistência antes de abrir áreas maiores.
 - Risco: os requisitos ainda são provisórios/debug e a implementação futura do caldeirão ainda precisará substituir o método de obtenção dos itens.
 
+## Decisão 45 - Poção Purificadora Fraca V0 no caldeirão
+- Problema: a poção provisória precisava sair do botão de debug e entrar no fluxo real do jogo sem mudar a purificação por áreas.
+- Decisão: ligar `agua` + `peixe_comum` no caldeirão para produzir `pocao_purificadora_fraca`, e incluir `peixe_comum` em `RECEITA_ITEM_IDS` para o livro e o modo lote reconstruírem a receita.
+- Motivo: conectar pesca à alquimia de forma simples e validar o catalisador de purificação com um caminho jogável.
+- Risco: a rota V0 ainda é temporária e não substitui o sistema completo de receitas/purificação por áreas que virá depois.
+
 ## Decisão 43 - Debug Panel V1 temporario
 - Problema: os testes do protótipo estavam lentos para itens, receitas, lotes, save e Baú da Vila.
 - Decisão: criar um painel de debug oculto na UI principal, aberto por `F10`, com ferramentas temporárias de teste.

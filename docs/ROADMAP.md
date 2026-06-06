@@ -83,6 +83,8 @@
 - Evoluir o Obstáculo Mágico V0 para requisitos múltiplos antes de ligar a geração real pelo caldeirão.
 - Ligar pesca, agricultura e alquimia como fontes dos requisitos da purificação.
 - Manter o sistema provisório de debug enquanto o caldeirão ainda não cria esses itens de forma real.
+- Ligar a receita V0 `agua` + `peixe_comum` para produzir `pocao_purificadora_fraca` no caldeirão.
+- Garantir que o livro e o modo lote reconstruam essa receita via `RECEITA_ITEM_IDS`.
 - Liberar uma pequena área com `FarmPlot` potenciais após a purificação.
 - Salvar o estado desbloqueado das áreas futuras.
 - Consolidar o Obstáculo Mágico V0 com item provisório e save mínimo antes de expandir áreas.

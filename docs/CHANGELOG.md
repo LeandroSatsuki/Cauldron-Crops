@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-06-05 - Poção Purificadora Fraca no caldeirão V0
+- O caldeirão agora produz `pocao_purificadora_fraca` com `agua` + `peixe_comum`.
+- `peixe_comum` entrou na lista de itens que o sistema de receitas usa para reconstruir ingredientes no livro e no modo lote.
+- O fluxo de purificação continua exigindo também `escama_brilhante` e `trigo` na Área Bloqueada V0.
+- O botão debug de poção segue provisório e continua disponível para teste.
+- Nenhuma nova área, obstáculo, conexão com FarmGrid ou alteração de save foi criada nesta etapa.
+
 ## 2026-06-04 - Area Bloqueada V0
 - O obstáculo usa uma lista provisória de requisitos de purificação.
 - A lista V0 inclui `pocao_purificadora_fraca`, `escama_brilhante` e `trigo`.

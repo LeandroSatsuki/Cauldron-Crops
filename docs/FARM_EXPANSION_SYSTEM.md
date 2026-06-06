@@ -81,7 +81,11 @@ Exemplos futuros:
 - Tônico Lunar
 - Elixir de Purificação Profunda
 
-Não implementar receitas agora.
+Receita V0 já ligada ao fluxo atual:
+
+- `agua` + `peixe_comum` -> `pocao_purificadora_fraca`
+
+Essa rota conecta pesca ao catalisador de purificação sem encerrar o sistema completo de áreas.
 
 ## Relação com o Catálogo de Itens
 
@@ -118,10 +122,9 @@ A pesca pode alimentar a purificação com ingredientes aquáticos.
 
 Exemplos:
 
-- `escama_brilhante`
-- `peixe_comum`
-- `gota_lunar` futura
+- `escama_brilhante` futuro
 - `lodo_de_lago` futuro
+- `peixe_comum` como ponte direta para a Poção Purificadora Fraca V0
 
 A Área do Lago pode ter upgrades e pontos de movimento melhores conforme a fazenda é purificada.
 

@@ -259,7 +259,9 @@ func _processar_tick_lote() -> void:
 
 	var ui = get_tree().current_scene.get_node_or_null("UI")
 	if ui and ui.has_method("criar_texto_flutuante"):
-		var nome_exibicao = "Golem" if _batch_resultado == "golem_coletor" else _batch_resultado
+		var nome_exibicao = "Golem" if _batch_resultado == "golem_coletor" else Database.obter_nome_item(_batch_resultado)
+		if nome_exibicao == "":
+			nome_exibicao = _batch_resultado
 		ui.criar_texto_flutuante("Lote pronto: " + nome_exibicao + "!", $BaseAnchor/SpriteCaldeirao.global_position, Color.GREEN)
 
 	if _batch_quantidade_concluida >= _batch_quantidade_total:
@@ -437,7 +439,9 @@ func _on_brew_timer_timeout() -> void:
 		
 	var ui = get_tree().current_scene.get_node_or_null("UI")
 	if ui and ui.has_method("criar_texto_flutuante"):
-		var nome_exibicao = "Golem" if item_em_producao == "golem_coletor" else item_em_producao
+		var nome_exibicao = "Golem" if item_em_producao == "golem_coletor" else Database.obter_nome_item(item_em_producao)
+		if nome_exibicao == "":
+			nome_exibicao = item_em_producao
 		ui.criar_texto_flutuante("Sucesso: " + nome_exibicao + "!", $BaseAnchor/SpriteCaldeirao.global_position, Color.GREEN)
 		
 	item_em_producao = ""

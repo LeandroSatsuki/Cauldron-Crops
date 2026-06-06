@@ -65,15 +65,16 @@ A purificação da Área Bloqueada V0 agora consulta um conjunto de requisitos m
 - `escama_brilhante` x1
 - `trigo` x3
 
-Nesse estágio, a poção purificadora fraca funciona como catalisador provisório, `escama_brilhante` conecta a pesca à progressão e `trigo` conecta a agricultura à progressão. Ainda não existe receita real no caldeirão para produzir esse conjunto automaticamente.
+Nesse estágio, a poção purificadora fraca funciona como catalisador provisório, `escama_brilhante` conecta a pesca à progressão e `trigo` conecta a agricultura à progressão. Agora existe uma receita V0 no caldeirão para produzir a poção: `agua` + `peixe_comum`.
 
 ## Regras atuais
 
 - Água continua sendo recurso interno do jogo, com tratamento visual separado no StatusPanel.
 - Itens de pesca já entram no inventário real e agora têm metadados estruturados.
 - `pocao_purificadora_fraca` existe como item provisório/debug para o Obstáculo Mágico V0.
+- `peixe_comum` também participa da alquimia V0 para ligar pesca ao catalisador de purificação.
 - Crops e sementes existentes foram cadastrados apenas com o que o projeto já usa hoje.
-- Nenhuma receita nova foi criada.
+- A receita V0 do caldeirão para a poção purificadora fraca já existe.
 - Nenhum balanceamento final foi definido.
 
 ## Uso esperado

@@ -2,6 +2,7 @@ extends Node
 
 const RECEITA_ITEM_IDS := [
 	"agua",
+	"peixe_comum",
 	"carvao",
 	"trigo",
 	"tomate_sol",
@@ -345,7 +346,8 @@ var receitas_alquimia: Dictionary = {
 	"abobora_sombria_raiz_gelida": "elixir_estacional",
 	"palha_rara_rama_encantada": "golem_coletor",
 	"agua_tomate_sol": "semente_outono",
-	"agua_raiz_gelida": "pocao_crescimento"
+	"agua_raiz_gelida": "pocao_crescimento",
+	"agua_peixe_comum": "pocao_purificadora_fraca"
 }
 
 var quests_exemplos: Dictionary = {
