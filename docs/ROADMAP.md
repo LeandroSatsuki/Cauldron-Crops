@@ -106,3 +106,4 @@
 - UX.
 - Refinar a UI de status e os indicadores provisórios.
 - Integrar o tempo real apenas quando o protótipo estiver estável.
+- Adicionar feedback visual provisório para a conclusão da purificação.

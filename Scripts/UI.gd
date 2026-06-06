@@ -574,6 +574,71 @@ func criar_texto_flutuante(texto: String, posicao_global: Vector2, cor: Color) -
 	tween.parallel().tween_property(label, "modulate:a", 0.0, 1.0)
 	tween.tween_callback(label.queue_free)
 
+func mostrar_feedback_purificacao(posicao_global: Vector2) -> void:
+	var efeito := Node2D.new()
+	efeito.name = "PurificationFlash"
+	efeito.top_level = true
+	efeito.global_position = posicao_global
+	efeito.z_index = 1500
+	efeito.modulate = Color(1, 1, 1, 0.98)
+	add_child(efeito)
+
+	var brilho := Polygon2D.new()
+	brilho.name = "PurificationGlow"
+	brilho.color = Color(0.92, 1.0, 0.78, 0.42)
+	brilho.polygon = PackedVector2Array([
+		Vector2(0, -22),
+		Vector2(18, -12),
+		Vector2(26, 0),
+		Vector2(18, 12),
+		Vector2(0, 22),
+		Vector2(-18, 12),
+		Vector2(-26, 0),
+		Vector2(-18, -12)
+	])
+	efeito.add_child(brilho)
+
+	var anel := Line2D.new()
+	anel.name = "PurificationRing"
+	anel.width = 7.0
+	anel.default_color = Color(1.0, 0.96, 0.62, 0.92)
+	anel.antialiased = true
+	anel.closed = true
+	anel.points = PackedVector2Array([
+		Vector2(0, -58),
+		Vector2(38, -40),
+		Vector2(58, 0),
+		Vector2(38, 40),
+		Vector2(0, 58),
+		Vector2(-38, 40),
+		Vector2(-58, 0),
+		Vector2(-38, -40)
+	])
+	efeito.add_child(anel)
+
+	var raio := Polygon2D.new()
+	raio.name = "PurificationSpark"
+	raio.color = Color(1.0, 1.0, 1.0, 0.88)
+	raio.polygon = PackedVector2Array([
+		Vector2(0, -10),
+		Vector2(8, -2),
+		Vector2(18, 0),
+		Vector2(8, 2),
+		Vector2(0, 10),
+		Vector2(-8, 2),
+		Vector2(-18, 0),
+		Vector2(-8, -2)
+	])
+	efeito.add_child(raio)
+
+	criar_texto_flutuante("Área purificada!", posicao_global + Vector2(0, -92), Color(0.95, 1.0, 0.8))
+
+	var tween := create_tween()
+	tween.tween_property(efeito, "scale", Vector2(1.55, 1.55), 0.22).from(Vector2(0.82, 0.82)).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tween.tween_interval(0.08)
+	tween.tween_property(efeito, "modulate:a", 0.0, 0.24)
+	tween.tween_callback(efeito.queue_free)
+
 func _on_abrir_quests_pressed() -> void:
 	if quest_board:
 		quest_board.visible = true

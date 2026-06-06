@@ -168,6 +168,7 @@ Nesta V0:
 - os requisitos podem ser entregues parcialmente por item e o progresso fica salvo por obstáculo em `farm_expansion.purification_progress`;
 - o botão `Purificar Área` só fica disponível quando tudo estiver completo;
 - ao purificar, o obstáculo some/desativa, a área roxa desaparece e o pocket é liberado;
+- ao purificar com sucesso, a UI dispara um feedback visual provisório de conclusão (`Área purificada!` + brilho simples);
 - a purificação é salva em `farm_expansion.purification_obstacles` e acompanha o progresso parcial no mesmo bloco de save;
 - o primeiro pocket bloqueado já ganha uma Área Bloqueada V0 visível;
 - o pocket usa 4 `FarmPlot` potenciais em arranjo 2x2;

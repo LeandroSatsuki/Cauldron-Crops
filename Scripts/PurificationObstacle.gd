@@ -156,11 +156,14 @@ func finalize_purification() -> bool:
 	purified_state = true
 	print("PurificationObstacle: purificado.")
 	_aplicar_estado()
-	_notificar_interface_purificacao()
 	var ui := _obter_ui()
+	if ui != null and ui.has_method("mostrar_feedback_purificacao"):
+		ui.call("mostrar_feedback_purificacao", global_position)
+	else:
+		_mostrar_feedback("Área purificada! Novos lotes foram revelados.")
+	_notificar_interface_purificacao()
 	if ui != null and ui.has_method("fechar_painel_purificacao"):
 		ui.call("fechar_painel_purificacao")
-	_mostrar_feedback("Área purificada. Novos lotes foram revelados.")
 	purified.emit(obstacle_id)
 	return true
 

@@ -1,5 +1,11 @@
 # Decisions
 
+## Decisão 48 - Feedback visual provisório na finalização da purificação
+- Problema: a purificação concluída precisava de uma recompensa visual curta sem mexer na lógica central.
+- Decisão: disparar um brilho/mensagem provisórios pela UI quando `finalize_purification()` concluir com sucesso.
+- Motivo: reforçar a sensação de conclusão e de desbloqueio sem depender de assets finais ou de mudanças no save.
+- Risco: o efeito é simples e pode ser substituído depois por uma animação mais elaborada.
+
 ## Decisão 47 - UX do Painel de Purificação separa entrega e finalização
 - Problema: o botão `Entregar tudo disponível` podia passar a impressão de que a área seria purificada automaticamente.
 - Decisão: reforçar o Painel de Purificação com mensagens de estado mais claras e um destaque visual simples no botão `Purificar Área` quando ele estiver habilitado.

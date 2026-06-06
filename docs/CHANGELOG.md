@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-06-06 - Feedback visual V0 da Purificação
+- Ao concluir a purificação com sucesso, o jogo agora dispara um feedback visual provisório com brilho e mensagem curta `Área purificada!`.
+- O efeito é apenas de apresentação, não altera save/load nem a lógica central de desbloqueio.
+- O painel continua fechando normalmente após a ação, sem depender do feedback para concluir.
+
 ## 2026-06-06 - Painel de Purificação mais claro
 - O Painel de Purificação agora diferencia visualmente a entrega de recursos da ação final de purificar.
 - Quando faltam requisitos, o painel orienta o jogador com uma mensagem direta para entregar tudo antes de purificar.
