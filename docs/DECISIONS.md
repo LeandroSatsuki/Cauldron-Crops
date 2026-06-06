@@ -266,9 +266,9 @@
 
 ## Decisão 44 - Obstáculo Mágico V0 com save mínimo
 - Problema: a primeira purificação precisava existir como teste pequeno, persistente e sem acoplar o FarmGrid.
-- Decisão: criar um obstáculo estático único no mapa principal, consumindo `pocao_purificadora_fraca` e salvando seu estado em `farm_expansion.purification_obstacles`.
-- Motivo: validar o ciclo purificação -> consumo -> persistência antes de abrir áreas maiores.
-- Risco: o item é provisório/debug e a implementação futura do caldeirão ainda precisará substituir o método de obtenção da poção.
+- Decisão: criar um obstáculo estático único no mapa principal, usando uma lista provisória de requisitos (`pocao_purificadora_fraca`, `escama_brilhante`, `trigo`) e salvando seu estado em `farm_expansion.purification_obstacles`.
+- Motivo: validar o ciclo pesca -> agricultura -> purificação -> persistência antes de abrir áreas maiores.
+- Risco: os requisitos ainda são provisórios/debug e a implementação futura do caldeirão ainda precisará substituir o método de obtenção dos itens.
 
 ## Decisão 43 - Debug Panel V1 temporario
 - Problema: os testes do protótipo estavam lentos para itens, receitas, lotes, save e Baú da Vila.

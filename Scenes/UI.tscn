@@ -302,6 +302,10 @@ text = "Adicionar ingredientes básicos"
 layout_mode = 2
 text = "Dar Poção Purificadora"
 
+[node name="BtnDebugAddPurificationResources" type="Button" parent="DebugPanel/MarginContainer/ScrollContainer/VBoxDebug"]
+layout_mode = 2
+text = "Dar Recursos de Purificação"
+
 [node name="SeparatorRecipes" type="HSeparator" parent="DebugPanel/MarginContainer/ScrollContainer/VBoxDebug"]
 layout_mode = 2
 

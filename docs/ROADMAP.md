@@ -80,7 +80,9 @@
 - Definir o visual da primeira área bloqueada da fazenda.
 - Obstáculo Mágico V0 implementado como primeira etapa prática de purificação.
 - Área Bloqueada V0 visível com pocket 2x2 de `FarmPlot` append-only.
-- Manter o item provisório de purificação enquanto o caldeirão ainda não cria a poção de forma real.
+- Evoluir o Obstáculo Mágico V0 para requisitos múltiplos antes de ligar a geração real pelo caldeirão.
+- Ligar pesca, agricultura e alquimia como fontes dos requisitos da purificação.
+- Manter o sistema provisório de debug enquanto o caldeirão ainda não cria esses itens de forma real.
 - Liberar uma pequena área com `FarmPlot` potenciais após a purificação.
 - Salvar o estado desbloqueado das áreas futuras.
 - Consolidar o Obstáculo Mágico V0 com item provisório e save mínimo antes de expandir áreas.

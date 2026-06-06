@@ -57,6 +57,16 @@ Cada item do catálogo expõe, por enquanto:
 - `golem_coletor`
 - `pocao_purificadora_fraca`
 
+## Uso na purificação V0
+
+A purificação da Área Bloqueada V0 agora consulta um conjunto de requisitos múltiplos:
+
+- `pocao_purificadora_fraca` x1
+- `escama_brilhante` x1
+- `trigo` x3
+
+Nesse estágio, a poção purificadora fraca funciona como catalisador provisório, `escama_brilhante` conecta a pesca à progressão e `trigo` conecta a agricultura à progressão. Ainda não existe receita real no caldeirão para produzir esse conjunto automaticamente.
+
 ## Regras atuais
 
 - Água continua sendo recurso interno do jogo, com tratamento visual separado no StatusPanel.

@@ -1,10 +1,14 @@
 # Changelog
 
 ## 2026-06-04 - Area Bloqueada V0
-- O Obstáculo Mágico V0 passou a mostrar uma Área Bloqueada V0 visível, com pocket 2x2 de `FarmPlot` reservado na fazenda.
-- O pocket fica oculto e bloqueado antes da purificação e é revelado quando a área é purificada.
-- A expansão agora segue append-only para proteger a ordem dos `FarmPlot` e manter saves antigos compatíveis.
-- Nenhuma conexão com o caldeirão real foi criada nesta etapa.
+- O obstáculo usa uma lista provisória de requisitos de purificação.
+- A lista V0 inclui `pocao_purificadora_fraca`, `escama_brilhante` e `trigo`.
+- O feedback agora mostra requisitos faltantes usando nomes do catálogo quando possível.
+- Um botão temporário no Debug Panel pode entregar todos os recursos de purificação para teste.
+- O obstáculo passa a pedir a lista completa antes de purificar.
+- A Poção Purificadora Fraca é apenas um requisito, não o custo inteiro.
+- A purificação continua salva em `farm_expansion.purification_obstacles`.
+- Nenhuma conexão real com o caldeirão foi criada nesta etapa.
 
 ## 2026-06-04 - Obstáculo Mágico V0
 - O projeto ganhou o primeiro obstáculo estático da fazenda, purificável com `pocao_purificadora_fraca`.
