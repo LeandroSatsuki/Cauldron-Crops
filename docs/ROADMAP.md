@@ -29,7 +29,6 @@ Entregar um protótipo jogável e estável do loop principal da fazenda, com pla
 - Teste de loop completo da Fase 1 em save limpo validado manualmente.
 
 ### O que ainda falta para fechar a Fase 1
-- Checklist/teste de loop completo em save novo.
 - Conteúdo mínimo de receitas.
 - Tutorial/objetivos mínimos para guiar o jogador.
 - Auditoria final de save/load.
@@ -56,7 +55,7 @@ Entregar um protótipo jogável e estável do loop principal da fazenda, com pla
 - Existe uma build/demo jogável que represente a Fase 1 como pacote fechado.
 
 ### Próxima tarefa recomendada
-Fazer o checklist completo do loop principal em um save novo e registrar qualquer ajuste necessário em `docs/CHANGELOG.md` e `docs/DECISIONS.md` antes de avançar para conteúdo adicional.
+Consolidar a build/demo jogável da Fase 1 e registrar qualquer ajuste necessário em `docs/CHANGELOG.md` e `docs/DECISIONS.md` antes de avançar para conteúdo adicional.
 
 ## Fase 2 - Estabilização
 - Corrigir a UI do caldeirão.
