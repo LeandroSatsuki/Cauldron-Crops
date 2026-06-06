@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-06-06 - Preparação da build/demo da Fase 1
+- Foi criado um preset de exportação Windows Desktop para a demo da Fase 1.
+- O `README.md` recebeu instruções mínimas de execução local e exportação.
+- `Builds/` passou a ser ignorado para manter as saídas de build fora do versionamento.
+- Nenhum sistema de gameplay foi alterado.
+
 ## 2026-06-06 - Validação manual da Fase 1 em save limpo
 - O teste de loop completo da Fase 1 foi executado em save limpo e concluído com sucesso.
 - A validação cobriu início em save limpo, arar, plantar, regar, colher, usar o caldeirão, abrir o Livro de Receitas, purificar a área, liberar o pocket 2x2, usar um plot liberado, salvar com F5, carregar com F9 e confirmar a persistência da expansão.

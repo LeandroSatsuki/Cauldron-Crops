@@ -95,4 +95,11 @@ Um script complementar desenvolvido em Python que analisa todos os arquivos PNG 
 
 ### Conflito: Auto-colheita em 4 segundos vs. Coleta do Golem
 - **Descrição do Problema**: Atualmente, a colheita automática realizada pelo [GolemManager.gd](file:///e:/Cauldron%20Crops/cauldron-crops/Scripts/GolemManager.gd) e a locomoção física do Golem em [Golem.gd](file:///e:/Cauldron%20Crops/cauldron-crops/Scripts/Golem.gd) entram em conflito direto. A cada 4 segundos, o `GolemManager` coleta instantaneamente e de forma invisível as plantas maduras remotas. Quando o Golem físico calcula sua rota e caminha até o lote maduro selecionado, a planta frequentemente já foi colhida e resetada à distância pelo loop do `GolemManager`, tornando a movimentação e animação física do Golem redundantes e ineficientes.
-- **Resolução Recomendada**: Para que o comportamento visual de IA do Golem faça sentido, a rotina de colheita remota instantânea do `GolemManager` deve ser desativada ou integrada diretamente à colheita física dos Golems, permitindo que apenas golems físicos realizem as colheitas ou que o `GolemManager` sirva apenas para gerenciar o spawn físico dos robôs.
+- **Resolução Recomendada**: Para que o comportamento visual de IA do Golem faça sentido, a rotina de colheita remota instantânea do [GolemManager.gd](file:///e:/Cauldron%20Crops/cauldron-crops/Scripts/GolemManager.gd) deve ser desativada ou integrada diretamente à colheita física dos Golems, permitindo que apenas golems físicos realizem as colheitas ou que o `GolemManager` sirva apenas para gerenciar o spawn físico dos robôs.
+
+## 8. Execução e exportação da demo da Fase 1
+- Versão usada: Godot 4.6.2.
+- Para abrir o projeto, abra a pasta `E:/Cauldron Crops/cauldron-crops` na Godot ou carregue diretamente `project.godot`.
+- Para rodar localmente, execute a cena principal definida em `project.godot` (`Scenes/Main.tscn`) com Play/F5 no editor.
+- Para exportar a demo Windows, use o preset `Windows Desktop - Fase 1 Demo` e exporte para `Builds/Fase1/CauldronCrops_Fase1.exe`.
+- Se o editor solicitar export templates, instale os templates da mesma versão da Godot (4.6.2) antes de exportar.
