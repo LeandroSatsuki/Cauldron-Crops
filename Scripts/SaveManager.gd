@@ -181,6 +181,10 @@ func _apply_save_data(data: Dictionary) -> void:
 		var purification_progress_data: Dictionary = _safe_dictionary(farm_expansion_data.get("purification_progress", {}))
 		_aplicar_estado_obstaculos_purificados(purification_obstacles_data, purification_progress_data)
 
+	var current_scene: Node = get_tree().current_scene if get_tree() != null else null
+	if current_scene != null and current_scene.has_method("sincronizar_area_bloqueada_v0"):
+		current_scene.call("sincronizar_area_bloqueada_v0")
+
 func _refresh_ui_after_load() -> void:
 	var scene := get_tree().current_scene
 	if scene == null:

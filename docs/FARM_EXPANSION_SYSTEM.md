@@ -179,6 +179,8 @@ A Poção Purificadora Fraca já pode vir do caldeirão na rota V0, enquanto `es
 
 A Área Bloqueada V0 é a primeira leitura visual de expansão da fazenda.
 
+Na implementação atual, ela é um pocket fixo 2x2 de `FarmPlot` pré-instanciados em `Scripts/Main.gd`, criados depois dos lotes já existentes e mantidos ocultos/bloqueados até a purificação.
+
 Ela serve para mostrar que existe um pocket corrompido atrás do obstáculo e que esse espaço será liberado mais tarde.
 
 Regras desta versão:
@@ -188,7 +190,8 @@ Regras desta versão:
 - o pocket é pequeno e usa `FarmPlot` já conhecidos pelo jogo;
 - a área some quando a purificação é concluída;
 - o pocket revelado passa a funcionar como parte normal da fazenda;
-- o save preserva o estado desbloqueado sem reordenar os lotes antigos.
+- o save preserva o estado desbloqueado sem reordenar os lotes antigos;
+- o `SaveManager` reaplica o estado purificado no carregamento para garantir que a liberação visual e funcional continue correta.
 
 ## O que evitar agora
 

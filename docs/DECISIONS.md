@@ -222,6 +222,12 @@
 - Motivo: dar um comportamento físico mais crível sem introduzir um sistema pesado de pathfinding agora.
 - Risco: a solução ainda é híbrida e simples; obstáculos mais complexos continuarão exigindo refinamento depois.
 
+## Decisão 37 - Expansão V0 por pocket fixo
+- Problema: a primeira expansão purificada precisava nascer compatível com o save por índice e sem acoplar o FarmGrid ao jogo principal.
+- Decisão: manter o pocket V0 como 2x2 de `FarmPlot` pré-instanciados, criados depois dos lotes já existentes e liberados apenas pelo estado do obstáculo.
+- Motivo: preservar a ordem dos lotes, reduzir risco de save e manter `FarmGridPreview` isolado.
+- Risco: qualquer nova expansão precisa continuar append-only para não quebrar saves antigos.
+
 ## Decisão 37 - Caldeirão como obstáculo físico
 - Problema: o caldeirão precisava bloquear o caminho do golem no mundo.
 - Decisão: adicionar um obstáculo físico simples ao caldeirão e uma região de navegação básica na área jogável inicial.

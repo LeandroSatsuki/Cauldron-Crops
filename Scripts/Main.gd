@@ -206,6 +206,9 @@ func _aplicar_estado_area_bloqueada_v0(purificado: bool) -> void:
 		if plot.has_method("set_expansion_blocked"):
 			plot.call("set_expansion_blocked", not purificado)
 
+func sincronizar_area_bloqueada_v0() -> void:
+	_aplicar_estado_area_bloqueada_v0(_obter_estado_purificacao_obstaculo())
+
 func _on_obstaculo_purificado(obstacle_id: String) -> void:
 	if obstacle_id != "first_obstacle":
 		return

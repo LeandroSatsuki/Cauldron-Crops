@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-06-06 - Expansão V0 da fazenda reforçada
+- O jogo principal mantém o pocket fixo 2x2 de `FarmPlot` atrás da Área Bloqueada V0, sem envolver `FarmGridPreview`.
+- `Main.gd` agora expõe uma sincronização explícita para reaplicar o estado da área bloqueada após o carregamento do save.
+- O `SaveManager` reforça essa sincronização depois de restaurar o estado de purificação, preservando a liberação visual e funcional dos plots.
+
 ## 2026-06-06 - Painel de Requisitos de Purificação V0
 - A Área Bloqueada V0 agora abre um `PurificationPanel` em vez de purificar direto no clique.
 - Os requisitos podem ser entregues parcialmente por item e o progresso fica salvo por obstáculo em `farm_expansion.purification_progress`.

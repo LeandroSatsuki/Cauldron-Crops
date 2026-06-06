@@ -87,6 +87,7 @@
 - Validar o save/load parcial com F5/F9 antes de expandir para outras áreas.
 - Liberar uma pequena área com `FarmPlot` potenciais após a purificação.
 - Consolidar o Obstáculo Mágico V0 com item provisório e save mínimo antes de expandir áreas.
+- Expansão V0 já implementada como pocket fixo 2x2 de `FarmPlot` liberado pela purificação.
 - Só depois conectar com inventário, caldeirão e árvore de alquimia.
 
 ## Fase 4 - Conteúdo
