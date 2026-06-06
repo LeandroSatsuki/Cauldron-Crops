@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-06-06 - Demo exportada da Fase 1 validada manualmente
+- A build Windows da Fase 1 foi gerada com sucesso em `Builds/Fase1/`.
+- Os arquivos exportados `CauldronCrops_Fase1.exe` e `CauldronCrops_Fase1.pck` foram gerados com os export templates da Godot 4.6.2 instalados localmente.
+- A demo exportada foi aberta e validada manualmente, e o jogo fechou corretamente ao final do teste.
+- `Builds/` permanece fora do versionamento e a validação não alterou gameplay, cenas nem código.
+
 ## 2026-06-06 - Preparação da build/demo da Fase 1
 - Foi criado um preset de exportação Windows Desktop para a demo da Fase 1.
 - O `README.md` recebeu instruções mínimas de execução local e exportação.

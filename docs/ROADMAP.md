@@ -27,6 +27,7 @@ Entregar um protótipo jogável e estável do loop principal da fazenda, com pla
 - Feedback Visual V0 da Purificação.
 - Correção de UI para evitar erro de `current_scene` nulo.
 - Teste de loop completo da Fase 1 em save limpo validado manualmente.
+- Build/demo Windows da Fase 1 gerada com sucesso e validada manualmente.
 
 ### O que ainda falta para fechar a Fase 1
 - Conteúdo mínimo de receitas.
@@ -34,7 +35,7 @@ Entregar um protótipo jogável e estável do loop principal da fazenda, com pla
 - Auditoria final de save/load.
 - Decisão sobre segunda área corrompida.
 - Limpeza/registro dos warnings antigos.
-- Build/demo jogável da Fase 1.
+- Registro final da build/demo já validada.
 
 ### O que fica explicitamente fora da Fase 1
 - FarmGrid livre.
@@ -52,10 +53,10 @@ Entregar um protótipo jogável e estável do loop principal da fazenda, com pla
 - A purificação V0 e a expansão V0 funcionam de forma reproduzível em uma sessão limpa.
 - Não há erros vermelhos no headless do fluxo principal.
 - Os warnings antigos estão documentados ou aceitos como dívida técnica consciente.
-- Existe uma build/demo jogável que represente a Fase 1 como pacote fechado.
+- Existe uma build/demo Windows da Fase 1 gerada com sucesso, validada manualmente e pronta para distribuição local.
 
 ### Próxima tarefa recomendada
-Consolidar a build/demo jogável da Fase 1 e registrar qualquer ajuste necessário em `docs/CHANGELOG.md` e `docs/DECISIONS.md` antes de avançar para conteúdo adicional.
+Avançar para o conteúdo mínimo da Fase 1 remanescente e manter a documentação da build/demo como referência de release local.
 
 ## Fase 2 - Estabilização
 - Corrigir a UI do caldeirão.

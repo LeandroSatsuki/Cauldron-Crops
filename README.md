@@ -103,3 +103,4 @@ Um script complementar desenvolvido em Python que analisa todos os arquivos PNG 
 - Para rodar localmente, execute a cena principal definida em `project.godot` (`Scenes/Main.tscn`) com Play/F5 no editor.
 - Para exportar a demo Windows, use o preset `Windows Desktop - Fase 1 Demo` e exporte para `Builds/Fase1/CauldronCrops_Fase1.exe`.
 - Se o editor solicitar export templates, instale os templates da mesma versão da Godot (4.6.2) antes de exportar.
+- A demo exportada da Fase 1 foi gerada com sucesso e validada manualmente; os artefatos locais ficam em `Builds/Fase1/` e não devem ser versionados.
