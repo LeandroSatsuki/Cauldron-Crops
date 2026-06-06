@@ -4,13 +4,58 @@
 - O projeto já possui sistemas iniciais.
 - O golem automático foi desativado temporariamente para estabilizar testes manuais.
 
-## Fase 1 - Loop Mínimo Jogável
-- Plantar.
-- Colher.
-- Inventário.
+## Fase 1 - Protótipo jogável do loop principal
+
+### Objetivo da Fase 1
+Entregar um protótipo jogável e estável do loop principal da fazenda, com plantio, cultivo, colheita, uso do caldeirão, descoberta de receitas e persistência mínima suficiente para testar uma sessão inteira.
+
+### O que já está concluído
+- Inventário base.
+- Agricultura em lotes fixos.
+- Enxada preparando lotes.
+- Plantio.
+- Rega.
+- Colheita.
 - Caldeirão.
-- Receita descoberta.
-- Feedback visual mínimo.
+- Livro de Receitas.
+- Produção em lote.
+- Save/load mínimo.
+- Golem coletor básico.
+- Painel de Purificação V0.
+- Expansão V0 pós-purificação.
+- UX V1 do Painel de Purificação.
+- Feedback Visual V0 da Purificação.
+- Correção de UI para evitar erro de `current_scene` nulo.
+
+### O que ainda falta para fechar a Fase 1
+- Checklist/teste de loop completo em save novo.
+- Conteúdo mínimo de receitas.
+- Tutorial/objetivos mínimos para guiar o jogador.
+- Auditoria final de save/load.
+- Decisão sobre segunda área corrompida.
+- Limpeza/registro dos warnings antigos.
+- Build/demo jogável da Fase 1.
+
+### O que fica explicitamente fora da Fase 1
+- FarmGrid livre.
+- Migração completa de receitas para `Resource .tres`.
+- Sistema grande de construção.
+- Balanceamento profundo.
+- Automação completa avançada.
+- Arte final de todos os sistemas.
+- Refatoração grande de save.
+
+### Critérios objetivos para considerar a Fase 1 fechada
+- Um save novo permite completar o loop principal sem bloqueio crítico.
+- O jogador consegue plantar, regar, colher, cozinhar e descobrir receitas sem instrução externa.
+- O save/load preserva o estado mínimo necessário para retomar a sessão sem perda de progresso essencial.
+- A purificação V0 e a expansão V0 funcionam de forma reproduzível em uma sessão limpa.
+- Não há erros vermelhos no headless do fluxo principal.
+- Os warnings antigos estão documentados ou aceitos como dívida técnica consciente.
+- Existe uma build/demo jogável que represente a Fase 1 como pacote fechado.
+
+### Próxima tarefa recomendada
+Fazer o checklist completo do loop principal em um save novo e registrar qualquer ajuste necessário em `docs/CHANGELOG.md` e `docs/DECISIONS.md` antes de avançar para conteúdo adicional.
 
 ## Fase 2 - Estabilização
 - Corrigir a UI do caldeirão.
