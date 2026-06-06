@@ -17,13 +17,16 @@ const EXPANSION_POCKET_COLUMNS: int = 2
 const EXPANSION_POCKET_ROWS: int = 2
 const EXPANSION_POCKET_START_COLUMN: int = BASE_FARM_COLUMNS + EXTRA_FARM_COLUMNS_RIGHT
 const EXPANSION_POCKET_START_ROW: int = 0
+const EXPANSION_V0_OBSTACLE_ID: String = "first_obstacle"
 
-var blocked_area_visual: Node2D = null
-var expansion_pocket_plots: Array = []
+var expansion_area_configs: Dictionary = {}
+var expansion_area_order: Array[String] = []
+var expansion_area_visuals: Dictionary = {}
+var expansion_area_plots: Dictionary = {}
 
 func _ready() -> void:
 	_configurar_regiao_navegacao()
-	
+
 	var screen_size = get_viewport_rect().size
 	var start_x: float = (screen_size.x - BASE_FARM_PIXEL_SIZE) / 2.0
 	var start_y: float = (screen_size.y - BASE_FARM_PIXEL_SIZE) / 2.0
@@ -32,9 +35,10 @@ func _ready() -> void:
 	_criar_farm_plot_extras_direita(start_x, start_y)
 	_criar_farm_plot_extras_inferiores(start_x, start_y)
 	_garantir_lago_da_fazenda()
-	_garantir_area_bloqueada_v0(start_x, start_y)
-	_conectar_obstaculo_purificacao()
-	_aplicar_estado_area_bloqueada_v0(_obter_estado_purificacao_obstaculo())
+	_registrar_area_expansao_v0(start_x, start_y)
+	_garantir_areas_expansao(start_x, start_y)
+	_conectar_obstaculos_purificacao()
+	_sincronizar_areas_expansao()
 
 func _configurar_regiao_navegacao() -> void:
 	if navigation_region == null:
@@ -74,33 +78,78 @@ func _instanciar_farm_plot(grid_x: int, grid_y: int, start_x: float, start_y: fl
 	plot.name = "FarmPlot_%d_%d" % [grid_x, grid_y]
 	add_child(plot)
 
-func _garantir_area_bloqueada_v0(start_x: float, start_y: float) -> void:
-	if blocked_area_visual == null:
-		blocked_area_visual = _criar_area_bloqueada_visual()
-		if blocked_area_visual != null:
-			blocked_area_visual.name = "BlockedAreaVisual"
-			blocked_area_visual.position = Vector2(
-				start_x + ((EXPANSION_POCKET_START_COLUMN + 0.5) * float(FARM_SPACING)),
-				start_y + ((EXPANSION_POCKET_START_ROW + 0.7) * float(FARM_SPACING))
-			)
-			add_child(blocked_area_visual)
+func _registrar_area_expansao_v0(start_x: float, start_y: float) -> void:
+	if expansion_area_configs.has(EXPANSION_V0_OBSTACLE_ID):
+		return
 
-	if expansion_pocket_plots.is_empty():
-		_criar_pocket_expandido_v0(start_x, start_y)
+	expansion_area_order.append(EXPANSION_V0_OBSTACLE_ID)
+	expansion_area_configs[EXPANSION_V0_OBSTACLE_ID] = {
+		"obstacle_id": EXPANSION_V0_OBSTACLE_ID,
+		"visual_name": "BlockedAreaVisual",
+		"visual_position": Vector2(
+			start_x + ((EXPANSION_POCKET_START_COLUMN + 0.5) * float(FARM_SPACING)),
+			start_y + ((EXPANSION_POCKET_START_ROW + 0.7) * float(FARM_SPACING))
+		),
+		"pocket_start_column": EXPANSION_POCKET_START_COLUMN,
+		"pocket_start_row": EXPANSION_POCKET_START_ROW,
+		"pocket_columns": EXPANSION_POCKET_COLUMNS,
+		"pocket_rows": EXPANSION_POCKET_ROWS
+	}
 
-func _criar_pocket_expandido_v0(start_x: float, start_y: float) -> void:
-	for x in range(EXPANSION_POCKET_COLUMNS):
-		for y in range(EXPANSION_POCKET_ROWS):
-			var grid_x: int = EXPANSION_POCKET_START_COLUMN + x
-			var grid_y: int = EXPANSION_POCKET_START_ROW + y
+func _garantir_areas_expansao(start_x: float, start_y: float) -> void:
+	for obstacle_id in expansion_area_order:
+		_garantir_area_expansao(obstacle_id, start_x, start_y)
+
+func _garantir_area_expansao(obstacle_id: String, start_x: float, start_y: float) -> void:
+	var area_config: Dictionary = _obter_config_area_expansao(obstacle_id)
+	if area_config.is_empty():
+		return
+
+	if not expansion_area_visuals.has(obstacle_id):
+		var visual: Node2D = _criar_area_bloqueada_visual()
+		if visual != null:
+			visual.name = str(area_config.get("visual_name", "BlockedAreaVisual"))
+			visual.position = area_config.get("visual_position", Vector2.ZERO)
+			expansion_area_visuals[obstacle_id] = visual
+			add_child(visual)
+
+	if not expansion_area_plots.has(obstacle_id):
+		var area_plots: Array = _criar_pocket_expansao(obstacle_id, start_x, start_y)
+		expansion_area_plots[obstacle_id] = area_plots
+
+func _criar_pocket_expansao(obstacle_id: String, start_x: float, start_y: float) -> Array:
+	var area_config: Dictionary = _obter_config_area_expansao(obstacle_id)
+	var area_plots: Array = []
+	if area_config.is_empty():
+		return area_plots
+
+	var pocket_start_column: int = int(area_config.get("pocket_start_column", 0))
+	var pocket_start_row: int = int(area_config.get("pocket_start_row", 0))
+	var pocket_columns: int = int(area_config.get("pocket_columns", 0))
+	var pocket_rows: int = int(area_config.get("pocket_rows", 0))
+
+	for x in range(pocket_columns):
+		for y in range(pocket_rows):
+			var grid_x: int = pocket_start_column + x
+			var grid_y: int = pocket_start_row + y
 			var plot: Node2D = farm_plot_scene.instantiate()
 			plot.position = Vector2(start_x + (grid_x * FARM_SPACING), start_y + (grid_y * FARM_SPACING))
 			plot.name = "FarmPlot_%d_%d" % [grid_x, grid_y]
-			if plot.has_method("set"):
-				plot.set("expansion_blocked", true)
+			if plot.has_method("set_expansion_blocked"):
+				plot.call("set_expansion_blocked", true)
 			plot.visible = false
 			add_child(plot)
-			expansion_pocket_plots.append(plot)
+			area_plots.append(plot)
+
+	return area_plots
+
+func _obter_config_area_expansao(obstacle_id: String) -> Dictionary:
+	if not expansion_area_configs.has(obstacle_id):
+		return {}
+	var area_config_variant: Variant = expansion_area_configs.get(obstacle_id, {})
+	if typeof(area_config_variant) != TYPE_DICTIONARY:
+		return {}
+	return area_config_variant
 
 func _criar_area_bloqueada_visual() -> Node2D:
 	var bloqueio := Node2D.new()
@@ -177,15 +226,23 @@ func _criar_area_bloqueada_visual() -> Node2D:
 
 	return bloqueio
 
-func _conectar_obstaculo_purificacao() -> void:
-	var obstaculo: Node = get_node_or_null("PurificationObstacle")
-	if obstaculo == null:
+func _conectar_obstaculos_purificacao() -> void:
+	var tree: SceneTree = get_tree()
+	if tree == null:
 		return
-	if obstaculo.has_signal("purified") and not obstaculo.is_connected("purified", Callable(self, "_on_obstaculo_purificado")):
-		obstaculo.connect("purified", Callable(self, "_on_obstaculo_purificado"))
 
-func _obter_estado_purificacao_obstaculo() -> bool:
-	var obstaculo: Node = get_node_or_null("PurificationObstacle")
+	var obstaculos: Array = tree.get_nodes_in_group("purification_obstacle")
+	for obstaculo_variant in obstaculos:
+		var obstaculo: Node = obstaculo_variant
+		if obstaculo == null or not is_instance_valid(obstaculo):
+			continue
+		if not obstaculo.has_signal("purified"):
+			continue
+		if not obstaculo.is_connected("purified", Callable(self, "_on_obstaculo_purificado")):
+			obstaculo.connect("purified", Callable(self, "_on_obstaculo_purificado"))
+
+func _obter_estado_purificacao_obstaculo(obstacle_id: String) -> bool:
+	var obstaculo: Node = _obter_obstaculo_purificacao_por_id(obstacle_id)
 	if obstaculo == null or not obstaculo.has_method("get_save_data"):
 		return false
 
@@ -195,25 +252,56 @@ func _obter_estado_purificacao_obstaculo() -> bool:
 
 	return bool((obstacle_data_variant as Dictionary).get("purified", false))
 
-func _aplicar_estado_area_bloqueada_v0(purificado: bool) -> void:
-	if blocked_area_visual != null:
-		blocked_area_visual.visible = not purificado
+func _obter_obstaculo_purificacao_por_id(obstacle_id: String) -> Node:
+	if obstacle_id == "":
+		return null
 
-	for plot_variant in expansion_pocket_plots:
-		var plot: Node = plot_variant
-		if plot == null or not is_instance_valid(plot):
+	var tree: SceneTree = get_tree()
+	if tree == null:
+		return null
+
+	var obstaculos: Array = tree.get_nodes_in_group("purification_obstacle")
+	for obstaculo_variant in obstaculos:
+		var obstaculo: Node = obstaculo_variant
+		if obstaculo == null or not is_instance_valid(obstaculo):
 			continue
-		if plot.has_method("set_expansion_blocked"):
-			plot.call("set_expansion_blocked", not purificado)
+		if obstaculo.has_method("get_obstacle_id"):
+			if str(obstaculo.call("get_obstacle_id")) == obstacle_id:
+				return obstaculo
+		elif obstaculo.name == obstacle_id:
+			return obstaculo
+
+	return null
+
+func _aplicar_estado_area_expansao(obstacle_id: String, purificado: bool) -> void:
+	if obstacle_id == "":
+		return
+
+	if expansion_area_visuals.has(obstacle_id):
+		var visual: Node = expansion_area_visuals[obstacle_id]
+		if visual != null and is_instance_valid(visual):
+			visual.visible = not purificado
+
+	if expansion_area_plots.has(obstacle_id):
+		var area_plots: Array = expansion_area_plots[obstacle_id]
+		for plot_variant in area_plots:
+			var plot: Node = plot_variant
+			if plot == null or not is_instance_valid(plot):
+				continue
+			if plot.has_method("set_expansion_blocked"):
+				plot.call("set_expansion_blocked", not purificado)
+
+func _sincronizar_areas_expansao() -> void:
+	for obstacle_id in expansion_area_order:
+		_aplicar_estado_area_expansao(obstacle_id, _obter_estado_purificacao_obstaculo(obstacle_id))
 
 func sincronizar_area_bloqueada_v0() -> void:
-	_aplicar_estado_area_bloqueada_v0(_obter_estado_purificacao_obstaculo())
+	_sincronizar_areas_expansao()
 
 func _on_obstaculo_purificado(obstacle_id: String) -> void:
-	if obstacle_id != "first_obstacle":
+	if obstacle_id == "":
 		return
-	_aplicar_estado_area_bloqueada_v0(true)
-
+	_aplicar_estado_area_expansao(obstacle_id, true)
 func _garantir_lago_da_fazenda() -> void:
 	var fishing_spot_node: Node = get_node_or_null("FishingSpot")
 	var fishing_spot: Node2D = null
@@ -410,10 +498,17 @@ func _criar_bobber_destaque() -> Polygon2D:
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-		var obstaculo: Node = get_node_or_null("PurificationObstacle")
-		if obstaculo == null and get_tree() != null and get_tree().current_scene != null:
-			obstaculo = get_tree().current_scene.find_child("PurificationObstacle", true, false)
-		if obstaculo != null and obstaculo.has_method("try_handle_global_click"):
+		var tree: SceneTree = get_tree()
+		if tree == null:
+			return
+
+		var obstaculos: Array = tree.get_nodes_in_group("purification_obstacle")
+		for obstaculo_variant in obstaculos:
+			var obstaculo: Node = obstaculo_variant
+			if obstaculo == null or not is_instance_valid(obstaculo):
+				continue
+			if not obstaculo.has_method("try_handle_global_click"):
+				continue
 			if obstaculo.call("try_handle_global_click", get_global_mouse_position()):
 				get_viewport().set_input_as_handled()
 				return

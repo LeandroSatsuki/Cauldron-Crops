@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-06-06 - Expansão preparada para múltiplas áreas
+- `Main.gd` passou a usar uma estrutura interna de áreas de expansão por `obstacle_id`, mantendo apenas a V0 cadastrada por enquanto.
+- O pocket 2x2 atual, o bloqueio visual e a sincronização pós-load continuam funcionando como antes.
+- Nenhuma segunda área foi adicionada, nenhum `FarmPlot` novo foi criado e o schema do save foi preservado.
+
 ## 2026-06-06 - Feedback visual V0 da Purificação
 - Ao concluir a purificação com sucesso, o jogo agora dispara um feedback visual provisório com brilho e mensagem curta `Área purificada!`.
 - O efeito é apenas de apresentação, não altera save/load nem a lógica central de desbloqueio.

@@ -183,6 +183,8 @@ A Área Bloqueada V0 é a primeira leitura visual de expansão da fazenda.
 
 Na implementação atual, ela é um pocket fixo 2x2 de `FarmPlot` pré-instanciados em `Scripts/Main.gd`, criados depois dos lotes já existentes e mantidos ocultos/bloqueados até a purificação.
 
+O controlador do mundo agora organiza a expansão por `obstacle_id` internamente, mesmo mantendo apenas a V0 cadastrada por enquanto. Isso prepara a chegada de futuras áreas sem alterar a V0 visível, o esquema de save ou a ordem append-only dos `FarmPlot`.
+
 Ela serve para mostrar que existe um pocket corrompido atrás do obstáculo e que esse espaço será liberado mais tarde.
 
 Regras desta versão:

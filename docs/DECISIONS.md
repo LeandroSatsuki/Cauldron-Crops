@@ -12,6 +12,12 @@
 - Motivo: deixar explícito que a entrega só preenche os requisitos e que a purificação continua sendo uma ação final separada.
 - Risco: a UI ficou um pouco mais verbal, então pode precisar de ajuste fino de texto se o painel ganhar mais requisitos no futuro.
 
+## Decisão 49 - Expansão organizada por obstacle_id antes da V1
+- Problema: o `Main.gd` ainda estava acoplado a uma única área/pocket, mesmo com o `SaveManager` já preparado para múltiplos obstáculos.
+- Decisão: introduzir uma estrutura interna de áreas de expansão por `obstacle_id`, mantendo apenas a V0 cadastrada por enquanto.
+- Motivo: preparar a chegada de uma segunda área sem alterar o comportamento visível da V0, sem mexer no schema do save e sem reorganizar os `FarmPlot` existentes.
+- Risco: a ordem dos `FarmPlot` continua dependente da criação append-only; qualquer expansão futura precisa preservar isso.
+
 ## Decisão 1 - Golem automático desativado temporariamente
 - Problema: `GolemManager.gd` colhia automaticamente e conflitada com o golem físico.
 - Decisão: manter o código, mas desligar a automação com flag.
