@@ -11,6 +11,7 @@ var purification_requirements: Array[Dictionary] = [
 	{"item_id": "escama_brilhante", "quantity": 1},
 	{"item_id": "trigo", "quantity": 3}
 ]
+var purification_progress: Dictionary = {}
 
 @onready var collision_shape: CollisionShape2D = $CollisionShape2D
 @onready var visual_root: Node2D = $Visual
@@ -18,44 +19,14 @@ var purification_requirements: Array[Dictionary] = [
 func _ready() -> void:
 	add_to_group("purification_obstacle")
 	input_pickable = true
-	set_process_input(true)
-	set_process_unhandled_input(true)
-	print("PurificationObstacle: ready. parent=%s global_position=%s visible=%s purificado=%s" % [str(get_parent().get_path() if get_parent() else "null"), str(global_position), str(visible), str(purified_state)])
+	_normalizar_progresso()
 	_aplicar_estado()
+	print("PurificationObstacle: ready. parent=%s global_position=%s visible=%s purificado=%s" % [str(get_parent().get_path() if get_parent() else "null"), str(global_position), str(visible), str(purified_state)])
 
 func _input_event(_viewport: Viewport, event: InputEvent, _shape_idx: int) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
 		if try_handle_global_click(get_global_mouse_position()):
 			_viewport.set_input_as_handled()
-
-func _input(event: InputEvent) -> void:
-	if not (event is InputEventMouseButton):
-		return
-
-	var mouse_event := event as InputEventMouseButton
-	if mouse_event.button_index != MOUSE_BUTTON_LEFT:
-		return
-	if not mouse_event.pressed:
-		return
-
-	var click_position: Vector2 = get_global_mouse_position()
-	if try_handle_global_click(click_position):
-		get_viewport().set_input_as_handled()
-
-func _unhandled_input(event: InputEvent) -> void:
-	if not (event is InputEventMouseButton):
-		return
-
-	var mouse_event := event as InputEventMouseButton
-	if mouse_event.button_index != MOUSE_BUTTON_LEFT:
-		return
-
-	if not mouse_event.pressed:
-		return
-
-	var click_position: Vector2 = get_global_mouse_position()
-	if try_handle_global_click(click_position):
-		get_viewport().set_input_as_handled()
 
 func _get_interaction_rect() -> Rect2:
 	var center: Vector2 = global_position + interaction_offset
@@ -76,41 +47,37 @@ func try_handle_global_click(global_point: Vector2) -> bool:
 		return false
 
 	print("PurificationObstacle: clique recebido na area bloqueada.")
-	_tentar_purificar()
+	var ui := _obter_ui()
+	if ui != null and ui.has_method("abrir_painel_purificacao"):
+		ui.call("abrir_painel_purificacao", self)
+	else:
+		_mostrar_feedback(_format_requirements_text())
 	return true
 
-func _tentar_purificar() -> void:
-	if purified_state:
-		return
+func get_obstacle_id() -> String:
+	return obstacle_id
 
-	print("PurificationObstacle: tentando purificar %s." % obstacle_id)
-	var missing: Dictionary = _get_missing_requirements()
-	if not missing.is_empty():
-		_mostrar_feedback(_format_missing_requirements_text(missing))
-		return
+func get_purification_requirements() -> Array:
+	return purification_requirements.duplicate(true)
 
-	if not _consume_requirements():
-		_mostrar_feedback("Falha ao consumir requisitos de purificação.")
-		return
+func get_delivered_requirements() -> Dictionary:
+	_normalizar_progresso()
+	var delivered: Dictionary = {}
+	for requirement_variant in purification_requirements:
+		if typeof(requirement_variant) != TYPE_DICTIONARY:
+			continue
 
-	purified_state = true
-	print("PurificationObstacle: purificado.")
-	_aplicar_estado()
-	_atualizar_ui_pos_purificacao()
-	_mostrar_feedback("Área purificada. Novos lotes foram revelados.")
-	purified.emit(obstacle_id)
+		var requirement: Dictionary = requirement_variant
+		var item_id: String = str(requirement.get("item_id", ""))
+		if item_id == "":
+			continue
 
-func _get_inventory_quantity(item_id: String) -> int:
-	return int(GlobalInventory.inventario.get(item_id, 0))
+		delivered[item_id] = int(purification_progress.get(item_id, 0))
 
-func _get_item_display_name(item_id: String) -> String:
-	if Database != null and Database.has_method("obter_nome_item"):
-		var nome: String = str(Database.obter_nome_item(item_id))
-		if nome != "":
-			return nome
-	return item_id
+	return delivered
 
-func _get_missing_requirements() -> Dictionary:
+func get_missing_requirements() -> Dictionary:
+	_normalizar_progresso()
 	var missing: Dictionary = {}
 	for requirement_variant in purification_requirements:
 		if typeof(requirement_variant) != TYPE_DICTIONARY:
@@ -122,21 +89,50 @@ func _get_missing_requirements() -> Dictionary:
 			continue
 
 		var required_quantity: int = int(requirement.get("quantity", 0))
-		var current_quantity: int = _get_inventory_quantity(item_id)
-		var missing_quantity: int = required_quantity - current_quantity
+		var delivered_quantity: int = int(purification_progress.get(item_id, 0))
+		var missing_quantity: int = required_quantity - delivered_quantity
 		if missing_quantity > 0:
 			missing[item_id] = missing_quantity
 
 	return missing
 
-func _has_all_requirements() -> bool:
-	return _get_missing_requirements().is_empty()
-
-func _consume_requirements() -> bool:
-	if not _has_all_requirements():
+func can_purify() -> bool:
+	if purified_state:
 		return false
+	return get_missing_requirements().is_empty()
 
-	var consumidos: Array[Dictionary] = []
+func deliver_requirement(item_id: String) -> int:
+	if purified_state or item_id == "":
+		return 0
+
+	var requirement_quantity := _obter_quantidade_requerida(item_id)
+	if requirement_quantity <= 0:
+		return 0
+
+	_normalizar_progresso()
+	var delivered_quantity: int = int(purification_progress.get(item_id, 0))
+	var missing_quantity: int = requirement_quantity - delivered_quantity
+	if missing_quantity <= 0:
+		return 0
+
+	var inventory_quantity: int = int(GlobalInventory.inventario.get(item_id, 0))
+	if inventory_quantity <= 0:
+		return 0
+
+	var quantity_to_deliver: int = min(missing_quantity, inventory_quantity)
+	if quantity_to_deliver <= 0:
+		return 0
+
+	if not GlobalInventory.remover_item(item_id, quantity_to_deliver):
+		push_warning("PurificationObstacle: falha ao remover %s x%d do inventario." % [item_id, quantity_to_deliver])
+		return 0
+
+	purification_progress[item_id] = min(delivered_quantity + quantity_to_deliver, requirement_quantity)
+	_notificar_interface_purificacao()
+	return quantity_to_deliver
+
+func deliver_all_available() -> Dictionary:
+	var delivered: Dictionary = {}
 	for requirement_variant in purification_requirements:
 		if typeof(requirement_variant) != TYPE_DICTIONARY:
 			continue
@@ -146,25 +142,81 @@ func _consume_requirements() -> bool:
 		if item_id == "":
 			continue
 
-		var quantity: int = int(requirement.get("quantity", 0))
-		if quantity <= 0:
+		var delivered_quantity: int = deliver_requirement(item_id)
+		if delivered_quantity > 0:
+			delivered[item_id] = delivered_quantity
+
+	return delivered
+
+func finalize_purification() -> bool:
+	if not can_purify():
+		return false
+
+	_definir_progresso_completo()
+	purified_state = true
+	print("PurificationObstacle: purificado.")
+	_aplicar_estado()
+	_notificar_interface_purificacao()
+	var ui := _obter_ui()
+	if ui != null and ui.has_method("fechar_painel_purificacao"):
+		ui.call("fechar_painel_purificacao")
+	_mostrar_feedback("Área purificada. Novos lotes foram revelados.")
+	purified.emit(obstacle_id)
+	return true
+
+func _get_item_display_name(item_id: String) -> String:
+	if Database != null and Database.has_method("obter_nome_item"):
+		var nome: String = str(Database.obter_nome_item(item_id))
+		if nome != "":
+			return nome
+	return item_id
+
+func _obter_quantidade_requerida(item_id: String) -> int:
+	for requirement_variant in purification_requirements:
+		if typeof(requirement_variant) != TYPE_DICTIONARY:
 			continue
 
-		if not GlobalInventory.remover_item(item_id, quantity):
-			push_error("PurificationObstacle: falha inesperada ao consumir %s x%d." % [item_id, quantity])
-			for consumed_variant in consumidos:
-				if typeof(consumed_variant) != TYPE_DICTIONARY:
-					continue
-				var consumed: Dictionary = consumed_variant
-				var consumed_item_id: String = str(consumed.get("item_id", ""))
-				var consumed_quantity: int = int(consumed.get("quantity", 0))
-				if consumed_item_id != "" and consumed_quantity > 0:
-					GlobalInventory.adicionar_item(consumed_item_id, consumed_quantity)
-			return false
+		var requirement: Dictionary = requirement_variant
+		if str(requirement.get("item_id", "")) != item_id:
+			continue
 
-		consumidos.append({"item_id": item_id, "quantity": quantity})
+		return int(requirement.get("quantity", 0))
 
-	return true
+	return 0
+
+func _normalizar_progresso() -> void:
+	var progresso_normalizado: Dictionary = {}
+	for requirement_variant in purification_requirements:
+		if typeof(requirement_variant) != TYPE_DICTIONARY:
+			continue
+
+		var requirement: Dictionary = requirement_variant
+		var item_id: String = str(requirement.get("item_id", ""))
+		if item_id == "":
+			continue
+
+		var required_quantity: int = int(requirement.get("quantity", 0))
+		var current_quantity: int = int(purification_progress.get(item_id, 0))
+		if current_quantity < 0:
+			current_quantity = 0
+		progresso_normalizado[item_id] = min(current_quantity, required_quantity)
+
+	purification_progress = progresso_normalizado
+
+func _definir_progresso_completo() -> void:
+	var completo: Dictionary = {}
+	for requirement_variant in purification_requirements:
+		if typeof(requirement_variant) != TYPE_DICTIONARY:
+			continue
+
+		var requirement: Dictionary = requirement_variant
+		var item_id: String = str(requirement.get("item_id", ""))
+		if item_id == "":
+			continue
+
+		completo[item_id] = int(requirement.get("quantity", 0))
+
+	purification_progress = completo
 
 func _format_requirements_text() -> String:
 	var partes: Array[String] = []
@@ -205,7 +257,6 @@ func _format_missing_requirements_text(missing: Dictionary) -> String:
 		return _format_requirements_text()
 	return "Faltam: %s." % ", ".join(partes)
 
-
 func _aplicar_estado() -> void:
 	if collision_shape:
 		collision_shape.disabled = purified_state
@@ -215,19 +266,20 @@ func _aplicar_estado() -> void:
 	visible = not purified_state
 	modulate = Color(1, 1, 1, 1.0)
 
-func _atualizar_ui_pos_purificacao() -> void:
-	var scene: Node = get_tree().current_scene
-	if scene == null:
-		return
-
-	var ui: Node = scene.get_node_or_null("UI")
+func _notificar_interface_purificacao() -> void:
+	var ui := _obter_ui()
 	if ui == null:
 		return
 
+	if ui.has_method("atualizar_painel_purificacao"):
+		ui.call_deferred("atualizar_painel_purificacao")
 	if ui.has_method("verificar_e_atualizar_inventario"):
-		ui.call("verificar_e_atualizar_inventario")
+		ui.call_deferred("verificar_e_atualizar_inventario")
 	if ui.has_method("atualizar_status_jogo"):
-		ui.call("atualizar_status_jogo")
+		ui.call_deferred("atualizar_status_jogo")
+
+func _atualizar_ui_pos_purificacao() -> void:
+	_notificar_interface_purificacao()
 
 func _mostrar_feedback(texto: String) -> void:
 	var scene: Node = get_tree().current_scene
@@ -239,10 +291,22 @@ func _mostrar_feedback(texto: String) -> void:
 
 	print(texto)
 
+func _obter_ui() -> Node:
+	var tree: SceneTree = get_tree()
+	if tree == null:
+		return null
+
+	var scene: Node = tree.current_scene
+	if scene == null:
+		return null
+
+	return scene.get_node_or_null("UI")
+
 func get_save_data() -> Dictionary:
 	return {
 		"obstacle_id": obstacle_id,
-		"purified": purified_state
+		"purified": purified_state,
+		"purification_progress": get_delivered_requirements()
 	}
 
 func load_save_data(data: Dictionary) -> void:
@@ -251,6 +315,16 @@ func load_save_data(data: Dictionary) -> void:
 		obstacle_id = str(data.get("obstacle_id", obstacle_id))
 	if data.has("purified"):
 		purified_state = bool(data.get("purified", purified_state))
+	if data.has("purification_progress"):
+		var progresso_carregado: Dictionary = {}
+		var progresso_data_variant: Variant = data.get("purification_progress", {})
+		if typeof(progresso_data_variant) == TYPE_DICTIONARY:
+			progresso_carregado = progresso_data_variant
+		purification_progress = progresso_carregado.duplicate(true)
+
+	_normalizar_progresso()
+	if purified_state:
+		_definir_progresso_completo()
 	_aplicar_estado()
 	if purified_state and not estava_purificado:
 		purified.emit(obstacle_id)

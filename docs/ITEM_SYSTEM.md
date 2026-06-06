@@ -65,7 +65,7 @@ A purificação da Área Bloqueada V0 agora consulta um conjunto de requisitos m
 - `escama_brilhante` x1
 - `trigo` x3
 
-Nesse estágio, a poção purificadora fraca funciona como catalisador provisório, `escama_brilhante` conecta a pesca à progressão e `trigo` conecta a agricultura à progressão. Agora existe uma receita V0 no caldeirão para produzir a poção: `agua` + `peixe_comum`.
+Nesse estágio, a poção purificadora fraca funciona como catalisador provisório, `escama_brilhante` conecta a pesca à progressão e `trigo` conecta a agricultura à progressão. Agora existe uma receita V0 no caldeirão para produzir a poção: `agua` + `peixe_comum`. A purificação da Área Bloqueada V0 usa um painel de requisitos e salva o progresso parcial por obstáculo, então os itens podem ser entregues aos poucos até liberar o botão `Purificar Área`.
 
 ## Regras atuais
 

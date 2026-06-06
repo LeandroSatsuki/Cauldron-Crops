@@ -163,16 +163,17 @@ Nesta V0:
 - o obstáculo usa uma lista provisória de requisitos de purificação;
 - a lista V0 inclui `pocao_purificadora_fraca`, `escama_brilhante` e `trigo`;
 - a poção purificadora fraca continua sendo apenas um requisito, não o custo inteiro;
-- o obstáculo responde ao clique e só purifica quando todos os requisitos estão presentes;
-- ao purificar, todos os requisitos são consumidos;
-- a purificação é salva em `farm_expansion.purification_obstacles`;
-- o obstáculo some/desativa ao ser purificado;
+- ao clicar na área bloqueada, o jogo abre um `PurificationPanel` com o progresso;
+- os requisitos podem ser entregues parcialmente por item e o progresso fica salvo por obstáculo em `farm_expansion.purification_progress`;
+- o botão `Purificar Área` só fica disponível quando tudo estiver completo;
+- ao purificar, o obstáculo some/desativa, a área roxa desaparece e o pocket é liberado;
+- a purificação é salva em `farm_expansion.purification_obstacles` e acompanha o progresso parcial no mesmo bloco de save;
 - o primeiro pocket bloqueado já ganha uma Área Bloqueada V0 visível;
 - o pocket usa 4 `FarmPlot` potenciais em arranjo 2x2;
 - os lotes ficam ocultos/bloqueados antes da purificação e são revelados depois;
 - a expansão é append-only para proteger saves antigos e a ordem dos lotes.
 
-Por enquanto, não existe receita real no caldeirão para gerar esses requisitos. A Poção Purificadora Fraca, a Escama Brilhante e o Trigo ainda entram como catalisadores/progressão provisória para validar o loop entre pesca, agricultura e desbloqueio de área.
+A Poção Purificadora Fraca já pode vir do caldeirão na rota V0, enquanto `escama_brilhante` conecta a pesca à progressão e `trigo` conecta a agricultura à progressão. A Área Bloqueada V0 continua sendo a única área desse sistema.
 
 ## Área Bloqueada V0
 

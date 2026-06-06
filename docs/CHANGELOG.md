@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-06-06 - Painel de Requisitos de Purificação V0
+- A Área Bloqueada V0 agora abre um `PurificationPanel` em vez de purificar direto no clique.
+- Os requisitos podem ser entregues parcialmente por item e o progresso fica salvo por obstáculo em `farm_expansion.purification_progress`.
+- O botão `Purificar Área` só fica disponível quando Poção Purificadora Fraca, Escama Brilhante e Trigo estão completos.
+- A purificação continua sendo um teste V0 com uma única área bloqueada, sem criar nova área, novo obstáculo ou nova receita.
+- Ao purificar, o obstáculo some, a área roxa desaparece e o pocket é liberado.
+
 ## 2026-06-05 - Poção Purificadora Fraca no caldeirão V0
 - O caldeirão agora produz `pocao_purificadora_fraca` com `agua` + `peixe_comum`.
 - `peixe_comum` entrou na lista de itens que o sistema de receitas usa para reconstruir ingredientes no livro e no modo lote.

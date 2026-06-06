@@ -1,7 +1,7 @@
 extends Node
 
 const SAVE_PATH := "user://savegame.json"
-const SAVE_VERSION := 2
+const SAVE_VERSION := 3
 
 func has_save() -> bool:
 	return FileAccess.file_exists(SAVE_PATH)
@@ -76,6 +76,7 @@ func _build_save_data() -> Dictionary:
 				farm_plots.append({})
 
 	var purification_obstacles: Dictionary = {}
+	var purification_progress: Dictionary = {}
 	if tree != null:
 		var obstacles: Array = tree.get_nodes_in_group("purification_obstacle")
 		for obstacle_variant in obstacles:
@@ -86,6 +87,8 @@ func _build_save_data() -> Dictionary:
 					var obstacle_data: Dictionary = obstacle_data_variant
 					var obstacle_id: String = str(obstacle_data.get("obstacle_id", obstacle.name))
 					purification_obstacles[obstacle_id] = bool(obstacle_data.get("purified", false))
+					var obstacle_progress: Dictionary = _safe_dictionary(obstacle_data.get("purification_progress", {}))
+					purification_progress[obstacle_id] = obstacle_progress.duplicate(true)
 
 	return {
 		"version": SAVE_VERSION,
@@ -115,7 +118,8 @@ func _build_save_data() -> Dictionary:
 		"village_chest_inventory": village_chest_inventory,
 		"farm_plots": farm_plots,
 		"farm_expansion": {
-			"purification_obstacles": purification_obstacles
+			"purification_obstacles": purification_obstacles,
+			"purification_progress": purification_progress
 		}
 	}
 
@@ -174,7 +178,8 @@ func _apply_save_data(data: Dictionary) -> void:
 	if data.has("farm_expansion"):
 		var farm_expansion_data: Dictionary = _safe_dictionary(data.get("farm_expansion", {}))
 		var purification_obstacles_data: Dictionary = _safe_dictionary(farm_expansion_data.get("purification_obstacles", {}))
-		_aplicar_estado_obstaculos_purificados(purification_obstacles_data)
+		var purification_progress_data: Dictionary = _safe_dictionary(farm_expansion_data.get("purification_progress", {}))
+		_aplicar_estado_obstaculos_purificados(purification_obstacles_data, purification_progress_data)
 
 func _refresh_ui_after_load() -> void:
 	var scene := get_tree().current_scene
@@ -184,6 +189,8 @@ func _refresh_ui_after_load() -> void:
 	var ui = scene.get_node_or_null("UI")
 	if ui and ui.has_method("verificar_e_atualizar_inventario"):
 		ui.verificar_e_atualizar_inventario()
+	if ui and ui.has_method("atualizar_painel_purificacao"):
+		ui.call("atualizar_painel_purificacao")
 
 	var village_chest := _get_village_chest()
 	if ui and village_chest and ui.has_method("_atualizar_painel_bau_vila"):
@@ -201,7 +208,7 @@ func _get_village_chest() -> Node:
 
 	return null
 
-func _aplicar_estado_obstaculos_purificados(purification_obstacles_data: Dictionary) -> void:
+func _aplicar_estado_obstaculos_purificados(purification_obstacles_data: Dictionary, purification_progress_data: Dictionary = {}) -> void:
 	var tree: SceneTree = get_tree()
 	if tree == null:
 		return
@@ -221,9 +228,11 @@ func _aplicar_estado_obstaculos_purificados(purification_obstacles_data: Diction
 				obstacle_id = str((obstacle_data_variant as Dictionary).get("obstacle_id", obstacle_id))
 
 		var purified := bool(purification_obstacles_data.get(obstacle_id, false))
+		var progress_data: Dictionary = _safe_dictionary(purification_progress_data.get(obstacle_id, {}))
 		obstacle.call("load_save_data", {
 			"obstacle_id": obstacle_id,
-			"purified": purified
+			"purified": purified,
+			"purification_progress": progress_data
 		})
 
 func _safe_dictionary(value: Variant) -> Dictionary:

@@ -197,6 +197,74 @@ Uso:"
 [node name="SellMenu" parent="." unique_id=237673747 instance=ExtResource("2_sellscene")]
 theme = ExtResource("3_pixeltheme")
 
+[node name="PurificationPanel" type="PanelContainer" parent="." unique_id=1900000001]
+visible = false
+custom_minimum_size = Vector2(760, 460)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -380.0
+offset_top = -230.0
+offset_right = 380.0
+offset_bottom = 230.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+theme = ExtResource("3_pixeltheme")
+
+[node name="MarginContainer" type="MarginContainer" parent="PurificationPanel" unique_id=1900000002]
+layout_mode = 2
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 14
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 14
+
+[node name="VBoxPurification" type="VBoxContainer" parent="PurificationPanel/MarginContainer" unique_id=1900000003]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="HeaderBar" type="VBoxContainer" parent="PurificationPanel/MarginContainer/VBoxPurification" unique_id=1900000004]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="TitleLabel" type="Label" parent="PurificationPanel/MarginContainer/VBoxPurification/HeaderBar" unique_id=1900000005]
+layout_mode = 2
+text = "Purificação da Área"
+horizontal_alignment = 1
+
+[node name="StatusLabel" type="Label" parent="PurificationPanel/MarginContainer/VBoxPurification/HeaderBar" unique_id=1900000006]
+layout_mode = 2
+text = "Selecione uma área bloqueada."
+autowrap_mode = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="PurificationPanel/MarginContainer/VBoxPurification" unique_id=1900000007]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="RequirementsList" type="VBoxContainer" parent="PurificationPanel/MarginContainer/VBoxPurification/ScrollContainer" unique_id=1900000008]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="ButtonsRow" type="HBoxContainer" parent="PurificationPanel/MarginContainer/VBoxPurification" unique_id=1900000009]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="BtnEntregarTudo" type="Button" parent="PurificationPanel/MarginContainer/VBoxPurification/ButtonsRow" unique_id=1900000010]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Entregar tudo disponível"
+
+[node name="BtnPurificarArea" type="Button" parent="PurificationPanel/MarginContainer/VBoxPurification/ButtonsRow" unique_id=1900000011]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Purificar Área"
+
+[node name="BtnFechar" type="Button" parent="PurificationPanel/MarginContainer/VBoxPurification/ButtonsRow" unique_id=1900000012]
+layout_mode = 2
+text = "Fechar"
+
 [node name="VillageChestPanel" type="PanelContainer" parent="." unique_id=574568525]
 visible = false
 offset_left = 470.0

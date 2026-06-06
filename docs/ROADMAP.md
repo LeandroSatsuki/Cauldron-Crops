@@ -78,15 +78,14 @@
 - Consolidar a Vara de Pesca como ferramenta visual/global na toolbar principal antes da pesca real.
 - Documentar o Sistema de Expansão e Purificação da Fazenda como pilar central do mapa final.
 - Definir o visual da primeira área bloqueada da fazenda.
-- Obstáculo Mágico V0 implementado como primeira etapa prática de purificação.
+- Obstáculo Mágico V0 evoluído para um `PurificationPanel` com entrega parcial persistente.
 - Área Bloqueada V0 visível com pocket 2x2 de `FarmPlot` append-only.
-- Evoluir o Obstáculo Mágico V0 para requisitos múltiplos antes de ligar a geração real pelo caldeirão.
 - Ligar pesca, agricultura e alquimia como fontes dos requisitos da purificação.
 - Manter o sistema provisório de debug enquanto o caldeirão ainda não cria esses itens de forma real.
 - Ligar a receita V0 `agua` + `peixe_comum` para produzir `pocao_purificadora_fraca` no caldeirão.
 - Garantir que o livro e o modo lote reconstruam essa receita via `RECEITA_ITEM_IDS`.
+- Validar o save/load parcial com F5/F9 antes de expandir para outras áreas.
 - Liberar uma pequena área com `FarmPlot` potenciais após a purificação.
-- Salvar o estado desbloqueado das áreas futuras.
 - Consolidar o Obstáculo Mágico V0 com item provisório e save mínimo antes de expandir áreas.
 - Só depois conectar com inventário, caldeirão e árvore de alquimia.
 

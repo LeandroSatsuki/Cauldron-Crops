@@ -276,6 +276,12 @@
 - Motivo: conectar pesca à alquimia de forma simples e validar o catalisador de purificação com um caminho jogável.
 - Risco: a rota V0 ainda é temporária e não substitui o sistema completo de receitas/purificação por áreas que virá depois.
 
+## Decisão 46 - Painel de Requisitos de Purificação V0
+- Problema: purificar direto no clique tornava o fluxo abrupto e impedia progresso parcial persistente por obstáculo.
+- Decisão: fazer o clique na Área Bloqueada V0 abrir um `PurificationPanel`, permitir entrega parcial dos requisitos e salvar o progresso em `farm_expansion.purification_progress`, mantendo `pocao_purificadora_fraca` como catalisador provisório.
+- Motivo: validar a progressão pesca -> caldeirão -> purificação com um loop mais legível, sem criar nova área, novo obstáculo ou mexer no `FarmGridPreview`.
+- Risco: o sistema ainda é V0 e depende de uma única área bloqueada; futuras áreas precisarão repetir o mesmo contrato de save e UI.
+
 ## Decisão 43 - Debug Panel V1 temporario
 - Problema: os testes do protótipo estavam lentos para itens, receitas, lotes, save e Baú da Vila.
 - Decisão: criar um painel de debug oculto na UI principal, aberto por `F10`, com ferramentas temporárias de teste.

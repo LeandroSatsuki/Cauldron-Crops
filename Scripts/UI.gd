@@ -44,6 +44,14 @@ var fishing_minigame_ui: Control
 @onready var village_chest_close_button: Button = $VillageChestPanel/MarginContainer/VBoxChest/ButtonsRow/FecharButton
 var village_chest_ref: VillageChest = null
 
+@onready var purification_panel: PanelContainer = $PurificationPanel
+@onready var purification_status_label: Label = $PurificationPanel/MarginContainer/VBoxPurification/HeaderBar/StatusLabel
+@onready var purification_requirements_list: VBoxContainer = $PurificationPanel/MarginContainer/VBoxPurification/ScrollContainer/RequirementsList
+@onready var purification_deliver_all_button: Button = $PurificationPanel/MarginContainer/VBoxPurification/ButtonsRow/BtnEntregarTudo
+@onready var purification_purify_button: Button = $PurificationPanel/MarginContainer/VBoxPurification/ButtonsRow/BtnPurificarArea
+@onready var purification_close_button: Button = $PurificationPanel/MarginContainer/VBoxPurification/ButtonsRow/BtnFechar
+var purification_obstacle_ref: Node = null
+
 @onready var inventory_bar: HBoxContainer = $InventoryBar
 @onready var tooltip_panel: Panel = $TooltipPanel
 @onready var tooltip_texto: Label = $TooltipPanel/TooltipTexto
@@ -206,7 +214,22 @@ func _ready() -> void:
 		village_chest_withdraw_button.pressed.connect(_on_village_chest_withdraw_pressed)
 	if village_chest_close_button:
 		village_chest_close_button.pressed.connect(fechar_bau_vila)
-		
+
+	if purification_panel:
+		_aplicar_tema_pixel_ui(purification_panel)
+		purification_panel.visible = false
+		purification_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		purification_panel.visibility_changed.connect(func():
+			if purification_panel:
+				purification_panel.mouse_filter = Control.MOUSE_FILTER_STOP if purification_panel.visible else Control.MOUSE_FILTER_IGNORE
+		)
+	if purification_deliver_all_button:
+		purification_deliver_all_button.pressed.connect(_on_purification_deliver_all_pressed)
+	if purification_purify_button:
+		purification_purify_button.pressed.connect(_on_purification_finalize_pressed)
+	if purification_close_button:
+		purification_close_button.pressed.connect(fechar_painel_purificacao)
+	
 	# Inicializa
 	verificar_e_atualizar_inventario()
 	atualizar_toolbar_ferramentas()
@@ -820,6 +843,216 @@ func _on_village_chest_withdraw_pressed() -> void:
 	else:
 		verificar_e_atualizar_inventario()
 		_atualizar_painel_bau_vila()
+
+func abrir_painel_purificacao(obstacle: Node) -> void:
+	if obstacle == null or not is_instance_valid(obstacle):
+		push_warning("UI: obstáculo de purificação inválido.")
+		return
+
+	if obstacle.has_method("get_save_data"):
+		var save_data_variant: Variant = obstacle.call("get_save_data")
+		if typeof(save_data_variant) == TYPE_DICTIONARY and bool((save_data_variant as Dictionary).get("purified", false)):
+			return
+
+	purification_obstacle_ref = obstacle
+	if obstacle.has_signal("purified") and not obstacle.is_connected("purified", Callable(self, "_on_purification_obstacle_purified")):
+		obstacle.connect("purified", Callable(self, "_on_purification_obstacle_purified"))
+
+	if purification_panel == null:
+		push_warning("UI: Painel de Purificação nao encontrado.")
+		return
+
+	purification_panel.visible = true
+	purification_panel.mouse_filter = Control.MOUSE_FILTER_STOP
+	purification_panel.move_to_front()
+	atualizar_painel_purificacao()
+
+func fechar_painel_purificacao() -> void:
+	if purification_panel:
+		purification_panel.visible = false
+		purification_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	purification_obstacle_ref = null
+
+func atualizar_painel_purificacao() -> void:
+	if purification_panel == null:
+		return
+
+	var obstacle: Node = _obter_obstaculo_purificacao_ativo()
+	if obstacle == null:
+		if purification_status_label:
+			purification_status_label.text = "Selecione uma área bloqueada."
+		if purification_deliver_all_button:
+			purification_deliver_all_button.disabled = true
+		if purification_purify_button:
+			purification_purify_button.disabled = true
+		_limpar_lista_requisitos_purificacao()
+		return
+
+	if _purification_obstacle_is_purified(obstacle):
+		fechar_painel_purificacao()
+		return
+
+	var requirements: Array = []
+	if obstacle.has_method("get_purification_requirements"):
+		requirements = obstacle.call("get_purification_requirements")
+
+	var delivered: Dictionary = {}
+	if obstacle.has_method("get_delivered_requirements"):
+		var delivered_variant: Variant = obstacle.call("get_delivered_requirements")
+		if typeof(delivered_variant) == TYPE_DICTIONARY:
+			delivered = delivered_variant
+
+	var missing: Dictionary = {}
+	if obstacle.has_method("get_missing_requirements"):
+		var missing_variant: Variant = obstacle.call("get_missing_requirements")
+		if typeof(missing_variant) == TYPE_DICTIONARY:
+			missing = missing_variant
+
+	_limpar_lista_requisitos_purificacao()
+
+	for requirement_variant in requirements:
+		if typeof(requirement_variant) != TYPE_DICTIONARY:
+			continue
+
+		var requirement: Dictionary = requirement_variant
+		var item_id: String = str(requirement.get("item_id", ""))
+		var required_quantity: int = int(requirement.get("quantity", 0))
+		if item_id == "" or required_quantity <= 0:
+			continue
+
+		var delivered_quantity: int = int(delivered.get(item_id, 0))
+		var row := HBoxContainer.new()
+		row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		row.add_theme_constant_override("separation", 10)
+		row.theme = pixel_ui_theme
+
+		var icon_label := Label.new()
+		var icon_text := Database.obter_icone_item(item_id)
+		if icon_text == "":
+			icon_text = "?"
+		icon_label.text = icon_text
+		icon_label.custom_minimum_size = Vector2(30, 0)
+		icon_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+
+		var name_label := Label.new()
+		name_label.text = Database.obter_nome_item(item_id)
+		if name_label.text == "":
+			name_label.text = item_id
+		name_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+
+		var progress_label := Label.new()
+		progress_label.text = "%d/%d" % [delivered_quantity, required_quantity]
+		progress_label.custom_minimum_size = Vector2(80, 0)
+		progress_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+
+		var deliver_button := Button.new()
+		deliver_button.text = "Entregar"
+		deliver_button.disabled = delivered_quantity >= required_quantity
+		deliver_button.pressed.connect(Callable(self, "_on_purification_deliver_pressed").bind(item_id))
+
+		row.add_child(icon_label)
+		row.add_child(name_label)
+		row.add_child(progress_label)
+		row.add_child(deliver_button)
+		if purification_requirements_list:
+			purification_requirements_list.add_child(row)
+
+	var status_text := "Entregue os itens para liberar a purificação."
+	if missing.is_empty():
+		status_text = "Todos os requisitos foram entregues. Clique em Purificar Área."
+	else:
+		var missing_parts: Array[String] = []
+		for requirement_variant in requirements:
+			if typeof(requirement_variant) != TYPE_DICTIONARY:
+				continue
+			var requirement: Dictionary = requirement_variant
+			var item_id: String = str(requirement.get("item_id", ""))
+			if item_id == "" or not missing.has(item_id):
+				continue
+			var missing_quantity: int = int(missing.get(item_id, 0))
+			if missing_quantity <= 0:
+				continue
+			var item_name: String = Database.obter_nome_item(item_id)
+			if item_name == "":
+				item_name = item_id
+			missing_parts.append("%s x%d" % [item_name, missing_quantity])
+		if not missing_parts.is_empty():
+			status_text = "Faltam: %s." % ", ".join(missing_parts)
+
+	if purification_status_label:
+		purification_status_label.text = status_text
+	if purification_deliver_all_button:
+		purification_deliver_all_button.disabled = requirements.is_empty()
+	if purification_purify_button:
+		purification_purify_button.disabled = not bool(obstacle.has_method("can_purify") and obstacle.call("can_purify"))
+
+func _obter_obstaculo_purificacao_ativo() -> Node:
+	if purification_obstacle_ref != null and is_instance_valid(purification_obstacle_ref):
+		return purification_obstacle_ref
+	return null
+
+func _purification_obstacle_is_purified(obstacle: Node) -> bool:
+	if obstacle == null or not is_instance_valid(obstacle):
+		return false
+	if not obstacle.has_method("get_save_data"):
+		return false
+	var save_data_variant: Variant = obstacle.call("get_save_data")
+	if typeof(save_data_variant) != TYPE_DICTIONARY:
+		return false
+	return bool((save_data_variant as Dictionary).get("purified", false))
+
+func _limpar_lista_requisitos_purificacao() -> void:
+	if purification_requirements_list == null:
+		return
+	for child in purification_requirements_list.get_children():
+		if child != null and is_instance_valid(child):
+			child.free()
+
+func _on_purification_deliver_pressed(item_id: String) -> void:
+	var obstacle: Node = _obter_obstaculo_purificacao_ativo()
+	if obstacle == null or not obstacle.has_method("deliver_requirement"):
+		return
+
+	var delivered_amount: int = int(obstacle.call("deliver_requirement", item_id))
+	if delivered_amount > 0:
+		print("Purificação: entregou %s x%d." % [item_id, delivered_amount])
+	else:
+		print("Purificação: nada entregue para %s." % item_id)
+	call_deferred("atualizar_painel_purificacao")
+	verificar_e_atualizar_inventario()
+	atualizar_status_jogo()
+
+func _on_purification_deliver_all_pressed() -> void:
+	var obstacle: Node = _obter_obstaculo_purificacao_ativo()
+	if obstacle == null or not obstacle.has_method("deliver_all_available"):
+		return
+
+	var delivered: Dictionary = obstacle.call("deliver_all_available")
+	print("Purificação: entrega total aplicada %s." % str(delivered))
+	call_deferred("atualizar_painel_purificacao")
+	verificar_e_atualizar_inventario()
+	atualizar_status_jogo()
+
+func _on_purification_finalize_pressed() -> void:
+	var obstacle: Node = _obter_obstaculo_purificacao_ativo()
+	if obstacle == null or not obstacle.has_method("finalize_purification"):
+		return
+
+	if bool(obstacle.call("finalize_purification")):
+		print("Purificação: área finalizada com sucesso.")
+		fechar_painel_purificacao()
+		verificar_e_atualizar_inventario()
+		atualizar_status_jogo()
+	else:
+		print("Purificação: ainda faltam requisitos.")
+		call_deferred("atualizar_painel_purificacao")
+
+func _on_purification_obstacle_purified(obstacle_id: String) -> void:
+	var obstacle: Node = _obter_obstaculo_purificacao_ativo()
+	if obstacle != null and obstacle.has_method("get_obstacle_id"):
+		if str(obstacle.call("get_obstacle_id")) != obstacle_id:
+			return
+	fechar_painel_purificacao()
 
 func _on_abrir_livro_receitas_pressed() -> void:
 	abrir_livro_receitas(false)
