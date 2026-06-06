@@ -1,7 +1,7 @@
 extends Node
 
 const SAVE_PATH := "user://savegame.json"
-const SAVE_VERSION := 1
+const SAVE_VERSION := 2
 
 func has_save() -> bool:
 	return FileAccess.file_exists(SAVE_PATH)
@@ -75,6 +75,18 @@ func _build_save_data() -> Dictionary:
 			else:
 				farm_plots.append({})
 
+	var purification_obstacles: Dictionary = {}
+	if tree != null:
+		var obstacles: Array = tree.get_nodes_in_group("purification_obstacle")
+		for obstacle_variant in obstacles:
+			var obstacle: Node = obstacle_variant
+			if obstacle and obstacle.has_method("get_save_data"):
+				var obstacle_data_variant: Variant = obstacle.get_save_data()
+				if typeof(obstacle_data_variant) == TYPE_DICTIONARY:
+					var obstacle_data: Dictionary = obstacle_data_variant
+					var obstacle_id: String = str(obstacle_data.get("obstacle_id", obstacle.name))
+					purification_obstacles[obstacle_id] = bool(obstacle_data.get("purified", false))
+
 	return {
 		"version": SAVE_VERSION,
 		"inventory": {
@@ -101,7 +113,10 @@ func _build_save_data() -> Dictionary:
 			"max_quests": QuestManager.max_quests
 		},
 		"village_chest_inventory": village_chest_inventory,
-		"farm_plots": farm_plots
+		"farm_plots": farm_plots,
+		"farm_expansion": {
+			"purification_obstacles": purification_obstacles
+		}
 	}
 
 func _apply_save_data(data: Dictionary) -> void:
@@ -156,6 +171,11 @@ func _apply_save_data(data: Dictionary) -> void:
 				if lote and lote.has_method("load_save_data") and typeof(plot_data_variant) == TYPE_DICTIONARY:
 					lote.load_save_data(plot_data_variant)
 
+	if data.has("farm_expansion"):
+		var farm_expansion_data: Dictionary = _safe_dictionary(data.get("farm_expansion", {}))
+		var purification_obstacles_data: Dictionary = _safe_dictionary(farm_expansion_data.get("purification_obstacles", {}))
+		_aplicar_estado_obstaculos_purificados(purification_obstacles_data)
+
 func _refresh_ui_after_load() -> void:
 	var scene := get_tree().current_scene
 	if scene == null:
@@ -180,6 +200,31 @@ func _get_village_chest() -> Node:
 			return chest
 
 	return null
+
+func _aplicar_estado_obstaculos_purificados(purification_obstacles_data: Dictionary) -> void:
+	var tree: SceneTree = get_tree()
+	if tree == null:
+		return
+
+	var obstacles: Array = tree.get_nodes_in_group("purification_obstacle")
+	for obstacle_variant in obstacles:
+		var obstacle: Node = obstacle_variant
+		if obstacle == null or not is_instance_valid(obstacle):
+			continue
+		if not obstacle.has_method("load_save_data"):
+			continue
+
+		var obstacle_id: String = obstacle.name
+		if obstacle.has_method("get_save_data"):
+			var obstacle_data_variant: Variant = obstacle.call("get_save_data")
+			if typeof(obstacle_data_variant) == TYPE_DICTIONARY:
+				obstacle_id = str((obstacle_data_variant as Dictionary).get("obstacle_id", obstacle_id))
+
+		var purified := bool(purification_obstacles_data.get(obstacle_id, false))
+		obstacle.call("load_save_data", {
+			"obstacle_id": obstacle_id,
+			"purified": purified
+		})
 
 func _safe_dictionary(value: Variant) -> Dictionary:
 	if typeof(value) == TYPE_DICTIONARY:

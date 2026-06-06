@@ -298,6 +298,10 @@ text = "Adicionar água"
 layout_mode = 2
 text = "Adicionar ingredientes básicos"
 
+[node name="BtnDebugAddPurificationPotion" type="Button" parent="DebugPanel/MarginContainer/ScrollContainer/VBoxDebug"]
+layout_mode = 2
+text = "Dar Poção Purificadora"
+
 [node name="SeparatorRecipes" type="HSeparator" parent="DebugPanel/MarginContainer/ScrollContainer/VBoxDebug"]
 layout_mode = 2
 

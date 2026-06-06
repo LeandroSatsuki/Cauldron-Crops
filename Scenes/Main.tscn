@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://c8aef365l3meu" path="res://Scenes/Golem.tscn" id="4_rgh2o"]
 [ext_resource type="PackedScene" path="res://Scenes/VillageChest.tscn" id="5_villagechestscene"]
 [ext_resource type="PackedScene" path="res://Scenes/FishingSpot.tscn" id="6_fishingspotscene"]
+[ext_resource type="PackedScene" path="res://Scenes/PurificationObstacle.tscn" id="7_purificationobstaclescene"]
 
 [node name="World" type="Node2D" unique_id=1433733631]
 script = ExtResource("1_maingd")
@@ -25,3 +26,6 @@ position = Vector2(285, 690)
 
 [node name="FishingSpot" parent="." unique_id=2147483644 instance=ExtResource("6_fishingspotscene")]
 position = Vector2(1110, 160)
+
+[node name="PurificationObstacle" parent="." unique_id=2147483645 instance=ExtResource("7_purificationobstaclescene")]
+position = Vector2(1430, 300)

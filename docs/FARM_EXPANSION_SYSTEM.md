@@ -151,6 +151,37 @@ A V0 futura deve ser pequena:
 - liberação visual da área;
 - save do estado desbloqueado.
 
+## Obstáculo Mágico V0
+
+A primeira implementação prática já pode existir como um único obstáculo estático no mapa principal.
+
+Nesta V0:
+
+- o obstáculo usa `pocao_purificadora_fraca`;
+- o item é provisório e serve só para teste/debug;
+- o obstáculo responde ao clique e consome 1 item quando disponível;
+- a purificação é salva em `farm_expansion.purification_obstacles`;
+- o obstáculo some/desativa ao ser purificado;
+- o primeiro pocket bloqueado já ganha uma Área Bloqueada V0 visível;
+- o pocket usa 4 `FarmPlot` potenciais em arranjo 2x2;
+- os lotes ficam ocultos/bloqueados antes da purificação e são revelados depois;
+- a expansão é append-only para proteger saves antigos e a ordem dos lotes.
+
+## Área Bloqueada V0
+
+A Área Bloqueada V0 é a primeira leitura visual de expansão da fazenda.
+
+Ela serve para mostrar que existe um pocket corrompido atrás do obstáculo e que esse espaço será liberado mais tarde.
+
+Regras desta versão:
+
+- a área corrompida é visível antes da purificação;
+- o obstáculo fica em frente ou ao lado desse pocket;
+- o pocket é pequeno e usa `FarmPlot` já conhecidos pelo jogo;
+- a área some quando a purificação é concluída;
+- o pocket revelado passa a funcionar como parte normal da fazenda;
+- o save preserva o estado desbloqueado sem reordenar os lotes antigos.
+
 ## O que evitar agora
 
 - Não criar sistema completo de neblina.
@@ -167,7 +198,7 @@ A V0 futura deve ser pequena:
 - O sistema foi aprovado como pilar central.
 - A documentação fica pronta agora.
 - A implementação completa fica para depois.
-- A primeira implementação futura deve ser Obstáculo Mágico V0.
+- A primeira implementação prática já virou Obstáculo Mágico V0.
 - `FarmPlot` continua ativo.
 - `FarmGrid` continua isolado.
 - Pesca e Catálogo de Itens já preparam esse caminho.

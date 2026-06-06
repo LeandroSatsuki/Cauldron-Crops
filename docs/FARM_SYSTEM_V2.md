@@ -235,10 +235,12 @@ Farm Expansion System - Purificacao da Fazenda:
 - a fazenda final sera fixa, media/grande e dividida em areas planejadas
 - a expansao nao sera infinita, procedural ou livre no escopo atual
 - a progressao futura deve abrir areas bloqueadas ou corrompidas por meio de alquimia
+- o Obstáculo Mágico V0 já introduz uma Área Bloqueada V0 visível com pocket 2x2 de `FarmPlot` append-only
 - cada area purificada pode liberar novos lotes, plantas, pesca, criaturas, ruinas ou receitas
 - o caldeirao passa a ser o centro da purificacao narrativa e mecanica
 - pesca e Catálogo de Itens ja preparam esse eixo com recursos e metadados para desbloqueios futuros
 - a implementacao completa fica para depois; a primeira versao futura deve ser um Obstaculo Magico V0
+- o Obstaculo Magico V0 ja existe como primeiro teste pratico, usando `pocao_purificadora_fraca` e save minimo de purificacao
 
 Colheita V0 por ferramenta no FarmPlot atual:
 

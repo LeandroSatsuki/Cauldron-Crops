@@ -13,6 +13,13 @@ const FARM_SPACING: int = 80
 const BASE_FARM_PIXEL_SIZE: int = 320
 const FISHING_SPOT_POSITION: Vector2 = Vector2(850, 220)
 const FISHING_SPOT_Z_INDEX: int = 20
+const EXPANSION_POCKET_COLUMNS: int = 2
+const EXPANSION_POCKET_ROWS: int = 2
+const EXPANSION_POCKET_START_COLUMN: int = BASE_FARM_COLUMNS + EXTRA_FARM_COLUMNS_RIGHT
+const EXPANSION_POCKET_START_ROW: int = 0
+
+var blocked_area_visual: Node2D = null
+var expansion_pocket_plots: Array = []
 
 func _ready() -> void:
 	_configurar_regiao_navegacao()
@@ -25,6 +32,9 @@ func _ready() -> void:
 	_criar_farm_plot_extras_direita(start_x, start_y)
 	_criar_farm_plot_extras_inferiores(start_x, start_y)
 	_garantir_lago_da_fazenda()
+	_garantir_area_bloqueada_v0(start_x, start_y)
+	_conectar_obstaculo_purificacao()
+	_aplicar_estado_area_bloqueada_v0(_obter_estado_purificacao_obstaculo())
 
 func _configurar_regiao_navegacao() -> void:
 	if navigation_region == null:
@@ -63,6 +73,143 @@ func _instanciar_farm_plot(grid_x: int, grid_y: int, start_x: float, start_y: fl
 	plot.position = Vector2(start_x + (grid_x * FARM_SPACING), start_y + (grid_y * FARM_SPACING))
 	plot.name = "FarmPlot_%d_%d" % [grid_x, grid_y]
 	add_child(plot)
+
+func _garantir_area_bloqueada_v0(start_x: float, start_y: float) -> void:
+	if blocked_area_visual == null:
+		blocked_area_visual = _criar_area_bloqueada_visual()
+		if blocked_area_visual != null:
+			blocked_area_visual.name = "BlockedAreaVisual"
+			blocked_area_visual.position = Vector2(
+				start_x + ((EXPANSION_POCKET_START_COLUMN + 0.5) * float(FARM_SPACING)),
+				start_y + ((EXPANSION_POCKET_START_ROW + 0.7) * float(FARM_SPACING))
+			)
+			add_child(blocked_area_visual)
+
+	if expansion_pocket_plots.is_empty():
+		_criar_pocket_expandido_v0(start_x, start_y)
+
+func _criar_pocket_expandido_v0(start_x: float, start_y: float) -> void:
+	for x in range(EXPANSION_POCKET_COLUMNS):
+		for y in range(EXPANSION_POCKET_ROWS):
+			var grid_x: int = EXPANSION_POCKET_START_COLUMN + x
+			var grid_y: int = EXPANSION_POCKET_START_ROW + y
+			var plot: Node2D = farm_plot_scene.instantiate()
+			plot.position = Vector2(start_x + (grid_x * FARM_SPACING), start_y + (grid_y * FARM_SPACING))
+			plot.name = "FarmPlot_%d_%d" % [grid_x, grid_y]
+			if plot.has_method("set"):
+				plot.set("expansion_blocked", true)
+			plot.visible = false
+			add_child(plot)
+			expansion_pocket_plots.append(plot)
+
+func _criar_area_bloqueada_visual() -> Node2D:
+	var bloqueio := Node2D.new()
+	bloqueio.z_index = 36
+
+	var sombra := Polygon2D.new()
+	sombra.name = "BlockedAreaShadow"
+	sombra.z_index = 0
+	sombra.color = Color(0.160784, 0.054902, 0.2, 0.58)
+	sombra.polygon = PackedVector2Array([
+		Vector2(-98, -46),
+		Vector2(-68, -90),
+		Vector2(28, -96),
+		Vector2(94, -48),
+		Vector2(108, 10),
+		Vector2(74, 66),
+		Vector2(6, 96),
+		Vector2(-78, 80),
+		Vector2(-110, 26)
+	])
+	bloqueio.add_child(sombra)
+
+	var raiz := Polygon2D.new()
+	raiz.name = "BlockedAreaRoot"
+	raiz.z_index = 1
+	raiz.color = Color(0.317647, 0.133333, 0.4, 0.92)
+	raiz.polygon = PackedVector2Array([
+		Vector2(-74, -30),
+		Vector2(-38, -68),
+		Vector2(20, -74),
+		Vector2(70, -36),
+		Vector2(82, 14),
+		Vector2(52, 58),
+		Vector2(-6, 70),
+		Vector2(-64, 44)
+	])
+	bloqueio.add_child(raiz)
+
+	var cristal := Polygon2D.new()
+	cristal.name = "BlockedAreaCrystal"
+	cristal.position = Vector2(18, -8)
+	cristal.z_index = 2
+	cristal.color = Color(0.780392, 0.27451, 0.905882, 0.88)
+	cristal.polygon = PackedVector2Array([
+		Vector2(0, -32),
+		Vector2(18, -14),
+		Vector2(28, 0),
+		Vector2(18, 16),
+		Vector2(0, 32),
+		Vector2(-18, 16),
+		Vector2(-28, 0),
+		Vector2(-18, -14)
+	])
+	bloqueio.add_child(cristal)
+
+	var anel := Line2D.new()
+	anel.name = "BlockedAreaRing"
+	anel.z_index = 3
+	anel.width = 7.0
+	anel.default_color = Color(0.941176, 0.768627, 1.0, 0.85)
+	anel.antialiased = true
+	anel.closed = true
+	anel.points = PackedVector2Array([
+		Vector2(0, -52),
+		Vector2(36, -34),
+		Vector2(54, 0),
+		Vector2(38, 38),
+		Vector2(0, 54),
+		Vector2(-38, 38),
+		Vector2(-54, 0),
+		Vector2(-36, -34)
+	])
+	bloqueio.add_child(anel)
+
+	return bloqueio
+
+func _conectar_obstaculo_purificacao() -> void:
+	var obstaculo: Node = get_node_or_null("PurificationObstacle")
+	if obstaculo == null:
+		return
+	if obstaculo.has_signal("purified") and not obstaculo.is_connected("purified", Callable(self, "_on_obstaculo_purificado")):
+		obstaculo.connect("purified", Callable(self, "_on_obstaculo_purificado"))
+
+func _obter_estado_purificacao_obstaculo() -> bool:
+	var obstaculo: Node = get_node_or_null("PurificationObstacle")
+	if obstaculo == null or not obstaculo.has_method("get_save_data"):
+		return false
+
+	var obstacle_data_variant: Variant = obstaculo.call("get_save_data")
+	if typeof(obstacle_data_variant) != TYPE_DICTIONARY:
+		return false
+
+	return bool((obstacle_data_variant as Dictionary).get("purified", false))
+
+func _aplicar_estado_area_bloqueada_v0(purificado: bool) -> void:
+	if blocked_area_visual != null:
+		blocked_area_visual.visible = not purificado
+
+	for plot_variant in expansion_pocket_plots:
+		var plot: Node = plot_variant
+		if plot == null or not is_instance_valid(plot):
+			continue
+		if plot.has_method("set_expansion_blocked"):
+			plot.call("set_expansion_blocked", not purificado)
+
+func _on_obstaculo_purificado(obstacle_id: String) -> void:
+	if obstacle_id != "first_obstacle":
+		return
+	_aplicar_estado_area_bloqueada_v0(true)
 
 func _garantir_lago_da_fazenda() -> void:
 	var fishing_spot_node: Node = get_node_or_null("FishingSpot")
@@ -257,6 +404,16 @@ func _criar_bobber_destaque() -> Polygon2D:
 		Vector2(-1, -3)
 	])
 	return highlight
+
+func _input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+		var obstaculo: Node = get_node_or_null("PurificationObstacle")
+		if obstaculo == null and get_tree() != null and get_tree().current_scene != null:
+			obstaculo = get_tree().current_scene.find_child("PurificationObstacle", true, false)
+		if obstaculo != null and obstaculo.has_method("try_handle_global_click"):
+			if obstaculo.call("try_handle_global_click", get_global_mouse_position()):
+				get_viewport().set_input_as_handled()
+				return
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo:

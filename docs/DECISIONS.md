@@ -264,6 +264,12 @@
 - Motivo: manter o projeto com identidade forte, avanço narrativo claro e expansão controlada por sistemas já existentes.
 - Risco: a expansão agora depende de alinhamento entre caldeirao, itens, pesca e progressao narrativa; a implementacao completa fica para depois.
 
+## Decisão 44 - Obstáculo Mágico V0 com save mínimo
+- Problema: a primeira purificação precisava existir como teste pequeno, persistente e sem acoplar o FarmGrid.
+- Decisão: criar um obstáculo estático único no mapa principal, consumindo `pocao_purificadora_fraca` e salvando seu estado em `farm_expansion.purification_obstacles`.
+- Motivo: validar o ciclo purificação -> consumo -> persistência antes de abrir áreas maiores.
+- Risco: o item é provisório/debug e a implementação futura do caldeirão ainda precisará substituir o método de obtenção da poção.
+
 ## Decisão 43 - Debug Panel V1 temporario
 - Problema: os testes do protótipo estavam lentos para itens, receitas, lotes, save e Baú da Vila.
 - Decisão: criar um painel de debug oculto na UI principal, aberto por `F10`, com ferramentas temporárias de teste.
@@ -505,3 +511,10 @@
 - Motivo: preparar nomes, ícones, raridade, venda e tags sem criar um sistema novo desnecessário agora.
 - Regra atual: a UI consulta o catálogo primeiro para ícones/emoji, e os IDs da pesca já estão registrados no mesmo catálogo.
 - Risco: os valores e descrições continuam provisórios e ainda podem mudar quando venda, receitas e filtros forem refinados.
+
+## Decisão 72 - Area Bloqueada V0 com pocket append-only
+- Problema: o Obstáculo Mágico V0 precisava mostrar uma área corrompida real, e não apenas o bloqueio visual isolado.
+- Decisão: criar uma Área Bloqueada V0 visível com um pocket 2x2 de `FarmPlot` já reservado, escondendo e revelando esses lotes conforme a purificação.
+- Motivo: tornar a expansão legível no mapa, preservar saves por ordem e manter a transição append-only sem criar sistema completo de áreas.
+- Regra atual: o estado `first_obstacle_purified` controla tanto o obstáculo quanto a liberação do pocket.
+- Risco: o pocket ainda é uma primeira leitura da expansão, então qualquer expansão futura precisa respeitar a ordem dos lotes e o save mínimo já adotado.

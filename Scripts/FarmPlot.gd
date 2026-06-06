@@ -38,6 +38,8 @@ var regado: bool = false
 @onready var visual_regado = $VisualRegado
 @onready var tooltip_area: Control = $TooltipArea
 @onready var golem_harvest_point: Marker2D = $GolemHarvestPoint
+@onready var collision_shape: CollisionShape2D = $CollisionShape2D
+var expansion_blocked: bool = false
 
 func _ready() -> void:
 	# Trava o posicionamento no centro perfeito do grid
@@ -54,6 +56,7 @@ func _ready() -> void:
 	else:
 		push_error("Timer não encontrado na cena FarmPlot!")
 	_configurar_camadas_visuais()
+	_aplicar_estado_expansao()
 	_atualizar_visual()
 
 func _process(_delta: float) -> void:
@@ -102,6 +105,14 @@ func _process(_delta: float) -> void:
 func _input_event(_viewport: Viewport, event: InputEvent, _shape_idx: int) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
 		_on_plot_clicked()
+
+func set_expansion_blocked(blocked: bool) -> void:
+	expansion_blocked = blocked
+	if is_inside_tree():
+		_aplicar_estado_expansao()
+
+func is_expansion_blocked() -> bool:
+	return expansion_blocked
 
 func _on_plot_clicked() -> void:
 	var ferramenta_ativa: int = _obter_ferramenta_ativa()
@@ -703,6 +714,19 @@ func _configurar_camadas_visuais() -> void:
 	if tooltip_area:
 		tooltip_area.z_as_relative = false
 		tooltip_area.z_index = 10
+
+func _aplicar_estado_expansao() -> void:
+	if collision_shape:
+		collision_shape.disabled = expansion_blocked
+	if tooltip_area:
+		tooltip_area.visible = not expansion_blocked
+	input_pickable = not expansion_blocked
+	monitoring = not expansion_blocked
+	monitorable = not expansion_blocked
+	visible = not expansion_blocked
+	set_process(not expansion_blocked)
+	if not expansion_blocked:
+		_atualizar_visual()
 
 func _on_sway_area_body_entered(_body: Node2D) -> void:
 	# Só balança se tiver uma textura de planta (ou seja, não é só terra pura)

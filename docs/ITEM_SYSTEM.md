@@ -55,11 +55,13 @@ Cada item do catálogo expõe, por enquanto:
 - `pocao_crescimento`
 - `pocao_aceleradora`
 - `golem_coletor`
+- `pocao_purificadora_fraca`
 
 ## Regras atuais
 
 - Água continua sendo recurso interno do jogo, com tratamento visual separado no StatusPanel.
 - Itens de pesca já entram no inventário real e agora têm metadados estruturados.
+- `pocao_purificadora_fraca` existe como item provisório/debug para o Obstáculo Mágico V0.
 - Crops e sementes existentes foram cadastrados apenas com o que o projeto já usa hoje.
 - Nenhuma receita nova foi criada.
 - Nenhum balanceamento final foi definido.

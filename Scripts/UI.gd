@@ -54,6 +54,7 @@ var village_chest_ref: VillageChest = null
 @onready var debug_add_seeds_button: Button = $DebugPanel/MarginContainer/ScrollContainer/VBoxDebug/BtnDebugAddSeeds
 @onready var debug_add_water_button: Button = $DebugPanel/MarginContainer/ScrollContainer/VBoxDebug/BtnDebugAddWater
 @onready var debug_add_basic_ingredients_button: Button = $DebugPanel/MarginContainer/ScrollContainer/VBoxDebug/BtnDebugAddIngredients
+@onready var debug_add_purification_potion_button: Button = $DebugPanel/MarginContainer/ScrollContainer/VBoxDebug/BtnDebugAddPurificationPotion
 @onready var debug_discover_all_recipes_button: Button = $DebugPanel/MarginContainer/ScrollContainer/VBoxDebug/BtnDebugDiscoverAllRecipes
 @onready var debug_force_growth_button: Button = $DebugPanel/MarginContainer/ScrollContainer/VBoxDebug/BtnDebugForceGrowth
 @onready var debug_daily_decay_button: Button = $DebugPanel/MarginContainer/ScrollContainer/VBoxDebug/BtnDebugDailyDecay
@@ -170,6 +171,8 @@ func _ready() -> void:
 		debug_add_water_button.pressed.connect(_on_debug_add_water_pressed)
 	if debug_add_basic_ingredients_button:
 		debug_add_basic_ingredients_button.pressed.connect(_on_debug_add_basic_ingredients_pressed)
+	if debug_add_purification_potion_button:
+		debug_add_purification_potion_button.pressed.connect(_on_debug_add_purification_potion_pressed)
 	if debug_discover_all_recipes_button:
 		debug_discover_all_recipes_button.pressed.connect(_on_debug_discover_all_recipes_pressed)
 	if debug_force_growth_button:
@@ -576,6 +579,11 @@ func _on_debug_add_basic_ingredients_pressed() -> void:
 	GlobalInventory.adicionar_item("rama_encantada", 3)
 	print("Debug: adicionou ingredientes basicos ao inventario.")
 	_atualizar_pos_debug_acao()
+
+func _on_debug_add_purification_potion_pressed() -> void:
+	GlobalInventory.adicionar_item("pocao_purificadora_fraca", 1)
+	print("Debug: adicionou pocao_purificadora_fraca x1 ao inventario.")
+	_atualizar_pos_debug_acao("Poção Purificadora Fraca +1")
 
 func _on_debug_discover_all_recipes_pressed() -> void:
 	var adicionadas: int = 0

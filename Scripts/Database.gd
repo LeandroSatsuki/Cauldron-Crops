@@ -251,6 +251,18 @@ var itens: Dictionary = {
 		"descricao": "Resultado especial ligado à automação e ao Baú da Vila.",
 		"icone": "🤖"
 	},
+	"pocao_purificadora_fraca": {
+		"nome": "Poção Purificadora Fraca",
+		"categoria": "pocao",
+		"raridade": "incomum",
+		"valor_base": 0,
+		"pode_vender": false,
+		"pode_usar_em_receita": false,
+		"tags": ["pocao", "purificacao", "magico"],
+		"origem": "caldeirao",
+		"descricao": "Uma poção simples capaz de enfraquecer pequenas corrupções mágicas.",
+		"icone": "🧪"
+	},
 	"peixe_comum": {
 		"nome": "Peixe Comum",
 		"categoria": "pesca",
