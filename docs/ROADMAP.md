@@ -26,6 +26,7 @@ Entregar um protótipo jogável e estável do loop principal da fazenda, com pla
 - UX V1 do Painel de Purificação.
 - Feedback Visual V0 da Purificação.
 - Correção de UI para evitar erro de `current_scene` nulo.
+- Teste de loop completo da Fase 1 em save limpo validado manualmente.
 
 ### O que ainda falta para fechar a Fase 1
 - Checklist/teste de loop completo em save novo.

@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-06-06 - Validação manual da Fase 1 em save limpo
+- O teste de loop completo da Fase 1 foi executado em save limpo e concluído com sucesso.
+- A validação cobriu início em save limpo, arar, plantar, regar, colher, usar o caldeirão, abrir o Livro de Receitas, purificar a área, liberar o pocket 2x2, usar um plot liberado, salvar com F5, carregar com F9 e confirmar a persistência da expansão.
+- A UI principal permaneceu funcional durante o teste e nenhuma instância do jogo ficou aberta ao final.
+- O save antigo foi preservado em backup antes da validação.
+
 ## 2026-06-06 - Expansão preparada para múltiplas áreas
 - `Main.gd` passou a usar uma estrutura interna de áreas de expansão por `obstacle_id`, mantendo apenas a V0 cadastrada por enquanto.
 - O pocket 2x2 atual, o bloqueio visual e a sincronização pós-load continuam funcionando como antes.
