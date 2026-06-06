@@ -136,7 +136,12 @@ func _ready() -> void:
 		abrir_quests_button.pressed.connect(_on_abrir_quests_pressed)
 
 	recipe_book = recipe_book_scene.instantiate()
-	var cauldron_popup_layer := get_tree().current_scene.get_node_or_null("CauldronUI/PopupLayer")
+	var current_scene := _obter_current_scene()
+	var cauldron_popup_layer: Node = null
+	if current_scene != null:
+		cauldron_popup_layer = current_scene.get_node_or_null("CauldronUI/PopupLayer")
+	elif OS.has_feature("headless"):
+		push_warning("UI: current_scene indisponivel ao inicializar o Livro de Receitas; usando fallback local.")
 	if cauldron_popup_layer:
 		cauldron_popup_layer.add_child(recipe_book)
 	else:
@@ -149,10 +154,11 @@ func _ready() -> void:
 	)
 	if recipe_book.has_signal("craft_requested"):
 		recipe_book.craft_requested.connect(_on_recipe_book_craft_requested)
-	_vincular_caldeirao_no_livro(_resolver_caldeirao(get_tree().current_scene.get_node_or_null("CauldronUI")))
+	_vincular_caldeirao_no_livro(_resolver_caldeirao(current_scene.get_node_or_null("CauldronUI") if current_scene != null else null))
+
 	if abrir_livro_receitas_button:
 		abrir_livro_receitas_button.pressed.connect(_on_abrir_livro_receitas_pressed)
-		
+
 	if sell_menu:
 		_aplicar_tema_pixel_ui(sell_menu)
 		sell_menu.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -1145,7 +1151,9 @@ func abrir_livro_receitas(fechar_caldeirao: bool = false, cauldron: Node = null)
 	if fechar_caldeirao:
 		var cauldron_ui := cauldron
 		if not cauldron_ui:
-			cauldron_ui = get_tree().current_scene.get_node_or_null("CauldronUI")
+			var current_scene := _obter_current_scene()
+			if current_scene != null:
+				cauldron_ui = current_scene.get_node_or_null("CauldronUI")
 		if cauldron_ui and cauldron_ui.has_method("fechar_popup"):
 			cauldron_ui.fechar_popup()
 		elif fechar_caldeirao:
@@ -1157,7 +1165,10 @@ func abrir_livro_receitas(fechar_caldeirao: bool = false, cauldron: Node = null)
 	else:
 		push_warning("UI: nenhum caldeirao valido encontrado para o Livro de Receitas.")
 
-	var cauldron_popup_layer := get_tree().current_scene.get_node_or_null("CauldronUI/PopupLayer")
+	var current_scene := _obter_current_scene()
+	var cauldron_popup_layer: Node = null
+	if current_scene != null:
+		cauldron_popup_layer = current_scene.get_node_or_null("CauldronUI/PopupLayer")
 	if cauldron_popup_layer:
 		cauldron_popup_layer.visible = true
 
@@ -1187,7 +1198,10 @@ func _on_recipe_book_craft_requested(recipe_id: String, quantidade: int) -> void
 
 func _instanciar_livro_receitas() -> void:
 	recipe_book = recipe_book_scene.instantiate()
-	var cauldron_popup_layer := get_tree().current_scene.get_node_or_null("CauldronUI/PopupLayer")
+	var current_scene := _obter_current_scene()
+	var cauldron_popup_layer: Node = null
+	if current_scene != null:
+		cauldron_popup_layer = current_scene.get_node_or_null("CauldronUI/PopupLayer")
 	if cauldron_popup_layer:
 		cauldron_popup_layer.visible = true
 		cauldron_popup_layer.add_child(recipe_book)
@@ -1201,7 +1215,7 @@ func _instanciar_livro_receitas() -> void:
 	)
 	if recipe_book.has_signal("craft_requested"):
 		recipe_book.craft_requested.connect(_on_recipe_book_craft_requested)
-	_vincular_caldeirao_no_livro(_resolver_caldeirao(get_tree().current_scene.get_node_or_null("CauldronUI")))
+	_vincular_caldeirao_no_livro(_resolver_caldeirao(current_scene.get_node_or_null("CauldronUI") if current_scene != null else null))
 
 func _vincular_caldeirao_no_livro(cauldron: Node) -> void:
 	if recipe_book == null or cauldron == null:
@@ -1228,3 +1242,9 @@ func _resolver_caldeirao(cauldron: Node = null) -> Node:
 			return node
 
 	return null
+
+func _obter_current_scene() -> Node:
+	var tree := get_tree()
+	if tree == null:
+		return null
+	return tree.current_scene
