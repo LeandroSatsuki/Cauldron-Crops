@@ -2,6 +2,8 @@ extends Panel
 
 signal craft_requested(recipe_id: String, quantidade: int)
 
+const UIDragHelperScript = preload("res://Scripts/UIDragHelper.gd")
+
 @onready var recipe_list: ItemList = $MarginContainer/VBoxRoot/Body/LeftPanel/LeftBox/RecipeList
 @onready var empty_label: Label = $MarginContainer/VBoxRoot/Body/LeftPanel/LeftBox/EmptyLabel
 @onready var recipe_id_label: Label = $MarginContainer/VBoxRoot/Body/RightPanel/RightBox/RecipeIdLabel
@@ -22,11 +24,17 @@ var _selected_recipe_id: String = ""
 var _craft_quantity: int = 1
 var cauldron_ref: Node = null
 var recipe_database: RecipeDatabase = null
+var _drag_helper: UIDragHelper = null
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	visible = false
 	z_index = 200
+
+	var title_handle: Control = get_node_or_null("MarginContainer/VBoxRoot/HeaderBar/TitleLabel") as Control
+	if title_handle:
+		_drag_helper = UIDragHelperScript.new()
+		_drag_helper.attach(self, title_handle)
 
 	if btn_close:
 		btn_close.pressed.connect(fechar)

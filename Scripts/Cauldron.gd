@@ -1,6 +1,7 @@
 extends Node2D
 
 const MOUSE_LEFT = MOUSE_BUTTON_LEFT
+const UIDragHelperScript = preload("res://Scripts/UIDragHelper.gd")
 
 @onready var drop_slot_1: Panel = $PopupLayer/CenterContainer/PopupUI/DropSlot1
 @onready var drop_slot_2: Panel = $PopupLayer/CenterContainer/PopupUI/DropSlot2
@@ -9,6 +10,7 @@ const MOUSE_LEFT = MOUSE_BUTTON_LEFT
 @onready var resultado_label: Label = $PopupLayer/CenterContainer/PopupUI/ResultadoLabel
 @onready var popup_ui: Panel = $PopupLayer/CenterContainer/PopupUI
 @onready var batch_timer: Timer = $BatchTimer
+
 @onready var batch_progress_panel: PanelContainer = $BatchProgressPanel
 @onready var batch_status_label: Label = $BatchProgressPanel/MarginContainer/VBoxBatch/BatchStatusLabel
 @onready var batch_progress_bar: ProgressBar = $BatchProgressPanel/MarginContainer/VBoxBatch/BatchProgressBar
@@ -23,9 +25,16 @@ var _batch_ingredientes: Dictionary = {}
 var _batch_quantidade_total: int = 0
 var _batch_quantidade_concluida: int = 0
 var _batch_ativo: bool = false
+var _drag_helper: UIDragHelper = null
 
 func _ready() -> void:
 	add_to_group("cauldrons")
+	if popup_ui and is_instance_valid(popup_ui):
+		var title_handle := popup_ui.get_node_or_null("TitleLabel") as Control
+		if title_handle:
+			_drag_helper = UIDragHelperScript.new()
+			_drag_helper.attach(popup_ui, title_handle)
+
 	if misturar_button:
 		misturar_button.pressed.connect(_on_misturar_button_pressed)
 	if btn_livro_receitas and not btn_livro_receitas.pressed.is_connected(_on_btn_livro_receitas_pressed):
