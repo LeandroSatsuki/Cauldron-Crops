@@ -4,16 +4,16 @@
 
 [resource]
 script = ExtResource("1_recipe_data")
-id = "agua_tomate_sol"
-nome = "Semente de Outono"
-descricao = "Receita provisoria que transforma agua e tomate do sol em uma semente de outono."
+id = "tomate_sol_raiz_gelida"
+nome = "Semente de Outono Fria"
+descricao = "Receita provisoria que transforma tomate do sol e raiz gelida em uma semente de outono."
 categoria = "semente"
-ingredientes = Array[String](["agua", "tomate_sol"])
+ingredientes = Array[String](["tomate_sol", "raiz_gelida"])
 resultado_item = "semente_outono"
 resultado_quantidade = 1
 tempo_producao = 2.0
 ordem_importa = false
 desbloqueada_por_padrao = false
 recompensa_pontos_alquimia = 1
-tags = Array[String](["semente", "outono"])
+tags = Array[String](["semente", "outono", "frio"])
 versao_do_schema = 1

@@ -339,15 +339,15 @@ var custo_semente = {
 }
 
 var receitas_alquimia: Dictionary = {
-	"agua_trigo": "pocao_crescimento",
+	"trigo_raiz_gelida": "pocao_crescimento",
 	"carvao_trigo": "pocao_aceleradora",
-	"agua_carvao": "essencia_sombria",
+	"carvao_raiz_gelida": "essencia_sombria",
 	"tomate_sol_trigo": "adubo_flamejante",
 	"abobora_sombria_raiz_gelida": "elixir_estacional",
 	"palha_rara_rama_encantada": "golem_coletor",
-	"agua_tomate_sol": "semente_outono",
-	"agua_raiz_gelida": "pocao_crescimento",
-	"agua_peixe_comum": "pocao_purificadora_fraca"
+	"tomate_sol_raiz_gelida": "semente_outono",
+	"raiz_gelida_peixe_comum": "pocao_purificadora_fraca",
+	"peixe_comum_trigo": "pocao_aceleradora"
 }
 
 var quests_exemplos: Dictionary = {

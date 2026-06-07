@@ -37,6 +37,12 @@
 - `Colher` permanece runtime-only por design: só conclui quando o mesmo lote foi observado como pronto após o bootstrap e depois ficou vazio; o rastreio é reiniciado em load para evitar falso positivo de inicialização/reload e também não conclui apenas porque o save abriu vazio.
 - Risco: etapas dependentes de ações transitórias podem ser heurísticas e precisar de leitura de estado mínima, sem acoplamento maior.
 
+## Decisão 54 - Slots e drag preview do caldeirão usam ícones textuais da base de dados
+- Problema: não havia texturas reais de itens no diretório de assets, então o slot do caldeirão e o preview de drag ficavam sem representação visual confiável.
+- Decisão: usar os ícones textuais/emoji já expostos por `Database.obter_icone_item()` e os nomes da base de dados para representar os itens no caldeirão e no arrasto.
+- Motivo: garantir consistência visual sem criar pipeline nova de arte nem alterar o schema de dados.
+- Risco: quando os ícones art finais chegarem, essa camada textual pode ser substituída por textura sem mudar a lógica.
+
 ## Decisão 53 - Risco aceitável de falso negativo pós-reload para objetivos runtime-only
 - Problema: objetivos runtime-only não podem depender de histórico salvo sem reintroduzir persistência nova.
 - Decisão: aceitar que o painel possa recalcular o estado de alguns passos a partir do estado atual após reload, priorizando ausência de falso positivo sobre cobertura perfeita do histórico.

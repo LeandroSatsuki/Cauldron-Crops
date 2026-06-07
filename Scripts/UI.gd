@@ -1525,6 +1525,8 @@ func _on_recipe_book_craft_requested(recipe_id: String, quantidade: int) -> void
 	if sucesso:
 		_initial_objectives_cauldron_used = true
 		_atualizar_objetivos_iniciais(0.0)
+		if cauldron_ui and cauldron_ui.has_method("fechar_popup"):
+			cauldron_ui.call("fechar_popup")
 		fechar_livro_receitas()
 	else:
 		push_warning("A producao em lote falhou para a receita %s." % recipe_id)

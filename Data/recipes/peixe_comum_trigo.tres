@@ -4,16 +4,16 @@
 
 [resource]
 script = ExtResource("1_recipe_data")
-id = "raiz_gelida_peixe_comum"
-nome = "Poção de Purificação Fria"
-descricao = "Receita provisoria que combina raiz gelida e peixe comum para produzir uma poção de purificação."
+id = "peixe_comum_trigo"
+nome = "Poção de Pulso Leve"
+descricao = "Receita provisoria que combina peixe comum e trigo para gerar um impulso alquimico leve."
 categoria = "pocao"
-ingredientes = Array[String](["raiz_gelida", "peixe_comum"])
-resultado_item = "pocao_purificadora_fraca"
+ingredientes = Array[String](["peixe_comum", "trigo"])
+resultado_item = "pocao_aceleradora"
 resultado_quantidade = 1
 tempo_producao = 2.0
 ordem_importa = false
 desbloqueada_por_padrao = false
 recompensa_pontos_alquimia = 1
-tags = Array[String](["purificacao", "frio"])
+tags = Array[String](["basica", "pulso"])
 versao_do_schema = 1

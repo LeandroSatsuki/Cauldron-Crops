@@ -4,16 +4,16 @@
 
 [resource]
 script = ExtResource("1_recipe_data")
-id = "agua_carvao"
-nome = "Essencia Sombria"
-descricao = "Receita provisoria que une agua e carvao para gerar uma essencia sombria."
+id = "carvao_raiz_gelida"
+nome = "Essência Sombria Fria"
+descricao = "Receita provisoria que combina carvão e raiz gelida para gerar uma essência sombria."
 categoria = "essencia"
-ingredientes = Array[String](["agua", "carvao"])
+ingredientes = Array[String](["carvao", "raiz_gelida"])
 resultado_item = "essencia_sombria"
 resultado_quantidade = 1
 tempo_producao = 2.0
 ordem_importa = false
 desbloqueada_por_padrao = false
 recompensa_pontos_alquimia = 1
-tags = Array[String](["sombria", "essencia"])
+tags = Array[String](["sombria", "essencia", "frio"])
 versao_do_schema = 1

@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-06-07 - UX do caldeirão e receitas ajustada
+- As receitas que dependiam de água foram substituídas por combinações com itens existentes e obtíveis em inventário, removendo o requisito de água das receitas ativas.
+- O slot do caldeirão agora exibe visualmente o item vinculado usando o texto/ícone da base de dados, em vez de depender de texturas ausentes.
+- O drag preview de itens passou a usar um preview textual/ícone consistente e visível seguindo o mouse.
+- Ao iniciar uma receita com sucesso, a popup do caldeirão fecha automaticamente; falhas continuam mantendo a UI aberta.
+
 ## 2026-06-07 - Missão Inicial V0 da fazenda implementada
 - Foi adicionado um painel pequeno de objetivos iniciais na UI para guiar o loop principal da Fase 1.5.
 - A Missão Inicial V0 é runtime-only, separada do `QuestManager`, não persiste no save e se oculta após a conclusão.

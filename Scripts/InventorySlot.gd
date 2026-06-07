@@ -11,10 +11,23 @@ var item_vinculado: String:
 		return item_id
 	set(value):
 		item_id = value
+		if is_node_ready():
+			_atualizar_visual()
 
 @onready var icon_label: Label = $ItemIconLabel
 @onready var qtd_label: Label = $QuantidadeLabel
 @onready var destaque: ReferenceRect = $Destaque
+
+func _ready() -> void:
+	# A MÁGICA ESTÁ AQUI: Garantir que o destaque visual
+	# NUNCA bloqueie os cliques do mouse quando estiver visível.
+	if destaque:
+		destaque.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	if icon_label:
+		icon_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	if qtd_label:
+		qtd_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_atualizar_visual()
 
 func _carregar_textura_item(id_item: String) -> Texture2D:
 	var caminhos := [
@@ -28,24 +41,52 @@ func _carregar_textura_item(id_item: String) -> Texture2D:
 
 	return null
 
-func _ready() -> void:
-	# A MÁGICA ESTÁ AQUI: Garantir que o destaque visual 
-	# NUNCA bloqueie os cliques do mouse quando estiver visível.
-	if destaque:
-		destaque.mouse_filter = Control.MOUSE_FILTER_IGNORE
+func _criar_preview_drag(item_id_preview: String) -> Control:
+	var conteudo := PanelContainer.new()
+	conteudo.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	conteudo.custom_minimum_size = Vector2(160, 56)
+
+	var margem := MarginContainer.new()
+	margem.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	margem.add_theme_constant_override("margin_left", 10)
+	margem.add_theme_constant_override("margin_top", 6)
+	margem.add_theme_constant_override("margin_right", 10)
+	margem.add_theme_constant_override("margin_bottom", 6)
+	conteudo.add_child(margem)
+
+	var label := Label.new()
+	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	label.text = "%s %s" % [Database.obter_icone_item(item_id_preview), Database.obter_nome_item(item_id_preview)]
+	margem.add_child(label)
+
+	return conteudo
+
+func _atualizar_visual() -> void:
+	var item_ativo := item_id != ""
+	var icone := Database.obter_icone_item(item_id) if item_ativo else ""
+	var nome := Database.obter_nome_item(item_id) if item_ativo else ""
+
 	if icon_label:
-		icon_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		icon_label.text = "%s" % icone
+		icon_label.tooltip_text = nome
+		icon_label.visible = item_ativo
 	if qtd_label:
-		qtd_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		qtd_label.text = str(quantidade)
+		qtd_label.visible = quantidade > 0
+	tooltip_text = nome
 
 func configurar_slot(id: String, qtd: int, texto_exibicao: String) -> void:
 	item_id = id
 	quantidade = qtd
 	if icon_label:
-		icon_label.text = texto_exibicao
+		icon_label.text = "%s" % texto_exibicao
 	if qtd_label:
 		qtd_label.text = str(qtd)
 	self.tooltip_text = texto_exibicao
+	_atualizar_visual()
 
 func set_destaque(ativo: bool) -> void:
 	if not destaque:
@@ -75,27 +116,9 @@ func _gui_input(event):
 			emit_signal("slot_clicado", item_id, true, self)
 
 # O arrasto funciona independentemente da seleção
-func _get_drag_data(at_position):
+func _get_drag_data(_at_position):
 	if item_id == "":
 		return null
-	
-	var preview = TextureRect.new()
-	var textura_item = _carregar_textura_item(item_id)
 
-	if textura_item:
-		preview.texture = textura_item
-		preview.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		preview.custom_minimum_size = Vector2(40, 40)
-		
-		# Centralizador
-		var control = Control.new()
-		preview.position = -preview.custom_minimum_size / 2
-		control.add_child(preview)
-		set_drag_preview(control)
-	else:
-		# Fallback de segurança se a imagem não existir
-		var text_preview = Label.new()
-		text_preview.text = item_id
-		set_drag_preview(text_preview)
-		
+	set_drag_preview(_criar_preview_drag(item_id))
 	return item_id

@@ -73,6 +73,14 @@ func abrir_popup():
 	popup_ui.move_to_front()
 	popup_ui.grab_click_focus() # Força o foco do mouse para a interface
 
+func fechar_popup() -> void:
+	if popup_ui:
+		popup_ui.visible = false
+	if has_node("PopupLayer"):
+		$PopupLayer.visible = false
+	if batch_progress_panel:
+		batch_progress_panel.move_to_front()
+
 func _on_area_2d_input_event(viewport, event, shape_idx):
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_LEFT:
 		if _batch_ativo:
@@ -154,6 +162,7 @@ func iniciar_producao_em_lote(recipe_id: String, quantidade: int) -> bool:
 
 	_abrir_painel_lote()
 	_atualizar_interface_lote()
+	fechar_popup()
 	_iniciar_proximo_tick_lote()
 	return true
 
@@ -376,6 +385,7 @@ func _on_misturar_button_pressed() -> void:
 			_iniciar_processo_de_mistura()
 			$BrewTimer.start(tempo_producao)
 			_limpar_slots()
+			fechar_popup()
 		else:
 			if removed_1:
 				GlobalInventory.adicionar_item(item1, 1)
