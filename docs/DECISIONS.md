@@ -24,6 +24,12 @@
 - Motivo: preservar a Fase 1, evitar retrabalho de layout e dar espaço para zonas futuras antes da migração sistêmica.
 - Risco: o blockout visual precisa continuar sem entrar no grupo `lotes_terra` nem se transformar em uma rota paralela de jogo.
 
+## Decisão 51 - Blockout visual V0 apenas como camada de apresentação
+- Problema: a fazenda precisava ganhar leitura espacial sem criar áreas novas de gameplay.
+- Decisão: implementar o Blockout Visual V0 como nós visuais runtime-only criados por `Main.gd`, sem `FarmPlot` novos, sem save e sem conexão com `FarmGridPreview`.
+- Motivo: reduzir a sensação de núcleo amontoado e preparar a leitura de zonas futuras sem tocar no loop validado.
+- Risco: qualquer marker visual futuro precisa continuar fora de grupos de gameplay e fora do schema de save.
+
 ## Decisão 1 - Golem automático desativado temporariamente
 - Problema: `GolemManager.gd` colhia automaticamente e conflitada com o golem físico.
 - Decisão: manter o código, mas desligar a automação com flag.

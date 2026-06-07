@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-06-06 - Blockout Visual V0 da fazenda implementado
+- `Scripts/Main.gd` passou a criar marcadores visuais runtime-only para zonas futuras da fazenda, sem gameplay e sem persistência.
+- O blockout marca visualmente áreas para criaturas/animais mágicos, golems/ajudantes, recursos/forrageamento, segunda área corrompida futura e ruína/mistério futura.
+- Nenhum `FarmPlot` novo foi criado, `SaveManager` permaneceu intacto e `FarmGridPreview` não foi conectado ao jogo principal.
+- A fazenda continua jogável com os plots antigos e o loop validado da Fase 1.
+
 ## 2026-06-06 - Plano macro da fazenda documentado
 - Foi criado `docs/FARM_LAYOUT_PLAN.md` para registrar o estado atual da fazenda, o problema de concentração do núcleo inicial e as zonas macro recomendadas.
 - A documentação separa Fase 1, Fase 1.5 e Fase 2, mantendo solo livre e `FarmGrid` real para a fase futura.

@@ -18,6 +18,7 @@ const EXPANSION_POCKET_ROWS: int = 2
 const EXPANSION_POCKET_START_COLUMN: int = BASE_FARM_COLUMNS + EXTRA_FARM_COLUMNS_RIGHT
 const EXPANSION_POCKET_START_ROW: int = 0
 const EXPANSION_V0_OBSTACLE_ID: String = "first_obstacle"
+const BLOCKOUT_FARM_Z_INDEX: int = 40
 
 var expansion_area_configs: Dictionary = {}
 var expansion_area_order: Array[String] = []
@@ -39,6 +40,7 @@ func _ready() -> void:
 	_garantir_areas_expansao(start_x, start_y)
 	_conectar_obstaculos_purificacao()
 	_sincronizar_areas_expansao()
+	_criar_blockout_fazenda_v0(start_x, start_y)
 
 func _configurar_regiao_navegacao() -> void:
 	if navigation_region == null:
@@ -225,6 +227,158 @@ func _criar_area_bloqueada_visual() -> Node2D:
 	bloqueio.add_child(anel)
 
 	return bloqueio
+
+func _criar_blockout_fazenda_v0(start_x: float, start_y: float) -> void:
+	if has_node("FarmBlockoutV0"):
+		return
+
+	var blockout_root := Node2D.new()
+	blockout_root.name = "FarmBlockoutV0"
+	blockout_root.z_index = BLOCKOUT_FARM_Z_INDEX
+	blockout_root.z_as_relative = false
+	add_child(blockout_root)
+
+	var zonas: Array = [
+		{
+			"id": "creatures_animals_future",
+			"title": "Criaturas mágicas",
+			"subtitle": "Animais e aliados encantados",
+			"center": Vector2(start_x + (7.8 * FARM_SPACING), start_y - (0.9 * FARM_SPACING)),
+			"size": Vector2(230, 150),
+			"fill": Color(0.160784, 0.356863, 0.258824, 0.48),
+			"outline": Color(0.690196, 0.882353, 0.741176, 0.88)
+		},
+		{
+			"id": "helpers_golems_future",
+			"title": "Golems / ajudantes",
+			"subtitle": "Área de apoio da fazenda",
+			"center": Vector2(start_x - (1.1 * FARM_SPACING), start_y + (4.9 * FARM_SPACING)),
+			"size": Vector2(210, 140),
+			"fill": Color(0.294118, 0.184314, 0.454902, 0.44),
+			"outline": Color(0.843137, 0.713726, 0.976471, 0.86)
+		},
+		{
+			"id": "foraging_resources_future",
+			"title": "Recursos / forrageamento",
+			"subtitle": "Área de coleta natural",
+			"center": Vector2(start_x + (8.9 * FARM_SPACING), start_y + (4.8 * FARM_SPACING)),
+			"size": Vector2(240, 150),
+			"fill": Color(0.486275, 0.333333, 0.113725, 0.42),
+			"outline": Color(0.988235, 0.878431, 0.619608, 0.86)
+		},
+		{
+			"id": "blocked_area_future",
+			"title": "Corrupção futura",
+			"subtitle": "Segunda área corrompida",
+			"center": Vector2(start_x + (10.2 * FARM_SPACING), start_y + (1.4 * FARM_SPACING)),
+			"size": Vector2(220, 150),
+			"fill": Color(0.337255, 0.121569, 0.454902, 0.5),
+			"outline": Color(0.94902, 0.760784, 1.0, 0.9)
+		},
+		{
+			"id": "ruin_mystery_future",
+			"title": "Ruína / mistério",
+			"subtitle": "Zona de enigma futuro",
+			"center": Vector2(start_x + (10.2 * FARM_SPACING), start_y + (5.8 * FARM_SPACING)),
+			"size": Vector2(240, 150),
+			"fill": Color(0.184314, 0.184314, 0.227451, 0.44),
+			"outline": Color(0.823529, 0.831373, 0.87451, 0.8)
+		}
+	]
+
+	for zona in zonas:
+		var marcador: Node2D = _criar_marcador_zona(
+			str(zona.get("id", "zona_futura")),
+			str(zona.get("title", "Zona futura")),
+			str(zona.get("subtitle", "")),
+			zona.get("center", Vector2.ZERO),
+			zona.get("size", Vector2(200, 120)),
+			zona.get("fill", Color(1, 1, 1, 0.35)),
+			zona.get("outline", Color(1, 1, 1, 0.85))
+		)
+		blockout_root.add_child(marcador)
+
+func _criar_marcador_zona(zona_id: String, titulo: String, subtitulo: String, centro: Vector2, tamanho: Vector2, fill_color: Color, outline_color: Color) -> Node2D:
+	var marcador := Node2D.new()
+	marcador.name = "Blockout_%s" % zona_id
+	marcador.position = centro
+	marcador.z_index = BLOCKOUT_FARM_Z_INDEX
+	marcador.z_as_relative = false
+
+	var sombra := Polygon2D.new()
+	sombra.name = "Sombra"
+	sombra.color = Color(fill_color.r, fill_color.g, fill_color.b, fill_color.a * 0.45)
+	sombra.polygon = _criar_poligono_retangular(tamanho + Vector2(30, 24))
+	sombra.position = Vector2(8, 10)
+	marcador.add_child(sombra)
+
+	var corpo := Polygon2D.new()
+	corpo.name = "Corpo"
+	corpo.color = fill_color
+	corpo.polygon = _criar_poligono_retangular(tamanho)
+	marcador.add_child(corpo)
+
+	var contorno := Line2D.new()
+	contorno.name = "Contorno"
+	contorno.width = 4.0
+	contorno.default_color = outline_color
+	contorno.closed = true
+	contorno.antialiased = true
+	contorno.points = _criar_pontos_retangulo(tamanho)
+	marcador.add_child(contorno)
+
+	var detalhe_horizontal := Line2D.new()
+	detalhe_horizontal.name = "DetalheHorizontal"
+	detalhe_horizontal.width = 2.0
+	detalhe_horizontal.default_color = Color(outline_color.r, outline_color.g, outline_color.b, outline_color.a * 0.55)
+	detalhe_horizontal.points = PackedVector2Array([
+		Vector2(-tamanho.x * 0.35, 0),
+		Vector2(tamanho.x * 0.35, 0)
+	])
+	marcador.add_child(detalhe_horizontal)
+
+	var detalhe_vertical := Line2D.new()
+	detalhe_vertical.name = "DetalheVertical"
+	detalhe_vertical.width = 2.0
+	detalhe_vertical.default_color = Color(outline_color.r, outline_color.g, outline_color.b, outline_color.a * 0.45)
+	detalhe_vertical.points = PackedVector2Array([
+		Vector2(0, -tamanho.y * 0.32),
+		Vector2(0, tamanho.y * 0.32)
+	])
+	marcador.add_child(detalhe_vertical)
+
+	var etiqueta := Label.new()
+	etiqueta.name = "Etiqueta"
+	etiqueta.text = titulo + "\n" + subtitulo
+	etiqueta.position = Vector2(-tamanho.x * 0.5, -tamanho.y * 0.5 - 48)
+	etiqueta.size = Vector2(tamanho.x, 70)
+	etiqueta.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	etiqueta.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	etiqueta.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	etiqueta.add_theme_font_size_override("font_size", 16)
+	etiqueta.add_theme_color_override("font_color", outline_color)
+	etiqueta.add_theme_color_override("font_shadow_color", Color(0.0, 0.0, 0.0, 0.88))
+	etiqueta.add_theme_constant_override("shadow_offset_x", 2)
+	etiqueta.add_theme_constant_override("shadow_offset_y", 2)
+	etiqueta.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	marcador.add_child(etiqueta)
+
+	return marcador
+
+func _criar_poligono_retangular(tamanho: Vector2) -> PackedVector2Array:
+	var meio_x: float = tamanho.x * 0.5
+	var meio_y: float = tamanho.y * 0.5
+	return PackedVector2Array([
+		Vector2(-meio_x, -meio_y),
+		Vector2(meio_x, -meio_y),
+		Vector2(meio_x, meio_y),
+		Vector2(-meio_x, meio_y)
+	])
+
+func _criar_pontos_retangulo(tamanho: Vector2) -> PackedVector2Array:
+	var pontos := _criar_poligono_retangular(tamanho)
+	pontos.append(pontos[0])
+	return pontos
 
 func _conectar_obstaculos_purificacao() -> void:
 	var tree: SceneTree = get_tree()

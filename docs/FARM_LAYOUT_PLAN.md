@@ -109,6 +109,18 @@ A Fase 1.5 deve ser pequena e segura:
 5. **Manter a Fase 1 intacta**
    - sem mexer em `FarmPlot`, `SaveManager`, cenas ou fluxo validado.
 
+## 9) Blockout visual V0
+
+O blockout visual V0 da fazenda já pode ser implementado como camada de apresentação sem gameplay:
+
+- marcadores visuais simples para criaturas/animais mágicos;
+- marcadores visuais simples para golems/ajudantes;
+- marcadores visuais simples para recursos/forrageamento;
+- marcador visual da segunda área corrompida futura;
+- marcador visual de ruína/mistério futura.
+
+Esses elementos são apenas visuais, não entram em `lotes_terra` e não fazem parte do save.
+
 ## 7) O que fica para a Fase 2
 
 A Fase 2 deve concentrar as mudanças sistêmicas de fato:
