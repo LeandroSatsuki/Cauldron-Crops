@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-06-07 - Missão Inicial V0 da fazenda implementada
+- Foi adicionado um painel pequeno de objetivos iniciais na UI para guiar o loop principal da Fase 1.5.
+- A Missão Inicial V0 é runtime-only, separada do `QuestManager`, não persiste no save e se oculta após a conclusão.
+- O painel acompanha o progresso por leitura de estado existente, incluindo inventário, `FarmPlot`, purificação e expansão liberada.
+- A etapa `Colher` passou a exigir observação de lote pronto após o bootstrap da UI e só conclui quando o mesmo lote fica vazio depois disso, reduzindo falso positivo.
+- Ao carregar um save, o rastreamento runtime-only dos objetivos iniciais é reiniciado para evitar transições espúrias durante reload, e um save que abre vazio não conclui `Colher` sozinho.
+- `QuestBoard`, `QuestManager`, `SaveManager`, `FarmGridPreview` e `FarmGridManager` permaneceram preservados.
+- O fluxo runtime-only aceita falso negativo leve após reload em troca de reduzir falso positivo, especialmente na etapa `Colher`.
+
 ## 2026-06-06 - Blockout Visual V0 da fazenda implementado
 - `Scripts/Main.gd` passou a criar marcadores visuais runtime-only para zonas futuras da fazenda, sem gameplay e sem persistência.
 - O blockout marca visualmente áreas para criaturas/animais mágicos, golems/ajudantes, recursos/forrageamento, segunda área corrompida futura e ruína/mistério futura.

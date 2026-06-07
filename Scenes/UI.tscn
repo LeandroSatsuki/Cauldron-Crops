@@ -83,6 +83,44 @@ icon = ExtResource("7_toolfishingrod")
 tooltip_text = "Vara de Pesca"
 text = "4 Vara"
 
+[node name="InitialObjectivesPanel" type="PanelContainer" parent="." unique_id=1905000001]
+offset_left = 925.0
+offset_top = 20.0
+offset_right = 1260.0
+offset_bottom = 285.0
+mouse_filter = 2
+theme = ExtResource("3_pixeltheme")
+
+[node name="MarginContainer" type="MarginContainer" parent="InitialObjectivesPanel" unique_id=1905000002]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="VBoxObjectives" type="VBoxContainer" parent="InitialObjectivesPanel/MarginContainer" unique_id=1905000003]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="TitleLabel" type="Label" parent="InitialObjectivesPanel/MarginContainer/VBoxObjectives" unique_id=1905000004]
+layout_mode = 2
+text = "Objetivos iniciais"
+horizontal_alignment = 1
+
+[node name="CurrentObjectiveLabel" type="Label" parent="InitialObjectivesPanel/MarginContainer/VBoxObjectives" unique_id=1905000005]
+layout_mode = 2
+text = "Objetivo atual: carregando..."
+autowrap_mode = 3
+
+[node name="StepsContainer" type="VBoxContainer" parent="InitialObjectivesPanel/MarginContainer/VBoxObjectives" unique_id=1905000006]
+layout_mode = 2
+theme_override_constants/separation = 3
+
+[node name="FooterLabel" type="Label" parent="InitialObjectivesPanel/MarginContainer/VBoxObjectives" unique_id=1905000007]
+layout_mode = 2
+text = "Checklist runtime-only"
+autowrap_mode = 3
+
 [node name="LeftPanel" type="VBoxContainer" parent="." unique_id=1703485619]
 offset_left = 20.0
 offset_top = 200.0

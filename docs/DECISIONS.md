@@ -30,6 +30,19 @@
 - Motivo: reduzir a sensação de núcleo amontoado e preparar a leitura de zonas futuras sem tocar no loop validado.
 - Risco: qualquer marker visual futuro precisa continuar fora de grupos de gameplay e fora do schema de save.
 
+## Decisão 52 - Missão Inicial V0 separada do QuestManager
+- Problema: o loop principal precisava de orientação sem transformar o onboarding em um sistema grande de quests.
+- Decisão: criar a Missão Inicial V0 como checklist runtime-only dentro da UI, separada do `QuestManager` e sem persistência no save.
+- Motivo: guiar o jogador pelo fluxo básico da Fase 1.5 com baixo risco e sem mexer no sistema de demandas genéricas.
+- `Colher` permanece runtime-only por design: só conclui quando o mesmo lote foi observado como pronto após o bootstrap e depois ficou vazio; o rastreio é reiniciado em load para evitar falso positivo de inicialização/reload e também não conclui apenas porque o save abriu vazio.
+- Risco: etapas dependentes de ações transitórias podem ser heurísticas e precisar de leitura de estado mínima, sem acoplamento maior.
+
+## Decisão 53 - Risco aceitável de falso negativo pós-reload para objetivos runtime-only
+- Problema: objetivos runtime-only não podem depender de histórico salvo sem reintroduzir persistência nova.
+- Decisão: aceitar que o painel possa recalcular o estado de alguns passos a partir do estado atual após reload, priorizando ausência de falso positivo sobre cobertura perfeita do histórico.
+- Motivo: manter a Missão Inicial V0 simples, sem schema novo e sem reescrever o `SaveManager`.
+- Risco: a etapa `Colher` pode exigir observação na sessão atual após reload em vez de concluir imediatamente; esse trade-off é aceitável para V0.
+
 ## Decisão 1 - Golem automático desativado temporariamente
 - Problema: `GolemManager.gd` colhia automaticamente e conflitada com o golem físico.
 - Decisão: manter o código, mas desligar a automação com flag.

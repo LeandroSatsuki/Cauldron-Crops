@@ -674,4 +674,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			get_viewport().set_input_as_handled()
 		elif event.keycode == KEY_F9:
 			if SaveManager.load_game():
+				var ui_node := get_node_or_null("UI")
+				if ui_node and ui_node.has_method("reiniciar_objetivos_iniciais_apos_load"):
+					ui_node.call("reiniciar_objetivos_iniciais_apos_load")
 				get_viewport().set_input_as_handled()

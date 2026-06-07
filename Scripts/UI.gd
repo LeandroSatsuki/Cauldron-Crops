@@ -75,11 +75,27 @@ var purification_obstacle_ref: Node = null
 @onready var debug_test_farm_grid_button: Button = $DebugPanel/MarginContainer/ScrollContainer/VBoxDebug/BtnDebugTestFarmGrid
 @onready var debug_close_button: Button = $DebugPanel/MarginContainer/ScrollContainer/VBoxDebug/BtnFechar
 
+@onready var initial_objectives_panel: PanelContainer = $InitialObjectivesPanel
+@onready var initial_objectives_current_label: Label = $InitialObjectivesPanel/MarginContainer/VBoxObjectives/CurrentObjectiveLabel
+@onready var initial_objectives_steps_container: VBoxContainer = $InitialObjectivesPanel/MarginContainer/VBoxObjectives/StepsContainer
+@onready var initial_objectives_footer_label: Label = $InitialObjectivesPanel/MarginContainer/VBoxObjectives/FooterLabel
+
 var ultimo_estado_inventario: Dictionary = {}
 var item_focado_id: String = ""
 var custo_dormir: int = 5
 var timer_reset_dormir: float = 0.0
 var _status_update_accum: float = 0.0
+const INITIAL_OBJECTIVES_HIDE_DELAY: float = 3.5
+
+var _initial_objectives_last_signature: String = ""
+var _initial_objectives_completed: bool = false
+var _initial_objectives_completion_timer: float = 0.0
+var _initial_objectives_cauldron_used: bool = false
+var _initial_objectives_recipe_book_opened: bool = false
+var _initial_objectives_seed_baseline: Dictionary = {}
+var _initial_objectives_crop_baseline: Dictionary = {}
+var _initial_objectives_bootstrapped: bool = false
+var _initial_objectives_plot_states: Dictionary = {}
 
 var quest_board_visivel: bool:
 	get:
@@ -181,6 +197,10 @@ func _ready() -> void:
 	if debug_panel:
 		debug_panel.visible = false
 		debug_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	if initial_objectives_panel:
+		_aplicar_tema_pixel_ui(initial_objectives_panel)
+		initial_objectives_panel.visible = true
+		initial_objectives_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	if debug_add_seeds_button:
 		debug_add_seeds_button.pressed.connect(_on_debug_add_seeds_pressed)
 	if debug_add_water_button:
@@ -238,9 +258,11 @@ func _ready() -> void:
 		purification_close_button.pressed.connect(fechar_painel_purificacao)
 	
 	# Inicializa
+	_capturar_baseline_objetivos_iniciais()
 	verificar_e_atualizar_inventario()
 	atualizar_toolbar_ferramentas()
 	atualizar_status_jogo()
+	_atualizar_objetivos_iniciais(0.0)
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_F10:
@@ -327,6 +349,7 @@ func _process(delta: float) -> void:
 	if _status_update_accum >= 0.5:
 		_status_update_accum = 0.0
 		atualizar_status_jogo()
+	_atualizar_objetivos_iniciais(delta)
 
 func _aplicar_tema_pixel_ui(no: Node) -> void:
 	if no is Control:
@@ -645,6 +668,303 @@ func mostrar_feedback_purificacao(posicao_global: Vector2) -> void:
 	tween.tween_property(efeito, "modulate:a", 0.0, 0.24)
 	tween.tween_callback(efeito.queue_free)
 
+func _capturar_baseline_objetivos_iniciais() -> void:
+	_initial_objectives_seed_baseline = {
+		"semente_basica": int(GlobalInventory.inventario.get("semente_basica", 0)),
+		"semente_inverno": int(GlobalInventory.inventario.get("semente_inverno", 0)),
+		"semente_verao": int(GlobalInventory.inventario.get("semente_verao", 0))
+	}
+	_initial_objectives_crop_baseline = {}
+	_initial_objectives_bootstrapped = false
+	_initial_objectives_plot_states.clear()
+	_initial_objectives_last_signature = ""
+	_initial_objectives_completed = false
+	_initial_objectives_completion_timer = 0.0
+	_initial_objectives_cauldron_used = false
+	_initial_objectives_recipe_book_opened = false
+
+func _atualizar_objetivos_iniciais(delta: float) -> void:
+	if initial_objectives_panel == null:
+		return
+
+	if not _initial_objectives_bootstrapped:
+		var estado_inicial := _construir_estado_objetivos_iniciais(true)
+		_renderizar_objetivos_iniciais(estado_inicial)
+		_initial_objectives_last_signature = str(estado_inicial.get("signature", ""))
+		_initial_objectives_bootstrapped = true
+		return
+
+	if _initial_objectives_completed:
+		_initial_objectives_completion_timer += delta
+		if initial_objectives_current_label:
+			initial_objectives_current_label.text = "Objetivos iniciais concluídos"
+		if initial_objectives_footer_label:
+			initial_objectives_footer_label.text = "Objetivos iniciais concluídos"
+		if _initial_objectives_completion_timer >= INITIAL_OBJECTIVES_HIDE_DELAY:
+			initial_objectives_panel.visible = false
+		return
+
+	var estado := _construir_estado_objetivos_iniciais()
+	var signature := str(estado.get("signature", ""))
+	if signature == _initial_objectives_last_signature:
+		return
+	_initial_objectives_last_signature = signature
+	_renderizar_objetivos_iniciais(estado)
+	if bool(estado.get("complete", false)):
+		_marcar_objetivos_iniciais_concluidos()
+
+func _construir_estado_objetivos_iniciais(bootstrap_pass: bool = false) -> Dictionary:
+	var estado_lotes := _calcular_estado_lotes_objetivos(bootstrap_pass)
+	var seeds_done := _tem_sementes_iniciais()
+	var farm_done := bool(estado_lotes.get("arado", false)) and bool(estado_lotes.get("plantado", false)) and bool(estado_lotes.get("regado", false)) and bool(estado_lotes.get("colhido", false))
+	var cauldron_done := _initial_objectives_cauldron_used
+	var recipe_book_done := _initial_objectives_recipe_book_opened
+	var purification_done := _tem_primeira_area_purificada()
+	var expansion_done := _tem_expansao_liberada()
+	var complete := seeds_done and farm_done and cauldron_done and recipe_book_done and purification_done and expansion_done
+
+	var steps: Array = [
+		{
+			"key": "seeds",
+			"label": "Pegue sementes",
+			"done": seeds_done,
+			"summary": "Tenha sementes iniciais disponíveis."
+		},
+		{
+			"key": "farm",
+			"label": "Prepare e cultive um lote",
+			"done": farm_done,
+			"summary": "Arar, plantar, regar e colher.",
+			"substeps": [
+				{"label": "Arar", "done": bool(estado_lotes.get("arado", false))},
+				{"label": "Plantar", "done": bool(estado_lotes.get("plantado", false))},
+				{"label": "Regar", "done": bool(estado_lotes.get("regado", false))},
+				{"label": "Colher", "done": bool(estado_lotes.get("colhido", false))}
+			]
+		},
+		{
+			"key": "cauldron",
+			"label": "Use o caldeirão",
+			"done": cauldron_done,
+			"summary": "Produza ao menos um item com o caldeirão."
+		},
+		{
+			"key": "recipe_book",
+			"label": "Abra o Livro de Receitas",
+			"done": recipe_book_done,
+			"summary": "Abra o livro uma vez durante a sessão."
+		},
+		{
+			"key": "purify",
+			"label": "Purifique a primeira área",
+			"done": purification_done,
+			"summary": "Libere a área corrompida inicial."
+		},
+		{
+			"key": "expansion",
+			"label": "Use a expansão liberada",
+			"done": expansion_done,
+			"summary": "Interaja com o pocket 2x2 liberado."
+		}
+	]
+
+	var current_label := ""
+	for step in steps:
+		if not bool(step.get("done", false)):
+			current_label = str(step.get("label", ""))
+			break
+
+	if current_label == "":
+		current_label = "Objetivos iniciais concluídos"
+
+	var signature_parts: Array[String] = [
+		str(seeds_done),
+		str(bool(estado_lotes.get("arado", false))),
+		str(bool(estado_lotes.get("plantado", false))),
+		str(bool(estado_lotes.get("regado", false))),
+		str(bool(estado_lotes.get("colhido", false))),
+		str(cauldron_done),
+		str(recipe_book_done),
+		str(purification_done),
+		str(expansion_done),
+		current_label
+	]
+
+	return {
+		"complete": complete,
+		"current_label": current_label,
+		"steps": steps,
+		"signature": "|".join(signature_parts)
+	}
+
+func _calcular_estado_lotes_objetivos(bootstrap_pass: bool = false) -> Dictionary:
+	var estado := {
+		"arado": false,
+		"plantado": false,
+		"regado": false,
+		"colhido": false
+	}
+
+	var tree := get_tree()
+	if tree == null:
+		return estado
+
+	var lotes: Array = tree.get_nodes_in_group("lotes_terra")
+	for lote_variant in lotes:
+		var lote: Node = lote_variant
+		if lote == null or not is_instance_valid(lote):
+			continue
+		if not lote.has_method("get_save_data"):
+			continue
+		var save_data_variant: Variant = lote.call("get_save_data")
+		if typeof(save_data_variant) != TYPE_DICTIONARY:
+			continue
+		var save_data: Dictionary = save_data_variant
+		if bool(save_data.get("arado", false)):
+			estado["arado"] = true
+		if str(save_data.get("semente_id_plantada", "")) != "":
+			estado["plantado"] = true
+		if bool(save_data.get("regado", false)):
+			estado["regado"] = true
+		if _registrar_harvest_state(lote.name, save_data, bootstrap_pass):
+			estado["colhido"] = true
+
+	return estado
+
+func _registrar_harvest_state(plot_name: String, save_data: Dictionary, bootstrap_pass: bool = false) -> bool:
+	if plot_name == "":
+		return false
+
+	var current_state: int = int(save_data.get("estado_atual", 0))
+	var current_ready: bool = bool(save_data.get("pronto_para_colher", false)) or current_state == 2
+	var current_empty: bool = current_state == 0 and str(save_data.get("semente_id_plantada", "")) == "" and not bool(save_data.get("arado", false))
+
+	var plot_state: Dictionary = _initial_objectives_plot_states.get(plot_name, {})
+	if plot_state.is_empty():
+		plot_state = {
+			"initialized": true,
+			"last_ready": current_ready,
+			"ready_seen_after_bootstrap": false,
+			"collected": false
+		}
+		_initial_objectives_plot_states[plot_name] = plot_state
+		return false
+
+	if bootstrap_pass:
+		plot_state["last_ready"] = current_ready
+		_initial_objectives_plot_states[plot_name] = plot_state
+		return false
+
+	var last_ready: bool = bool(plot_state.get("last_ready", false))
+	var ready_seen_after_bootstrap: bool = bool(plot_state.get("ready_seen_after_bootstrap", false))
+	var harvested: bool = false
+
+	if current_ready:
+		ready_seen_after_bootstrap = true
+		plot_state["ready_seen_after_bootstrap"] = true
+
+	if current_empty and last_ready and ready_seen_after_bootstrap and not bool(plot_state.get("collected", false)):
+		harvested = true
+		plot_state["collected"] = true
+
+	plot_state["last_ready"] = current_ready
+	_initial_objectives_plot_states[plot_name] = plot_state
+	return harvested
+
+func _tem_sementes_iniciais() -> bool:
+	for item_id in _initial_objectives_seed_baseline.keys():
+		if int(GlobalInventory.inventario.get(item_id, 0)) > 0:
+			return true
+	return false
+
+func _tem_primeira_area_purificada() -> bool:
+	var tree := get_tree()
+	if tree == null:
+		return false
+
+	var obstacles: Array = tree.get_nodes_in_group("purification_obstacle")
+	for obstacle_variant in obstacles:
+		var obstacle: Node = obstacle_variant
+		if obstacle == null or not is_instance_valid(obstacle):
+			continue
+		if obstacle.has_method("get_save_data"):
+			var save_data_variant: Variant = obstacle.call("get_save_data")
+			if typeof(save_data_variant) == TYPE_DICTIONARY:
+				var save_data: Dictionary = save_data_variant
+				if bool(save_data.get("purified", false)):
+					return true
+	return false
+
+func _tem_expansao_liberada() -> bool:
+	var tree := get_tree()
+	if tree == null or tree.current_scene == null:
+		return false
+
+	var expansion_plot_names: Array[String] = ["FarmPlot_6_0", "FarmPlot_6_1", "FarmPlot_7_0", "FarmPlot_7_1"]
+	for plot_name in expansion_plot_names:
+		var plot: Node = tree.current_scene.get_node_or_null(plot_name)
+		if plot == null or not is_instance_valid(plot):
+			continue
+		if plot.has_method("is_expansion_blocked") and not bool(plot.call("is_expansion_blocked")):
+			return true
+	return false
+
+func _renderizar_objetivos_iniciais(estado: Dictionary) -> void:
+	if initial_objectives_panel == null:
+		return
+
+	if initial_objectives_panel.visible == false and not bool(estado.get("complete", false)):
+		initial_objectives_panel.visible = true
+
+	if initial_objectives_current_label:
+		initial_objectives_current_label.text = "Objetivo atual: %s" % str(estado.get("current_label", ""))
+	if initial_objectives_footer_label:
+		initial_objectives_footer_label.text = "Checklist runtime-only"
+
+	for child in initial_objectives_steps_container.get_children():
+		child.queue_free()
+
+	for step_variant in estado.get("steps", []):
+		if typeof(step_variant) != TYPE_DICTIONARY:
+			continue
+		var step: Dictionary = step_variant
+		var step_label := Label.new()
+		step_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		step_label.text = "%s %s" % ["☑" if bool(step.get("done", false)) else "☐", str(step.get("label", ""))]
+		if bool(step.get("done", false)):
+			step_label.modulate = Color(0.75, 1.0, 0.75)
+		elif str(step.get("label", "")) == str(estado.get("current_label", "")):
+			step_label.modulate = Color(1.0, 0.95, 0.7)
+		initial_objectives_steps_container.add_child(step_label)
+
+		var substeps: Array = step.get("substeps", [])
+		for substep_variant in substeps:
+			if typeof(substep_variant) != TYPE_DICTIONARY:
+				continue
+			var substep: Dictionary = substep_variant
+			var sub_label := Label.new()
+			sub_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+			sub_label.text = "   %s %s" % ["☑" if bool(substep.get("done", false)) else "☐", str(substep.get("label", ""))]
+			if bool(substep.get("done", false)):
+				sub_label.modulate = Color(0.72, 0.92, 1.0)
+			initial_objectives_steps_container.add_child(sub_label)
+
+	if bool(estado.get("complete", false)):
+		if initial_objectives_current_label:
+			initial_objectives_current_label.text = "Objetivos iniciais concluídos"
+		if initial_objectives_footer_label:
+			initial_objectives_footer_label.text = "Objetivos iniciais concluídos"
+
+func _marcar_objetivos_iniciais_concluidos() -> void:
+	_initial_objectives_completed = true
+	_initial_objectives_completion_timer = 0.0
+	if initial_objectives_panel:
+		initial_objectives_panel.visible = true
+	if initial_objectives_current_label:
+		initial_objectives_current_label.text = "Objetivos iniciais concluídos"
+	if initial_objectives_footer_label:
+		initial_objectives_footer_label.text = "Objetivos iniciais concluídos"
+
 func _on_abrir_quests_pressed() -> void:
 	if quest_board:
 		quest_board.visible = true
@@ -724,6 +1044,7 @@ func _on_debug_save_pressed() -> void:
 func _on_debug_load_pressed() -> void:
 	if SaveManager and SaveManager.load_game():
 		print("Debug: jogo carregado.")
+		reiniciar_objetivos_iniciais_apos_load()
 		_atualizar_pos_debug_acao()
 	else:
 		push_warning("Debug: falha ao carregar o jogo.")
@@ -1174,12 +1495,22 @@ func abrir_livro_receitas(fechar_caldeirao: bool = false, cauldron: Node = null)
 
 	if recipe_book and recipe_book.has_method("abrir"):
 		recipe_book.abrir()
+		_initial_objectives_recipe_book_opened = true
+		_atualizar_objetivos_iniciais(0.0)
 	else:
 		push_warning("Livro de Receitas nao pode ser aberto porque a instancia nao foi encontrada.")
 
 func fechar_livro_receitas() -> void:
 	if recipe_book and recipe_book.has_method("fechar"):
 		recipe_book.fechar()
+
+func reiniciar_objetivos_iniciais_apos_load() -> void:
+	_capturar_baseline_objetivos_iniciais()
+	if initial_objectives_panel:
+		initial_objectives_panel.visible = true
+		initial_objectives_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_renderizar_objetivos_iniciais(_construir_estado_objetivos_iniciais(true))
+	_initial_objectives_last_signature = ""
 
 func _on_recipe_book_craft_requested(recipe_id: String, quantidade: int) -> void:
 	var cauldron_ui: Node = null
@@ -1192,6 +1523,8 @@ func _on_recipe_book_craft_requested(recipe_id: String, quantidade: int) -> void
 
 	var sucesso := bool(cauldron_ui.iniciar_producao_em_lote(recipe_id, quantidade))
 	if sucesso:
+		_initial_objectives_cauldron_used = true
+		_atualizar_objetivos_iniciais(0.0)
 		fechar_livro_receitas()
 	else:
 		push_warning("A producao em lote falhou para a receita %s." % recipe_id)

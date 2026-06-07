@@ -64,6 +64,7 @@ Avançar para o conteúdo mínimo da Fase 1 remanescente e manter a documentaç�
 - Reservar espaço para a segunda área corrompida.
 - Definir zonas principais por função.
 - Manter a Fase 1 funcional intacta enquanto a fazenda ganha forma maior.
+- Criar a Missão Inicial V0 runtime-only, separada do QuestManager, para guiar o loop principal sem persistência.
 
 ## Fase 2 - Solo livre e expansão sistêmica
 - Implementar solo livre / FarmGrid real.

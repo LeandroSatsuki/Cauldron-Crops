@@ -121,6 +121,15 @@ O blockout visual V0 da fazenda já pode ser implementado como camada de apresen
 
 Esses elementos são apenas visuais, não entram em `lotes_terra` e não fazem parte do save.
 
+## Missão Inicial V0
+
+A Missão Inicial V0 pode existir como um checklist runtime-only dentro da UI para guiar o loop principal sem criar um sistema grande de quests.
+
+- Deve ficar separada do `QuestManager` e do `QuestBoard`.
+- Deve ler o estado atual do jogo e avançar sem persistir progresso.
+- Pode usar leitura segura de inventário, `FarmPlot` e do obstáculo de purificação para acompanhar etapas básicas.
+- Deve ocultar o painel após a conclusão, sem bloquear gameplay.
+
 ## 7) O que fica para a Fase 2
 
 A Fase 2 deve concentrar as mudanças sistêmicas de fato:
