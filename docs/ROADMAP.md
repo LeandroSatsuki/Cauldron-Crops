@@ -4,6 +4,11 @@
 - O projeto já possui sistemas iniciais.
 - O golem automático foi desativado temporariamente para estabilizar testes manuais.
 
+## Fase 1.5 - Ajudantes e gestão runtime-only
+- Interface do Golem V0 adicionada para expor status, talento, tarefa atual e prioridade de trabalho.
+- A prioridade do golem permanece runtime-only nesta V0; reiniciar o jogo volta ao comportamento padrão.
+- O Golem Irrigador passou a regar lotes plantados e secos quando o talento está desbloqueado, sem criar um novo golem.
+
 ## Fase 1 - Protótipo jogável do loop principal
 
 ### Objetivo da Fase 1
@@ -65,6 +70,7 @@ Avançar para o conteúdo mínimo da Fase 1 remanescente e manter a documentaç�
 - Definir zonas principais por função.
 - Manter a Fase 1 funcional intacta enquanto a fazenda ganha forma maior.
 - Criar a Missão Inicial V0 runtime-only, separada do QuestManager, para guiar o loop principal sem persistência.
+- Evoluir o golem físico existente com o talento `Golem Irrigador`, preservando a coleta e adicionando suporte a rega sem criar uma entidade nova.
 
 ## Fase 2 - Solo livre e expansão sistêmica
 - Implementar solo livre / FarmGrid real.

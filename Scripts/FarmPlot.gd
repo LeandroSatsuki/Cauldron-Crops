@@ -234,6 +234,27 @@ func _regar_lote_por_ferramenta() -> bool:
 
 	return true
 
+func pode_ser_regado_por_golem() -> bool:
+	if estado_atual != State.CRESCENDO:
+		return false
+	if regado:
+		return false
+	if expansion_blocked:
+		return false
+	if not visible:
+		return false
+	return true
+
+func regar_por_golem() -> bool:
+	if not pode_ser_regado_por_golem():
+		return false
+
+	regado = true
+	_atualizar_visual()
+	if timer and timer.time_left > 0.0:
+		timer.start(timer.time_left * 0.8)
+	return true
+
 func harvest_by_golem() -> Array:
 	if estado_atual != State.PRONTO_PARA_COLHER:
 		return []

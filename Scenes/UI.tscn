@@ -1,483 +1,1162 @@
 [gd_scene format=3 uid="uid://dw5w54uf0bly5"]
 
+
+
 [ext_resource type="Script" uid="uid://cpbky483ya1uj" path="res://Scripts/UI.gd" id="1_uigd"]
+
 [ext_resource type="PackedScene" path="res://Scenes/SellMenu.tscn" id="2_sellscene"]
+
 [ext_resource type="Theme" path="res://Themes/pixel_ui_theme.tres" id="3_pixeltheme"]
+
 [ext_resource type="Texture2D" path="res://Assets/Tools/tool_hoe.png" id="4_toolhoe"]
+
 [ext_resource type="Texture2D" path="res://Assets/Tools/tool_watering_can.png" id="5_toolwateringcan"]
+
 [ext_resource type="Texture2D" path="res://Assets/Tools/tool_harvest.png" id="6_toolharvest"]
+
 [ext_resource type="Texture2D" path="res://Assets/Tools/tool_fishing_rod.png" id="7_toolfishingrod"]
 
+
+
 [node name="UI" type="CanvasLayer" unique_id=570246364]
+
 script = ExtResource("1_uigd")
 
+
+
 [node name="StatusPanel" type="VBoxContainer" parent="." unique_id=2048173949]
+
 offset_left = 20.0
+
 offset_top = 20.0
+
 offset_right = 250.0
+
 offset_bottom = 180.0
+
 theme = ExtResource("3_pixeltheme")
+
 theme_override_constants/separation = 5
 
+
+
 [node name="MoedasLabel" type="Label" parent="StatusPanel" unique_id=1932157237]
+
 layout_mode = 2
+
 text = "Moedas: 0"
 
+
+
 [node name="SeasonLabel" type="Label" parent="StatusPanel" unique_id=966561422]
+
 layout_mode = 2
+
 text = "Estação: Primavera | Ano: 1"
 
+
+
 [node name="CargasLabel" type="Label" parent="StatusPanel" unique_id=348134435]
+
 layout_mode = 2
+
 text = "Água: 0"
 
+
+
 [node name="SementeLabel" type="Label" parent="StatusPanel" unique_id=14489961]
+
 layout_mode = 2
+
 text = "Semente Atual: Trigo"
 
+
+
 [node name="GolemsLabel" type="Label" parent="StatusPanel" unique_id=1742243833]
+
 layout_mode = 2
+
 text = "Golems Ativos: 0"
 
+
+
 [node name="CapacityLabel" type="Label" parent="StatusPanel" unique_id=2147483646]
+
 layout_mode = 2
+
 text = "Capacidade: 0/0"
 
+
+
 [node name="ChestStatusLabel" type="Label" parent="StatusPanel" unique_id=2147483645]
+
 layout_mode = 2
+
 text = "Baú: não encontrado"
 
+
+
 [node name="ToolLabel" type="Label" parent="StatusPanel" unique_id=1730000001]
+
 layout_mode = 2
+
 text = "Ferramenta: Nenhuma"
 
+
+
 [node name="ToolBarPanel" type="HBoxContainer" parent="." unique_id=1730001000]
+
 offset_left = 300.0
+
 offset_top = 92.0
+
 offset_right = 720.0
+
 offset_bottom = 144.0
+
 theme = ExtResource("3_pixeltheme")
+
 theme_override_constants/separation = 8
+
+
 
 [node name="BtnToolHoe" type="Button" parent="ToolBarPanel" unique_id=1730000002]
+
 layout_mode = 2
+
 icon = ExtResource("4_toolhoe")
+
 tooltip_text = "Enxada"
+
 text = "1 Enxada"
 
+
+
 [node name="BtnToolWateringCan" type="Button" parent="ToolBarPanel" unique_id=1730000004]
+
 layout_mode = 2
+
 icon = ExtResource("5_toolwateringcan")
+
 tooltip_text = "Regador"
+
 text = "2 Regador"
 
+
+
 [node name="BtnToolHarvest" type="Button" parent="ToolBarPanel" unique_id=1730000005]
+
 layout_mode = 2
+
 icon = ExtResource("6_toolharvest")
+
 tooltip_text = "Colheita"
+
 text = "3 Colheita"
 
+
+
 [node name="BtnToolFishingRod" type="Button" parent="ToolBarPanel" unique_id=1730000006]
+
 layout_mode = 2
+
 icon = ExtResource("7_toolfishingrod")
+
 tooltip_text = "Vara de Pesca"
+
 text = "4 Vara"
 
+
+
 [node name="InitialObjectivesPanel" type="PanelContainer" parent="." unique_id=1905000001]
+
 offset_left = 925.0
+
 offset_top = 20.0
+
 offset_right = 1260.0
+
 offset_bottom = 285.0
+
 mouse_filter = 2
+
 theme = ExtResource("3_pixeltheme")
+
+
 
 [node name="MarginContainer" type="MarginContainer" parent="InitialObjectivesPanel" unique_id=1905000002]
+
 layout_mode = 2
+
 theme_override_constants/margin_left = 12
+
 theme_override_constants/margin_top = 12
+
 theme_override_constants/margin_right = 12
+
 theme_override_constants/margin_bottom = 12
+
+
 
 [node name="VBoxObjectives" type="VBoxContainer" parent="InitialObjectivesPanel/MarginContainer" unique_id=1905000003]
+
 layout_mode = 2
+
 theme_override_constants/separation = 6
 
+
+
 [node name="TitleLabel" type="Label" parent="InitialObjectivesPanel/MarginContainer/VBoxObjectives" unique_id=1905000004]
+
 layout_mode = 2
+
 text = "Objetivos iniciais"
+
 horizontal_alignment = 1
+
+
 
 [node name="CurrentObjectiveLabel" type="Label" parent="InitialObjectivesPanel/MarginContainer/VBoxObjectives" unique_id=1905000005]
+
 layout_mode = 2
+
 text = "Objetivo atual: carregando..."
+
 autowrap_mode = 3
+
+
 
 [node name="StepsContainer" type="VBoxContainer" parent="InitialObjectivesPanel/MarginContainer/VBoxObjectives" unique_id=1905000006]
+
 layout_mode = 2
+
 theme_override_constants/separation = 3
 
+
+
 [node name="FooterLabel" type="Label" parent="InitialObjectivesPanel/MarginContainer/VBoxObjectives" unique_id=1905000007]
+
 layout_mode = 2
+
 text = "Checklist runtime-only"
+
 autowrap_mode = 3
+
+
 
 [node name="LeftPanel" type="VBoxContainer" parent="." unique_id=1703485619]
+
 offset_left = 20.0
+
 offset_top = 200.0
+
 offset_right = 250.0
+
 offset_bottom = 800.0
+
 theme = ExtResource("3_pixeltheme")
+
 theme_override_constants/separation = 10
+
+
 
 [node name="HeaderAcoes" type="Label" parent="LeftPanel" unique_id=1722522138]
+
 modulate = Color(1, 1, 0, 1)
+
 layout_mode = 2
+
 text = "--- GERENCIAMENTO ---"
+
 horizontal_alignment = 1
+
+
 
 [node name="DormirButton" type="Button" parent="LeftPanel" unique_id=2091208078]
+
 layout_mode = 2
+
 text = "Dormir (Mudar Estação)"
 
+
+
 [node name="UsarPocaoButton" type="Button" parent="LeftPanel" unique_id=131889047]
+
 layout_mode = 2
+
 text = "Usar Poção (3 Cargas)"
 
+
+
 [node name="AbrirSkillTreeButton" type="Button" parent="LeftPanel" unique_id=1432251359]
+
 layout_mode = 2
+
 text = "Árvore de Alquimia"
 
-[node name="AbrirQuestsButton" type="Button" parent="LeftPanel" unique_id=2117830448]
+
+
+[node name="AbrirGolemButton" type="Button" parent="LeftPanel" unique_id=1900000200]
+
 layout_mode = 2
+
+text = "Golem / Ajudante"
+
+
+
+[node name="AbrirQuestsButton" type="Button" parent="LeftPanel" unique_id=2117830448]
+
+layout_mode = 2
+
 text = "Mural de Demandas"
 
+
+
 [node name="AlertaQuest" type="Label" parent="LeftPanel/AbrirQuestsButton" unique_id=800257725]
+
 visible = false
+
 layout_mode = 1
+
 anchors_preset = 1
+
 anchor_left = 1.0
+
 anchor_right = 1.0
+
 offset_left = -25.0
+
 offset_top = -5.0
+
 offset_right = -5.0
+
 offset_bottom = 21.0
+
 grow_horizontal = 0
+
 theme_override_colors/font_color = Color(0.945098, 0.768627, 0.0588235, 1)
+
 text = "❗"
+
 horizontal_alignment = 2
 
+
+
 [node name="AbrirLivroReceitasButton" type="Button" parent="LeftPanel" unique_id=1779835986]
+
 layout_mode = 2
+
 text = "Livro de Receitas"
 
+
+
 [node name="Separator1" type="HSeparator" parent="LeftPanel" unique_id=1773945761]
+
 layout_mode = 2
+
+
 
 [node name="HeaderLoja" type="Label" parent="LeftPanel" unique_id=1646114359]
+
 modulate = Color(1, 1, 0, 1)
+
 layout_mode = 2
+
 text = "--- LOJA DE RECURSOS ---"
+
 horizontal_alignment = 1
+
+
 
 [node name="GridSementes" type="HBoxContainer" parent="LeftPanel" unique_id=248111658]
+
 layout_mode = 2
+
 theme_override_constants/separation = 10
+
+
 
 [node name="ComprarTrigoButton" type="Button" parent="LeftPanel/GridSementes" unique_id=602916330]
+
 custom_minimum_size = Vector2(50, 50)
+
 layout_mode = 2
+
 text = "🌾 $5"
 
+
+
 [node name="ComprarVeraoButton" type="Button" parent="LeftPanel/GridSementes" unique_id=1539986390]
+
 custom_minimum_size = Vector2(50, 50)
+
 layout_mode = 2
+
 text = "🍅 $10"
 
+
+
 [node name="Separator3" type="HSeparator" parent="LeftPanel" unique_id=1108179252]
+
 layout_mode = 2
+
+
 
 [node name="HeaderUpgrades" type="Label" parent="LeftPanel" unique_id=1519303709]
+
 modulate = Color(1, 1, 0, 1)
+
 layout_mode = 2
+
 text = "--- LOJA DE APRIMORAMENTOS ---"
+
 horizontal_alignment = 1
+
+
 
 [node name="ComprarCosmeticoButton" type="Button" parent="LeftPanel" unique_id=737885919]
+
 layout_mode = 2
+
 text = "Comprar Tema Verde (50 Moedas)"
 
+
+
 [node name="InventoryBar" type="HBoxContainer" parent="." unique_id=691947243]
+
 offset_left = 300.0
+
 offset_top = 20.0
+
 offset_right = 1150.0
+
 offset_bottom = 80.0
+
 theme = ExtResource("3_pixeltheme")
+
 theme_override_constants/separation = 10
+
+
 
 [node name="TooltipPanel" type="Panel" parent="." unique_id=528137829]
+
 visible = false
+
 offset_left = 270.0
+
 offset_top = 350.0
+
 offset_right = 570.0
+
 offset_bottom = 550.0
+
 theme = ExtResource("3_pixeltheme")
+
+
 
 [node name="TooltipTexto" type="Label" parent="TooltipPanel" unique_id=1500808006]
+
 layout_mode = 0
+
 offset_left = 15.0
+
 offset_top = 15.0
+
 offset_right = 285.0
+
 offset_bottom = 185.0
+
 text = "Nome:
+
 Estação:
+
 Uso:"
 
+
+
 [node name="SellMenu" parent="." unique_id=237673747 instance=ExtResource("2_sellscene")]
+
 theme = ExtResource("3_pixeltheme")
+
+
+
+[node name="GolemPanel" type="PanelContainer" parent="." unique_id=1900000100]
+
+visible = false
+
+custom_minimum_size = Vector2(360, 420)
+
+anchors_preset = 8
+
+anchor_left = 0.5
+
+anchor_top = 0.5
+
+anchor_right = 0.5
+
+anchor_bottom = 0.5
+
+offset_left = -180.0
+
+offset_top = -210.0
+
+offset_right = 180.0
+
+offset_bottom = 210.0
+
+grow_horizontal = 2
+
+grow_vertical = 2
+
+mouse_filter = 2
+
+theme = ExtResource("3_pixeltheme")
+
+
+
+[node name="MarginContainer" type="MarginContainer" parent="GolemPanel" unique_id=1900000101]
+
+layout_mode = 2
+
+theme_override_constants/margin_left = 12
+
+theme_override_constants/margin_top = 12
+
+theme_override_constants/margin_right = 12
+
+theme_override_constants/margin_bottom = 12
+
+
+
+[node name="VBoxGolem" type="VBoxContainer" parent="GolemPanel/MarginContainer" unique_id=1900000102]
+
+layout_mode = 2
+
+theme_override_constants/separation = 8
+
+
+
+[node name="TitleLabel" type="Label" parent="GolemPanel/MarginContainer/VBoxGolem" unique_id=1900000103]
+
+layout_mode = 2
+
+text = "Golem"
+
+horizontal_alignment = 1
+
+
+
+[node name="StatusLabel" type="Label" parent="GolemPanel/MarginContainer/VBoxGolem" unique_id=1900000104]
+
+layout_mode = 2
+
+text = "Golem: --"
+
+autowrap_mode = 3
+
+
+
+[node name="TalentLabel" type="Label" parent="GolemPanel/MarginContainer/VBoxGolem" unique_id=1900000105]
+
+layout_mode = 2
+
+text = "Talento Golem Irrigador: --"
+
+autowrap_mode = 3
+
+
+
+[node name="TaskLabel" type="Label" parent="GolemPanel/MarginContainer/VBoxGolem" unique_id=1900000106]
+
+layout_mode = 2
+
+text = "Tarefa atual: --"
+
+autowrap_mode = 3
+
+
+
+[node name="PriorityLabel" type="Label" parent="GolemPanel/MarginContainer/VBoxGolem" unique_id=1900000107]
+layout_mode = 2
+text = "Prioridade atual: --"
+autowrap_mode = 3
+
+
+[node name="TargetLabel" type="Label" parent="GolemPanel/MarginContainer/VBoxGolem" unique_id=1900000115]
+layout_mode = 2
+text = "Último alvo: --"
+autowrap_mode = 3
+
+
+[node name="ActionLabel" type="Label" parent="GolemPanel/MarginContainer/VBoxGolem" unique_id=1900000116]
+layout_mode = 2
+text = "Última ação: --"
+autowrap_mode = 3
+
+
+[node name="CountsLabel" type="Label" parent="GolemPanel/MarginContainer/VBoxGolem" unique_id=1900000117]
+layout_mode = 2
+text = "Contagem: maduros 0 | secos 0"
+autowrap_mode = 3
+
+
+
+[node name="GridPriorities" type="GridContainer" parent="GolemPanel/MarginContainer/VBoxGolem" unique_id=1900000108]
+
+layout_mode = 2
+
+columns = 2
+
+theme_override_constants/h_separation = 8
+
+theme_override_constants/v_separation = 8
+
+
+
+[node name="BtnGolemHarvestFirst" type="Button" parent="GolemPanel/MarginContainer/VBoxGolem/GridPriorities" unique_id=1900000109]
+
+layout_mode = 2
+
+text = "Colher primeiro"
+
+
+
+[node name="BtnGolemWaterFirst" type="Button" parent="GolemPanel/MarginContainer/VBoxGolem/GridPriorities" unique_id=1900000110]
+
+layout_mode = 2
+
+text = "Regar primeiro"
+
+
+
+[node name="BtnGolemHarvestOnly" type="Button" parent="GolemPanel/MarginContainer/VBoxGolem/GridPriorities" unique_id=1900000111]
+
+layout_mode = 2
+
+text = "Só colher"
+
+
+
+[node name="BtnGolemWaterOnly" type="Button" parent="GolemPanel/MarginContainer/VBoxGolem/GridPriorities" unique_id=1900000112]
+
+layout_mode = 2
+
+text = "Só regar"
+
+
+
+[node name="BtnGolemPause" type="Button" parent="GolemPanel/MarginContainer/VBoxGolem/GridPriorities" unique_id=1900000113]
+
+layout_mode = 2
+
+text = "Pausar"
+
+
+
+[node name="BtnFechar" type="Button" parent="GolemPanel/MarginContainer/VBoxGolem" unique_id=1900000114]
+
+layout_mode = 2
+
+text = "Fechar"
+
+
 
 [node name="PurificationPanel" type="PanelContainer" parent="." unique_id=1900000001]
+
 visible = false
+
 custom_minimum_size = Vector2(760, 460)
+
 anchors_preset = 8
+
 anchor_left = 0.5
+
 anchor_top = 0.5
+
 anchor_right = 0.5
+
 anchor_bottom = 0.5
+
 offset_left = -380.0
+
 offset_top = -230.0
+
 offset_right = 380.0
+
 offset_bottom = 230.0
+
 grow_horizontal = 2
+
 grow_vertical = 2
+
 mouse_filter = 1
+
 theme = ExtResource("3_pixeltheme")
+
+
 
 [node name="MarginContainer" type="MarginContainer" parent="PurificationPanel" unique_id=1900000002]
+
 layout_mode = 2
+
 theme_override_constants/margin_left = 14
+
 theme_override_constants/margin_top = 14
+
 theme_override_constants/margin_right = 14
+
 theme_override_constants/margin_bottom = 14
 
+
+
 [node name="VBoxPurification" type="VBoxContainer" parent="PurificationPanel/MarginContainer" unique_id=1900000003]
+
 layout_mode = 2
+
 theme_override_constants/separation = 10
+
+
 
 [node name="HeaderBar" type="VBoxContainer" parent="PurificationPanel/MarginContainer/VBoxPurification" unique_id=1900000004]
+
 layout_mode = 2
+
 theme_override_constants/separation = 4
 
+
+
 [node name="TitleLabel" type="Label" parent="PurificationPanel/MarginContainer/VBoxPurification/HeaderBar" unique_id=1900000005]
+
 layout_mode = 2
+
 text = "Purificação da Área"
+
 horizontal_alignment = 1
+
+
 
 [node name="StatusLabel" type="Label" parent="PurificationPanel/MarginContainer/VBoxPurification/HeaderBar" unique_id=1900000006]
+
 layout_mode = 2
+
 text = "Selecione uma área bloqueada."
+
 autowrap_mode = 2
+
+
 
 [node name="HintLabel" type="Label" parent="PurificationPanel/MarginContainer/VBoxPurification/HeaderBar" unique_id=1900000013]
+
 layout_mode = 2
+
 text = "Entregar tudo disponível só entrega recursos. Purificar Área é a etapa final."
+
 autowrap_mode = 2
+
 theme_override_colors/font_color = Color(0.8, 0.88, 1, 1)
 
+
+
 [node name="ScrollContainer" type="ScrollContainer" parent="PurificationPanel/MarginContainer/VBoxPurification" unique_id=1900000007]
+
 layout_mode = 2
+
 size_flags_vertical = 3
 
+
+
 [node name="RequirementsList" type="VBoxContainer" parent="PurificationPanel/MarginContainer/VBoxPurification/ScrollContainer" unique_id=1900000008]
+
 layout_mode = 2
+
 theme_override_constants/separation = 8
+
+
 
 [node name="ButtonsRow" type="HBoxContainer" parent="PurificationPanel/MarginContainer/VBoxPurification" unique_id=1900000009]
+
 layout_mode = 2
+
 theme_override_constants/separation = 8
+
+
 
 [node name="BtnEntregarTudo" type="Button" parent="PurificationPanel/MarginContainer/VBoxPurification/ButtonsRow" unique_id=1900000010]
+
 layout_mode = 2
+
 size_flags_horizontal = 3
+
 text = "Entregar tudo disponível"
 
+
+
 [node name="BtnPurificarArea" type="Button" parent="PurificationPanel/MarginContainer/VBoxPurification/ButtonsRow" unique_id=1900000011]
+
 layout_mode = 2
+
 size_flags_horizontal = 3
+
 text = "Purificar Área"
 
+
+
 [node name="BtnFechar" type="Button" parent="PurificationPanel/MarginContainer/VBoxPurification/ButtonsRow" unique_id=1900000012]
+
 layout_mode = 2
+
 text = "Fechar"
+
+
 
 [node name="VillageChestPanel" type="PanelContainer" parent="." unique_id=574568525]
+
 visible = false
+
 offset_left = 470.0
+
 offset_top = 180.0
+
 offset_right = 820.0
+
 offset_bottom = 420.0
+
 theme = ExtResource("3_pixeltheme")
+
+
 
 [node name="MarginContainer" type="MarginContainer" parent="VillageChestPanel" unique_id=987751860]
+
 layout_mode = 2
+
 theme_override_constants/margin_left = 12
+
 theme_override_constants/margin_top = 12
+
 theme_override_constants/margin_right = 12
+
 theme_override_constants/margin_bottom = 12
+
+
 
 [node name="VBoxChest" type="VBoxContainer" parent="VillageChestPanel/MarginContainer" unique_id=1968060145]
+
 layout_mode = 2
+
 theme_override_constants/separation = 10
+
+
 
 [node name="TitleLabel" type="Label" parent="VillageChestPanel/MarginContainer/VBoxChest" unique_id=989220907]
+
 layout_mode = 2
+
 text = "Baú da Vila"
+
 horizontal_alignment = 1
+
+
 
 [node name="ChestContents" type="RichTextLabel" parent="VillageChestPanel/MarginContainer/VBoxChest" unique_id=280472735]
+
 custom_minimum_size = Vector2(300, 140)
+
 layout_mode = 2
+
 bbcode_enabled = true
+
 text = "Baú vazio."
+
 fit_content = true
 
+
+
 [node name="ButtonsRow" type="HBoxContainer" parent="VillageChestPanel/MarginContainer/VBoxChest" unique_id=1191930841]
+
 layout_mode = 2
+
 theme_override_constants/separation = 10
 
+
+
 [node name="RetirarTudoButton" type="Button" parent="VillageChestPanel/MarginContainer/VBoxChest/ButtonsRow" unique_id=1099312039]
+
 layout_mode = 2
+
 text = "Retirar Tudo"
 
+
+
 [node name="FecharButton" type="Button" parent="VillageChestPanel/MarginContainer/VBoxChest/ButtonsRow" unique_id=1208024200]
+
 layout_mode = 2
+
 text = "Fechar"
 
+
+
 [node name="DebugPanel" type="PanelContainer" parent="."]
+
 visible = false
+
 mouse_filter = 2
+
 offset_left = 860.0
+
 offset_top = 120.0
+
 offset_right = 1230.0
+
 offset_bottom = 760.0
+
 theme = ExtResource("3_pixeltheme")
 
+
+
 [node name="MarginContainer" type="MarginContainer" parent="DebugPanel"]
+
 layout_mode = 2
+
 theme_override_constants/margin_left = 12
+
 theme_override_constants/margin_top = 12
+
 theme_override_constants/margin_right = 12
+
 theme_override_constants/margin_bottom = 12
 
+
+
 [node name="ScrollContainer" type="ScrollContainer" parent="DebugPanel/MarginContainer"]
+
 layout_mode = 2
+
 custom_minimum_size = Vector2(330, 620)
 
+
+
 [node name="VBoxDebug" type="VBoxContainer" parent="DebugPanel/MarginContainer/ScrollContainer"]
+
 layout_mode = 2
+
 theme_override_constants/separation = 8
 
+
+
 [node name="TitleLabel" type="Label" parent="DebugPanel/MarginContainer/ScrollContainer/VBoxDebug"]
+
 layout_mode = 2
+
 text = "Debug Panel"
+
 horizontal_alignment = 1
 
+
+
 [node name="InfoLabel" type="Label" parent="DebugPanel/MarginContainer/ScrollContainer/VBoxDebug"]
+
 layout_mode = 2
+
 text = "Ferramentas temporárias de teste. Não é UI final."
+
 autowrap_mode = 3
+
+
 
 [node name="DebugLastActionLabel" type="Label" parent="DebugPanel/MarginContainer/ScrollContainer/VBoxDebug"]
+
 layout_mode = 2
+
 text = "Última ação: nenhuma"
+
 autowrap_mode = 3
 
+
+
 [node name="SeparatorTop" type="HSeparator" parent="DebugPanel/MarginContainer/ScrollContainer/VBoxDebug"]
+
 layout_mode = 2
+
+
 
 [node name="LabelInventario" type="Label" parent="DebugPanel/MarginContainer/ScrollContainer/VBoxDebug"]
+
 layout_mode = 2
+
 text = "Inventário"
 
+
+
 [node name="BtnDebugAddSeeds" type="Button" parent="DebugPanel/MarginContainer/ScrollContainer/VBoxDebug"]
+
 layout_mode = 2
+
 text = "Adicionar sementes básicas"
 
+
+
 [node name="BtnDebugAddWater" type="Button" parent="DebugPanel/MarginContainer/ScrollContainer/VBoxDebug"]
+
 layout_mode = 2
+
 text = "Adicionar água"
 
-[node name="BtnDebugAddIngredients" type="Button" parent="DebugPanel/MarginContainer/ScrollContainer/VBoxDebug"]
+
+
+[node name="BtnDebugAddAlchemyPoints" type="Button" parent="DebugPanel/MarginContainer/ScrollContainer/VBoxDebug"]
+
 layout_mode = 2
+
+text = "Adicionar pontos de alquimia"
+
+
+
+[node name="BtnDebugAddIngredients" type="Button" parent="DebugPanel/MarginContainer/ScrollContainer/VBoxDebug"]
+
+layout_mode = 2
+
 text = "Adicionar ingredientes básicos"
 
+
+
 [node name="BtnDebugAddPurificationPotion" type="Button" parent="DebugPanel/MarginContainer/ScrollContainer/VBoxDebug"]
+
 layout_mode = 2
+
 text = "Dar Poção Purificadora"
 
+
+
 [node name="BtnDebugAddPurificationResources" type="Button" parent="DebugPanel/MarginContainer/ScrollContainer/VBoxDebug"]
+
 layout_mode = 2
+
 text = "Dar Recursos de Purificação"
 
+
+
 [node name="SeparatorRecipes" type="HSeparator" parent="DebugPanel/MarginContainer/ScrollContainer/VBoxDebug"]
+
 layout_mode = 2
+
+
 
 [node name="LabelReceitas" type="Label" parent="DebugPanel/MarginContainer/ScrollContainer/VBoxDebug"]
+
 layout_mode = 2
+
 text = "Receitas"
 
+
+
 [node name="BtnDebugDiscoverAllRecipes" type="Button" parent="DebugPanel/MarginContainer/ScrollContainer/VBoxDebug"]
+
 layout_mode = 2
+
 text = "Descobrir todas as receitas"
 
+
+
 [node name="SeparatorPlots" type="HSeparator" parent="DebugPanel/MarginContainer/ScrollContainer/VBoxDebug"]
+
 layout_mode = 2
+
+
 
 [node name="LabelLotes" type="Label" parent="DebugPanel/MarginContainer/ScrollContainer/VBoxDebug"]
+
 layout_mode = 2
+
 text = "Lotes"
 
+
+
 [node name="BtnDebugForceGrowth" type="Button" parent="DebugPanel/MarginContainer/ScrollContainer/VBoxDebug"]
+
 layout_mode = 2
+
 text = "Forçar crescimento dos lotes"
 
+
+
 [node name="BtnDebugDailyDecay" type="Button" parent="DebugPanel/MarginContainer/ScrollContainer/VBoxDebug"]
+
 layout_mode = 2
+
 text = "Simular Decay Diário"
 
+
+
 [node name="SeparatorSave" type="HSeparator" parent="DebugPanel/MarginContainer/ScrollContainer/VBoxDebug"]
+
 layout_mode = 2
+
+
 
 [node name="LabelSave" type="Label" parent="DebugPanel/MarginContainer/ScrollContainer/VBoxDebug"]
+
 layout_mode = 2
+
 text = "Save"
 
+
+
 [node name="BtnDebugSave" type="Button" parent="DebugPanel/MarginContainer/ScrollContainer/VBoxDebug"]
+
 layout_mode = 2
+
 text = "Salvar"
 
+
+
 [node name="BtnDebugLoad" type="Button" parent="DebugPanel/MarginContainer/ScrollContainer/VBoxDebug"]
+
 layout_mode = 2
+
 text = "Carregar"
 
+
+
 [node name="SeparatorChest" type="HSeparator" parent="DebugPanel/MarginContainer/ScrollContainer/VBoxDebug"]
+
 layout_mode = 2
+
+
 
 [node name="LabelBau" type="Label" parent="DebugPanel/MarginContainer/ScrollContainer/VBoxDebug"]
+
 layout_mode = 2
+
 text = "Baú da Vila"
 
+
+
 [node name="BtnDebugAddWheatChest" type="Button" parent="DebugPanel/MarginContainer/ScrollContainer/VBoxDebug"]
+
 layout_mode = 2
+
 text = "Adicionar trigo ao Baú"
 
+
+
 [node name="BtnDebugClearChest" type="Button" parent="DebugPanel/MarginContainer/ScrollContainer/VBoxDebug"]
+
 layout_mode = 2
+
 text = "Limpar Baú"
 
+
+
 [node name="BtnDebugTestFarmGrid" type="Button" parent="DebugPanel/MarginContainer/ScrollContainer/VBoxDebug"]
+
 layout_mode = 2
+
 text = "Testar FarmGrid"
 
+
+
 [node name="BtnFechar" type="Button" parent="DebugPanel/MarginContainer/ScrollContainer/VBoxDebug"]
+
 layout_mode = 2
+
 text = "Fechar"

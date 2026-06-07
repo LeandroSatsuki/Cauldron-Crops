@@ -9,10 +9,21 @@ extends CharacterBody2D
 @onready var crop_sensor_area: Area2D = $CropSensorArea
 @onready var navigation_agent: NavigationAgent2D = $NavigationAgent2D
 
+const PRIORITY_HARVEST_FIRST: int = 0
+const PRIORITY_WATER_FIRST: int = 1
+const PRIORITY_HARVEST_ONLY: int = 2
+const PRIORITY_WATER_ONLY: int = 3
+const PRIORITY_PAUSED: int = 4
+
 var state: String = "IDLE"
 var carried_rewards: Array = []
 var target_plot: Node2D = null
 var target_chest: Node2D = null
+var work_priority: int = PRIORITY_HARVEST_FIRST
+var lotes_maduros_encontrados: int = 0
+var lotes_secos_encontrados: int = 0
+var ultimo_alvo_detectado: String = "Nenhum"
+var ultima_acao: String = "aguardando trabalho"
 var _movement_callback: Callable = Callable()
 var _think_timer: Timer
 var _last_position: Vector2 = Vector2.ZERO
@@ -90,31 +101,288 @@ func _on_think_timer_timeout() -> void:
 	if state != "IDLE":
 		return
 
-	if not carried_rewards.is_empty():
-		_procurar_bau()
-	else:
-		_procurar_lote()
+	if work_priority == PRIORITY_PAUSED:
+		_registrar_acao("pausado")
+		return
 
-func _procurar_lote() -> void:
+	if not carried_rewards.is_empty():
+		_registrar_acao("indo ao baú")
+		_procurar_bau()
+		return
+
+	var talento_desbloqueado: bool = _tem_skill_golem_irrigador()
+	_recalcular_contadores_lotes()
+
+	match work_priority:
+		PRIORITY_HARVEST_ONLY:
+			if not _procurar_lote():
+				_registrar_acao("sem lote maduro")
+		PRIORITY_WATER_ONLY:
+			if talento_desbloqueado:
+				if not _procurar_lote_para_regar():
+					_registrar_acao("sem lote seco")
+			else:
+				_registrar_acao("rega bloqueada pelo talento")
+		PRIORITY_WATER_FIRST:
+			if talento_desbloqueado and _procurar_lote_para_regar():
+				return
+			if _procurar_lote():
+				return
+			if talento_desbloqueado:
+				_registrar_acao("sem lote seco")
+			else:
+				if lotes_maduros_encontrados > 0:
+					_registrar_acao("sem lote maduro")
+				else:
+					_registrar_acao("rega bloqueada pelo talento")
+		_:
+			if _procurar_lote():
+				return
+			if talento_desbloqueado and _procurar_lote_para_regar():
+				return
+			if lotes_maduros_encontrados > 0:
+				_registrar_acao("sem lote maduro")
+			elif talento_desbloqueado:
+				_registrar_acao("sem lote seco")
+			else:
+				_registrar_acao("sem lote maduro")
+
+func _tem_skill_golem_irrigador() -> bool:
+	return "skill_golem_irrigador" in GlobalInventory.skills_desbloqueadas
+
+func is_golem_active() -> bool:
+	return work_priority != PRIORITY_PAUSED
+
+func is_irrigation_skill_unlocked() -> bool:
+	return _tem_skill_golem_irrigador()
+
+func get_work_priority() -> int:
+	return work_priority
+
+func set_work_priority(nova_prioridade: int) -> bool:
+	if nova_prioridade < PRIORITY_HARVEST_FIRST or nova_prioridade > PRIORITY_PAUSED:
+		return false
+
+	work_priority = nova_prioridade
+	if work_priority == PRIORITY_PAUSED:
+		_parar_execucao_atual()
+	else:
+		if _prioridade_exige_talento_irrigador(work_priority) and not _tem_skill_golem_irrigador():
+			ultima_acao = "rega bloqueada pelo talento"
+		else:
+			ultima_acao = "aguardando trabalho"
+	return true
+
+func get_work_priority_label() -> String:
+	var bloqueada := _prioridade_exige_talento_irrigador(work_priority) and not _tem_skill_golem_irrigador()
+	match work_priority:
+		PRIORITY_HARVEST_FIRST:
+			return "Colher primeiro"
+		PRIORITY_WATER_FIRST:
+			return "Regar primeiro" + (" (bloqueado pelo talento)" if bloqueada else "")
+		PRIORITY_HARVEST_ONLY:
+			return "Só colher"
+		PRIORITY_WATER_ONLY:
+			return "Só regar" + (" (bloqueado pelo talento)" if bloqueada else "")
+		PRIORITY_PAUSED:
+			return "Pausado"
+		_:
+			return "Colher primeiro"
+
+func get_talent_irrigator_label() -> String:
+	return "Desbloqueado" if _tem_skill_golem_irrigador() else "Bloqueado"
+
+func get_current_task_label() -> String:
+	if work_priority == PRIORITY_PAUSED:
+		return "Pausado"
+
+	if _prioridade_exige_talento_irrigador(work_priority) and not _tem_skill_golem_irrigador():
+		if work_priority == PRIORITY_WATER_FIRST and lotes_maduros_encontrados > 0:
+			return "Procurando colheita"
+		return "Rega bloqueada pelo talento"
+
+	if not carried_rewards.is_empty() and state == "IDLE":
+		return "Pronto para entregar colheita"
+
+	match state:
+		"MOVING_TO_PLOT":
+			return "Indo ao lote"
+		"HARVESTING":
+			return "Colhendo"
+		"MOVING_TO_CHEST":
+			return "Indo ao baú"
+		"DEPOSITING":
+			return "Depositando"
+		"WATERING":
+			return "Irrigando"
+		_:
+			var prioridade_efetiva: int = _obter_prioridade_efetiva()
+			match prioridade_efetiva:
+				PRIORITY_WATER_ONLY:
+					return "Procurando lote para regar"
+				PRIORITY_WATER_FIRST:
+					return "Procurando rega ou colheita"
+				PRIORITY_HARVEST_ONLY:
+					return "Procurando colheita"
+				_:
+					return "Aguardando trabalho"
+
+func _prioridade_exige_talento_irrigador(prioridade: int) -> bool:
+	return prioridade == PRIORITY_WATER_FIRST or prioridade == PRIORITY_WATER_ONLY
+
+func _obter_prioridade_efetiva() -> int:
+	if work_priority == PRIORITY_PAUSED:
+		return PRIORITY_PAUSED
+	if _prioridade_exige_talento_irrigador(work_priority) and not _tem_skill_golem_irrigador():
+		if work_priority == PRIORITY_WATER_ONLY:
+			return PRIORITY_PAUSED
+		return PRIORITY_HARVEST_FIRST
+	return work_priority
+
+func get_last_target_label() -> String:
+	return ultimo_alvo_detectado if ultimo_alvo_detectado != "" else "Nenhum"
+
+func get_last_action_label() -> String:
+	return ultima_acao if ultima_acao != "" else "aguardando trabalho"
+
+func get_mature_plots_found() -> int:
+	return lotes_maduros_encontrados
+
+func get_dry_plots_found() -> int:
+	return lotes_secos_encontrados
+
+func atualizar_diagnosticos_runtime() -> void:
+	_recalcular_contadores_lotes()
+
+func _parar_execucao_atual() -> void:
+	velocity = Vector2.ZERO
+	_movement_callback = Callable()
+	_is_avoiding_obstacle = false
+	_current_avoidance_point = Vector2.ZERO
+	_stuck_time = 0.0
+	_final_destination = global_position
+	if navigation_agent:
+		navigation_agent.target_position = global_position
+	_limpar_alvo_lote()
+	target_chest = null
+	state = "IDLE"
+	ultima_acao = "pausado"
+
+func _recalcular_contadores_lotes() -> void:
+	lotes_maduros_encontrados = 0
+	lotes_secos_encontrados = 0
+
 	var lotes = get_tree().get_nodes_in_group("lotes_terra")
 	for lote in lotes:
 		if not is_instance_valid(lote):
 			continue
-		if lote.get("pronto_para_colher") == true:
-			target_plot = lote as Node2D
-			if target_plot == null:
-				continue
-			state = "MOVING_TO_PLOT"
-			_iniciar_deslocamento(_obter_posicao_interacao_lote(target_plot), Callable(self, "_chegar_ao_lote"))
-			return
+		if lote.has_method("is_expansion_blocked") and bool(lote.call("is_expansion_blocked")):
+			continue
+		if lote.has_method("get") and lote.get("visible") == false:
+			continue
+
+		if bool(lote.get("pronto_para_colher")):
+			lotes_maduros_encontrados += 1
+		elif lote.has_method("pode_ser_regado_por_golem") and bool(lote.call("pode_ser_regado_por_golem")):
+			lotes_secos_encontrados += 1
+
+func _descrever_lote(lote: Node2D) -> String:
+	if lote == null or not is_instance_valid(lote):
+		return "Nenhum"
+	return "%s" % lote.get_path()
+
+func _registrar_acao(texto: String) -> void:
+	if texto == "":
+		return
+	ultima_acao = texto
+
+func _registrar_alvo(lote: Node2D) -> void:
+	ultimo_alvo_detectado = _descrever_lote(lote)
+
+func _procurar_lote() -> bool:
+	_recalcular_contadores_lotes()
+	var lotes = get_tree().get_nodes_in_group("lotes_terra")
+	var melhor_lote: Node2D = null
+	var melhor_distancia: float = -1.0
+
+	for lote in lotes:
+		if not is_instance_valid(lote):
+			continue
+		if lote.has_method("is_expansion_blocked") and bool(lote.call("is_expansion_blocked")):
+			continue
+		if lote.has_method("get") and lote.get("visible") == false:
+			continue
+		if lote.get("pronto_para_colher") != true:
+			continue
+
+		var lote_node: Node2D = lote as Node2D
+		if lote_node == null:
+			continue
+
+		var distancia: float = global_position.distance_to(_obter_posicao_interacao_lote(lote_node))
+		if melhor_lote == null or distancia < melhor_distancia:
+			melhor_lote = lote_node
+			melhor_distancia = distancia
+
+	if melhor_lote == null:
+		_registrar_acao("sem lote maduro")
+		return false
+
+	target_plot = melhor_lote
+	_registrar_alvo(target_plot)
+	_registrar_acao("indo ao lote")
+	state = "MOVING_TO_PLOT"
+	_iniciar_deslocamento(_obter_posicao_interacao_lote(target_plot), Callable(self, "_chegar_ao_lote"))
+	return true
+
+func _procurar_lote_para_regar() -> bool:
+	_recalcular_contadores_lotes()
+	if not _tem_skill_golem_irrigador():
+		_registrar_acao("rega bloqueada pelo talento")
+		return false
+
+	var lotes = get_tree().get_nodes_in_group("lotes_terra")
+	var melhor_lote: Node2D = null
+	var melhor_distancia: float = -1.0
+
+	for lote in lotes:
+		if not is_instance_valid(lote):
+			continue
+		if not lote.has_method("pode_ser_regado_por_golem"):
+			continue
+		if not bool(lote.call("pode_ser_regado_por_golem")):
+			continue
+
+		var lote_node: Node2D = lote as Node2D
+		if lote_node == null:
+			continue
+
+		var distancia: float = global_position.distance_to(_obter_posicao_interacao_lote(lote_node))
+		if melhor_lote == null or distancia < melhor_distancia:
+			melhor_lote = lote_node
+			melhor_distancia = distancia
+
+	if melhor_lote == null:
+		_registrar_acao("sem lote seco")
+		return false
+
+	target_plot = melhor_lote
+	_registrar_alvo(target_plot)
+	_registrar_acao("indo ao lote")
+	state = "MOVING_TO_PLOT"
+	_iniciar_deslocamento(_obter_posicao_interacao_lote(target_plot), Callable(self, "_chegar_para_regar"))
+	return true
 
 func _procurar_bau() -> void:
 	target_chest = _encontrar_bau()
 	if target_chest == null:
 		push_warning("Golem: nenhum Baú da Vila encontrado.")
 		state = "IDLE"
+		_registrar_acao("indo ao baú")
 		return
 
+	ultimo_alvo_detectado = "Baú da Vila"
+	_registrar_acao("indo ao baú")
 	state = "MOVING_TO_CHEST"
 	_iniciar_deslocamento(target_chest.global_position, Callable(self, "_chegar_ao_bau"))
 
@@ -281,11 +549,14 @@ func _chegar_ao_lote() -> void:
 
 	state = "HARVESTING"
 	await get_tree().create_timer(harvest_duration).timeout
+	if work_priority == PRIORITY_PAUSED or state != "HARVESTING":
+		return
 
 	if not is_instance_valid(target_plot) or not target_plot.has_method("harvest_by_golem"):
 		push_warning("Golem: lote inválido para colheita.")
 		_limpar_alvo_lote()
 		state = "IDLE"
+		_registrar_acao("sem lote maduro")
 		return
 
 	var colheita: Array = target_plot.harvest_by_golem()
@@ -293,6 +564,7 @@ func _chegar_ao_lote() -> void:
 		push_warning("Golem: o lote não entregou colheita.")
 		_limpar_alvo_lote()
 		state = "IDLE"
+		_registrar_acao("sem lote maduro")
 		return
 
 	carried_rewards = colheita.duplicate(true)
@@ -302,9 +574,46 @@ func _chegar_ao_lote() -> void:
 	if carried_rewards.is_empty():
 		push_warning("Golem: colheita inválida recebida do lote.")
 		state = "IDLE"
+		_registrar_acao("sem lote maduro")
 		return
 
+	_registrar_acao("colheu")
+	_registrar_acao("indo ao baú")
 	_procurar_bau()
+
+func _chegar_para_regar() -> void:
+	if state != "MOVING_TO_PLOT":
+		return
+
+	state = "WATERING"
+	await get_tree().create_timer(harvest_duration).timeout
+	if work_priority == PRIORITY_PAUSED or state != "WATERING":
+		return
+
+	if not is_instance_valid(target_plot) or not target_plot.has_method("regar_por_golem"):
+		push_warning("Golem: lote inválido para irrigação.")
+		_limpar_alvo_lote()
+		state = "IDLE"
+		_registrar_acao("sem lote seco")
+		return
+
+	if not target_plot.pode_ser_regado_por_golem():
+		push_warning("Golem: o lote não aceitou a irrigação.")
+		_limpar_alvo_lote()
+		state = "IDLE"
+		if _tem_skill_golem_irrigador():
+			_registrar_acao("sem lote seco")
+		else:
+			_registrar_acao("rega bloqueada pelo talento")
+		return
+
+	if target_plot.regar_por_golem():
+		_registrar_acao("regou")
+	else:
+		_registrar_acao("sem lote seco")
+
+	_limpar_alvo_lote()
+	state = "IDLE"
 
 func _chegar_ao_bau() -> void:
 	if state != "MOVING_TO_CHEST":
@@ -312,6 +621,8 @@ func _chegar_ao_bau() -> void:
 
 	state = "DEPOSITING"
 	await get_tree().create_timer(deposit_duration).timeout
+	if work_priority == PRIORITY_PAUSED or state != "DEPOSITING":
+		return
 
 	var total_quantidade: int = 0
 	if is_instance_valid(target_chest) and target_chest.has_method("deposit_item"):
@@ -339,6 +650,7 @@ func _chegar_ao_bau() -> void:
 	carried_rewards = []
 	target_chest = null
 	state = "IDLE"
+	_registrar_acao("indo ao baú")
 
 func _limpar_alvo_lote() -> void:
 	target_plot = null

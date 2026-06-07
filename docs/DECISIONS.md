@@ -1,5 +1,17 @@
 # Decisions
 
+## Decisão 55 - Golem Irrigador como talento, não como novo golem
+- Problema: o golem físico já existente precisava ganhar rega sem quebrar o coletor/depositador nem criar uma segunda entidade paralela.
+- Decisão: implementar `skill_golem_irrigador` como talento separado na árvore, com um método público seguro em `FarmPlot` para irrigação e checagem direta no golem físico.
+- Motivo: preservar o comportamento de colheita atual, manter o escopo pequeno e evitar inventário próprio, pathfinding novo ou múltiplos golems.
+- Risco: como a decisão depende de leitura runtime de `skills_desbloqueadas`, qualquer futuro efeito persistente adicional deve continuar sendo revalidado junto com o save.
+
+## Decisão 56 - Prioridade do golem runtime-only na Interface V0
+- Problema: a V0 precisava permitir controle simples do trabalho do golem sem mexer no save.
+- Decisão: manter a prioridade de trabalho apenas em runtime, no próprio golem, exposta pela Interface do Golem V0, sem persistir essa escolha em `SaveManager`.
+- Motivo: manter o escopo pequeno e validar a ergonomia do painel antes de decidir por persistência.
+- Risco: ao reiniciar o jogo, a prioridade volta ao padrão e o jogador precisa reconfigurar.
+
 ## Decisão 48 - Feedback visual provisório na finalização da purificação
 - Problema: a purificação concluída precisava de uma recompensa visual curta sem mexer na lógica central.
 - Decisão: disparar um brilho/mensagem provisórios pela UI quando `finalize_purification()` concluir com sucesso.

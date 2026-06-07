@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-06-07 - Talento Golem Irrigador implementado
+- A árvore de talentos ganhou o novo talento `skill_golem_irrigador`, separado do talento `skill_golem` já existente.
+- O golem físico agora preserva a prioridade de colheita e, quando não há lote maduro, pode irrigar lote plantado e seco se o talento estiver desbloqueado.
+- A rega por golem usa um método público seguro em `FarmPlot` e não consome água do inventário do jogador.
+- A interface do Golem V0 foi adicionada para mostrar status, desbloqueio do talento, tarefa atual e prioridade runtime-only.
+- A implementação manteve o golem atual, sem criar múltiplos golems, sem novo inventário e sem novo pathfinding.
+- `SaveManager`, `Database`, receitas, caldeirão, purificação e expansão permaneceram fora desta mudança.
+
 ## 2026-06-07 - UX do caldeirão e receitas ajustada
 - As receitas que dependiam de água foram substituídas por combinações com itens existentes e obtíveis em inventário, removendo o requisito de água das receitas ativas.
 - O slot do caldeirão agora exibe visualmente o item vinculado usando o texto/ícone da base de dados, em vez de depender de texturas ausentes.

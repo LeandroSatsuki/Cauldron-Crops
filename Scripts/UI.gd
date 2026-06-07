@@ -1,1585 +1,3420 @@
 extends CanvasLayer
 
+
+
 var slot_scene = preload("res://Scenes/InventorySlot.tscn")
+
 var pixel_ui_theme = preload("res://Themes/pixel_ui_theme.tres")
+
 const FarmGridManagerSmokeTestScript = preload("res://Scripts/dev/FarmGridManagerSmokeTest.gd")
 
+const GOLEM_PRIORITY_HARVEST_FIRST: int = 0
+
+const GOLEM_PRIORITY_WATER_FIRST: int = 1
+
+const GOLEM_PRIORITY_HARVEST_ONLY: int = 2
+
+const GOLEM_PRIORITY_WATER_ONLY: int = 3
+
+const GOLEM_PRIORITY_PAUSED: int = 4
+
+
+
 @onready var moedas_label: Label = $StatusPanel/MoedasLabel
+
 @onready var season_label: Label = $StatusPanel/SeasonLabel
+
 @onready var cargas_label: Label = $StatusPanel/CargasLabel
+
 @onready var semente_label: Label = $StatusPanel/SementeLabel
+
 @onready var golems_label: Label = $StatusPanel/GolemsLabel
+
 @onready var capacity_label: Label = $StatusPanel/CapacityLabel
+
 @onready var chest_status_label: Label = $StatusPanel/ChestStatusLabel
+
 @onready var tool_label: Label = $StatusPanel/ToolLabel
 
+
+
 @onready var usar_pocao_button: Button = $LeftPanel/UsarPocaoButton
+
 @onready var dormir_button: Button = $LeftPanel/DormirButton
+
 @onready var comprar_cosmetico_button: Button = $LeftPanel/ComprarCosmeticoButton
+
 @onready var tool_bar_panel: HBoxContainer = $ToolBarPanel
+
 @onready var tool_hoe_button: Button = $ToolBarPanel/BtnToolHoe
+
 @onready var tool_watering_can_button: Button = $ToolBarPanel/BtnToolWateringCan
+
 @onready var tool_harvest_button: Button = $ToolBarPanel/BtnToolHarvest
+
 @onready var tool_fishing_rod_button: Button = $ToolBarPanel/BtnToolFishingRod
+
 @onready var comprar_trigo_button: Button = $LeftPanel/GridSementes/ComprarTrigoButton
+
 @onready var comprar_verao_button: Button = $LeftPanel/GridSementes/ComprarVeraoButton
+
 @onready var abrir_skill_tree_button: Button = $LeftPanel/AbrirSkillTreeButton
+
+@onready var abrir_golem_button: Button = $LeftPanel/AbrirGolemButton
+
 var skill_tree_scene = preload("res://Scenes/SkillTree.tscn")
+
 var skill_tree: Panel
 
+
+
+@onready var golem_panel: PanelContainer = $GolemPanel
+@onready var golem_status_label: Label = $GolemPanel/MarginContainer/VBoxGolem/StatusLabel
+@onready var golem_talent_label: Label = $GolemPanel/MarginContainer/VBoxGolem/TalentLabel
+@onready var golem_task_label: Label = $GolemPanel/MarginContainer/VBoxGolem/TaskLabel
+@onready var golem_priority_label: Label = $GolemPanel/MarginContainer/VBoxGolem/PriorityLabel
+@onready var golem_target_label: Label = $GolemPanel/MarginContainer/VBoxGolem/TargetLabel
+@onready var golem_action_label: Label = $GolemPanel/MarginContainer/VBoxGolem/ActionLabel
+@onready var golem_counts_label: Label = $GolemPanel/MarginContainer/VBoxGolem/CountsLabel
+@onready var golem_priority_harvest_first_button: Button = $GolemPanel/MarginContainer/VBoxGolem/GridPriorities/BtnGolemHarvestFirst
+@onready var golem_priority_water_first_button: Button = $GolemPanel/MarginContainer/VBoxGolem/GridPriorities/BtnGolemWaterFirst
+@onready var golem_priority_harvest_only_button: Button = $GolemPanel/MarginContainer/VBoxGolem/GridPriorities/BtnGolemHarvestOnly
+@onready var golem_priority_water_only_button: Button = $GolemPanel/MarginContainer/VBoxGolem/GridPriorities/BtnGolemWaterOnly
+@onready var golem_priority_pause_button: Button = $GolemPanel/MarginContainer/VBoxGolem/GridPriorities/BtnGolemPause
+@onready var golem_close_button: Button = $GolemPanel/MarginContainer/VBoxGolem/BtnFechar
+
+
+
 @onready var abrir_quests_button: Button = $LeftPanel/AbrirQuestsButton
+
 var quest_board_scene = preload("res://Scenes/QuestBoard.tscn")
+
 var quest_board: Panel
 
+
+
 @onready var abrir_livro_receitas_button: Button = $LeftPanel/AbrirLivroReceitasButton
+
 var recipe_book_scene = preload("res://Scenes/RecipeBookUI.tscn")
+
 var recipe_book: Panel
 
+
+
 var fishing_minigame_scene = preload("res://Scenes/FishingMinigameUI.tscn")
+
 var fishing_minigame_ui: Control
 
+
+
 @onready var village_chest_panel: PanelContainer = $VillageChestPanel
+
 @onready var village_chest_contents: RichTextLabel = $VillageChestPanel/MarginContainer/VBoxChest/ChestContents
+
 @onready var village_chest_withdraw_button: Button = $VillageChestPanel/MarginContainer/VBoxChest/ButtonsRow/RetirarTudoButton
+
 @onready var village_chest_close_button: Button = $VillageChestPanel/MarginContainer/VBoxChest/ButtonsRow/FecharButton
+
 var village_chest_ref: VillageChest = null
 
+
+
 @onready var purification_panel: PanelContainer = $PurificationPanel
+
 @onready var purification_status_label: Label = $PurificationPanel/MarginContainer/VBoxPurification/HeaderBar/StatusLabel
+
 @onready var purification_hint_label: Label = $PurificationPanel/MarginContainer/VBoxPurification/HeaderBar/HintLabel
+
 @onready var purification_requirements_list: VBoxContainer = $PurificationPanel/MarginContainer/VBoxPurification/ScrollContainer/RequirementsList
+
 @onready var purification_deliver_all_button: Button = $PurificationPanel/MarginContainer/VBoxPurification/ButtonsRow/BtnEntregarTudo
+
 @onready var purification_purify_button: Button = $PurificationPanel/MarginContainer/VBoxPurification/ButtonsRow/BtnPurificarArea
+
 @onready var purification_close_button: Button = $PurificationPanel/MarginContainer/VBoxPurification/ButtonsRow/BtnFechar
+
 var purification_obstacle_ref: Node = null
 
+
+
 @onready var inventory_bar: HBoxContainer = $InventoryBar
+
 @onready var tooltip_panel: Panel = $TooltipPanel
+
 @onready var tooltip_texto: Label = $TooltipPanel/TooltipTexto
+
 @onready var sell_menu: PanelContainer = $SellMenu
 
+
+
 @onready var debug_panel: PanelContainer = $DebugPanel
+
 @onready var debug_last_action_label: Label = $DebugPanel/MarginContainer/ScrollContainer/VBoxDebug/DebugLastActionLabel
+
 @onready var debug_add_seeds_button: Button = $DebugPanel/MarginContainer/ScrollContainer/VBoxDebug/BtnDebugAddSeeds
+
 @onready var debug_add_water_button: Button = $DebugPanel/MarginContainer/ScrollContainer/VBoxDebug/BtnDebugAddWater
+
 @onready var debug_add_basic_ingredients_button: Button = $DebugPanel/MarginContainer/ScrollContainer/VBoxDebug/BtnDebugAddIngredients
+
 @onready var debug_add_purification_potion_button: Button = $DebugPanel/MarginContainer/ScrollContainer/VBoxDebug/BtnDebugAddPurificationPotion
+
 @onready var debug_add_purification_resources_button: Button = $DebugPanel/MarginContainer/ScrollContainer/VBoxDebug/BtnDebugAddPurificationResources
+
 @onready var debug_discover_all_recipes_button: Button = $DebugPanel/MarginContainer/ScrollContainer/VBoxDebug/BtnDebugDiscoverAllRecipes
+
 @onready var debug_force_growth_button: Button = $DebugPanel/MarginContainer/ScrollContainer/VBoxDebug/BtnDebugForceGrowth
+
 @onready var debug_daily_decay_button: Button = $DebugPanel/MarginContainer/ScrollContainer/VBoxDebug/BtnDebugDailyDecay
+
 @onready var debug_save_button: Button = $DebugPanel/MarginContainer/ScrollContainer/VBoxDebug/BtnDebugSave
+
 @onready var debug_load_button: Button = $DebugPanel/MarginContainer/ScrollContainer/VBoxDebug/BtnDebugLoad
+
 @onready var debug_add_wheat_chest_button: Button = $DebugPanel/MarginContainer/ScrollContainer/VBoxDebug/BtnDebugAddWheatChest
+
 @onready var debug_clear_chest_button: Button = $DebugPanel/MarginContainer/ScrollContainer/VBoxDebug/BtnDebugClearChest
+
 @onready var debug_test_farm_grid_button: Button = $DebugPanel/MarginContainer/ScrollContainer/VBoxDebug/BtnDebugTestFarmGrid
+
 @onready var debug_close_button: Button = $DebugPanel/MarginContainer/ScrollContainer/VBoxDebug/BtnFechar
 
+
+
 @onready var initial_objectives_panel: PanelContainer = $InitialObjectivesPanel
+
 @onready var initial_objectives_current_label: Label = $InitialObjectivesPanel/MarginContainer/VBoxObjectives/CurrentObjectiveLabel
+
 @onready var initial_objectives_steps_container: VBoxContainer = $InitialObjectivesPanel/MarginContainer/VBoxObjectives/StepsContainer
+
 @onready var initial_objectives_footer_label: Label = $InitialObjectivesPanel/MarginContainer/VBoxObjectives/FooterLabel
 
+
+
 var ultimo_estado_inventario: Dictionary = {}
+
 var item_focado_id: String = ""
+
 var custo_dormir: int = 5
+
 var timer_reset_dormir: float = 0.0
+
 var _status_update_accum: float = 0.0
+
 const INITIAL_OBJECTIVES_HIDE_DELAY: float = 3.5
 
+
+
 var _initial_objectives_last_signature: String = ""
+
 var _initial_objectives_completed: bool = false
+
 var _initial_objectives_completion_timer: float = 0.0
+
 var _initial_objectives_cauldron_used: bool = false
+
 var _initial_objectives_recipe_book_opened: bool = false
+
 var _initial_objectives_seed_baseline: Dictionary = {}
+
 var _initial_objectives_crop_baseline: Dictionary = {}
+
 var _initial_objectives_bootstrapped: bool = false
+
 var _initial_objectives_plot_states: Dictionary = {}
 
+
+
 var quest_board_visivel: bool:
+
 	get:
+
 		return quest_board.visible if quest_board else false
 
+
+
 func _ready() -> void:
+
 	if usar_pocao_button:
+
 		usar_pocao_button.pressed.connect(_on_usar_pocao_button_pressed)
+
 	if dormir_button:
+
 		dormir_button.pressed.connect(_on_dormir_button_pressed)
+
 	if comprar_cosmetico_button:
+
 		comprar_cosmetico_button.pressed.connect(_on_comprar_cosmetico_button_pressed)
+
 	if tool_hoe_button:
+
 		if not tool_hoe_button.pressed.is_connected(_on_tool_hoe_button_pressed):
+
 			tool_hoe_button.pressed.connect(_on_tool_hoe_button_pressed)
+
 	if tool_watering_can_button:
+
 		if not tool_watering_can_button.pressed.is_connected(_on_tool_watering_can_button_pressed):
+
 			tool_watering_can_button.pressed.connect(_on_tool_watering_can_button_pressed)
+
 	if tool_harvest_button:
+
 		if not tool_harvest_button.pressed.is_connected(_on_tool_harvest_button_pressed):
+
 			tool_harvest_button.pressed.connect(_on_tool_harvest_button_pressed)
+
 	if tool_fishing_rod_button:
+
 		if not tool_fishing_rod_button.pressed.is_connected(_on_tool_fishing_rod_button_pressed):
+
 			tool_fishing_rod_button.pressed.connect(_on_tool_fishing_rod_button_pressed)
+
 	if comprar_trigo_button:
+
 		comprar_trigo_button.gui_input.connect(func(event): _on_comprar_semente_gui_input(event, "semente_basica", 5, "+1 Semente Trigo", "+10 Semente Trigo"))
+
 		comprar_trigo_button.mouse_entered.connect(_on_comprar_trigo_button_mouse_entered)
+
 		comprar_trigo_button.mouse_exited.connect(_on_comprar_trigo_button_mouse_exited)
+
 	if comprar_verao_button:
+
 		comprar_verao_button.gui_input.connect(func(event): _on_comprar_semente_gui_input(event, "semente_verao", 10, "+1 Semente Tomate", "+10 Semente Tomate"))
+
 		comprar_verao_button.mouse_entered.connect(_on_comprar_verao_button_mouse_entered)
+
 		comprar_verao_button.mouse_exited.connect(_on_comprar_verao_button_mouse_exited)
+
 		
+
 	skill_tree = skill_tree_scene.instantiate()
+
 	add_child(skill_tree)
+
 	_aplicar_tema_pixel_ui(skill_tree)
+
 	skill_tree.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
 	skill_tree.visibility_changed.connect(func():
+
 		if skill_tree:
+
 			skill_tree.mouse_filter = Control.MOUSE_FILTER_STOP if skill_tree.visible else Control.MOUSE_FILTER_IGNORE
+
 	)
+
 	if abrir_skill_tree_button:
+
 		abrir_skill_tree_button.pressed.connect(func(): skill_tree.visible = true)
-		
+
+	if abrir_golem_button:
+
+		abrir_golem_button.pressed.connect(_on_abrir_golem_pressed)
+
 	quest_board = quest_board_scene.instantiate()
+
 	add_child(quest_board)
+
 	_aplicar_tema_pixel_ui(quest_board)
+
 	quest_board.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
 	quest_board.visibility_changed.connect(func():
+
 		if quest_board:
+
 			quest_board.mouse_filter = Control.MOUSE_FILTER_STOP if quest_board.visible else Control.MOUSE_FILTER_IGNORE
+
 	)
+
 	if abrir_quests_button:
+
 		abrir_quests_button.pressed.connect(_on_abrir_quests_pressed)
 
+
+
 	recipe_book = recipe_book_scene.instantiate()
+
 	var current_scene := _obter_current_scene()
+
 	var cauldron_popup_layer: Node = null
+
 	if current_scene != null:
+
 		cauldron_popup_layer = current_scene.get_node_or_null("CauldronUI/PopupLayer")
+
 	elif OS.has_feature("headless"):
+
 		push_warning("UI: current_scene indisponivel ao inicializar o Livro de Receitas; usando fallback local.")
+
 	if cauldron_popup_layer:
+
 		cauldron_popup_layer.add_child(recipe_book)
+
 	else:
+
 		add_child(recipe_book)
+
 	recipe_book.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
 	recipe_book.z_index = 200
+
 	recipe_book.visibility_changed.connect(func():
+
 		if recipe_book:
+
 			recipe_book.mouse_filter = Control.MOUSE_FILTER_STOP if recipe_book.visible else Control.MOUSE_FILTER_IGNORE
+
 	)
+
 	if recipe_book.has_signal("craft_requested"):
+
 		recipe_book.craft_requested.connect(_on_recipe_book_craft_requested)
+
 	_vincular_caldeirao_no_livro(_resolver_caldeirao(current_scene.get_node_or_null("CauldronUI") if current_scene != null else null))
 
+
+
 	if abrir_livro_receitas_button:
+
 		abrir_livro_receitas_button.pressed.connect(_on_abrir_livro_receitas_pressed)
 
+
+
 	if sell_menu:
+
 		_aplicar_tema_pixel_ui(sell_menu)
+
 		sell_menu.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
 		sell_menu.visibility_changed.connect(func():
+
 			if sell_menu:
+
 				sell_menu.mouse_filter = Control.MOUSE_FILTER_STOP if sell_menu.visible else Control.MOUSE_FILTER_IGNORE
+
 		)
+
+
 
 	fishing_minigame_ui = fishing_minigame_scene.instantiate()
+
 	add_child(fishing_minigame_ui)
+
 	_aplicar_tema_pixel_ui(fishing_minigame_ui)
+
 	if fishing_minigame_ui:
+
 		fishing_minigame_ui.z_index = 500
+
 		fishing_minigame_ui.visible = false
+
 		fishing_minigame_ui.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
 		
+
 	if QuestManager:
+
 		QuestManager.quest_atualizada.connect(_on_nova_quest_recebida)
 
+
+
 	if debug_panel:
+
 		debug_panel.visible = false
+
 		debug_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
 	if initial_objectives_panel:
+
 		_aplicar_tema_pixel_ui(initial_objectives_panel)
+
 		initial_objectives_panel.visible = true
+
 		initial_objectives_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
 	if debug_add_seeds_button:
+
 		debug_add_seeds_button.pressed.connect(_on_debug_add_seeds_pressed)
+
 	if debug_add_water_button:
+
 		debug_add_water_button.pressed.connect(_on_debug_add_water_pressed)
+
 	if debug_add_basic_ingredients_button:
+
 		debug_add_basic_ingredients_button.pressed.connect(_on_debug_add_basic_ingredients_pressed)
+
 	if debug_add_purification_potion_button:
+
 		debug_add_purification_potion_button.pressed.connect(_on_debug_add_purification_potion_pressed)
+
 	if debug_add_purification_resources_button:
+
 		debug_add_purification_resources_button.pressed.connect(_on_debug_add_purification_resources_pressed)
+
 	if debug_discover_all_recipes_button:
+
 		debug_discover_all_recipes_button.pressed.connect(_on_debug_discover_all_recipes_pressed)
+
 	if debug_force_growth_button:
+
 		debug_force_growth_button.pressed.connect(_on_debug_force_growth_pressed)
+
 	if debug_daily_decay_button:
+
 		if not debug_daily_decay_button.pressed.is_connected(_on_debug_daily_decay_pressed):
+
 			debug_daily_decay_button.pressed.connect(_on_debug_daily_decay_pressed)
+
 	if debug_save_button:
+
 		debug_save_button.pressed.connect(_on_debug_save_pressed)
+
 	if debug_load_button:
+
 		debug_load_button.pressed.connect(_on_debug_load_pressed)
+
 	if debug_add_wheat_chest_button:
+
 		debug_add_wheat_chest_button.pressed.connect(_on_debug_add_wheat_to_chest_pressed)
+
 	if debug_clear_chest_button:
+
 		debug_clear_chest_button.pressed.connect(_on_debug_clear_chest_pressed)
+
 	if debug_test_farm_grid_button:
+
 		if not debug_test_farm_grid_button.pressed.is_connected(_on_debug_test_farm_grid_pressed):
+
 			debug_test_farm_grid_button.pressed.connect(_on_debug_test_farm_grid_pressed)
+
 	else:
+
 		push_warning("DebugPanel: BtnDebugTestFarmGrid nao encontrado.")
+
 	if debug_close_button:
+
 		debug_close_button.pressed.connect(fechar_debug_panel)
 
+	if golem_panel:
+
+		golem_panel.visible = false
+
+		golem_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+		golem_panel.visibility_changed.connect(func():
+
+			if golem_panel:
+
+				golem_panel.mouse_filter = Control.MOUSE_FILTER_STOP if golem_panel.visible else Control.MOUSE_FILTER_IGNORE
+
+		)
+
+	if golem_priority_harvest_first_button:
+
+		golem_priority_harvest_first_button.pressed.connect(_on_golem_priority_harvest_first_pressed)
+
+	if golem_priority_water_first_button:
+
+		golem_priority_water_first_button.pressed.connect(_on_golem_priority_water_first_pressed)
+
+	if golem_priority_harvest_only_button:
+
+		golem_priority_harvest_only_button.pressed.connect(_on_golem_priority_harvest_only_pressed)
+
+	if golem_priority_water_only_button:
+
+		golem_priority_water_only_button.pressed.connect(_on_golem_priority_water_only_pressed)
+
+	if golem_priority_pause_button:
+
+		golem_priority_pause_button.pressed.connect(_on_golem_priority_pause_pressed)
+
+	if golem_close_button:
+
+		golem_close_button.pressed.connect(fechar_golem_panel)
+
+
+
 	if village_chest_panel:
+
 		village_chest_panel.visible = false
+
 		village_chest_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
 	if village_chest_withdraw_button:
+
 		village_chest_withdraw_button.pressed.connect(_on_village_chest_withdraw_pressed)
+
 	if village_chest_close_button:
+
 		village_chest_close_button.pressed.connect(fechar_bau_vila)
 
+
+
 	if purification_panel:
+
 		_aplicar_tema_pixel_ui(purification_panel)
+
 		purification_panel.visible = false
+
 		purification_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
 		purification_panel.visibility_changed.connect(func():
+
 			if purification_panel:
+
 				purification_panel.mouse_filter = Control.MOUSE_FILTER_STOP if purification_panel.visible else Control.MOUSE_FILTER_IGNORE
+
 		)
+
 	if purification_deliver_all_button:
+
 		purification_deliver_all_button.pressed.connect(_on_purification_deliver_all_pressed)
+
 	if purification_purify_button:
+
 		purification_purify_button.pressed.connect(_on_purification_finalize_pressed)
+
 	if purification_close_button:
+
 		purification_close_button.pressed.connect(fechar_painel_purificacao)
+
 	
+
 	# Inicializa
+
 	_capturar_baseline_objetivos_iniciais()
+
 	verificar_e_atualizar_inventario()
+
 	atualizar_toolbar_ferramentas()
+
 	atualizar_status_jogo()
+
 	_atualizar_objetivos_iniciais(0.0)
 
+
+
 func _input(event: InputEvent) -> void:
+
 	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_F10:
+
 		_toggle_debug_panel()
+
 		get_viewport().set_input_as_handled()
+
 	elif event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_1:
+
 		_selecionar_enxada()
+
 		get_viewport().set_input_as_handled()
+
 	elif event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_2:
+
 		_selecionar_regador()
+
 		get_viewport().set_input_as_handled()
+
 	elif event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_3:
+
 		_selecionar_colheita()
+
 		get_viewport().set_input_as_handled()
+
 	elif event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_4:
+
 		_selecionar_vara_de_pesca()
+
 		get_viewport().set_input_as_handled()
+
+
 
 func _toggle_debug_panel() -> void:
+
 	if debug_panel and debug_panel.visible:
+
 		fechar_debug_panel()
+
 	else:
+
 		abrir_debug_panel()
 
+
+
 func abrir_debug_panel() -> void:
+
 	if not debug_panel:
+
 		return
+
+
 
 	debug_panel.visible = true
+
 	debug_panel.mouse_filter = Control.MOUSE_FILTER_STOP
+
 	debug_panel.move_to_front()
+
 	print("Debug: painel aberto.")
 
+
+
 func fechar_debug_panel() -> void:
+
 	if not debug_panel:
+
 		return
+
+
 
 	debug_panel.visible = false
+
 	debug_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
 	print("Debug: painel fechado.")
 
+
+
 func abrir_pesca_sincronia(origem_global: Vector2, pesca_favorecida: bool = false) -> Control:
+
 	if fishing_minigame_ui == null or not is_instance_valid(fishing_minigame_ui):
+
 		push_warning("UI: FishingMinigameUI nao encontrado.")
+
 		return null
+
 	if not fishing_minigame_ui.has_method("abrir_popup"):
+
 		push_warning("UI: FishingMinigameUI nao possui metodo abrir_popup.")
+
 		return null
+
+
 
 	if fishing_minigame_ui.has_method("configurar_pesca_favorecida"):
+
 		fishing_minigame_ui.call("configurar_pesca_favorecida", pesca_favorecida)
+
 	fishing_minigame_ui.call("abrir_popup", origem_global)
+
 	return fishing_minigame_ui
 
+
+
 func _process(delta: float) -> void:
+
 	timer_reset_dormir += delta
+
 	_status_update_accum += delta
+
 	if timer_reset_dormir >= 60.0:
+
 		custo_dormir = 2 if "skill_dormir" in GlobalInventory.skills_desbloqueadas else 5
+
 	if dormir_button:
+
 		dormir_button.text = "Dormir (Custo: " + str(custo_dormir) + ")"
+
 		
+
 	if moedas_label:
+
 		moedas_label.text = "Moedas: " + str(EconomyManager.moedas)
+
 	if season_label:
+
 		season_label.text = "Estação: " + SeasonManager.obter_nome_estacao() + " | Ano: " + str(SeasonManager.ano)
+
 	if cargas_label:
+
 		cargas_label.text = "Água: " + str(int(GlobalInventory.inventario.get("agua", 0)))
+
 	if semente_label:
+
 		var nome = "Trigo"
+
 		if GlobalInventory.semente_selecionada == "semente_inverno":
+
 			nome = "Raiz"
+
 		elif GlobalInventory.semente_selecionada == "semente_verao":
+
 			nome = "Tomate"
+
 		elif GlobalInventory.semente_selecionada == "semente_outono":
+
 			nome = "Abóbora"
+
 		semente_label.text = "Semente Atual: " + nome
+
 	if golems_label:
+
 		golems_label.text = "Golems Ativos: " + str(EconomyManager.total_golems)
+
 		
+
 	verificar_e_atualizar_inventario()
+
 	if village_chest_panel and village_chest_panel.visible and village_chest_ref:
+
 		_atualizar_painel_bau_vila()
+
 	if _status_update_accum >= 0.5:
+
 		_status_update_accum = 0.0
+
 		atualizar_status_jogo()
+
 	_atualizar_objetivos_iniciais(delta)
 
+
+
 func _aplicar_tema_pixel_ui(no: Node) -> void:
+
 	if no is Control:
+
 		(no as Control).theme = pixel_ui_theme
 
+
+
 func atualizar_status_jogo() -> void:
+
 	if moedas_label:
+
 		moedas_label.text = "Moedas: %d" % int(EconomyManager.moedas)
+
 	if season_label:
+
 		season_label.text = "Estação: %s | Ano %d" % [SeasonManager.obter_nome_estacao(), int(SeasonManager.ano)]
+
 	if cargas_label:
+
 		cargas_label.text = "Água: %d" % int(GlobalInventory.inventario.get("agua", 0))
+
 	if semente_label:
+
 		semente_label.text = "Alquimia: %d" % int(GlobalInventory.pontos_alquimia)
+
 	if golems_label:
+
 		golems_label.text = "Golems: %d/%d" % [int(EconomyManager.total_golems), int(EconomyManager.max_golems)]
+
 	if capacity_label:
+
 		capacity_label.text = "Capacidade: %d/%d" % [int(EconomyManager.total_golems), int(EconomyManager.max_golems)]
+
 	if chest_status_label:
+
 		chest_status_label.text = "Baú: %s" % _obter_status_bau_vila()
+
 	if tool_label:
+
 		tool_label.text = "Ferramenta: %s" % _obter_nome_ferramenta_ativa()
+
+	_atualizar_painel_golem()
+
 	atualizar_toolbar_ferramentas()
 
+
+
 func atualizar_toolbar_ferramentas() -> void:
+
 	if tool_bar_panel:
+
 		tool_bar_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
+
+
 	_atualizar_texto_botao_ferramenta(tool_hoe_button, "1 Enxada", _is_tool_active(ToolManager.ToolType.HOE))
+
 	_atualizar_texto_botao_ferramenta(tool_watering_can_button, "2 Regador", _is_tool_active(ToolManager.ToolType.WATERING_CAN))
+
 	_atualizar_texto_botao_ferramenta(tool_harvest_button, "3 Colheita", _is_tool_active(ToolManager.ToolType.HARVEST))
+
 	_atualizar_texto_botao_ferramenta(tool_fishing_rod_button, "4 Vara", _is_tool_active(ToolManager.ToolType.FISHING_ROD))
 
+
+
 func _atualizar_texto_botao_ferramenta(button: Button, texto_base: String, ativa: bool) -> void:
+
 	if button == null:
+
 		return
+
+
 
 	if ativa:
+
 		button.text = "> %s" % texto_base
+
 	else:
+
 		button.text = texto_base
 
+
+
 func _is_tool_active(tool_index: int) -> bool:
+
 	var tool_manager: Node = _obter_tool_manager()
+
 	if tool_manager == null or not tool_manager.has_method("get_active_tool"):
+
 		return false
 
+
+
 	var active_tool_value: int = int(tool_manager.call("get_active_tool"))
+
 	return active_tool_value == tool_index
 
+
+
 func _obter_status_bau_vila() -> String:
+
 	var chests: Array = get_tree().get_nodes_in_group("village_chest")
+
 	for chest_variant in chests:
+
 		var chest: Node = chest_variant
+
 		if chest == null or not is_instance_valid(chest):
+
 			continue
+
 		if not chest.has_method("get_contents"):
+
 			continue
+
 		var conteudo_variant: Variant = chest.get_contents()
+
 		if typeof(conteudo_variant) != TYPE_DICTIONARY:
+
 			return "não encontrado"
+
 		var conteudo: Dictionary = conteudo_variant
+
 		if conteudo.is_empty():
+
 			return "vazio"
+
 		return "contém itens"
+
 	return "não encontrado"
 
+
+
 func verificar_e_atualizar_inventario() -> void:
+
 	var precisa_atualizar = false
+
 	if GlobalInventory.inventario.size() != ultimo_estado_inventario.size():
+
 		precisa_atualizar = true
+
 	else:
+
 		for key in GlobalInventory.inventario:
+
 			if not ultimo_estado_inventario.has(key) or GlobalInventory.inventario[key] != ultimo_estado_inventario[key]:
+
 				precisa_atualizar = true
+
 				break
+
 				
+
 	if precisa_atualizar:
+
 		ultimo_estado_inventario = GlobalInventory.inventario.duplicate()
+
 		atualizar_inventario_visual()
 
+
+
 func atualizar_inventario_visual() -> void:
+
 	if not inventory_bar:
+
 		return
+
 		
+
 	# Limpa
+
 	for child in inventory_bar.get_children():
+
 		child.queue_free()
+
 		
+
 	# Cria slots
+
 	for item_key in GlobalInventory.inventario:
+
 		if item_key == "agua":
+
 			continue
+
 		var qtd = GlobalInventory.inventario[item_key]
+
 		if qtd > 0:
+
 			var slot = slot_scene.instantiate()
+
 			inventory_bar.add_child(slot)
+
 			
+
 			var emoji = obter_emoji_item(item_key)
+
 			slot.configurar_slot(item_key, qtd, emoji)
+
 			slot.tooltip_text = "%s\nQuantidade: %d" % [Database.obter_nome_item(item_key), qtd]
+
 			slot.slot_clicado.connect(_on_slot_clicado)
+
 			if item_key == GlobalInventory.semente_selecionada or item_key == item_focado_id:
+
 				slot.set_destaque(true)
+
 			else:
+
 				slot.set_destaque(false)
+
 			
+
 	atualizar_destaques()
 
+
+
 func atualizar_destaques() -> void:
+
 	if not inventory_bar:
+
 		return
+
 	for slot in inventory_bar.get_children():
+
 		if slot.is_queued_for_deletion():
+
 			continue
+
 		if slot.has_method("set_destaque"):
+
 			if slot.item_id == GlobalInventory.semente_selecionada or slot.item_id == item_focado_id:
+
 				slot.set_destaque(true)
+
 			else:
+
 				slot.set_destaque(false)
 
+
+
 func _on_slot_clicado(item_id: String, is_right_click: bool, slot_node: Control) -> void:
+
 	if item_id.begins_with("semente_"):
+
 		GlobalInventory.semente_selecionada = item_id
+
 		item_focado_id = ""
+
 		atualizar_destaques()
+
 		
+
 		if not is_right_click:
+
 			print("Semente selecionada equipada: ", item_id)
+
 		else:
+
 			var preco_revenda = int(Database.custo_semente.get(item_id, 0) * 0.6)
+
 			if preco_revenda > 0:
+
 				var qtd_atual = GlobalInventory.inventario.get(item_id, 0)
+
 				if qtd_atual >= 10:
+
 					if GlobalInventory.remover_item(item_id, 10):
+
 						var ganho = preco_revenda * 10
+
 						EconomyManager.adicionar_moedas(ganho)
+
 						criar_texto_flutuante("+" + str(ganho) + " Moedas", get_viewport().get_mouse_position(), Color.GREEN)
+
 				else:
+
 					print("Quantidade insuficiente de sementes para revenda!")
+
 	else:
+
 		item_focado_id = item_id
+
 		GlobalInventory.semente_selecionada = ""
+
 		atualizar_destaques()
+
 		
+
 		if is_right_click:
+
 			# Venda 10x
+
 			var preco = Database.precos.get(item_id, 0)
+
 			if preco > 0:
+
 				var qtd_atual = GlobalInventory.inventario.get(item_id, 0)
+
 				if qtd_atual >= 10:
+
 					if GlobalInventory.remover_item(item_id, 10):
+
 						var ganho = preco * 10
+
 						EconomyManager.adicionar_moedas(ganho)
+
 						criar_texto_flutuante("+" + str(ganho) + " Moedas", get_viewport().get_mouse_position(), Color.GREEN)
+
 				else:
+
 					print("Quantidade insuficiente para vender 10x!")
+
 		else:
+
 			# Clique esquerdo -> abre SellMenu
+
 			if sell_menu:
+
 				var pos_fixa = slot_node.global_position + Vector2(0, slot_node.size.y + 5)
+
 				sell_menu.abrir(item_id, pos_fixa)
 
+
+
 func obter_emoji_item(item_id: String) -> String:
+
 	var icone_catalogo: String = Database.obter_icone_item(item_id)
+
 	if icone_catalogo != "" and icone_catalogo != "?":
+
 		return icone_catalogo
 
+
+
 	match item_id:
+
 		"trigo": return "🌾"
+
 		"raiz_gelida": return "🧊"
+
 		"tomate_sol": return "🍅"
+
 		"abobora_sombria": return "🎃"
+
 		"semente_basica": return "🌱"
+
 		"semente_inverno": return "❄️"
+
 		"semente_verao": return "☀️"
+
 		"semente_outono": return "🍁"
+
 		"pocao_crescimento": return "🧪"
+
 		"pocao_aceleradora": return "⚡"
+
 		"essencia_sombria": return "🔮"
+
 		"adubo_flamejante": return "🔥"
+
 		"elixir_estacional": return "🍶"
+
 		"peixe_comum": return "🐟"
+
 		"escama_brilhante": return "✨"
+
 		"agua": return "💧"
+
 	return "📦"
 
+
+
 func _on_usar_pocao_button_pressed() -> void:
+
 	if GlobalInventory.remover_item("pocao_crescimento", 1):
+
 		GlobalInventory.cargas_crescimento += 3
 
+
+
 func _on_dormir_button_pressed() -> void:
+
 	if EconomyManager.moedas >= custo_dormir:
+
 		if EconomyManager.remover_moedas(custo_dormir):
+
 			criar_texto_flutuante("Custo: -" + str(custo_dormir), get_viewport().get_mouse_position(), Color.RED)
+
 			SeasonManager.avancar_estacao()
+
 			if "skill_dormir" in GlobalInventory.skills_desbloqueadas:
+
 				custo_dormir = int(custo_dormir * 1.5)
+
 			else:
+
 				custo_dormir *= 2
+
 			timer_reset_dormir = 0.0
+
 	else:
+
 		print("Moedas insuficientes para dormir!")
 
+
+
 func _on_comprar_cosmetico_button_pressed() -> void:
+
 	if EconomyManager.remover_moedas(50):
+
 		print("Tema comprado e aplicado!")
+
 		RenderingServer.set_default_clear_color(Color(0.1, 0.4, 0.1))
 
+
+
 func _on_comprar_semente_gui_input(event: InputEvent, semente_id: String, preco_unitario: int, texto_1x: String, texto_10x: String) -> void:
+
 	if event is InputEventMouseButton and event.pressed:
+
 		if event.button_index == MOUSE_BUTTON_LEFT:
+
 			if EconomyManager.remover_moedas(preco_unitario):
+
 				GlobalInventory.adicionar_item(semente_id, 1)
+
 				criar_texto_flutuante(texto_1x, get_viewport().get_mouse_position(), Color.YELLOW)
+
 		elif event.button_index == MOUSE_BUTTON_RIGHT:
+
 			if EconomyManager.remover_moedas(preco_unitario * 10):
+
 				GlobalInventory.adicionar_item(semente_id, 10)
+
 				criar_texto_flutuante(texto_10x, get_viewport().get_mouse_position(), Color.YELLOW)
 
 
+
+
+
 func _on_comprar_trigo_button_mouse_entered() -> void:
+
 	if tooltip_panel:
+
 		tooltip_panel.visible = true
+
 	if tooltip_texto:
+
 		tooltip_texto.text = "Semente de Trigo\nCusto: 5 Moedas\nEstação: Primavera\nUso: Adubo Flamejante"
 
+
+
 func _on_comprar_trigo_button_mouse_exited() -> void:
+
 	if tooltip_panel:
+
 		tooltip_panel.visible = false
+
+
 
 func _on_comprar_verao_button_mouse_entered() -> void:
+
 	if tooltip_panel:
+
 		tooltip_panel.visible = true
+
 	if tooltip_texto:
+
 		tooltip_texto.text = "Semente de Tomate\nCusto: 10 Moedas\nEstação: Verão\nUso: Adubo Flamejante"
 
+
+
 func _on_comprar_verao_button_mouse_exited() -> void:
+
 	if tooltip_panel:
+
 		tooltip_panel.visible = false
 
+
+
 func criar_texto_flutuante(texto: String, posicao_global: Vector2, cor: Color) -> void:
+
 	var label = Label.new()
+
 	label.text = texto
+
 	label.modulate = cor
+
 	label.global_position = posicao_global
+
 	add_child(label)
+
 	
+
 	var tween = create_tween()
+
 	tween.tween_property(label, "global_position", posicao_global + Vector2(0, -50), 1.0)
+
 	tween.parallel().tween_property(label, "modulate:a", 0.0, 1.0)
+
 	tween.tween_callback(label.queue_free)
 
+
+
 func mostrar_feedback_purificacao(posicao_global: Vector2) -> void:
+
 	var efeito := Node2D.new()
+
 	efeito.name = "PurificationFlash"
+
 	efeito.top_level = true
+
 	efeito.global_position = posicao_global
+
 	efeito.z_index = 1500
+
 	efeito.modulate = Color(1, 1, 1, 0.98)
+
 	add_child(efeito)
 
+
+
 	var brilho := Polygon2D.new()
+
 	brilho.name = "PurificationGlow"
+
 	brilho.color = Color(0.92, 1.0, 0.78, 0.42)
+
 	brilho.polygon = PackedVector2Array([
+
 		Vector2(0, -22),
+
 		Vector2(18, -12),
+
 		Vector2(26, 0),
+
 		Vector2(18, 12),
+
 		Vector2(0, 22),
+
 		Vector2(-18, 12),
+
 		Vector2(-26, 0),
+
 		Vector2(-18, -12)
+
 	])
+
 	efeito.add_child(brilho)
 
+
+
 	var anel := Line2D.new()
+
 	anel.name = "PurificationRing"
+
 	anel.width = 7.0
+
 	anel.default_color = Color(1.0, 0.96, 0.62, 0.92)
+
 	anel.antialiased = true
+
 	anel.closed = true
+
 	anel.points = PackedVector2Array([
+
 		Vector2(0, -58),
+
 		Vector2(38, -40),
+
 		Vector2(58, 0),
+
 		Vector2(38, 40),
+
 		Vector2(0, 58),
+
 		Vector2(-38, 40),
+
 		Vector2(-58, 0),
+
 		Vector2(-38, -40)
+
 	])
+
 	efeito.add_child(anel)
 
+
+
 	var raio := Polygon2D.new()
+
 	raio.name = "PurificationSpark"
+
 	raio.color = Color(1.0, 1.0, 1.0, 0.88)
+
 	raio.polygon = PackedVector2Array([
+
 		Vector2(0, -10),
+
 		Vector2(8, -2),
+
 		Vector2(18, 0),
+
 		Vector2(8, 2),
+
 		Vector2(0, 10),
+
 		Vector2(-8, 2),
+
 		Vector2(-18, 0),
+
 		Vector2(-8, -2)
+
 	])
+
 	efeito.add_child(raio)
+
+
 
 	criar_texto_flutuante("Área purificada!", posicao_global + Vector2(0, -92), Color(0.95, 1.0, 0.8))
 
+
+
 	var tween := create_tween()
+
 	tween.tween_property(efeito, "scale", Vector2(1.55, 1.55), 0.22).from(Vector2(0.82, 0.82)).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+
 	tween.tween_interval(0.08)
+
 	tween.tween_property(efeito, "modulate:a", 0.0, 0.24)
+
 	tween.tween_callback(efeito.queue_free)
 
+
+
 func _capturar_baseline_objetivos_iniciais() -> void:
+
 	_initial_objectives_seed_baseline = {
+
 		"semente_basica": int(GlobalInventory.inventario.get("semente_basica", 0)),
+
 		"semente_inverno": int(GlobalInventory.inventario.get("semente_inverno", 0)),
+
 		"semente_verao": int(GlobalInventory.inventario.get("semente_verao", 0))
+
 	}
+
 	_initial_objectives_crop_baseline = {}
+
 	_initial_objectives_bootstrapped = false
+
 	_initial_objectives_plot_states.clear()
+
 	_initial_objectives_last_signature = ""
+
 	_initial_objectives_completed = false
+
 	_initial_objectives_completion_timer = 0.0
+
 	_initial_objectives_cauldron_used = false
+
 	_initial_objectives_recipe_book_opened = false
 
+
+
 func _atualizar_objetivos_iniciais(delta: float) -> void:
+
 	if initial_objectives_panel == null:
+
 		return
+
+
 
 	if not _initial_objectives_bootstrapped:
+
 		var estado_inicial := _construir_estado_objetivos_iniciais(true)
+
 		_renderizar_objetivos_iniciais(estado_inicial)
+
 		_initial_objectives_last_signature = str(estado_inicial.get("signature", ""))
+
 		_initial_objectives_bootstrapped = true
+
 		return
+
+
 
 	if _initial_objectives_completed:
+
 		_initial_objectives_completion_timer += delta
+
 		if initial_objectives_current_label:
+
 			initial_objectives_current_label.text = "Objetivos iniciais concluídos"
+
 		if initial_objectives_footer_label:
+
 			initial_objectives_footer_label.text = "Objetivos iniciais concluídos"
+
 		if _initial_objectives_completion_timer >= INITIAL_OBJECTIVES_HIDE_DELAY:
+
 			initial_objectives_panel.visible = false
+
 		return
+
+
 
 	var estado := _construir_estado_objetivos_iniciais()
+
 	var signature := str(estado.get("signature", ""))
+
 	if signature == _initial_objectives_last_signature:
+
 		return
+
 	_initial_objectives_last_signature = signature
+
 	_renderizar_objetivos_iniciais(estado)
+
 	if bool(estado.get("complete", false)):
+
 		_marcar_objetivos_iniciais_concluidos()
 
+
+
 func _construir_estado_objetivos_iniciais(bootstrap_pass: bool = false) -> Dictionary:
+
 	var estado_lotes := _calcular_estado_lotes_objetivos(bootstrap_pass)
+
 	var seeds_done := _tem_sementes_iniciais()
+
 	var farm_done := bool(estado_lotes.get("arado", false)) and bool(estado_lotes.get("plantado", false)) and bool(estado_lotes.get("regado", false)) and bool(estado_lotes.get("colhido", false))
+
 	var cauldron_done := _initial_objectives_cauldron_used
+
 	var recipe_book_done := _initial_objectives_recipe_book_opened
+
 	var purification_done := _tem_primeira_area_purificada()
+
 	var expansion_done := _tem_expansao_liberada()
+
 	var complete := seeds_done and farm_done and cauldron_done and recipe_book_done and purification_done and expansion_done
 
+
+
 	var steps: Array = [
+
 		{
+
 			"key": "seeds",
+
 			"label": "Pegue sementes",
+
 			"done": seeds_done,
+
 			"summary": "Tenha sementes iniciais disponíveis."
+
 		},
+
 		{
+
 			"key": "farm",
+
 			"label": "Prepare e cultive um lote",
+
 			"done": farm_done,
+
 			"summary": "Arar, plantar, regar e colher.",
+
 			"substeps": [
+
 				{"label": "Arar", "done": bool(estado_lotes.get("arado", false))},
+
 				{"label": "Plantar", "done": bool(estado_lotes.get("plantado", false))},
+
 				{"label": "Regar", "done": bool(estado_lotes.get("regado", false))},
+
 				{"label": "Colher", "done": bool(estado_lotes.get("colhido", false))}
+
 			]
+
 		},
+
 		{
+
 			"key": "cauldron",
+
 			"label": "Use o caldeirão",
+
 			"done": cauldron_done,
+
 			"summary": "Produza ao menos um item com o caldeirão."
+
 		},
+
 		{
+
 			"key": "recipe_book",
+
 			"label": "Abra o Livro de Receitas",
+
 			"done": recipe_book_done,
+
 			"summary": "Abra o livro uma vez durante a sessão."
+
 		},
+
 		{
+
 			"key": "purify",
+
 			"label": "Purifique a primeira área",
+
 			"done": purification_done,
+
 			"summary": "Libere a área corrompida inicial."
+
 		},
+
 		{
+
 			"key": "expansion",
+
 			"label": "Use a expansão liberada",
+
 			"done": expansion_done,
+
 			"summary": "Interaja com o pocket 2x2 liberado."
+
 		}
+
 	]
+
+
 
 	var current_label := ""
+
 	for step in steps:
+
 		if not bool(step.get("done", false)):
+
 			current_label = str(step.get("label", ""))
+
 			break
 
+
+
 	if current_label == "":
+
 		current_label = "Objetivos iniciais concluídos"
 
+
+
 	var signature_parts: Array[String] = [
+
 		str(seeds_done),
+
 		str(bool(estado_lotes.get("arado", false))),
+
 		str(bool(estado_lotes.get("plantado", false))),
+
 		str(bool(estado_lotes.get("regado", false))),
+
 		str(bool(estado_lotes.get("colhido", false))),
+
 		str(cauldron_done),
+
 		str(recipe_book_done),
+
 		str(purification_done),
+
 		str(expansion_done),
+
 		current_label
+
 	]
 
+
+
 	return {
+
 		"complete": complete,
+
 		"current_label": current_label,
+
 		"steps": steps,
+
 		"signature": "|".join(signature_parts)
+
 	}
+
+
 
 func _calcular_estado_lotes_objetivos(bootstrap_pass: bool = false) -> Dictionary:
+
 	var estado := {
+
 		"arado": false,
+
 		"plantado": false,
+
 		"regado": false,
+
 		"colhido": false
+
 	}
 
+
+
 	var tree := get_tree()
+
 	if tree == null:
+
 		return estado
 
+
+
 	var lotes: Array = tree.get_nodes_in_group("lotes_terra")
+
 	for lote_variant in lotes:
+
 		var lote: Node = lote_variant
+
 		if lote == null or not is_instance_valid(lote):
+
 			continue
+
 		if not lote.has_method("get_save_data"):
+
 			continue
+
 		var save_data_variant: Variant = lote.call("get_save_data")
+
 		if typeof(save_data_variant) != TYPE_DICTIONARY:
+
 			continue
+
 		var save_data: Dictionary = save_data_variant
+
 		if bool(save_data.get("arado", false)):
+
 			estado["arado"] = true
+
 		if str(save_data.get("semente_id_plantada", "")) != "":
+
 			estado["plantado"] = true
+
 		if bool(save_data.get("regado", false)):
+
 			estado["regado"] = true
+
 		if _registrar_harvest_state(lote.name, save_data, bootstrap_pass):
+
 			estado["colhido"] = true
+
+
 
 	return estado
 
+
+
 func _registrar_harvest_state(plot_name: String, save_data: Dictionary, bootstrap_pass: bool = false) -> bool:
+
 	if plot_name == "":
+
 		return false
+
+
 
 	var current_state: int = int(save_data.get("estado_atual", 0))
+
 	var current_ready: bool = bool(save_data.get("pronto_para_colher", false)) or current_state == 2
+
 	var current_empty: bool = current_state == 0 and str(save_data.get("semente_id_plantada", "")) == "" and not bool(save_data.get("arado", false))
 
+
+
 	var plot_state: Dictionary = _initial_objectives_plot_states.get(plot_name, {})
+
 	if plot_state.is_empty():
+
 		plot_state = {
+
 			"initialized": true,
+
 			"last_ready": current_ready,
+
 			"ready_seen_after_bootstrap": false,
+
 			"collected": false
+
 		}
+
 		_initial_objectives_plot_states[plot_name] = plot_state
+
 		return false
+
+
 
 	if bootstrap_pass:
+
 		plot_state["last_ready"] = current_ready
+
 		_initial_objectives_plot_states[plot_name] = plot_state
+
 		return false
+
+
 
 	var last_ready: bool = bool(plot_state.get("last_ready", false))
+
 	var ready_seen_after_bootstrap: bool = bool(plot_state.get("ready_seen_after_bootstrap", false))
+
 	var harvested: bool = false
 
+
+
 	if current_ready:
+
 		ready_seen_after_bootstrap = true
+
 		plot_state["ready_seen_after_bootstrap"] = true
 
+
+
 	if current_empty and last_ready and ready_seen_after_bootstrap and not bool(plot_state.get("collected", false)):
+
 		harvested = true
+
 		plot_state["collected"] = true
 
+
+
 	plot_state["last_ready"] = current_ready
+
 	_initial_objectives_plot_states[plot_name] = plot_state
+
 	return harvested
 
+
+
 func _tem_sementes_iniciais() -> bool:
+
 	for item_id in _initial_objectives_seed_baseline.keys():
+
 		if int(GlobalInventory.inventario.get(item_id, 0)) > 0:
+
 			return true
+
 	return false
+
+
 
 func _tem_primeira_area_purificada() -> bool:
+
 	var tree := get_tree()
+
 	if tree == null:
+
 		return false
+
+
 
 	var obstacles: Array = tree.get_nodes_in_group("purification_obstacle")
+
 	for obstacle_variant in obstacles:
+
 		var obstacle: Node = obstacle_variant
+
 		if obstacle == null or not is_instance_valid(obstacle):
+
 			continue
+
 		if obstacle.has_method("get_save_data"):
+
 			var save_data_variant: Variant = obstacle.call("get_save_data")
+
 			if typeof(save_data_variant) == TYPE_DICTIONARY:
+
 				var save_data: Dictionary = save_data_variant
+
 				if bool(save_data.get("purified", false)):
+
 					return true
+
 	return false
+
+
 
 func _tem_expansao_liberada() -> bool:
+
 	var tree := get_tree()
+
 	if tree == null or tree.current_scene == null:
+
 		return false
 
+
+
 	var expansion_plot_names: Array[String] = ["FarmPlot_6_0", "FarmPlot_6_1", "FarmPlot_7_0", "FarmPlot_7_1"]
+
 	for plot_name in expansion_plot_names:
+
 		var plot: Node = tree.current_scene.get_node_or_null(plot_name)
+
 		if plot == null or not is_instance_valid(plot):
+
 			continue
+
 		if plot.has_method("is_expansion_blocked") and not bool(plot.call("is_expansion_blocked")):
+
 			return true
+
 	return false
 
+
+
 func _renderizar_objetivos_iniciais(estado: Dictionary) -> void:
+
 	if initial_objectives_panel == null:
+
 		return
 
+
+
 	if initial_objectives_panel.visible == false and not bool(estado.get("complete", false)):
+
 		initial_objectives_panel.visible = true
 
+
+
 	if initial_objectives_current_label:
+
 		initial_objectives_current_label.text = "Objetivo atual: %s" % str(estado.get("current_label", ""))
+
 	if initial_objectives_footer_label:
+
 		initial_objectives_footer_label.text = "Checklist runtime-only"
 
+
+
 	for child in initial_objectives_steps_container.get_children():
+
 		child.queue_free()
 
+
+
 	for step_variant in estado.get("steps", []):
+
 		if typeof(step_variant) != TYPE_DICTIONARY:
+
 			continue
+
 		var step: Dictionary = step_variant
+
 		var step_label := Label.new()
+
 		step_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+
 		step_label.text = "%s %s" % ["☑" if bool(step.get("done", false)) else "☐", str(step.get("label", ""))]
+
 		if bool(step.get("done", false)):
+
 			step_label.modulate = Color(0.75, 1.0, 0.75)
+
 		elif str(step.get("label", "")) == str(estado.get("current_label", "")):
+
 			step_label.modulate = Color(1.0, 0.95, 0.7)
+
 		initial_objectives_steps_container.add_child(step_label)
 
+
+
 		var substeps: Array = step.get("substeps", [])
+
 		for substep_variant in substeps:
+
 			if typeof(substep_variant) != TYPE_DICTIONARY:
+
 				continue
+
 			var substep: Dictionary = substep_variant
+
 			var sub_label := Label.new()
+
 			sub_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+
 			sub_label.text = "   %s %s" % ["☑" if bool(substep.get("done", false)) else "☐", str(substep.get("label", ""))]
+
 			if bool(substep.get("done", false)):
+
 				sub_label.modulate = Color(0.72, 0.92, 1.0)
+
 			initial_objectives_steps_container.add_child(sub_label)
 
+
+
 	if bool(estado.get("complete", false)):
+
 		if initial_objectives_current_label:
+
 			initial_objectives_current_label.text = "Objetivos iniciais concluídos"
+
 		if initial_objectives_footer_label:
+
 			initial_objectives_footer_label.text = "Objetivos iniciais concluídos"
 
+
+
 func _marcar_objetivos_iniciais_concluidos() -> void:
+
 	_initial_objectives_completed = true
+
 	_initial_objectives_completion_timer = 0.0
+
 	if initial_objectives_panel:
+
 		initial_objectives_panel.visible = true
+
 	if initial_objectives_current_label:
+
 		initial_objectives_current_label.text = "Objetivos iniciais concluídos"
+
 	if initial_objectives_footer_label:
+
 		initial_objectives_footer_label.text = "Objetivos iniciais concluídos"
 
+
+
 func _on_abrir_quests_pressed() -> void:
+
 	if quest_board:
+
 		quest_board.visible = true
+
 	var alerta = $LeftPanel/AbrirQuestsButton/AlertaQuest
+
 	if alerta:
+
 		alerta.visible = false
 
+
+
 func _on_nova_quest_recebida() -> void:
+
 	if not quest_board_visivel:
+
 		var alerta = $LeftPanel/AbrirQuestsButton/AlertaQuest
+
 		if alerta:
+
 			alerta.visible = true
 
+
+
 func _on_debug_add_seeds_pressed() -> void:
+
 	GlobalInventory.adicionar_item("semente_basica", 10)
+
 	print("Debug: adicionou semente_basica x10.")
+
 	_atualizar_pos_debug_acao()
+
+
 
 func _on_debug_add_water_pressed() -> void:
+
 	GlobalInventory.adicionar_item("agua", 10)
+
 	print("Debug: adicionou agua x10.")
+
 	_atualizar_pos_debug_acao()
+
+
 
 func _on_debug_add_basic_ingredients_pressed() -> void:
+
 	GlobalInventory.adicionar_item("trigo", 10)
+
 	GlobalInventory.adicionar_item("carvao", 10)
+
 	GlobalInventory.adicionar_item("tomate_sol", 5)
+
 	GlobalInventory.adicionar_item("raiz_gelida", 5)
+
 	GlobalInventory.adicionar_item("palha_rara", 3)
+
 	GlobalInventory.adicionar_item("rama_encantada", 3)
+
 	print("Debug: adicionou ingredientes basicos ao inventario.")
+
 	_atualizar_pos_debug_acao()
 
+
+
 func _on_debug_add_purification_potion_pressed() -> void:
+
 	GlobalInventory.adicionar_item("pocao_purificadora_fraca", 1)
+
 	print("Debug: adicionou pocao_purificadora_fraca x1 ao inventario.")
+
 	_atualizar_pos_debug_acao("Poção Purificadora Fraca +1")
 
+
+
 func _on_debug_add_purification_resources_pressed() -> void:
+
 	GlobalInventory.adicionar_item("pocao_purificadora_fraca", 1)
+
 	GlobalInventory.adicionar_item("escama_brilhante", 1)
+
 	GlobalInventory.adicionar_item("trigo", 3)
+
 	print("Debug: adicionou recursos de purificacao ao inventario.")
+
 	_atualizar_pos_debug_acao("Recursos de purificação +1")
 
+
+
 func _on_debug_discover_all_recipes_pressed() -> void:
+
 	var adicionadas: int = 0
+
 	for recipe_id_variant in Database.receitas_alquimia.keys():
+
 		var recipe_id: String = str(recipe_id_variant)
+
 		if recipe_id == "":
+
 			continue
+
 		if GlobalInventory.receitas_descobertas.has(recipe_id):
+
 			continue
+
 		GlobalInventory.receitas_descobertas.append(recipe_id)
+
 		adicionadas += 1
+
+
 
 	print("Debug: descobriu %d receitas." % adicionadas)
 
+
+
 func _on_debug_force_growth_pressed() -> void:
+
 	var lotes := get_tree().get_nodes_in_group("lotes_terra")
+
 	var afetados: int = 0
+
 	for lote in lotes:
+
 		if lote == null or not is_instance_valid(lote):
+
 			continue
+
 		if lote.has_method("debug_force_ready_to_harvest"):
+
 			lote.debug_force_ready_to_harvest()
+
 			afetados += 1
+
+
 
 	print("Debug: lotes forçados para colheita: %d." % afetados)
 
+
+
 func _on_debug_save_pressed() -> void:
+
 	if SaveManager and SaveManager.save_game():
+
 		print("Debug: jogo salvo.")
+
 	else:
+
 		push_warning("Debug: falha ao salvar o jogo.")
 
+
+
 func _on_debug_load_pressed() -> void:
+
 	if SaveManager and SaveManager.load_game():
+
 		print("Debug: jogo carregado.")
+
 		reiniciar_objetivos_iniciais_apos_load()
+
 		_atualizar_pos_debug_acao()
+
 	else:
+
 		push_warning("Debug: falha ao carregar o jogo.")
 
+
+
 func _on_debug_add_wheat_to_chest_pressed() -> void:
+
 	var chest := _obter_bau_da_vila_debug()
+
 	if chest == null:
+
 		push_warning("Debug: baú da vila não encontrado.")
+
 		return
+
+
 
 	chest.deposit_item("trigo", 10)
+
 	print("Debug: adicionou trigo x10 ao Baú da Vila.")
+
 	_atualizar_painel_bau_vila()
+
+
 
 func _on_debug_clear_chest_pressed() -> void:
+
 	var chest := _obter_bau_da_vila_debug()
+
 	if chest == null:
+
 		push_warning("Debug: baú da vila não encontrado.")
+
 		return
 
+
+
 	if chest.has_method("clear_contents"):
+
 		chest.clear_contents()
+
 		print("Debug: baú da vila limpo.")
+
 	else:
+
 		push_warning("Debug: o baú da vila não possui clear_contents().")
+
 		return
+
+
 
 	_atualizar_painel_bau_vila()
 
+
+
 func _on_debug_test_farm_grid_pressed() -> void:
+
 	print("Debug FarmGrid: botao clicado.")
+
 	var passou: bool = FarmGridManagerSmokeTestScript.run()
+
 	if passou:
+
 		print("Debug FarmGrid: smoke test passou.")
+
 		_atualizar_pos_debug_acao("FarmGrid test: passou")
+
 	else:
+
 		push_warning("Debug FarmGrid: smoke test falhou.")
+
 		_atualizar_pos_debug_acao("FarmGrid test: falhou")
 
+
+
 func _on_debug_daily_decay_pressed() -> void:
+
 	var tree: SceneTree = get_tree()
+
 	if tree == null:
+
 		return
 
+
+
 	var lotes: Array = tree.get_nodes_in_group("lotes_terra")
+
 	var afetados: int = 0
+
 	for lote_variant in lotes:
+
 		if lote_variant == null or not is_instance_valid(lote_variant):
+
 			continue
+
+
 
 		var lote: Node = lote_variant
+
 		if not lote.has_method("debug_apply_daily_decay"):
+
 			continue
 
+
+
 		if bool(lote.call("debug_apply_daily_decay")):
+
 			afetados += 1
 
+
+
 	print("Debug: decay diario limpou %d lote(s) arados sem semente." % afetados)
+
 	_atualizar_pos_debug_acao("Decay diário: %d lote(s)" % afetados)
 
+
+
 func _on_tool_hoe_button_pressed() -> void:
+
 	_selecionar_enxada()
 
+
+
 func _selecionar_enxada() -> void:
+
 	var tool_manager: Node = _obter_tool_manager()
+
 	if tool_manager != null and tool_manager.has_method("select_hoe"):
+
 		tool_manager.call("select_hoe")
+
 	else:
+
 		push_warning("UI: ToolManager nao encontrado.")
+
 	atualizar_toolbar_ferramentas()
+
 	atualizar_status_jogo()
+
+
 
 func _selecionar_regador() -> void:
+
 	var tool_manager: Node = _obter_tool_manager()
+
 	if tool_manager != null and tool_manager.has_method("select_watering_can"):
+
 		tool_manager.call("select_watering_can")
+
 	else:
+
 		push_warning("UI: ToolManager nao encontrado.")
+
 	atualizar_toolbar_ferramentas()
+
 	atualizar_status_jogo()
+
+
 
 func _selecionar_colheita() -> void:
+
 	var tool_manager: Node = _obter_tool_manager()
+
 	if tool_manager != null and tool_manager.has_method("select_harvest"):
+
 		tool_manager.call("select_harvest")
+
 	else:
+
 		push_warning("UI: ToolManager nao encontrado.")
+
 	atualizar_toolbar_ferramentas()
+
 	atualizar_status_jogo()
+
+
 
 func _selecionar_vara_de_pesca() -> void:
+
 	var tool_manager: Node = _obter_tool_manager()
+
 	if tool_manager != null and tool_manager.has_method("select_fishing_rod"):
+
 		tool_manager.call("select_fishing_rod")
+
 	else:
+
 		push_warning("UI: ToolManager nao encontrado.")
+
 	atualizar_toolbar_ferramentas()
+
 	atualizar_status_jogo()
 
+
+
 func _on_tool_watering_can_button_pressed() -> void:
+
 	_selecionar_regador()
 
+
+
 func _on_tool_harvest_button_pressed() -> void:
+
 	_selecionar_colheita()
 
+
+
 func _on_tool_fishing_rod_button_pressed() -> void:
+
 	_selecionar_vara_de_pesca()
 
+
+
 func _obter_nome_ferramenta_ativa() -> String:
+
 	var tool_manager: Node = _obter_tool_manager()
+
 	if tool_manager != null and tool_manager.has_method("get_tool_name"):
+
 		var ferramenta_nome: String = str(tool_manager.call("get_tool_name"))
+
 		return ferramenta_nome
+
 	return "Nenhuma"
 
+
+
 func _obter_tool_manager() -> Node:
+
 	if get_tree() == null:
+
 		return null
+
 	return get_tree().root.get_node_or_null("ToolManager")
 
+
+
 func _atualizar_pos_debug_acao(acao_texto: String = "") -> void:
+
 	if debug_last_action_label and acao_texto != "":
+
 		debug_last_action_label.text = "Última ação: %s" % acao_texto
+
 	verificar_e_atualizar_inventario()
+
 	if village_chest_panel and village_chest_panel.visible:
+
 		_atualizar_painel_bau_vila()
 
+
+
 func _obter_bau_da_vila_debug() -> VillageChest:
+
 	if village_chest_ref and is_instance_valid(village_chest_ref):
+
 		return village_chest_ref
 
+
+
 	var chests: Array = get_tree().get_nodes_in_group("village_chest")
+
 	for chest in chests:
+
 		if chest != null and is_instance_valid(chest) and chest is VillageChest:
+
 			return chest
+
+
 
 	return null
 
-func abrir_bau_vila(bau: VillageChest) -> void:
-	if bau == null or not is_instance_valid(bau):
-		push_warning("UI: baú da vila inválido.")
+
+
+func abrir_golem_panel() -> void:
+
+	if golem_panel:
+
+		golem_panel.visible = true
+
+		golem_panel.mouse_filter = Control.MOUSE_FILTER_STOP
+
+		_atualizar_painel_golem()
+
+
+
+func fechar_golem_panel() -> void:
+
+	if golem_panel:
+
+		golem_panel.visible = false
+
+		golem_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+
+
+func _obter_golem_atual() -> Node:
+
+	var current_scene := _obter_current_scene()
+
+	if current_scene == null:
+
+		return null
+
+	return current_scene.get_node_or_null("Golem")
+
+
+
+func _atualizar_painel_golem() -> void:
+	var golem: Node = _obter_golem_atual()
+	var golem_disponivel: bool = golem != null and is_instance_valid(golem)
+
+	var ativo: bool = false
+	var talento_desbloqueado: bool = false
+	var prioridade_atual: int = -1
+	var tarefa_atual: String = "Golem não encontrado"
+	var ultimo_alvo: String = "Nenhum"
+	var ultima_acao: String = "Aguardando trabalho"
+	var lotes_maduros: int = 0
+	var lotes_secos: int = 0
+
+	if golem_disponivel:
+		if golem.has_method("atualizar_diagnosticos_runtime"):
+			golem.call("atualizar_diagnosticos_runtime")
+		if golem.has_method("is_golem_active"):
+			ativo = bool(golem.call("is_golem_active"))
+		if golem.has_method("is_irrigation_skill_unlocked"):
+			talento_desbloqueado = bool(golem.call("is_irrigation_skill_unlocked"))
+		if golem.has_method("get_work_priority"):
+			prioridade_atual = int(golem.call("get_work_priority"))
+		if golem.has_method("get_current_task_label"):
+			tarefa_atual = str(golem.call("get_current_task_label"))
+		if golem.has_method("get_last_target_label"):
+			ultimo_alvo = str(golem.call("get_last_target_label"))
+		if golem.has_method("get_last_action_label"):
+			ultima_acao = str(golem.call("get_last_action_label"))
+		if golem.has_method("get_mature_plots_found"):
+			lotes_maduros = int(golem.call("get_mature_plots_found"))
+		if golem.has_method("get_dry_plots_found"):
+			lotes_secos = int(golem.call("get_dry_plots_found"))
+
+	if golem_status_label:
+		golem_status_label.text = "Golem: %s" % ("Ativo" if ativo else "Pausado") if golem_disponivel else "Golem: não encontrado"
+
+	if golem_talent_label:
+		golem_talent_label.text = "Talento Golem Irrigador: %s" % ("Desbloqueado" if talento_desbloqueado else "Bloqueado") if golem_disponivel else "Talento Golem Irrigador: --"
+
+	if golem_task_label:
+		golem_task_label.text = "Tarefa atual: %s" % tarefa_atual
+
+	if golem_priority_label:
+		golem_priority_label.text = "Prioridade atual: %s" % ("nenhuma" if prioridade_atual < 0 else _obter_label_prioridade_golem(prioridade_atual, talento_desbloqueado))
+
+	if golem_target_label:
+		golem_target_label.text = "Último alvo: %s" % ultimo_alvo
+
+	if golem_action_label:
+		golem_action_label.text = "Última ação: %s" % ultima_acao
+
+	if golem_counts_label:
+		golem_counts_label.text = "Contagem: maduros %d | secos %d" % [lotes_maduros, lotes_secos]
+
+	_atualizar_botoes_prioridade_golem(prioridade_atual, talento_desbloqueado, golem_disponivel)
+
+
+
+func _atualizar_botoes_prioridade_golem(prioridade_atual: int, talento_desbloqueado: bool, golem_disponivel: bool) -> void:
+
+	_configurar_botao_prioridade_golem(golem_priority_harvest_first_button, "Colher primeiro", prioridade_atual == GOLEM_PRIORITY_HARVEST_FIRST, false, golem_disponivel)
+
+	_configurar_botao_prioridade_golem(golem_priority_water_first_button, "Regar primeiro", prioridade_atual == GOLEM_PRIORITY_WATER_FIRST, not talento_desbloqueado, golem_disponivel)
+
+	_configurar_botao_prioridade_golem(golem_priority_harvest_only_button, "Só colher", prioridade_atual == GOLEM_PRIORITY_HARVEST_ONLY, false, golem_disponivel)
+
+	_configurar_botao_prioridade_golem(golem_priority_water_only_button, "Só regar", prioridade_atual == GOLEM_PRIORITY_WATER_ONLY, not talento_desbloqueado, golem_disponivel)
+
+	_configurar_botao_prioridade_golem(golem_priority_pause_button, "Pausar", prioridade_atual == GOLEM_PRIORITY_PAUSED, false, golem_disponivel)
+
+
+
+func _configurar_botao_prioridade_golem(button: Button, texto_base: String, selecionada: bool, bloqueada: bool, golem_disponivel: bool) -> void:
+	if button == null:
 		return
+
+	button.disabled = not golem_disponivel
+	button.text = ("▶ " if selecionada else "") + texto_base + (" (bloqueado pelo talento)" if bloqueada else "")
+
+
+
+func _obter_label_prioridade_golem(prioridade: int, talento_desbloqueado: bool) -> String:
+	match prioridade:
+		GOLEM_PRIORITY_HARVEST_FIRST:
+			return "Colher primeiro"
+		GOLEM_PRIORITY_WATER_FIRST:
+			return "Regar primeiro" if talento_desbloqueado else "Regar primeiro (bloqueado pelo talento)"
+		GOLEM_PRIORITY_HARVEST_ONLY:
+			return "Só colher"
+		GOLEM_PRIORITY_WATER_ONLY:
+			return "Só regar" if talento_desbloqueado else "Só regar (bloqueado pelo talento)"
+		GOLEM_PRIORITY_PAUSED:
+			return "Pausado"
+		_:
+			return "Desconhecida"
+
+
+
+func _definir_prioridade_golem(prioridade: int) -> void:
+	var golem: Node = _obter_golem_atual()
+
+	if golem == null or not is_instance_valid(golem) or not golem.has_method("set_work_priority"):
+		_atualizar_painel_golem()
+		return
+
+	golem.call("set_work_priority", prioridade)
+	_atualizar_painel_golem()
+
+
+
+func _on_abrir_golem_pressed() -> void:
+
+	abrir_golem_panel()
+
+
+
+func _on_golem_priority_harvest_first_pressed() -> void:
+
+	_definir_prioridade_golem(GOLEM_PRIORITY_HARVEST_FIRST)
+
+
+
+func _on_golem_priority_water_first_pressed() -> void:
+
+	_definir_prioridade_golem(GOLEM_PRIORITY_WATER_FIRST)
+
+
+
+func _on_golem_priority_harvest_only_pressed() -> void:
+
+	_definir_prioridade_golem(GOLEM_PRIORITY_HARVEST_ONLY)
+
+
+
+func _on_golem_priority_water_only_pressed() -> void:
+
+	_definir_prioridade_golem(GOLEM_PRIORITY_WATER_ONLY)
+
+
+
+func _on_golem_priority_pause_pressed() -> void:
+
+	_definir_prioridade_golem(GOLEM_PRIORITY_PAUSED)
+
+
+
+func abrir_bau_vila(bau: VillageChest) -> void:
+
+	if bau == null or not is_instance_valid(bau):
+
+		push_warning("UI: baú da vila inválido.")
+
+		return
+
+
 
 	village_chest_ref = bau
+
 	if village_chest_panel:
+
 		village_chest_panel.visible = true
+
 		village_chest_panel.mouse_filter = Control.MOUSE_FILTER_STOP
+
 	_atualizar_painel_bau_vila()
 
+
+
 func fechar_bau_vila() -> void:
+
 	if village_chest_panel:
+
 		village_chest_panel.visible = false
+
 		village_chest_panel.mouse_filter = Control.MOUSE_FILTER_PASS
 
+
+
 func _atualizar_painel_bau_vila() -> void:
+
 	if not village_chest_contents:
+
 		return
 
+
+
 	if village_chest_ref == null or not is_instance_valid(village_chest_ref):
+
 		village_chest_contents.text = "Baú vazio."
+
 		return
+
+
 
 	var conteudo: Dictionary = village_chest_ref.get_contents()
+
 	if conteudo.is_empty():
+
 		village_chest_contents.text = "Baú vazio."
+
 		return
+
+
 
 	var linhas: PackedStringArray = PackedStringArray()
+
 	for item_id in conteudo.keys():
+
 		var quantidade: int = int(conteudo[item_id])
+
 		if quantidade > 0:
+
 			linhas.append("%s x%d" % [str(item_id), quantidade])
 
+
+
 	if linhas.is_empty():
+
 		village_chest_contents.text = "Baú vazio."
+
 	else:
+
 		village_chest_contents.text = "\n".join(linhas)
 
+
+
 func _on_village_chest_withdraw_pressed() -> void:
+
 	if village_chest_ref == null or not is_instance_valid(village_chest_ref):
+
 		fechar_bau_vila()
+
 		return
+
+
 
 	var retirado: Dictionary = village_chest_ref.withdraw_all_to_global_inventory()
+
 	if retirado.is_empty():
+
 		if village_chest_contents:
+
 			village_chest_contents.text = "Baú vazio."
+
 		print("Baú vazio.")
+
 	else:
+
 		verificar_e_atualizar_inventario()
+
 		_atualizar_painel_bau_vila()
 
+
+
 func abrir_painel_purificacao(obstacle: Node) -> void:
+
 	if obstacle == null or not is_instance_valid(obstacle):
+
 		push_warning("UI: obstáculo de purificação inválido.")
+
 		return
+
+
 
 	if obstacle.has_method("get_save_data"):
+
 		var save_data_variant: Variant = obstacle.call("get_save_data")
+
 		if typeof(save_data_variant) == TYPE_DICTIONARY and bool((save_data_variant as Dictionary).get("purified", false)):
+
 			return
 
+
+
 	purification_obstacle_ref = obstacle
+
 	if obstacle.has_signal("purified") and not obstacle.is_connected("purified", Callable(self, "_on_purification_obstacle_purified")):
+
 		obstacle.connect("purified", Callable(self, "_on_purification_obstacle_purified"))
 
+
+
 	if purification_panel == null:
+
 		push_warning("UI: Painel de Purificação nao encontrado.")
+
 		return
+
+
 
 	purification_panel.visible = true
+
 	purification_panel.mouse_filter = Control.MOUSE_FILTER_STOP
+
 	purification_panel.move_to_front()
+
 	atualizar_painel_purificacao()
 
+
+
 func fechar_painel_purificacao() -> void:
+
 	if purification_panel:
+
 		purification_panel.visible = false
+
 		purification_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
 	purification_obstacle_ref = null
+
 	if purification_purify_button:
+
 		purification_purify_button.self_modulate = Color(1, 1, 1, 1)
 
+
+
 func atualizar_painel_purificacao() -> void:
+
 	if purification_panel == null:
+
 		return
+
+
 
 	var obstacle: Node = _obter_obstaculo_purificacao_ativo()
+
 	if obstacle == null:
+
 		if purification_status_label:
+
 			purification_status_label.text = "Selecione uma área bloqueada."
+
 		if purification_hint_label:
+
 			purification_hint_label.text = "Entregar tudo disponível só entrega recursos. Purificar Área é a etapa final."
+
 		if purification_deliver_all_button:
+
 			purification_deliver_all_button.disabled = true
+
 		if purification_purify_button:
+
 			purification_purify_button.disabled = true
+
 			purification_purify_button.self_modulate = Color(1, 1, 1, 1)
+
 		_limpar_lista_requisitos_purificacao()
+
 		return
+
+
 
 	if _purification_obstacle_is_purified(obstacle):
+
 		fechar_painel_purificacao()
+
 		return
 
+
+
 	var requirements: Array = []
+
 	if obstacle.has_method("get_purification_requirements"):
+
 		requirements = obstacle.call("get_purification_requirements")
 
+
+
 	var delivered: Dictionary = {}
+
 	if obstacle.has_method("get_delivered_requirements"):
+
 		var delivered_variant: Variant = obstacle.call("get_delivered_requirements")
+
 		if typeof(delivered_variant) == TYPE_DICTIONARY:
+
 			delivered = delivered_variant
 
+
+
 	var missing: Dictionary = {}
+
 	if obstacle.has_method("get_missing_requirements"):
+
 		var missing_variant: Variant = obstacle.call("get_missing_requirements")
+
 		if typeof(missing_variant) == TYPE_DICTIONARY:
+
 			missing = missing_variant
+
+
 
 	_limpar_lista_requisitos_purificacao()
 
+
+
 	for requirement_variant in requirements:
+
 		if typeof(requirement_variant) != TYPE_DICTIONARY:
+
 			continue
+
+
 
 		var requirement: Dictionary = requirement_variant
+
 		var item_id: String = str(requirement.get("item_id", ""))
+
 		var required_quantity: int = int(requirement.get("quantity", 0))
+
 		if item_id == "" or required_quantity <= 0:
+
 			continue
 
+
+
 		var delivered_quantity: int = int(delivered.get(item_id, 0))
+
 		var row := HBoxContainer.new()
+
 		row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+
 		row.add_theme_constant_override("separation", 10)
+
 		row.theme = pixel_ui_theme
 
+
+
 		var icon_label := Label.new()
+
 		var icon_text := Database.obter_icone_item(item_id)
+
 		if icon_text == "":
+
 			icon_text = "?"
+
 		icon_label.text = icon_text
+
 		icon_label.custom_minimum_size = Vector2(30, 0)
+
 		icon_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 
+
+
 		var name_label := Label.new()
+
 		name_label.text = Database.obter_nome_item(item_id)
+
 		if name_label.text == "":
+
 			name_label.text = item_id
+
 		name_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 
+
+
 		var progress_label := Label.new()
+
 		progress_label.text = "%d/%d" % [delivered_quantity, required_quantity]
+
 		progress_label.custom_minimum_size = Vector2(80, 0)
+
 		progress_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 
+
+
 		var deliver_button := Button.new()
+
 		deliver_button.text = "Entregar"
+
 		deliver_button.disabled = delivered_quantity >= required_quantity
+
 		deliver_button.pressed.connect(Callable(self, "_on_purification_deliver_pressed").bind(item_id))
 
+
+
 		row.add_child(icon_label)
+
 		row.add_child(name_label)
+
 		row.add_child(progress_label)
+
 		row.add_child(deliver_button)
+
 		if purification_requirements_list:
+
 			purification_requirements_list.add_child(row)
 
+
+
 	var status_text := "Entregue todos os requisitos para purificar esta área."
+
 	if missing.is_empty():
+
 		status_text = "Requisitos completos. Clique em Purificar Área."
+
 	else:
+
 		var missing_parts: Array[String] = []
+
 		for requirement_variant in requirements:
+
 			if typeof(requirement_variant) != TYPE_DICTIONARY:
+
 				continue
+
 			var requirement: Dictionary = requirement_variant
+
 			var item_id: String = str(requirement.get("item_id", ""))
+
 			if item_id == "" or not missing.has(item_id):
+
 				continue
+
 			var missing_quantity: int = int(missing.get(item_id, 0))
+
 			if missing_quantity <= 0:
+
 				continue
+
 			var item_name: String = Database.obter_nome_item(item_id)
+
 			if item_name == "":
+
 				item_name = item_id
+
 			missing_parts.append("%s x%d" % [item_name, missing_quantity])
+
 		if not missing_parts.is_empty():
+
 			status_text += "\nFaltam: %s." % ", ".join(missing_parts)
 
+
+
 	if purification_status_label:
+
 		purification_status_label.text = status_text
+
 	if purification_hint_label:
+
 		if missing.is_empty():
+
 			purification_hint_label.text = "Entregar tudo disponível já foi aplicado. Purificar Área conclui a liberação da área."
+
 		else:
+
 			purification_hint_label.text = "Entregar tudo disponível só entrega recursos. Purificar Área não é executado automaticamente."
+
 	if purification_deliver_all_button:
+
 		purification_deliver_all_button.disabled = requirements.is_empty()
+
 	if purification_purify_button:
+
 		var pode_purificar := bool(obstacle.has_method("can_purify") and obstacle.call("can_purify"))
+
 		purification_purify_button.disabled = not pode_purificar
+
 		purification_purify_button.self_modulate = Color(1.0, 0.95, 0.75, 1.0) if pode_purificar else Color(1, 1, 1, 1)
 
+
+
 func _obter_obstaculo_purificacao_ativo() -> Node:
+
 	if purification_obstacle_ref != null and is_instance_valid(purification_obstacle_ref):
+
 		return purification_obstacle_ref
+
 	return null
+
+
 
 func _purification_obstacle_is_purified(obstacle: Node) -> bool:
+
 	if obstacle == null or not is_instance_valid(obstacle):
+
 		return false
+
 	if not obstacle.has_method("get_save_data"):
+
 		return false
+
 	var save_data_variant: Variant = obstacle.call("get_save_data")
+
 	if typeof(save_data_variant) != TYPE_DICTIONARY:
+
 		return false
+
 	return bool((save_data_variant as Dictionary).get("purified", false))
 
+
+
 func _limpar_lista_requisitos_purificacao() -> void:
+
 	if purification_requirements_list == null:
+
 		return
+
 	for child in purification_requirements_list.get_children():
+
 		if child != null and is_instance_valid(child):
+
 			child.free()
 
+
+
 func _on_purification_deliver_pressed(item_id: String) -> void:
+
 	var obstacle: Node = _obter_obstaculo_purificacao_ativo()
+
 	if obstacle == null or not obstacle.has_method("deliver_requirement"):
+
 		return
+
+
 
 	var delivered_amount: int = int(obstacle.call("deliver_requirement", item_id))
+
 	if delivered_amount > 0:
+
 		print("Purificação: entregou %s x%d." % [item_id, delivered_amount])
+
 	else:
+
 		print("Purificação: nada entregue para %s." % item_id)
+
 	call_deferred("atualizar_painel_purificacao")
+
 	verificar_e_atualizar_inventario()
+
 	atualizar_status_jogo()
+
+
 
 func _on_purification_deliver_all_pressed() -> void:
+
 	var obstacle: Node = _obter_obstaculo_purificacao_ativo()
+
 	if obstacle == null or not obstacle.has_method("deliver_all_available"):
+
 		return
+
+
 
 	var delivered: Dictionary = obstacle.call("deliver_all_available")
+
 	print("Purificação: entrega total aplicada %s." % str(delivered))
+
 	call_deferred("atualizar_painel_purificacao")
+
 	verificar_e_atualizar_inventario()
+
 	atualizar_status_jogo()
 
+
+
 func _on_purification_finalize_pressed() -> void:
+
 	var obstacle: Node = _obter_obstaculo_purificacao_ativo()
+
 	if obstacle == null or not obstacle.has_method("finalize_purification"):
+
 		return
+
+
 
 	if bool(obstacle.call("finalize_purification")):
+
 		print("Purificação: área finalizada com sucesso.")
+
 		fechar_painel_purificacao()
+
 		verificar_e_atualizar_inventario()
+
 		atualizar_status_jogo()
+
 	else:
+
 		print("Purificação: ainda faltam requisitos.")
+
 		call_deferred("atualizar_painel_purificacao")
 
+
+
 func _on_purification_obstacle_purified(obstacle_id: String) -> void:
+
 	var obstacle: Node = _obter_obstaculo_purificacao_ativo()
+
 	if obstacle != null and obstacle.has_method("get_obstacle_id"):
+
 		if str(obstacle.call("get_obstacle_id")) != obstacle_id:
+
 			return
+
 	fechar_painel_purificacao()
 
+
+
 func _on_abrir_livro_receitas_pressed() -> void:
+
 	abrir_livro_receitas(false)
 
+
+
 func abrir_livro_receitas(fechar_caldeirao: bool = false, cauldron: Node = null) -> void:
+
 	if not recipe_book:
+
 		_instanciar_livro_receitas()
+
 	if not recipe_book:
+
 		push_warning("Nao foi possivel abrir o Livro de Receitas: instancia nao encontrada.")
+
 		return
+
+
 
 	if fechar_caldeirao:
+
 		var cauldron_ui := cauldron
+
 		if not cauldron_ui:
+
 			var current_scene := _obter_current_scene()
+
 			if current_scene != null:
+
 				cauldron_ui = current_scene.get_node_or_null("CauldronUI")
+
 		if cauldron_ui and cauldron_ui.has_method("fechar_popup"):
+
 			cauldron_ui.fechar_popup()
+
 		elif fechar_caldeirao:
+
 			push_warning("Nao foi possivel fechar o popup do caldeirao ao abrir o Livro de Receitas.")
 
+
+
 	var cauldron_final := _resolver_caldeirao(cauldron)
+
 	if cauldron_final:
+
 		_vincular_caldeirao_no_livro(cauldron_final)
+
 	else:
+
 		push_warning("UI: nenhum caldeirao valido encontrado para o Livro de Receitas.")
 
+
+
 	var current_scene := _obter_current_scene()
+
 	var cauldron_popup_layer: Node = null
+
 	if current_scene != null:
+
 		cauldron_popup_layer = current_scene.get_node_or_null("CauldronUI/PopupLayer")
+
 	if cauldron_popup_layer:
+
 		cauldron_popup_layer.visible = true
+
+
 
 	if recipe_book and recipe_book.has_method("abrir"):
+
 		recipe_book.abrir()
+
 		_initial_objectives_recipe_book_opened = true
+
 		_atualizar_objetivos_iniciais(0.0)
+
 	else:
+
 		push_warning("Livro de Receitas nao pode ser aberto porque a instancia nao foi encontrada.")
 
+
+
 func fechar_livro_receitas() -> void:
+
 	if recipe_book and recipe_book.has_method("fechar"):
+
 		recipe_book.fechar()
 
+
+
 func reiniciar_objetivos_iniciais_apos_load() -> void:
+
 	_capturar_baseline_objetivos_iniciais()
+
 	if initial_objectives_panel:
+
 		initial_objectives_panel.visible = true
+
 		initial_objectives_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
 	_renderizar_objetivos_iniciais(_construir_estado_objetivos_iniciais(true))
+
 	_initial_objectives_last_signature = ""
 
+
+
 func _on_recipe_book_craft_requested(recipe_id: String, quantidade: int) -> void:
+
 	var cauldron_ui: Node = null
+
 	if recipe_book and recipe_book.has_method("get_cauldron_reference"):
+
 		cauldron_ui = recipe_book.get_cauldron_reference()
+
 	cauldron_ui = _resolver_caldeirao(cauldron_ui)
+
 	if not cauldron_ui:
+
 		push_warning("Nao foi possivel iniciar producao em lote: caldeirao nao encontrado.")
+
 		return
+
+
 
 	var sucesso := bool(cauldron_ui.iniciar_producao_em_lote(recipe_id, quantidade))
+
 	if sucesso:
+
 		_initial_objectives_cauldron_used = true
+
 		_atualizar_objetivos_iniciais(0.0)
+
 		if cauldron_ui and cauldron_ui.has_method("fechar_popup"):
+
 			cauldron_ui.call("fechar_popup")
+
 		fechar_livro_receitas()
+
 	else:
+
 		push_warning("A producao em lote falhou para a receita %s." % recipe_id)
 
+
+
 func _instanciar_livro_receitas() -> void:
+
 	recipe_book = recipe_book_scene.instantiate()
+
 	var current_scene := _obter_current_scene()
+
 	var cauldron_popup_layer: Node = null
+
 	if current_scene != null:
+
 		cauldron_popup_layer = current_scene.get_node_or_null("CauldronUI/PopupLayer")
+
 	if cauldron_popup_layer:
+
 		cauldron_popup_layer.visible = true
+
 		cauldron_popup_layer.add_child(recipe_book)
+
 	else:
+
 		add_child(recipe_book)
+
 	recipe_book.mouse_filter = Control.MOUSE_FILTER_PASS
+
 	recipe_book.z_index = 200
+
 	recipe_book.visibility_changed.connect(func():
+
 		if recipe_book:
+
 			recipe_book.mouse_filter = Control.MOUSE_FILTER_STOP if recipe_book.visible else Control.MOUSE_FILTER_PASS
+
 	)
+
 	if recipe_book.has_signal("craft_requested"):
+
 		recipe_book.craft_requested.connect(_on_recipe_book_craft_requested)
+
 	_vincular_caldeirao_no_livro(_resolver_caldeirao(current_scene.get_node_or_null("CauldronUI") if current_scene != null else null))
 
+
+
 func _vincular_caldeirao_no_livro(cauldron: Node) -> void:
+
 	if recipe_book == null or cauldron == null:
+
 		return
+
+
 
 	if not cauldron.has_method("iniciar_producao_em_lote"):
+
 		push_warning("UI: o no recebido como caldeirao nao possui iniciar_producao_em_lote: %s" % cauldron.get_path())
+
 		return
 
+
+
 	if recipe_book.has_method("set_cauldron"):
+
 		recipe_book.set_cauldron(cauldron)
+
 	elif recipe_book.has_method("set_cauldron_reference"):
+
 		recipe_book.set_cauldron_reference(cauldron)
+
 	else:
+
 		push_warning("UI: RecipeBookUI nao possui metodo para vincular caldeirao.")
 
+
+
 func _resolver_caldeirao(cauldron: Node = null) -> Node:
+
 	if cauldron != null and cauldron.has_method("iniciar_producao_em_lote"):
+
 		return cauldron
 
+
+
 	var cauldrons := get_tree().get_nodes_in_group("cauldrons")
+
 	for node in cauldrons:
+
 		if node != null and node.has_method("iniciar_producao_em_lote"):
+
 			return node
+
+
 
 	return null
 
+
+
 func _obter_current_scene() -> Node:
+
 	var tree := get_tree()
+
 	if tree == null:
+
 		return null
+
 	return tree.current_scene
