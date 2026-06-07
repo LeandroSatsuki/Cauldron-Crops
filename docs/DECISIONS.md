@@ -17,14 +17,16 @@
 ## Decisão 58 - Arraste de UI runtime-only sem persistência
 
 - Problema: alguns painéis do jogo precisavam ser reposicionados pelo jogador durante a sessão sem introduzir complexidade de save.
-
 - Decisão: implementar arraste de UI como comportamento runtime-only, com helper reutilizável e sem salvar a posição entre sessões.
-
 - Motivo: permitir organização da tela de forma segura e pequena, sem mexer no `SaveManager` nesta etapa.
-
 - Risco: ao recarregar o jogo, os painéis voltam às posições padrão e o jogador precisa ajustar novamente.
 
+## Decisão 59 - Catálogo de transição documentado antes da migração definitiva
 
+- Problema: o código ainda usa um catálogo legado/provisório enquanto os documentos novos já definem o catálogo definitivo do jogo.
+- Decisão: documentar a transição de catálogo antes de migrar IDs e receitas, mantendo compatibilidade temporária e evitando troca prematura de schema.
+- Motivo: reduzir drift entre `Database.gd`, `Data/recipes/*.tres`, Livro de Receitas, caldeirão e `receitas_descobertas` salvas.
+- Risco: se a migração ocorrer sem alias/compatibilidade, o save e a UI podem divergir rapidamente.
 
 ## Decisão 55 - Golem Irrigador como talento, não como novo golem
 

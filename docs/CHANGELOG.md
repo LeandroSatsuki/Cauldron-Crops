@@ -2,6 +2,12 @@
 
 
 
+## 2026-06-07 - Documentação do catálogo de transição
+
+- Foi criado `docs/CATALOG_TRANSITION_PLAN.md` para registrar o estado atual do catálogo legado/provisório e a direção do catálogo definitivo.
+- A documentação consolida a equivalência entre o catálogo atual do código e os nomes/linhas do design novo, sem alterar gameplay, cenas ou recursos de receita.
+- Também foi registrado o risco de drift entre `Database.gd`, `Data/recipes/*.tres`, o Livro de Receitas e o caldeirão durante a migração futura.
+
 ## 2026-06-07 - Layout Pass V1 da fazenda e UI arrastável
 
 - O núcleo inicial da fazenda recebeu um ajuste de layout para ganhar respiro visual, reduzindo a sensação de área amontoada.

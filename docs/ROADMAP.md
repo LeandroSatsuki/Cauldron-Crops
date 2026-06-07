@@ -33,10 +33,9 @@
 ## Fase 1.5 - Ajudantes e gestão runtime-only
 
 - Interface do Golem V0 adicionada para expor status, talento, tarefa atual e prioridade de trabalho.
-
 - A prioridade do golem permanece runtime-only nesta V0; reiniciar o jogo volta ao comportamento padrão.
-
 - O Golem Irrigador passou a regar lotes plantados e secos quando o talento está desbloqueado, sem criar um novo golem.
+- O catálogo de receitas entrou em fase de transição documentada antes da migração para o catálogo definitivo.
 
 
 
