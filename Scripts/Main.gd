@@ -1304,6 +1304,11 @@ func _criar_bobber_destaque() -> Polygon2D:
 
 func _input(event: InputEvent) -> void:
 
+	if event is InputEventMouseButton:
+		var ui_node: Node = get_node_or_null("UI")
+		if ui_node != null and ui_node.has_method("_tem_popup_modal_aberto") and ui_node.call("_tem_popup_modal_aberto"):
+			return
+
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
 
 		var tree: SceneTree = get_tree()

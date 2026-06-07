@@ -966,6 +966,16 @@ theme = ExtResource("3_pixeltheme")
 
 
 
+[node name="ModalBlocker" type="ColorRect" parent="."]
+visible = false
+mouse_filter = 0
+color = Color(0, 0, 0, 0.001)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
 [node name="GolemPanel" type="PanelContainer" parent="." unique_id=1900000100]
 
 

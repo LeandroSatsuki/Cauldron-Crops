@@ -1283,7 +1283,7 @@ func _ready() -> void:
 
 
 
-	quest_board.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	quest_board.mouse_filter = Control.MOUSE_FILTER_STOP
 
 
 
@@ -1308,6 +1308,7 @@ func _ready() -> void:
 
 
 			quest_board.mouse_filter = Control.MOUSE_FILTER_STOP if quest_board.visible else Control.MOUSE_FILTER_IGNORE
+			_atualizar_modal_blocker()
 
 
 
@@ -8045,6 +8046,7 @@ func _on_abrir_quests_pressed() -> void:
 
 
 		quest_board.visible = true
+		_atualizar_modal_blocker()
 
 
 
@@ -13819,33 +13821,36 @@ func _garantir_modal_blocker() -> void:
 		move_child(modal_blocker, 0)
 
 
-func _atualizar_modal_blocker() -> void:
-	_garantir_modal_blocker()
-	if modal_blocker == null:
-		return
-
-	var bloquear_input: bool = false
+func _tem_popup_modal_aberto() -> bool:
 	if skill_tree and skill_tree.visible:
-		bloquear_input = true
+		return true
 	if golem_panel and golem_panel.visible:
-		bloquear_input = true
+		return true
 	if purification_panel and purification_panel.visible:
-		bloquear_input = true
+		return true
 	if village_chest_panel and village_chest_panel.visible:
-		bloquear_input = true
+		return true
 	if debug_panel and debug_panel.visible:
-		bloquear_input = true
+		return true
 	if quest_board and quest_board.visible:
-		bloquear_input = true
+		return true
 	if sell_menu and sell_menu.visible:
-		bloquear_input = true
+		return true
 	if recipe_book and is_instance_valid(recipe_book) and recipe_book.visible:
-		bloquear_input = true
+		return true
 
 	var current_scene := _obter_current_scene()
 	if current_scene != null:
 		var cauldron_popup_layer: Node = current_scene.get_node_or_null("CauldronUI/PopupLayer")
 		if cauldron_popup_layer != null and cauldron_popup_layer.visible:
-			bloquear_input = true
+			return true
 
-	modal_blocker.visible = bloquear_input
+	return false
+
+
+func _atualizar_modal_blocker() -> void:
+	_garantir_modal_blocker()
+	if modal_blocker == null:
+		return
+
+	modal_blocker.visible = _tem_popup_modal_aberto()

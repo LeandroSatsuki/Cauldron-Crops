@@ -52,7 +52,11 @@ func _process(delta: float) -> void:
 func _input_event(viewport: Viewport, event: InputEvent, shape_idx: int) -> void:
 	if event is not InputEventMouseButton:
 		return
-	if not event.pressed or event.button_index != MOUSE_BUTTON_LEFT:
+	if event.button_index != MOUSE_BUTTON_LEFT or not event.pressed:
+		return
+
+	var ui_node: Node = get_tree().current_scene.get_node_or_null("UI")
+	if ui_node != null and ui_node.has_method("_tem_popup_modal_aberto") and ui_node.call("_tem_popup_modal_aberto"):
 		return
 
 	_on_lake_clicked()

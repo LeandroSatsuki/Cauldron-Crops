@@ -41,13 +41,16 @@ func try_handle_global_click(global_point: Vector2) -> bool:
 		print("PurificationObstacle: clique ignorado, ja purificado. click global=", global_point, " rect=", rect, " purificado=", purified_state)
 		return false
 
+	var ui := _obter_ui()
+	if ui != null and ui.has_method("_tem_popup_modal_aberto") and ui.call("_tem_popup_modal_aberto"):
+		return false
+
 	var inside: bool = rect.has_point(global_point)
 	print("PurificationObstacle: click global=", global_point, " rect=", rect, " inside=", inside, " purificado=", purified_state)
 	if not inside:
 		return false
 
 	print("PurificationObstacle: clique recebido na area bloqueada.")
-	var ui := _obter_ui()
 	if ui != null and ui.has_method("abrir_painel_purificacao"):
 		ui.call("abrir_painel_purificacao", self)
 	else:

@@ -104,6 +104,9 @@ func _process(_delta: float) -> void:
 # Função para capturar cliques do mouse (usando _input_event)
 func _input_event(_viewport: Viewport, event: InputEvent, _shape_idx: int) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+		var ui_node: Node = get_tree().current_scene.get_node_or_null("UI")
+		if ui_node != null and ui_node.has_method("_tem_popup_modal_aberto") and ui_node.call("_tem_popup_modal_aberto"):
+			return
 		_on_plot_clicked()
 
 func set_expansion_blocked(blocked: bool) -> void:
