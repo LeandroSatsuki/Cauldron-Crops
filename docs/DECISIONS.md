@@ -18,6 +18,12 @@
 - Motivo: preparar a chegada de uma segunda área sem alterar o comportamento visível da V0, sem mexer no schema do save e sem reorganizar os `FarmPlot` existentes.
 - Risco: a ordem dos `FarmPlot` continua dependente da criação append-only; qualquer expansão futura precisa preservar isso.
 
+## Decisão 50 - Planejar o mapa macro antes do solo livre
+- Problema: a fazenda já funciona, mas o núcleo inicial está concentrado demais e pode ficar amontoado se o mapa crescer sem direção.
+- Decisão: não implementar solo livre na Fase 1; primeiro planejar o mapa macro e usar blockout visual como preparação, sem conectar `FarmGrid` ao gameplay.
+- Motivo: preservar a Fase 1, evitar retrabalho de layout e dar espaço para zonas futuras antes da migração sistêmica.
+- Risco: o blockout visual precisa continuar sem entrar no grupo `lotes_terra` nem se transformar em uma rota paralela de jogo.
+
 ## Decisão 1 - Golem automático desativado temporariamente
 - Problema: `GolemManager.gd` colhia automaticamente e conflitada com o golem físico.
 - Decisão: manter o código, mas desligar a automação com flag.

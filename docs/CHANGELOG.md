@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-06-06 - Plano macro da fazenda documentado
+- Foi criado `docs/FARM_LAYOUT_PLAN.md` para registrar o estado atual da fazenda, o problema de concentração do núcleo inicial e as zonas macro recomendadas.
+- A documentação separa Fase 1, Fase 1.5 e Fase 2, mantendo solo livre e `FarmGrid` real para a fase futura.
+- Também foi registrado que blockout visual pode existir na Fase 1.5, mas sem gameplay, sem novos `FarmPlot` reais e sem acoplar `FarmGridPreview` ao jogo principal.
+- Nenhum código, cena ou sistema de gameplay foi alterado nesta etapa.
+
 ## 2026-06-06 - Demo exportada da Fase 1 validada manualmente
 - A build Windows da Fase 1 foi gerada com sucesso em `Builds/Fase1/`.
 - Os arquivos exportados `CauldronCrops_Fase1.exe` e `CauldronCrops_Fase1.pck` foram gerados com os export templates da Godot 4.6.2 instalados localmente.

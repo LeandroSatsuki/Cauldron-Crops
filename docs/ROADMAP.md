@@ -58,7 +58,19 @@ Entregar um protótipo jogável e estável do loop principal da fazenda, com pla
 ### Próxima tarefa recomendada
 Avançar para o conteúdo mínimo da Fase 1 remanescente e manter a documentação da build/demo como referência de release local.
 
-## Fase 2 - Estabilização
+## Fase 1.5 - Layout macro e preparação da fazenda
+- Documentar o layout macro da fazenda.
+- Fazer blockout visual leve do mapa, sem gameplay novo.
+- Reservar espaço para a segunda área corrompida.
+- Definir zonas principais por função.
+- Manter a Fase 1 funcional intacta enquanto a fazenda ganha forma maior.
+
+## Fase 2 - Solo livre e expansão sistêmica
+- Implementar solo livre / FarmGrid real.
+- Permitir criação e remoção de lotes.
+- Tornar a segunda área corrompida funcional.
+- Expandir o save de forma maior, se necessário.
+- Avaliar a migração real para FarmGrid, se aprovada.
 - Corrigir a UI do caldeirão.
 - Revisar o inventário.
 - Revisar a venda.
