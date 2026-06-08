@@ -128,9 +128,8 @@ O caminho recomendado é um destes dois:
 
 Essa etapa deve acontecer antes do P02C de implementação de receitas, para evitar migração prematura e quebra de catálogo.
 
-## Resumo executivo
+## 11. Status do P02C1
 
-- O código ainda opera com catálogo legado/provisório.
-- Os docs novos já definem o catálogo definitivo.
-- A migração deve ser incremental, com compatibilidade temporária.
-- O foco agora é planejar o mapa de transição, não implementar novas receitas.
+- O P02C1 alinhou o acesso de caldeirão e Livro de Receitas para uma resolução central baseada em `RecipeDatabase`/`Data/recipes`, com fallback legado temporário via `Database.receitas_alquimia`.
+- A transição ainda preserva `GlobalInventory.receitas_descobertas` e não altera schema de save.
+- O próximo passo segue sendo reduzir a dependência do legado apenas onde houver alias/compatibilidade suficiente.

@@ -36,6 +36,7 @@
 - A prioridade do golem permanece runtime-only nesta V0; reiniciar o jogo volta ao comportamento padrão.
 - O Golem Irrigador passou a regar lotes plantados e secos quando o talento está desbloqueado, sem criar um novo golem.
 - O catálogo de receitas entrou em fase de transição documentada antes da migração para o catálogo definitivo.
+- P02C1 alinhou caldeirão e Livro de Receitas para resolver receitas por `RecipeDatabase`/`Data/recipes`, com fallback legado temporário.
 
 
 

@@ -35,6 +35,7 @@ const FarmGridManagerSmokeTestScript = preload("res://Scripts/dev/FarmGridManage
 
 
 const UIDragHelperScript = preload("res://Scripts/UIDragHelper.gd")
+const RecipeResolverScript = preload("res://Scripts/data/RecipeResolver.gd")
 
 
 
@@ -804,6 +805,7 @@ var timer_reset_dormir: float = 0.0
 
 
 var _status_update_accum: float = 0.0
+var _inventory_update_accum: float = 0.0
 
 
 
@@ -1581,6 +1583,7 @@ func _ready() -> void:
 
 
 				sell_menu.mouse_filter = Control.MOUSE_FILTER_STOP if sell_menu.visible else Control.MOUSE_FILTER_IGNORE
+			_atualizar_modal_blocker()
 
 
 
@@ -1653,6 +1656,11 @@ func _ready() -> void:
 
 
 		fishing_minigame_ui.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		fishing_minigame_ui.visibility_changed.connect(func():
+			if fishing_minigame_ui:
+				fishing_minigame_ui.mouse_filter = Control.MOUSE_FILTER_STOP if fishing_minigame_ui.visible else Control.MOUSE_FILTER_IGNORE
+				_atualizar_modal_blocker()
+		)
 
 
 
@@ -2444,6 +2452,7 @@ func _input(event: InputEvent) -> void:
 
 
 
+
 	elif event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_1:
 
 
@@ -2634,25 +2643,19 @@ func abrir_debug_panel() -> void:
 
 
 
-
-
 	debug_panel.mouse_filter = Control.MOUSE_FILTER_STOP
 
 
 
 
 
-
-
 	debug_panel.move_to_front()
+	_atualizar_modal_blocker()
 
 
 
 
 
-
-
-	print("Debug: painel aberto.")
 
 
 
@@ -2670,67 +2673,12 @@ func abrir_debug_panel() -> void:
 
 func fechar_debug_panel() -> void:
 
-
-
-
-
-
-
 	if not debug_panel:
-
-
-
-
-
-
-
 		return
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	debug_panel.visible = false
-
-
-
-
-
-
-
 	debug_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
-
-
-
-
-
-
-
-	print("Debug: painel fechado.")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+	_atualizar_modal_blocker()
 
 func abrir_pesca_sincronia(origem_global: Vector2, pesca_favorecida: bool = false) -> Control:
 
@@ -3044,7 +2992,10 @@ func _process(delta: float) -> void:
 
 
 
-	verificar_e_atualizar_inventario()
+	_inventory_update_accum += delta
+	if _inventory_update_accum >= 0.25:
+		_inventory_update_accum = 0.0
+		verificar_e_atualizar_inventario()
 
 
 
@@ -3093,21 +3044,6 @@ func _process(delta: float) -> void:
 
 
 	_atualizar_objetivos_iniciais(delta)
-	_atualizar_modal_blocker()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 func _aplicar_tema_pixel_ui(no: Node) -> void:
 
@@ -8406,85 +8342,15 @@ func _on_debug_discover_all_recipes_pressed() -> void:
 
 
 
-	for recipe_id_variant in Database.receitas_alquimia.keys():
-
-
-
-
-
-
-
+	var recipe_resolver := RecipeResolverScript.new()
+	for recipe_id_variant in recipe_resolver.get_all_recipe_ids(true):
 		var recipe_id: String = str(recipe_id_variant)
-
-
-
-
-
-
-
 		if recipe_id == "":
-
-
-
-
-
-
-
 			continue
-
-
-
-
-
-
-
 		if GlobalInventory.receitas_descobertas.has(recipe_id):
-
-
-
-
-
-
-
 			continue
-
-
-
-
-
-
-
 		GlobalInventory.receitas_descobertas.append(recipe_id)
-
-
-
-
-
-
-
 		adicionadas += 1
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	print("Debug: descobriu %d receitas." % adicionadas)
-
-
-
-
-
-
 
 
 
@@ -9655,13 +9521,6 @@ func _atualizar_pos_debug_acao(acao_texto: String = "") -> void:
 
 
 	verificar_e_atualizar_inventario()
-
-
-
-
-
-
-
 	if village_chest_panel and village_chest_panel.visible:
 
 
@@ -12983,12 +12842,7 @@ func abrir_livro_receitas(fechar_caldeirao: bool = false, cauldron: Node = null)
 
 
 		recipe_book.abrir()
-
-
-
-
-
-
+		_atualizar_modal_blocker()
 
 		_initial_objectives_recipe_book_opened = true
 
@@ -13032,35 +12886,16 @@ func abrir_livro_receitas(fechar_caldeirao: bool = false, cauldron: Node = null)
 
 func fechar_livro_receitas() -> void:
 
-
-
-
-
-
-
 	if recipe_book and recipe_book.has_method("fechar"):
-
-
-
-
-
-
-
 		recipe_book.fechar()
 
+	var current_scene := _obter_current_scene()
+	if current_scene != null:
+		var cauldron_popup_layer: Node = current_scene.get_node_or_null("CauldronUI/PopupLayer")
+		if cauldron_popup_layer:
+			cauldron_popup_layer.visible = false
 
-
-
-
-
-
-
-
-
-
-
-
-
+	_atualizar_modal_blocker()
 
 func reiniciar_objetivos_iniciais_apos_load() -> void:
 
@@ -13399,6 +13234,7 @@ func _instanciar_livro_receitas() -> void:
 
 
 			recipe_book.mouse_filter = Control.MOUSE_FILTER_STOP if recipe_book.visible else Control.MOUSE_FILTER_PASS
+			_atualizar_modal_blocker()
 
 
 
@@ -13822,27 +13658,29 @@ func _garantir_modal_blocker() -> void:
 
 
 func _tem_popup_modal_aberto() -> bool:
-	if skill_tree and skill_tree.visible:
+	if skill_tree and skill_tree.is_visible_in_tree():
 		return true
-	if golem_panel and golem_panel.visible:
+	if golem_panel and golem_panel.is_visible_in_tree():
 		return true
-	if purification_panel and purification_panel.visible:
+	if purification_panel and purification_panel.is_visible_in_tree():
 		return true
-	if village_chest_panel and village_chest_panel.visible:
+	if village_chest_panel and village_chest_panel.is_visible_in_tree():
 		return true
-	if debug_panel and debug_panel.visible:
+	if debug_panel and debug_panel.is_visible_in_tree():
 		return true
-	if quest_board and quest_board.visible:
+	if quest_board and quest_board.is_visible_in_tree():
 		return true
-	if sell_menu and sell_menu.visible:
+	if sell_menu and sell_menu.is_visible_in_tree():
 		return true
-	if recipe_book and is_instance_valid(recipe_book) and recipe_book.visible:
+	if recipe_book and is_instance_valid(recipe_book) and recipe_book.is_visible_in_tree():
+		return true
+	if fishing_minigame_ui and is_instance_valid(fishing_minigame_ui) and fishing_minigame_ui.is_visible_in_tree():
 		return true
 
 	var current_scene := _obter_current_scene()
 	if current_scene != null:
 		var cauldron_popup_layer: Node = current_scene.get_node_or_null("CauldronUI/PopupLayer")
-		if cauldron_popup_layer != null and cauldron_popup_layer.visible:
+		if cauldron_popup_layer != null and cauldron_popup_layer is Control and (cauldron_popup_layer as Control).is_visible_in_tree():
 			return true
 
 	return false

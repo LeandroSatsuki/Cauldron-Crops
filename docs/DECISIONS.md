@@ -28,6 +28,13 @@
 - Motivo: reduzir drift entre `Database.gd`, `Data/recipes/*.tres`, Livro de Receitas, caldeirão e `receitas_descobertas` salvas.
 - Risco: se a migração ocorrer sem alias/compatibilidade, o save e a UI podem divergir rapidamente.
 
+## Decisão 60 - RecipeDatabase como fonte principal planejada
+
+- Problema: caldeirão e Livro de Receitas ainda dependiam de caminhos paralelos para resolver receitas, o que aumentava o risco de drift.
+- Decisão: tratar `RecipeDatabase`/`Data/recipes` como a fonte principal planejada para receitas, mantendo `Database.receitas_alquimia` apenas como fallback legado temporário durante a transição.
+- Motivo: centralizar nomes, ingredientes, resultados e validade em um schema de recurso mais claro e reduzir divergências entre UI e produção.
+- Risco: enquanto o fallback existir, qualquer receita nova precisa ser mantida em ambas as fontes ou migrada em lote com compatibilidade.
+
 ## Decisão 55 - Golem Irrigador como talento, não como novo golem
 
 - Problema: o golem físico já existente precisava ganhar rega sem quebrar o coletor/depositador nem criar uma segunda entidade paralela.

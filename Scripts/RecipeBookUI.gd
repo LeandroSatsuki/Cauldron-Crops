@@ -3,6 +3,7 @@ extends Panel
 signal craft_requested(recipe_id: String, quantidade: int)
 
 const UIDragHelperScript = preload("res://Scripts/UIDragHelper.gd")
+const RecipeResolverScript = preload("res://Scripts/data/RecipeResolver.gd")
 
 @onready var recipe_list: ItemList = $MarginContainer/VBoxRoot/Body/LeftPanel/LeftBox/RecipeList
 @onready var empty_label: Label = $MarginContainer/VBoxRoot/Body/LeftPanel/LeftBox/EmptyLabel
@@ -23,8 +24,9 @@ var _last_inventory_snapshot: Dictionary = {}
 var _selected_recipe_id: String = ""
 var _craft_quantity: int = 1
 var cauldron_ref: Node = null
-var recipe_database: RecipeDatabase = null
+var recipe_resolver = null
 var _drag_helper: UIDragHelper = null
+var _refresh_check_accum: float = 0.0
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_STOP
@@ -51,14 +53,19 @@ func _ready() -> void:
 	if btn_produce:
 		btn_produce.pressed.connect(_on_produce_pressed)
 
-	_initialize_recipe_database()
+	_initialize_recipe_resolver()
 	_cache_inventory_snapshot()
 	_refresh_recipe_list()
 	_show_empty_state()
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
 	if not visible:
 		return
+
+	_refresh_check_accum += delta
+	if _refresh_check_accum < 0.25:
+		return
+	_refresh_check_accum = 0.0
 
 	var current_count := GlobalInventory.receitas_descobertas.size()
 	if current_count != _last_discovered_count:
@@ -70,10 +77,17 @@ func abrir() -> void:
 	visible = true
 	move_to_front()
 	grab_click_focus()
+	_refresh_check_accum = 0.0
 	_refresh_recipe_list()
 
 func fechar() -> void:
 	visible = false
+	var popup_host := get_parent()
+	if popup_host != null:
+		popup_host.visible = false
+	var ui := get_tree().current_scene.get_node_or_null("UI") if get_tree() != null and get_tree().current_scene != null else null
+	if ui != null and ui.has_method("_atualizar_modal_blocker"):
+		ui.call_deferred("_atualizar_modal_blocker")
 
 func toggle() -> void:
 	if visible:
@@ -119,7 +133,7 @@ func _get_unique_discovered_recipes() -> Array:
 			continue
 		if seen.has(recipe_id):
 			continue
-		if not Database.receitas_alquimia.has(recipe_id):
+		if recipe_resolver == null or not recipe_resolver.recipe_exists(recipe_id):
 			continue
 
 		seen[recipe_id] = true
@@ -161,7 +175,7 @@ func _show_recipe(recipe_id: String) -> void:
 		_show_recipe_from_resource(recipe_id, recipe_data)
 		return
 
-	if not Database.receitas_alquimia.has(recipe_id):
+	if recipe_resolver == null or not recipe_resolver.recipe_exists(recipe_id):
 		_show_unavailable_recipe(recipe_id)
 		return
 
@@ -196,8 +210,8 @@ func _show_recipe_from_resource(_recipe_id: String, recipe_data: RecipeData) -> 
 	_cache_inventory_snapshot()
 
 func _show_recipe_legacy(recipe_id: String) -> void:
-	var ingredientes := Database.obter_ingredientes_receita(recipe_id)
-	var resultado := str(Database.receitas_alquimia.get(recipe_id, ""))
+	var ingredientes: Array = recipe_resolver.get_ingredients(recipe_id) if recipe_resolver != null else []
+	var resultado: String = recipe_resolver.get_result(recipe_id) if recipe_resolver != null else ""
 	recipe_id_label.text = "Receita: " + _format_recipe_name(recipe_id)
 	result_label.text = "Resultado: " + _format_item_name(resultado)
 
@@ -250,7 +264,7 @@ func _show_unavailable_recipe(recipe_id: String) -> void:
 	ingredients_label.text = "Ingredientes: indisponiveis"
 	result_label.text = "Resultado: indisponivel"
 	max_craft_label.text = "Quantidade maxima: indisponivel"
-	status_label.text = "A receita existe no save, mas nao esta presente no Database."
+	status_label.text = "A receita existe no save, mas nao esta presente na fonte de receitas."
 	_craft_quantity = 0
 	_atualizar_controles_producao(0)
 	_cache_inventory_snapshot()
@@ -301,45 +315,20 @@ func _format_category_name(categoria: String) -> String:
 	return nome.substr(0, 1).to_upper() + nome.substr(1, nome.length() - 1)
 
 func _get_recipe_display_name(recipe_id: String) -> String:
-	var recipe_data := _get_valid_recipe_data(recipe_id)
-	if recipe_data != null and recipe_data.nome.strip_edges() != "":
-		return recipe_data.nome
+	if recipe_resolver != null:
+		var display_name: String = recipe_resolver.get_display_name(recipe_id)
+		if display_name.strip_edges() != "":
+			return display_name
 
 	return _format_recipe_name(recipe_id)
 
 func _get_valid_recipe_data(recipe_id: String) -> RecipeData:
-	if recipe_database == null:
+	if recipe_resolver == null:
 		return null
-	if recipe_id == "" or not recipe_database.has_recipe(recipe_id):
-		return null
+	return recipe_resolver.get_recipe_data(recipe_id)
 
-	var recipe := recipe_database.get_recipe(recipe_id)
-	if recipe == null:
-		return null
-	if recipe.id.strip_edges() == "":
-		return null
-	if recipe.nome.strip_edges() == "":
-		return null
-	if recipe.descricao.strip_edges() == "":
-		return null
-	if recipe.categoria.strip_edges() == "":
-		return null
-	if recipe.ingredientes.is_empty():
-		return null
-	if recipe.resultado_item.strip_edges() == "":
-		return null
-	if int(recipe.resultado_quantidade) <= 0:
-		return null
-	if float(recipe.tempo_producao) <= 0.0:
-		return null
-	if int(recipe.versao_do_schema) < 1:
-		return null
-
-	return recipe
-
-func _initialize_recipe_database() -> void:
-	recipe_database = RecipeDatabase.new()
-	recipe_database.load_recipes()
+func _initialize_recipe_resolver() -> void:
+	recipe_resolver = RecipeResolverScript.new()
 
 func _atualizar_controles_producao(quantidade_maxima: int) -> void:
 	if quantity_label:
@@ -366,7 +355,7 @@ func _on_quantity_minus_pressed() -> void:
 	if _selected_recipe_id == "":
 		return
 
-	var ingredientes := Database.obter_ingredientes_receita(_selected_recipe_id)
+	var ingredientes: Array = recipe_resolver.get_ingredients(_selected_recipe_id) if recipe_resolver != null else []
 	var quantidade_maxima := _calcular_quantidade_maxima(ingredientes)
 	if quantidade_maxima <= 0:
 		return
@@ -379,7 +368,7 @@ func _on_quantity_plus_pressed() -> void:
 	if _selected_recipe_id == "":
 		return
 
-	var ingredientes := Database.obter_ingredientes_receita(_selected_recipe_id)
+	var ingredientes: Array = recipe_resolver.get_ingredients(_selected_recipe_id) if recipe_resolver != null else []
 	var quantidade_maxima := _calcular_quantidade_maxima(ingredientes)
 	if quantidade_maxima <= 0:
 		return
@@ -396,7 +385,7 @@ func _aplicar_quantidade_digitada() -> void:
 	if _selected_recipe_id == "":
 		return
 
-	var ingredientes := Database.obter_ingredientes_receita(_selected_recipe_id)
+	var ingredientes: Array = recipe_resolver.get_ingredients(_selected_recipe_id) if recipe_resolver != null else []
 	var quantidade_maxima := _calcular_quantidade_maxima(ingredientes)
 	if quantidade_maxima <= 0:
 		return

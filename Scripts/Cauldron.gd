@@ -2,6 +2,7 @@ extends Node2D
 
 const MOUSE_LEFT = MOUSE_BUTTON_LEFT
 const UIDragHelperScript = preload("res://Scripts/UIDragHelper.gd")
+const RecipeResolverScript = preload("res://Scripts/data/RecipeResolver.gd")
 
 @onready var drop_slot_1: Panel = $PopupLayer/CenterContainer/PopupUI/DropSlot1
 @onready var drop_slot_2: Panel = $PopupLayer/CenterContainer/PopupUI/DropSlot2
@@ -26,6 +27,7 @@ var _batch_quantidade_total: int = 0
 var _batch_quantidade_concluida: int = 0
 var _batch_ativo: bool = false
 var _drag_helper: UIDragHelper = null
+var recipe_resolver = null
 
 func _ready() -> void:
 	add_to_group("cauldrons")
@@ -49,6 +51,7 @@ func _ready() -> void:
 	if btn_cancelar_producao and not btn_cancelar_producao.pressed.is_connected(_on_btn_cancelar_producao_pressed):
 		btn_cancelar_producao.pressed.connect(_on_btn_cancelar_producao_pressed)
 		btn_cancelar_producao.disabled = true
+	_initialize_recipe_resolver()
 	
 	var btn_fechar = $PopupLayer/CenterContainer/PopupUI/BtnFechar
 	if btn_fechar:
@@ -66,6 +69,9 @@ func _ready() -> void:
 	# Shader Material
 	material = ShaderMaterial.new()
 	material.shader = load("res://Shaders/transparencia.gdshader")
+
+func _initialize_recipe_resolver() -> void:
+	recipe_resolver = RecipeResolverScript.new()
 
 func _process(_delta: float) -> void:
 	if $BaseAnchor/SpriteCaldeirao.frame >= 4:
@@ -118,14 +124,14 @@ func iniciar_producao_em_lote(recipe_id: String, quantidade: int) -> bool:
 	if recipe_id == "":
 		push_warning("Cauldron: receita vazia recebida para producao em lote.")
 		return false
-	if not Database.receitas_alquimia.has(recipe_id):
+	if not recipe_resolver.recipe_exists(recipe_id):
 		push_warning("Cauldron: receita inexistente para producao em lote: %s" % recipe_id)
 		return false
 	if quantidade <= 0:
 		push_warning("Cauldron: quantidade invalida para producao em lote: %s" % str(quantidade))
 		return false
 
-	var ingredientes := Database.obter_ingredientes_receita(recipe_id)
+	var ingredientes: Array = recipe_resolver.get_ingredients(recipe_id)
 	if ingredientes.is_empty():
 		push_warning("Cauldron: nao foi possivel reconstruir os ingredientes da receita %s." % recipe_id)
 		return false
@@ -136,7 +142,7 @@ func iniciar_producao_em_lote(recipe_id: String, quantidade: int) -> bool:
 		return false
 
 	var quantidade_final := clampi(quantidade, 1, quantidade_maxima)
-	var resultado := str(Database.receitas_alquimia.get(recipe_id, ""))
+	var resultado: String = str(recipe_resolver.get_result(recipe_id))
 	if resultado == "":
 		push_warning("Cauldron: resultado vazio para a receita %s." % recipe_id)
 		return false
@@ -356,12 +362,14 @@ func _on_misturar_button_pressed() -> void:
 	var resultado = ""
 	var chave_combinacao = ""
 	
-	if Database.receitas_alquimia.has(chave1):
-		resultado = Database.receitas_alquimia[chave1]
-		chave_combinacao = chave1
-	elif Database.receitas_alquimia.has(chave2):
-		resultado = Database.receitas_alquimia[chave2]
-		chave_combinacao = chave2
+	if recipe_resolver != null:
+		resultado = recipe_resolver.get_result(chave1)
+		if resultado != "":
+			chave_combinacao = chave1
+		else:
+			resultado = recipe_resolver.get_result(chave2)
+			if resultado != "":
+				chave_combinacao = chave2
 		
 	if resultado == "":
 		# Se a mistura falhar:

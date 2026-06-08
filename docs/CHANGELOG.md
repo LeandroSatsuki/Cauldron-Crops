@@ -2,6 +2,12 @@
 
 
 
+## 2026-06-07 - P02C1 alinhamento da fonte de receitas
+
+- `RecipeBookUI.gd` e `Cauldron.gd` passaram a resolver receitas por uma camada central baseada em `RecipeDatabase`/`Data/recipes`, com fallback legado temporário para `Database.receitas_alquimia`.
+- O `SaveManager` não foi alterado e `receitas_descobertas` continua sendo salvo como ids crus.
+- A mudança reduz o drift entre Livro e Caldeirão sem migrar o catálogo ainda.
+
 ## 2026-06-07 - Documentação do catálogo de transição
 
 - Foi criado `docs/CATALOG_TRANSITION_PLAN.md` para registrar o estado atual do catálogo legado/provisório e a direção do catálogo definitivo.
