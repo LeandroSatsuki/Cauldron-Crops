@@ -14,7 +14,7 @@ script = ExtResource("1_maingd")
 [node name="NavigationRegion2D" type="NavigationRegion2D" parent="." unique_id=2147483643]
 
 [node name="CauldronUI" parent="." unique_id=1614176975 instance=ExtResource("3_cauldronscene")]
-position = Vector2(-64, 0)
+position = Vector2(0, 0)
 
 [node name="UI" parent="." unique_id=824803257 instance=ExtResource("2_uiscene")]
 

@@ -482,6 +482,24 @@ func _criar_blockout_fazenda_v0(start_x: float, start_y: float) -> void:
 
 		{
 
+			"id": "initial_hub",
+
+			"title": "Área inicial",
+
+			"subtitle": "Caldeirão central / praça aberta",
+
+			"center": Vector2(start_x + (2.8 * FARM_SPACING), start_y + (1.6 * FARM_SPACING)),
+
+			"size": Vector2(260, 170),
+
+			"fill": Color(0.431373, 0.329412, 0.172549, 0.3),
+
+			"outline": Color(0.972549, 0.898039, 0.694118, 0.78)
+
+		},
+
+		{
+
 			"id": "creatures_animals_future",
 
 			"title": "Criaturas mágicas",

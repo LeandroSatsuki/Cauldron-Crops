@@ -69,7 +69,7 @@ Motivo: elas ainda refletem um catálogo provisório e dependem de nomes/combina
 
 ## 6. Primeiras receitas definitivas candidatas
 
-As receitas abaixo são candidatas para a primeira onda de migração definitiva, mas não devem ser implementadas agora neste passo de documentação:
+As receitas abaixo são candidatas para a primeira onda de migração definitiva, mas não devem ser implementadas em lote até o catálogo de itens definitivo ficar mais alinhado:
 
 - `Saquinho de Semente Mista`
 - `Infusão Purificadora`
@@ -77,6 +77,21 @@ As receitas abaixo são candidatas para a primeira onda de migração definitiva
 - `Kit de Plantio Ritual`
 - `Fritura de Riafin`
 - opcional futura: `Bálsamo de Raiz e Flor`
+
+## 6.1. Primeira leva já implementada em P02C2
+
+Nesta leva pequena foram promovidas duas receitas resource-first sem mexer em save, `Database.gd` ou sistemas adjacentes:
+
+- `raiz_gelida_peixe_comum` -> `Infusão Purificadora`
+- `semente_basica_tomate_sol` -> `Saquinho de Semente Mista`
+
+Motivo da escolha:
+
+- ambas usam IDs já existentes no catálogo atual;
+- nenhuma depende de novos sistemas, NPCs, clima, buff ou horário;
+- a segunda já conecta o caldeirão com progressão agrícola sem exigir um novo item catalogado.
+
+`Fritura de Riafin` ficou para um lote futuro porque ainda depende de alinhar o peixe definitivo `Riafin` com o catálogo de itens e a sua via de aquisição.
 
 Essas receitas têm uma boa relação com o loop atual e ajudam a converter o catálogo novo em gameplay legível sem depender de sistemas ainda imaturos.
 
