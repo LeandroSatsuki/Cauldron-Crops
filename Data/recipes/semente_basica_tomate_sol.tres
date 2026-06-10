@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="RecipeData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://Scripts/data/RecipeData.gd" id="1_recipe_data"]
+
+[resource]
+script = ExtResource("1_recipe_data")
+id = "semente_basica_tomate_sol"
+nome = "Saquinho de Semente Mista"
+descricao = "Mistura uma semente básica com tomate do sol para gerar sementes de verão em lote."
+categoria = "semente"
+ingredientes = Array[String](["semente_basica", "tomate_sol"])
+resultado_item = "semente_verao"
+resultado_quantidade = 2
+tempo_producao = 2.0
+ordem_importa = false
+desbloqueada_por_padrao = false
+recompensa_pontos_alquimia = 1
+tags = Array[String](["semente", "mista", "plantio"])
+versao_do_schema = 1

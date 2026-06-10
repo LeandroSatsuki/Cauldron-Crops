@@ -28,6 +28,20 @@
 - Motivo: reduzir drift entre `Database.gd`, `Data/recipes/*.tres`, Livro de Receitas, caldeirão e `receitas_descobertas` salvas.
 - Risco: se a migração ocorrer sem alias/compatibilidade, o save e a UI podem divergir rapidamente.
 
+## Decisão 61 - Primeira leva definitiva de receitas sem novos IDs de item
+
+- Problema: a primeira migração do catálogo precisava começar pequena, mas sem criar um novo sistema ou mexer em save/schema.
+- Decisão: promover apenas receitas resource-first que pudessem usar IDs já existentes no catálogo atual, adiando `Fritura de Riafin` até o peixe definitivo `Riafin` existir no catálogo de itens.
+- Motivo: reduzir risco técnico e validar o fluxo resource-first com o menor número possível de mudanças adjacentes.
+- Risco: a leva inicial fica pequena e algumas receitas planejadas continuam no backlog até o catálogo de itens se alinhar.
+
+## Decisão 62 - Área inicial cenográfica com caldeirão central e plantio livre
+
+- Problema: a fazenda inicial estava ficando amontoada demais e ainda carregava a ideia de uma casa do jogador que não combina com a proposta idle.
+- Decisão: tratar a área inicial como um núcleo cenográfico com o caldeirão no centro visual, praça aberta ao redor, ponto de chegada/abrigo da vila como marco de ambientação e sem zona rígida de plantio.
+- Motivo: melhorar a leitura espacial sem criar novo gameplay, permitir que o chão continue plantável em qualquer ponto útil e reservar espaço para expansão futura.
+- Risco: como a decisão é cenográfica e de layout, ela pode pedir refinamento visual posterior sem afetar o loop principal.
+
 ## Decisão 60 - RecipeDatabase como fonte principal planejada
 
 - Problema: caldeirão e Livro de Receitas ainda dependiam de caminhos paralelos para resolver receitas, o que aumentava o risco de drift.
@@ -1220,11 +1234,21 @@
 ## Decisão 72 - Area Bloqueada V0 com pocket append-only
 
 - Problema: o Obstáculo Mágico V0 precisava mostrar uma área corrompida real, e não apenas o bloqueio visual isolado.
-
 - Decisão: criar uma Área Bloqueada V0 visível com um pocket 2x2 de `FarmPlot` já reservado, escondendo e revelando esses lotes conforme a purificação.
-
 - Motivo: tornar a expansão legível no mapa, preservar saves por ordem e manter a transição append-only sem criar sistema completo de áreas.
-
 - Regra atual: o estado `first_obstacle_purified` controla tanto o obstáculo quanto a liberação do pocket.
-
 - Risco: o pocket ainda é uma primeira leitura da expansão, então qualquer expansão futura precisa respeitar a ordem dos lotes e o save mínimo já adotado.
+
+## Decisão 73 - UI base mínima com padrões godot-ui
+
+- Problema: o inventário básico e a interface do caldeirão precisam nascer corretos sem abrir espaço para polimento demais antes do loop principal ficar sólido.
+- Decisão: tratar a skill de UI apenas como orientação para a base dos `Control` nessa etapa, com foco em `anchors`, `size_flags_*` e `mouse_filter`, sem animações, temas customizados ou refino visual extra.
+- Motivo: garantir layout e bloqueio de input da UI desde o início sem adicionar escopo novo ao protótipo.
+- Risco: a disponibilidade de uma skill de UI pode incentivar polimento prematuro se o escopo não ficar rígido.
+
+## Decisão 74 - Persistência robusta fica para depois
+
+- Problema: uma arquitetura de save mais robusta parece útil, mas não é necessária agora para validar o protótipo.
+- Decisão: adiar o sistema de persistência avançado para depois da estabilização do loop; no máximo, manter uma persistência mínima se testes longos exigirem guardar inventário ou estado básico de sessão.
+- Motivo: evitar retrabalho em migração/serialização enquanto catálogo, UI e sistemas principais ainda estão amadurecendo.
+- Risco: quando a persistência maior entrar, será preciso revalidar compatibilidade e migração com cuidado.

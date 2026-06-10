@@ -2,6 +2,13 @@
 
 
 
+## 2026-06-08 - P02C2 primeira leva definitiva de receitas
+
+- Foram promovidas duas receitas resource-first iniciais para o catálogo definitivo sem mexer em `SaveManager` ou em `Database.gd`.
+- `Infusão Purificadora` passou a ser o nome exibido da receita de purificação inicial baseada em `raiz_gelida` + `peixe_comum`.
+- `Saquinho de Semente Mista` foi adicionado como ponte agrícola inicial, usando IDs já existentes e produzindo sementes de verão.
+- `Fritura de Riafin` ficou fora desta leva por ainda depender do alinhamento do peixe definitivo `Riafin` com o catálogo de itens.
+
 ## 2026-06-07 - P02C1 alinhamento da fonte de receitas
 
 - `RecipeBookUI.gd` e `Cauldron.gd` passaram a resolver receitas por uma camada central baseada em `RecipeDatabase`/`Data/recipes`, com fallback legado temporário para `Database.receitas_alquimia`.
