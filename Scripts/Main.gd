@@ -25,7 +25,7 @@ const FARM_SPACING: int = 80
 
 const BASE_FARM_PIXEL_SIZE: int = 320
 
-const FISHING_SPOT_POSITION: Vector2 = Vector2(1110, 160)
+const FISHING_SPOT_POSITION: Vector2 = Vector2(1288, 172)
 
 const FISHING_SPOT_Z_INDEX: int = 20
 
