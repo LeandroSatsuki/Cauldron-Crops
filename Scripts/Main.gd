@@ -727,120 +727,91 @@ func _criar_blockout_fazenda_v0(start_x: float, start_y: float) -> void:
 	blockout_root.z_index = BLOCKOUT_FARM_Z_INDEX
 
 	blockout_root.z_as_relative = false
-
 	add_child(blockout_root)
-
-
+	blockout_root.add_child(_criar_envelope_macro_fazenda(Vector2(start_x + (2.6 * FARM_SPACING), start_y + (2.5 * FARM_SPACING)), Vector2(2400, 1600)))
 
 	var zonas: Array = [
-
-		{
-
-			"id": "initial_hub",
-
-			"title": "Área inicial",
-
-			"subtitle": "Caldeirão central / praça aberta",
-
-			"center": Vector2(start_x + (2.8 * FARM_SPACING), start_y + (1.6 * FARM_SPACING)),
-
-			"size": Vector2(260, 170),
-
-			"fill": Color(0.431373, 0.329412, 0.172549, 0.3),
-
-			"outline": Color(0.972549, 0.898039, 0.694118, 0.78)
-
-		},
-
-		{
-
-			"id": "creatures_animals_future",
-
-			"title": "Criaturas mágicas",
-
-			"subtitle": "Animais e aliados encantados",
-
-			"center": Vector2(start_x + (8.9 * FARM_SPACING), start_y - (1.1 * FARM_SPACING)),
-
-			"size": Vector2(210, 136),
-
-			"fill": Color(0.160784, 0.356863, 0.258824, 0.3),
-
-			"outline": Color(0.690196, 0.882353, 0.741176, 0.68)
-
-		},
-
-		{
-
-			"id": "helpers_golems_future",
-
-			"title": "Golems / ajudantes",
-
-			"subtitle": "Área de apoio da fazenda",
-
-			"center": Vector2(start_x - (1.9 * FARM_SPACING), start_y + (5.2 * FARM_SPACING)),
-
-			"size": Vector2(190, 128),
-
-			"fill": Color(0.294118, 0.184314, 0.454902, 0.28),
-
-			"outline": Color(0.843137, 0.713726, 0.976471, 0.68)
-
-		},
-
-		{
-
-			"id": "foraging_resources_future",
-
-			"title": "Recursos / forrageamento",
-
-			"subtitle": "Área de coleta natural",
-
-			"center": Vector2(start_x + (9.8 * FARM_SPACING), start_y + (5.0 * FARM_SPACING)),
-
-			"size": Vector2(220, 140),
-
-			"fill": Color(0.486275, 0.333333, 0.113725, 0.28),
-
-			"outline": Color(0.988235, 0.878431, 0.619608, 0.68)
-
-		},
-
-		{
-
-			"id": "blocked_area_future",
-
-			"title": "Corrupção futura",
-
-			"subtitle": "Segunda área corrompida",
-
-			"center": Vector2(start_x + (10.8 * FARM_SPACING), start_y + (1.2 * FARM_SPACING)),
-
-			"size": Vector2(210, 136),
-
-			"fill": Color(0.337255, 0.121569, 0.454902, 0.32),
-
-			"outline": Color(0.94902, 0.760784, 1.0, 0.72)
-
-		},
-
-		{
-
-			"id": "ruin_mystery_future",
-
-			"title": "Ruína / mistério",
-
-			"subtitle": "Zona de enigma futuro",
-
-			"center": Vector2(start_x + (10.8 * FARM_SPACING), start_y + (6.0 * FARM_SPACING)),
-
-			"size": Vector2(220, 138),
-
-			"fill": Color(0.184314, 0.184314, 0.227451, 0.26),
-
-			"outline": Color(0.823529, 0.831373, 0.87451, 0.64)
-
-		}
+			{
+				"id": "initial_hub",
+				"title": "Área inicial",
+				"subtitle": "Caldeirão central / praça aberta",
+				"center": Vector2(start_x + (2.8 * FARM_SPACING), start_y + (1.6 * FARM_SPACING)),
+				"size": Vector2(340, 220),
+				"fill": Color(0.431373, 0.329412, 0.172549, 0.3),
+				"outline": Color(0.972549, 0.898039, 0.694118, 0.78)
+			},
+			{
+				"id": "initial_logistics_side",
+				"title": "Baú / logística",
+				"subtitle": "Lado de apoio do núcleo inicial",
+				"center": Vector2(start_x - (5.8 * FARM_SPACING), start_y + (4.8 * FARM_SPACING)),
+				"size": Vector2(210, 140),
+				"fill": Color(0.439216, 0.278431, 0.133333, 0.28),
+				"outline": Color(0.988235, 0.815686, 0.619608, 0.72)
+			},
+			{
+				"id": "initial_arrival_side",
+				"title": "Abrigo / chegada",
+				"subtitle": "Marco cenográfico da vila",
+				"center": Vector2(start_x + (8.1 * FARM_SPACING), start_y + (0.2 * FARM_SPACING)),
+				"size": Vector2(220, 146),
+				"fill": Color(0.219608, 0.309804, 0.372549, 0.26),
+				"outline": Color(0.74902, 0.858824, 0.941176, 0.72)
+			},
+			{
+				"id": "fishing_lake",
+				"title": "Lago / pesca",
+				"subtitle": "Ponto especial de pesca",
+				"center": Vector2(start_x + (6.6 * FARM_SPACING), start_y - (2.6 * FARM_SPACING)),
+				"size": Vector2(280, 180),
+				"fill": Color(0.109804, 0.529412, 0.752941, 0.28),
+				"outline": Color(0.843137, 0.960784, 1.0, 0.78)
+			},
+			{
+				"id": "creatures_animals_future",
+				"title": "Criaturas mágicas",
+				"subtitle": "Animais e aliados encantados",
+				"center": Vector2(start_x + (10.4 * FARM_SPACING), start_y - (1.4 * FARM_SPACING)),
+				"size": Vector2(220, 140),
+				"fill": Color(0.160784, 0.356863, 0.258824, 0.3),
+				"outline": Color(0.690196, 0.882353, 0.741176, 0.68)
+			},
+			{
+				"id": "helpers_golems_future",
+				"title": "Golems / ajudantes",
+				"subtitle": "Área de apoio da fazenda",
+				"center": Vector2(start_x - (1.9 * FARM_SPACING), start_y + (5.2 * FARM_SPACING)),
+				"size": Vector2(190, 128),
+				"fill": Color(0.294118, 0.184314, 0.454902, 0.28),
+				"outline": Color(0.843137, 0.713726, 0.976471, 0.68)
+			},
+			{
+				"id": "foraging_resources_future",
+				"title": "Recursos / forrageamento",
+				"subtitle": "Área de coleta natural",
+				"center": Vector2(start_x + (11.1 * FARM_SPACING), start_y + (5.2 * FARM_SPACING)),
+				"size": Vector2(230, 146),
+				"fill": Color(0.486275, 0.333333, 0.113725, 0.28),
+				"outline": Color(0.988235, 0.878431, 0.619608, 0.68)
+			},
+			{
+				"id": "blocked_area_future",
+				"title": "Corrupção futura",
+				"subtitle": "Segunda área corrompida",
+				"center": Vector2(start_x + (11.8 * FARM_SPACING), start_y + (1.4 * FARM_SPACING)),
+				"size": Vector2(220, 140),
+				"fill": Color(0.337255, 0.121569, 0.454902, 0.32),
+				"outline": Color(0.94902, 0.760784, 1.0, 0.72)
+			},
+			{
+				"id": "ruin_mystery_future",
+				"title": "Ruína / mistério",
+				"subtitle": "Zona de enigma futuro",
+				"center": Vector2(start_x + (12.9 * FARM_SPACING), start_y + (6.3 * FARM_SPACING)),
+				"size": Vector2(230, 146),
+				"fill": Color(0.184314, 0.184314, 0.227451, 0.26),
+				"outline": Color(0.823529, 0.831373, 0.87451, 0.64)
+			}
 
 	]
 
@@ -1002,6 +973,39 @@ func _criar_marcador_zona(zona_id: String, titulo: String, subtitulo: String, ce
 
 	return marcador
 
+
+func _criar_envelope_macro_fazenda(centro: Vector2, tamanho: Vector2) -> Node2D:
+
+	var envelope := Node2D.new()
+
+	envelope.name = "FarmEnvelopeMacro"
+	envelope.position = centro
+	envelope.z_index = BLOCKOUT_FARM_Z_INDEX - 1
+	envelope.z_as_relative = false
+
+	var sombra := Polygon2D.new()
+	sombra.name = "Sombra"
+	sombra.color = Color(0.160784, 0.168627, 0.152941, 0.04)
+	sombra.polygon = _criar_poligono_retangular(tamanho + Vector2(36, 28))
+	sombra.position = Vector2(10, 12)
+	envelope.add_child(sombra)
+
+	var corpo := Polygon2D.new()
+	corpo.name = "Corpo"
+	corpo.color = Color(0.160784, 0.168627, 0.152941, 0.05)
+	corpo.polygon = _criar_poligono_retangular(tamanho)
+	envelope.add_child(corpo)
+
+	var contorno := Line2D.new()
+	contorno.name = "Contorno"
+	contorno.width = 5.0
+	contorno.default_color = Color(0.611765, 0.682353, 0.588235, 0.26)
+	contorno.closed = true
+	contorno.antialiased = true
+	contorno.points = _criar_pontos_retangulo(tamanho)
+	envelope.add_child(contorno)
+
+	return envelope
 
 
 func _criar_poligono_retangular(tamanho: Vector2) -> PackedVector2Array:
