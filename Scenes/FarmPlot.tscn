@@ -4,14 +4,15 @@
 [ext_resource type="Texture2D" uid="uid://c3xt58l1b4y07" path="res://Assets/seca.png" id="2_seca"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_farmplot"]
-size = Vector2(64, 64)
+size = Vector2(76, 76)
 
 [node name="FarmPlot" type="Area2D" unique_id=1661898718]
 script = ExtResource("1_farmplot_script")
 
 [node name="SpriteTerra" type="Sprite2D" parent="." unique_id=1216385600]
 texture_filter = 1
-scale = Vector2(0.125, 0.125)
+position = Vector2(0, 7.1525574e-07)
+scale = Vector2(0.16985133, 0.16161616)
 texture = ExtResource("2_seca")
 
 [node name="SpritePlanta" type="Sprite2D" parent="." unique_id=1283450992]
@@ -22,14 +23,14 @@ hframes = 5
 vframes = 3
 frame = 13
 
-[node name="GolemHarvestPoint" type="Marker2D" parent="."]
+[node name="GolemHarvestPoint" type="Marker2D" parent="." unique_id=1915591561]
 position = Vector2(0, 24)
 
 [node name="ColorRect" type="ColorRect" parent="." unique_id=275089934]
-offset_left = -32.0
-offset_top = -32.0
-offset_right = 32.0
-offset_bottom = 32.0
+offset_left = -40.0
+offset_top = -40.0
+offset_right = 40.0
+offset_bottom = 40.0
 mouse_filter = 2
 color = Color(0.419608, 0.258824, 0.14902, 1)
 
@@ -40,20 +41,20 @@ shape = SubResource("RectangleShape2D_farmplot")
 one_shot = true
 
 [node name="VisualRegado" type="ColorRect" parent="." unique_id=1999632947]
-offset_left = -32.0
-offset_top = -32.0
-offset_right = 32.0
-offset_bottom = 32.0
+offset_left = -40.0
+offset_top = -40.0
+offset_right = 40.0
+offset_bottom = 40.0
 mouse_filter = 2
 color = Color(0, 0, 0, 0)
 
 [node name="TooltipArea" type="Control" parent="." unique_id=171530185]
 layout_mode = 3
 anchors_preset = 0
-offset_left = -32.0
-offset_top = -32.0
-offset_right = 32.0
-offset_bottom = 32.0
+offset_left = -40.0
+offset_top = -40.0
+offset_right = 40.0
+offset_bottom = 40.0
 mouse_filter = 1
 
 [node name="DropRaroVFX" type="CPUParticles2D" parent="." unique_id=256089909]
