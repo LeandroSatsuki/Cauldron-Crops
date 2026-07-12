@@ -77,7 +77,6 @@ func _ready() -> void:
 	if bar_background:
 		bar_background.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		bar_background.custom_minimum_size = BAR_SIZE
-		bar_background.size = BAR_SIZE
 	if hit_zone:
 		hit_zone.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		hit_zone.position = BAR_HIT_ZONE_POSITION
