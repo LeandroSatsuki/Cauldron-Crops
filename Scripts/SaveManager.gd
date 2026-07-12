@@ -1,7 +1,7 @@
 extends Node
 
 const SAVE_PATH := "user://savegame.json"
-const SAVE_VERSION := 3
+const SAVE_VERSION := 4
 
 func has_save() -> bool:
 	return FileAccess.file_exists(SAVE_PATH)
@@ -65,6 +65,7 @@ func _build_save_data() -> Dictionary:
 		village_chest_inventory = village_chest.get_contents()
 
 	var farm_plots: Array = []
+	var farm_grid: Dictionary = {}
 	var tree: SceneTree = get_tree()
 	if tree != null:
 		var lotes_terra: Array = tree.get_nodes_in_group("lotes_terra")
@@ -74,6 +75,12 @@ func _build_save_data() -> Dictionary:
 				farm_plots.append(lote.get_save_data())
 			else:
 				farm_plots.append({})
+
+		var scene: Node = tree.current_scene
+		if scene != null and scene.has_method("obter_farm_grid_manager"):
+			var grid_manager_variant: Variant = scene.call("obter_farm_grid_manager")
+			if grid_manager_variant is FarmGridManager:
+				farm_grid = (grid_manager_variant as FarmGridManager).to_save_data()
 
 	var purification_obstacles: Dictionary = {}
 	var purification_progress: Dictionary = {}
@@ -117,6 +124,7 @@ func _build_save_data() -> Dictionary:
 		},
 		"village_chest_inventory": village_chest_inventory,
 		"farm_plots": farm_plots,
+		"farm_grid": farm_grid,
 		"farm_expansion": {
 			"purification_obstacles": purification_obstacles,
 			"purification_progress": purification_progress
@@ -163,7 +171,14 @@ func _apply_save_data(data: Dictionary) -> void:
 		if village_chest and village_chest.has_method("set_contents"):
 			village_chest.set_contents(village_chest_inventory)
 
-	if data.has("farm_plots"):
+	var farm_grid_aplicado := false
+	if data.has("farm_grid"):
+		var saved_grid: Dictionary = _safe_dictionary(data.get("farm_grid", {}))
+		if not saved_grid.is_empty():
+			_aplicar_farm_grid_no_mundo(saved_grid)
+			_aplicar_farm_grid_aos_plots(saved_grid)
+			farm_grid_aplicado = true
+	if not farm_grid_aplicado and data.has("farm_plots"):
 		var saved_plots: Array = _safe_array(data.get("farm_plots", []))
 		var tree: SceneTree = get_tree()
 		if tree != null:
@@ -238,6 +253,82 @@ func _aplicar_estado_obstaculos_purificados(purification_obstacles_data: Diction
 			"purified": purified,
 			"purification_progress": progress_data
 		})
+
+func _aplicar_farm_grid_no_mundo(farm_grid_data: Dictionary) -> void:
+	var tree: SceneTree = get_tree()
+	if tree == null or tree.current_scene == null:
+		return
+
+	var scene: Node = tree.current_scene
+	if not scene.has_method("obter_farm_grid_manager"):
+		return
+
+	var grid_manager_variant: Variant = scene.call("obter_farm_grid_manager")
+	if grid_manager_variant is FarmGridManager:
+		(grid_manager_variant as FarmGridManager).load_save_data(farm_grid_data)
+
+func _aplicar_farm_grid_aos_plots(farm_grid_data: Dictionary) -> void:
+	var tree: SceneTree = get_tree()
+	if tree == null or tree.current_scene == null:
+		return
+
+	var scene: Node = tree.current_scene
+	if not scene.has_method("obter_farm_plot_por_grid_position"):
+		return
+
+	var grid_manager: FarmGridManager = FarmGridManager.new()
+	grid_manager.load_save_data(farm_grid_data)
+	for tile_variant in grid_manager.get_all_tiles():
+		if tile_variant is not FarmTileData:
+			continue
+
+		var tile: FarmTileData = tile_variant
+		var plot_variant: Variant = scene.call("obter_farm_plot_por_grid_position", tile.grid_position)
+		if not (plot_variant is Node2D) and tile.tile_state != FarmTileData.TileState.GRAMA:
+			if scene.has_method("garantir_farm_plot_por_grid_position"):
+				plot_variant = scene.call("garantir_farm_plot_por_grid_position", tile.grid_position)
+		if plot_variant is Node2D and is_instance_valid(plot_variant):
+			var plot: Node2D = plot_variant
+			if plot.has_method("load_save_data"):
+				plot.load_save_data(_converter_farm_tile_para_plot_save_data(tile))
+
+func _converter_farm_tile_para_plot_save_data(tile: FarmTileData) -> Dictionary:
+	if tile == null:
+		return {}
+
+	if tile.tile_state == FarmTileData.TileState.BLOQUEADO:
+		return {
+			"expansion_blocked": true
+		}
+
+	var regado: bool = tile.is_watered or tile.tile_state == FarmTileData.TileState.MOLHADO
+	if tile.crop_id == "":
+		if tile.tile_state == FarmTileData.TileState.GRAMA:
+			return {}
+
+		return {
+			"estado_atual": 0,
+			"semente_id_plantada": "",
+			"regado": regado,
+			"arado": true,
+			"expansion_blocked": false,
+			"tempo_restante": 0.0,
+			"tempo_total_crescimento": 0.0,
+			"pronto_para_colher": false
+		}
+
+	var tempo_restante: float = maxf(tile.remaining_growth_time, 0.0)
+	var estado_atual: int = 2 if tempo_restante <= 0.0 else 1
+	return {
+		"estado_atual": estado_atual,
+		"semente_id_plantada": tile.crop_id,
+		"regado": regado,
+		"arado": true,
+		"expansion_blocked": false,
+		"tempo_restante": tempo_restante,
+		"tempo_total_crescimento": maxf(tile.total_growth_time, tempo_restante),
+		"pronto_para_colher": tempo_restante <= 0.0
+	}
 
 func _safe_dictionary(value: Variant) -> Dictionary:
 	if typeof(value) == TYPE_DICTIONARY:

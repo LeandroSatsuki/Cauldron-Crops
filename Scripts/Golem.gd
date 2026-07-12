@@ -299,30 +299,82 @@ func _registrar_acao(texto: String) -> void:
 func _registrar_alvo(lote: Node2D) -> void:
 	ultimo_alvo_detectado = _descrever_lote(lote)
 
+func _obter_farm_grid_manager_da_cena() -> FarmGridManager:
+	var tree: SceneTree = get_tree()
+	if tree == null or tree.current_scene == null:
+		return null
+
+	var scene: Node = tree.current_scene
+	if not scene.has_method("obter_farm_grid_manager"):
+		return null
+
+	var grid_manager_variant: Variant = scene.call("obter_farm_grid_manager")
+	if grid_manager_variant is FarmGridManager:
+		return grid_manager_variant
+	return null
+
+func _obter_farm_plot_por_grid_position(grid_position: Vector2i) -> Node2D:
+	var tree: SceneTree = get_tree()
+	if tree == null or tree.current_scene == null:
+		return null
+
+	var scene: Node = tree.current_scene
+	if not scene.has_method("obter_farm_plot_por_grid_position"):
+		return null
+
+	var plot_variant: Variant = scene.call("obter_farm_plot_por_grid_position", grid_position)
+	if plot_variant is Node2D and is_instance_valid(plot_variant):
+		return plot_variant
+	return null
+
 func _procurar_lote() -> bool:
 	_recalcular_contadores_lotes()
-	var lotes = get_tree().get_nodes_in_group("lotes_terra")
+
 	var melhor_lote: Node2D = null
 	var melhor_distancia: float = -1.0
+	var grid_manager: FarmGridManager = _obter_farm_grid_manager_da_cena()
+	if grid_manager != null:
+		for tile_variant in grid_manager.get_all_tiles():
+			if tile_variant is not FarmTileData:
+				continue
 
-	for lote in lotes:
-		if not is_instance_valid(lote):
-			continue
-		if lote.has_method("is_expansion_blocked") and bool(lote.call("is_expansion_blocked")):
-			continue
-		if lote.has_method("get") and lote.get("visible") == false:
-			continue
-		if lote.get("pronto_para_colher") != true:
-			continue
+			var tile: FarmTileData = tile_variant
+			if tile.crop_id == "" or tile.remaining_growth_time > 0.0:
+				continue
 
-		var lote_node: Node2D = lote as Node2D
-		if lote_node == null:
-			continue
+			var lote_node: Node2D = _obter_farm_plot_por_grid_position(tile.grid_position)
+			if lote_node == null:
+				continue
+			if lote_node.has_method("is_expansion_blocked") and bool(lote_node.call("is_expansion_blocked")):
+				continue
+			if lote_node.has_method("get") and lote_node.get("visible") == false:
+				continue
 
-		var distancia: float = global_position.distance_to(_obter_posicao_interacao_lote(lote_node))
-		if melhor_lote == null or distancia < melhor_distancia:
-			melhor_lote = lote_node
-			melhor_distancia = distancia
+			var distancia: float = global_position.distance_to(_obter_posicao_interacao_lote(lote_node))
+			if melhor_lote == null or distancia < melhor_distancia:
+				melhor_lote = lote_node
+				melhor_distancia = distancia
+
+	if melhor_lote == null:
+		var lotes = get_tree().get_nodes_in_group("lotes_terra")
+		for lote in lotes:
+			if not is_instance_valid(lote):
+				continue
+			if lote.has_method("is_expansion_blocked") and bool(lote.call("is_expansion_blocked")):
+				continue
+			if lote.has_method("get") and lote.get("visible") == false:
+				continue
+			if lote.get("pronto_para_colher") != true:
+				continue
+
+			var lote_node_legacy: Node2D = lote as Node2D
+			if lote_node_legacy == null:
+				continue
+
+			var distancia_legacy: float = global_position.distance_to(_obter_posicao_interacao_lote(lote_node_legacy))
+			if melhor_lote == null or distancia_legacy < melhor_distancia:
+				melhor_lote = lote_node_legacy
+				melhor_distancia = distancia_legacy
 
 	if melhor_lote == null:
 		_registrar_acao("sem lote maduro")
@@ -341,26 +393,47 @@ func _procurar_lote_para_regar() -> bool:
 		_registrar_acao("rega bloqueada pelo talento")
 		return false
 
-	var lotes = get_tree().get_nodes_in_group("lotes_terra")
 	var melhor_lote: Node2D = null
 	var melhor_distancia: float = -1.0
+	var grid_manager: FarmGridManager = _obter_farm_grid_manager_da_cena()
+	if grid_manager != null:
+		for tile_variant in grid_manager.get_all_tiles():
+			if tile_variant is not FarmTileData:
+				continue
 
-	for lote in lotes:
-		if not is_instance_valid(lote):
-			continue
-		if not lote.has_method("pode_ser_regado_por_golem"):
-			continue
-		if not bool(lote.call("pode_ser_regado_por_golem")):
-			continue
+			var tile: FarmTileData = tile_variant
+			if tile.crop_id == "" or tile.remaining_growth_time <= 0.0 or tile.is_watered:
+				continue
 
-		var lote_node: Node2D = lote as Node2D
-		if lote_node == null:
-			continue
+			var lote_node: Node2D = _obter_farm_plot_por_grid_position(tile.grid_position)
+			if lote_node == null:
+				continue
+			if lote_node.has_method("pode_ser_regado_por_golem") and not bool(lote_node.call("pode_ser_regado_por_golem")):
+				continue
 
-		var distancia: float = global_position.distance_to(_obter_posicao_interacao_lote(lote_node))
-		if melhor_lote == null or distancia < melhor_distancia:
-			melhor_lote = lote_node
-			melhor_distancia = distancia
+			var distancia: float = global_position.distance_to(_obter_posicao_interacao_lote(lote_node))
+			if melhor_lote == null or distancia < melhor_distancia:
+				melhor_lote = lote_node
+				melhor_distancia = distancia
+
+	if melhor_lote == null:
+		var lotes = get_tree().get_nodes_in_group("lotes_terra")
+		for lote in lotes:
+			if not is_instance_valid(lote):
+				continue
+			if not lote.has_method("pode_ser_regado_por_golem"):
+				continue
+			if not bool(lote.call("pode_ser_regado_por_golem")):
+				continue
+
+			var lote_node_legacy: Node2D = lote as Node2D
+			if lote_node_legacy == null:
+				continue
+
+			var distancia_legacy: float = global_position.distance_to(_obter_posicao_interacao_lote(lote_node_legacy))
+			if melhor_lote == null or distancia_legacy < melhor_distancia:
+				melhor_lote = lote_node_legacy
+				melhor_distancia = distancia_legacy
 
 	if melhor_lote == null:
 		_registrar_acao("sem lote seco")

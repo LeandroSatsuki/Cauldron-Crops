@@ -2,7 +2,7 @@
 
 ## Visao Geral
 
-O FarmGrid V2 segue em laboratorio. O preview isolado validou o loop minimo em memoria, mas o jogo principal continua usando `FarmPlot` como sistema ativo de plantio e colheita.
+O FarmGrid V2 fechou a ponte técnica como contrato runtime-only. O preview isolado validou o loop minimo em memoria, o jogo principal espelha os `FarmPlot` vivos em `FarmGridManager`, o golem fisico le esse snapshot e o save ja persiste `farm_grid`; `FarmPlot` segue como sistema ativo de plantio e colheita.
 
 ## Sistemas ja criados
 
@@ -28,6 +28,7 @@ O preview validou:
 11. Limpar terra arada ou molhada sem crop.
 12. Preservar tile plantado durante o decay.
 13. Alternar tipos de Solo Vivo Alquimico com botao direito.
+14. Remover tile do grid com clique do meio.
 
 ## Ferramentas fake testadas
 
@@ -63,20 +64,19 @@ Regra validada:
 
 Isso valida a Ideia 01 do Farm System V2: Ciclo de Limpeza Natural da Terra.
 
-## O que ainda e fake
+## O que ainda e laboratorial
 
 - `crop_id = debug_crop`
 - ferramentas nao vem de inventario real
 - regador nao consome agua
 - crescimento nao usa tempo real
 - colheita nao gera item real
-- save real nao guarda FarmGrid
-- golem nao interage com FarmGrid
 - caldeirao ainda nao cria essencias de solo
 - nao existe renderizacao pixel art final
 - nao existe pathfinding sobre grid
+- a migracao para `FarmGrid` como autoridade total de gameplay ainda nao foi aprovada
 
-## Por que nao migrar ainda
+## Por que a migracao total ainda nao foi aprovada
 
 O `FarmPlot` precisa continuar ativo porque:
 
@@ -85,7 +85,7 @@ O `FarmPlot` precisa continuar ativo porque:
 - ja conversa com golem
 - ja conversa com Baú da Vila
 - ja funciona no loop principal
-- FarmGrid ainda e laboratorio
+- a autoridade total do `FarmGrid` ainda nao foi validada como substituta do prototipo
 
 ## Riscos da migracao
 
@@ -104,8 +104,8 @@ O `FarmPlot` precisa continuar ativo porque:
 3. Melhorar o visual do preview sem tocar no gameplay.
 4. Criar ferramenta real de selecao no jogo principal apenas depois.
 5. Planejar adaptador entre `FarmPlot` e `FarmTile`.
-6. Criar save isolado do FarmGrid em teste.
-7. So depois criar uma pequena area experimental no jogo principal.
+6. Validar o save/load do FarmGrid já integrado ao contrato runtime-only.
+7. Só depois avaliar a migração total do gameplay para o grid.
 
 ## Pendencia tecnica: Autoloads em cenas dev
 
@@ -120,15 +120,24 @@ Pendencia registrada:
 - investigar a origem dos logs de agua
 - evitar que cenas dev sejam poluidas por sistemas globais
 - o `PocoManager` agora ignora `res://Scenes/dev/`, entao o ruido deve desaparecer nos previews
-- manter a verificacao de outros possiveis logs globais, se aparecerem no futuro
+- manter a verificacao de outros possiveis logs globais, se aparecerem mais adiante
 
 ## Decisao atual
 
-- FarmGrid V2 aprovado como direcao futura
+- FarmGrid V2 fechou a ponte técnica como contrato runtime-only
 - preview validou o loop minimo
 - FarmPlot continua como sistema ativo
-- integracao real fica para etapas futuras
-- nenhuma migracao agora
+- a migração total do gameplay ainda nao foi aprovada
+- nenhuma substituicao completa do prototipo agora
+
+## Validacao do save v4
+
+- `farm_grid` preserva o snapshot dos lotes vivos sem remover o fallback legado de `farm_plots`.
+- Lotes dinamicos arados ou plantados sao recriados ao carregar quando ainda nao existem na cena.
+- Um `farm_grid` vazio usa o fallback legado em vez de impedir a restauracao dos lotes.
+- O estado `expansion_blocked` e aplicado mesmo quando o lote restaurado esta vazio.
+- F5/F9 foi validado manualmente com lote dinamico e carregamento concluido com sucesso.
+- O launch headless do Godot 4.6.2 encerrou sem erros.
 
 ## Ferramenta Ativa V0
 

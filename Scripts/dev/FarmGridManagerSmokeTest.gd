@@ -26,6 +26,25 @@ static func run() -> bool:
 		push_error("FarmGridManagerSmokeTest: tile central não encontrado.")
 		return false
 
+	if not manager.remove_tile(middle_position):
+		push_error("FarmGridManagerSmokeTest: remove_tile não removeu o tile central.")
+		return false
+
+	if manager.has_tile(middle_position):
+		push_error("FarmGridManagerSmokeTest: tile central ainda existe após remoção.")
+		return false
+
+	var recreated_tile: FarmTileData = FarmTileData.new()
+	manager.set_tile(middle_position, recreated_tile)
+	if not manager.has_tile(middle_position):
+		push_error("FarmGridManagerSmokeTest: tile central não foi recriado após remoção.")
+		return false
+
+	tile = manager.get_tile(middle_position)
+	if tile == null:
+		push_error("FarmGridManagerSmokeTest: tile central recriado não encontrado.")
+		return false
+
 	tile.tile_state = FarmTileData.TileState.PLANTADO
 	tile.soil_type = FarmTileData.SoilType.ENCANTADO
 	tile.crop_id = "trigo"
@@ -85,6 +104,23 @@ static func run() -> bool:
 
 	if absf(loaded_tile.total_growth_time - 5.0) > 0.001:
 		push_error("FarmGridManagerSmokeTest: total_growth_time não foi restaurado corretamente.")
+		return false
+
+	var dynamic_position := Vector2i(7, 5)
+	var dynamic_tile := FarmTileData.new()
+	dynamic_tile.tile_state = FarmTileData.TileState.ARADO
+	manager.set_tile(dynamic_position, dynamic_tile)
+
+	var dynamic_save_data: Dictionary = manager.to_save_data()
+	var dynamic_loaded_manager := FarmGridManager.new()
+	dynamic_loaded_manager.load_save_data(dynamic_save_data)
+	var loaded_dynamic_tile: FarmTileData = dynamic_loaded_manager.get_tile(dynamic_position)
+	if loaded_dynamic_tile == null:
+		push_error("FarmGridManagerSmokeTest: tile dinâmico não foi restaurado.")
+		return false
+
+	if loaded_dynamic_tile.tile_state != FarmTileData.TileState.ARADO:
+		push_error("FarmGridManagerSmokeTest: estado do tile dinâmico não foi restaurado.")
 		return false
 
 	print("FarmGridManagerSmokeTest: sucesso.")

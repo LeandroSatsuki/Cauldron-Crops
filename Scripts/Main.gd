@@ -9,6 +9,7 @@ const FISHING_SPOT_SCENE_PATH: String = "res://Scenes/FishingSpot.tscn"
 const FISHING_SPOT_SCRIPT_PATH: String = "res://Scripts/FishingSpot.gd"
 
 @onready var navigation_region: NavigationRegion2D = $NavigationRegion2D
+@onready var main_camera: Camera2D = get_node_or_null("MainCamera") as Camera2D
 
 
 
@@ -50,7 +51,12 @@ var expansion_area_visuals: Dictionary = {}
 
 var expansion_area_plots: Dictionary = {}
 
+var farm_plot_registry: Dictionary = {}
+var farm_grid_manager: FarmGridManager = null
 
+var farm_origin: Vector2 = Vector2.ZERO
+
+var _camera_dragging: bool = false
 
 func _ready() -> void:
 
@@ -63,6 +69,8 @@ func _ready() -> void:
 	var start_x: float = (screen_size.x - BASE_FARM_PIXEL_SIZE) / 2.0 - 40.0
 
 	var start_y: float = (screen_size.y - BASE_FARM_PIXEL_SIZE) / 2.0
+
+	farm_origin = Vector2(start_x, start_y)
 
 
 
@@ -81,8 +89,10 @@ func _ready() -> void:
 	_conectar_obstaculos_purificacao()
 
 	_sincronizar_areas_expansao()
+	_reconstruir_farm_grid_manager()
 
 	_criar_blockout_fazenda_v0(start_x, start_y)
+	_configurar_camera_inicial(start_x, start_y)
 
 
 
@@ -98,25 +108,143 @@ func _configurar_regiao_navegacao() -> void:
 
 	var margem := 192.0
 
-	var outline := PackedVector2Array([
-
+	var vertices := PackedVector2Array([
 		Vector2(-margem, -margem),
-
 		Vector2(screen_size.x + margem, -margem),
-
 		Vector2(screen_size.x + margem, screen_size.y + margem),
-
 		Vector2(-margem, screen_size.y + margem)
-
 	])
 
 	var polygon := NavigationPolygon.new()
-
-	polygon.add_outline(outline)
-
-	polygon.make_polygons_from_outlines()
+	polygon.vertices = vertices
+	polygon.add_polygon(PackedInt32Array([0, 1, 2, 3]))
 
 	navigation_region.navigation_polygon = polygon
+
+
+func _configurar_camera_inicial(start_x: float, start_y: float) -> void:
+
+	if main_camera == null:
+
+		return
+
+	main_camera.make_current()
+	main_camera.zoom = Vector2.ONE
+	main_camera.position = Vector2(start_x + (2.8 * FARM_SPACING), start_y + (1.6 * FARM_SPACING))
+	main_camera.limit_left = -512
+	main_camera.limit_top = -384
+	main_camera.limit_right = 2560
+	main_camera.limit_bottom = 1920
+
+
+func _garantir_farm_grid_manager() -> void:
+	if farm_grid_manager == null:
+		farm_grid_manager = FarmGridManager.new()
+
+
+func _reconstruir_farm_grid_manager() -> void:
+	_garantir_farm_grid_manager()
+	if farm_grid_manager == null:
+		return
+
+	farm_grid_manager.clear()
+
+	for key_variant in farm_plot_registry.keys():
+		var plot_variant: Variant = farm_plot_registry.get(key_variant)
+		if plot_variant is not Node2D or not is_instance_valid(plot_variant):
+			continue
+
+		var plot: Node2D = plot_variant
+		var plot_position: Vector2i = _obter_posicao_grid_de_nome_farm_plot(plot.name)
+		if plot_position == Vector2i(-1, -1):
+			continue
+
+		_sincronizar_farm_grid_manager_com_plot(plot_position, plot)
+
+	for obstacle_id in expansion_area_order:
+		var area_plots_variant: Variant = expansion_area_plots.get(obstacle_id, [])
+		if typeof(area_plots_variant) != TYPE_ARRAY:
+			continue
+
+		var area_plots: Array = area_plots_variant
+		for plot_variant in area_plots:
+			if plot_variant is not Node2D or not is_instance_valid(plot_variant):
+				continue
+
+			var plot: Node2D = plot_variant
+			var plot_position: Vector2i = _obter_posicao_grid_de_nome_farm_plot(plot.name)
+			if plot_position == Vector2i(-1, -1):
+				continue
+
+			_sincronizar_farm_grid_manager_com_plot(plot_position, plot)
+
+
+func _sincronizar_farm_grid_manager_com_plot(grid_position: Vector2i, plot: Node2D) -> void:
+	if grid_position == Vector2i(-1, -1) or plot == null or not is_instance_valid(plot):
+		return
+
+	_garantir_farm_grid_manager()
+	if farm_grid_manager == null:
+		return
+
+	var tile: FarmTileData = _converter_farm_plot_para_tile_data(grid_position, plot)
+	if tile == null:
+		return
+
+	farm_grid_manager.set_tile(grid_position, tile)
+
+
+func _converter_farm_plot_para_tile_data(grid_position: Vector2i, plot: Node2D) -> FarmTileData:
+	var tile: FarmTileData = FarmTileData.new()
+	tile.grid_position = grid_position
+	if plot == null or not is_instance_valid(plot):
+		return tile
+
+	if plot.has_method("is_expansion_blocked") and bool(plot.call("is_expansion_blocked")):
+		tile.tile_state = FarmTileData.TileState.BLOQUEADO
+		return tile
+
+	var save_data: Dictionary = {}
+	if plot.has_method("get_save_data"):
+		var save_data_variant: Variant = plot.call("get_save_data")
+		if typeof(save_data_variant) == TYPE_DICTIONARY:
+			save_data = save_data_variant
+
+	var arado: bool = bool(save_data.get("arado", false))
+	var regado: bool = bool(save_data.get("regado", false))
+	var semente_id: String = str(save_data.get("semente_id_plantada", ""))
+	tile.is_watered = regado
+	tile.crop_id = semente_id
+	tile.remaining_growth_time = maxf(float(save_data.get("tempo_restante", 0.0)), 0.0)
+	tile.total_growth_time = maxf(float(save_data.get("tempo_total_crescimento", 0.0)), 0.0)
+
+	if semente_id != "":
+		tile.tile_state = FarmTileData.TileState.MOLHADO if regado else FarmTileData.TileState.PLANTADO
+	elif arado:
+		tile.tile_state = FarmTileData.TileState.MOLHADO if regado else FarmTileData.TileState.ARADO
+	else:
+		tile.tile_state = FarmTileData.TileState.GRAMA
+
+	return tile
+
+
+func _obter_posicao_grid_de_nome_farm_plot(nome: String) -> Vector2i:
+	var partes: PackedStringArray = nome.split("_")
+	if partes.size() < 3:
+		return Vector2i(-1, -1)
+
+	return Vector2i(int(partes[1]), int(partes[2]))
+
+
+func _esta_modal_aberto() -> bool:
+
+	var ui_node: Node = get_node_or_null("UI")
+	if ui_node != null and ui_node.has_method("_tem_popup_modal_aberto"):
+
+		return bool(ui_node.call("_tem_popup_modal_aberto"))
+
+	return false
+
 
 
 
@@ -150,7 +278,7 @@ func _criar_farm_plot_extras_inferiores(start_x: float, start_y: float) -> void:
 
 
 
-func _instanciar_farm_plot(grid_x: int, grid_y: int, start_x: float, start_y: float) -> void:
+func _instanciar_farm_plot(grid_x: int, grid_y: int, start_x: float, start_y: float) -> Node2D:
 
 	var plot: Node2D = farm_plot_scene.instantiate()
 
@@ -159,6 +287,131 @@ func _instanciar_farm_plot(grid_x: int, grid_y: int, start_x: float, start_y: fl
 	plot.name = "FarmPlot_%d_%d" % [grid_x, grid_y]
 
 	add_child(plot)
+
+	_registrar_farm_plot(grid_x, grid_y, plot)
+
+	return plot
+
+
+func _farm_plot_key(grid_x: int, grid_y: int) -> String:
+
+	return "%d_%d" % [grid_x, grid_y]
+
+
+func _registrar_farm_plot(grid_x: int, grid_y: int, plot: Node2D) -> void:
+
+	if plot == null or not is_instance_valid(plot):
+		return
+
+	farm_plot_registry[_farm_plot_key(grid_x, grid_y)] = plot
+	if plot.has_signal("estado_alterado"):
+		var callback := Callable(self, "_on_farm_plot_estado_alterado")
+		if not plot.is_connected("estado_alterado", callback):
+			plot.connect("estado_alterado", callback)
+
+
+func _on_farm_plot_estado_alterado() -> void:
+	_reconstruir_farm_grid_manager()
+
+
+func _obter_farm_plot_registrado(grid_x: int, grid_y: int) -> Node2D:
+
+	var key: String = _farm_plot_key(grid_x, grid_y)
+
+	if not farm_plot_registry.has(key):
+		return null
+
+
+	var plot_variant: Variant = farm_plot_registry.get(key)
+
+	if plot_variant is Node2D and is_instance_valid(plot_variant):
+		return plot_variant
+
+	farm_plot_registry.erase(key)
+	return null
+
+
+func _obter_ou_criar_farm_plot(grid_x: int, grid_y: int, start_x: float, start_y: float) -> Node2D:
+
+	var plot: Node2D = _obter_farm_plot_registrado(grid_x, grid_y)
+
+	if plot != null:
+		return plot
+
+	plot = farm_plot_scene.instantiate()
+	plot.position = Vector2(start_x + (grid_x * FARM_SPACING), start_y + (grid_y * FARM_SPACING))
+	plot.name = "FarmPlot_%d_%d" % [grid_x, grid_y]
+	add_child(plot)
+	_registrar_farm_plot(grid_x, grid_y, plot)
+	_sincronizar_farm_grid_manager_com_plot(Vector2i(grid_x, grid_y), plot)
+	return plot
+
+
+func _tile_grid_esta_bloqueado(grid_position: Vector2i) -> bool:
+	if grid_position == Vector2i(-1, -1):
+		return false
+
+	var manager: FarmGridManager = obter_farm_grid_manager()
+	if manager == null or not manager.has_tile(grid_position):
+		return false
+
+	var tile: FarmTileData = manager.get_tile(grid_position)
+	if tile == null:
+		return false
+
+	return tile.tile_state == FarmTileData.TileState.BLOQUEADO
+
+
+func obter_farm_grid_manager() -> FarmGridManager:
+	_garantir_farm_grid_manager()
+	return farm_grid_manager
+
+
+func obter_farm_plot_por_grid_position(grid_position: Vector2i) -> Node2D:
+	return _obter_farm_plot_registrado(grid_position.x, grid_position.y)
+
+
+func garantir_farm_plot_por_grid_position(grid_position: Vector2i) -> Node2D:
+	if farm_origin == Vector2.ZERO:
+		return null
+
+	return _obter_ou_criar_farm_plot(
+		grid_position.x,
+		grid_position.y,
+		farm_origin.x,
+		farm_origin.y
+	)
+
+
+
+func _converter_posicao_global_em_grid(global_position: Vector2) -> Vector2i:
+
+	if farm_origin == Vector2.ZERO:
+		return Vector2i(-1, -1)
+
+	var relative_position: Vector2 = global_position - farm_origin
+	var grid_x: int = int(round(relative_position.x / float(FARM_SPACING)))
+	var grid_y: int = int(round(relative_position.y / float(FARM_SPACING)))
+	return Vector2i(grid_x, grid_y)
+
+
+func _tem_colisor_no_ponto(global_position: Vector2) -> bool:
+
+	var world_2d: World2D = get_world_2d()
+	if world_2d == null:
+		return false
+
+	var space_state: PhysicsDirectSpaceState2D = world_2d.direct_space_state
+	if space_state == null:
+		return false
+
+	var query := PhysicsPointQueryParameters2D.new()
+	query.position = global_position
+	query.collide_with_areas = true
+	query.collide_with_bodies = true
+
+	var resultados: Array = space_state.intersect_point(query, 32)
+	return not resultados.is_empty()
 
 
 
@@ -285,6 +538,7 @@ func _criar_pocket_expansao(obstacle_id: String, start_x: float, start_y: float)
 			add_child(plot)
 
 			area_plots.append(plot)
+			_sincronizar_farm_grid_manager_com_plot(Vector2i(grid_x, grid_y), plot)
 
 
 
@@ -1323,8 +1577,7 @@ func _criar_bobber_destaque() -> Polygon2D:
 func _input(event: InputEvent) -> void:
 
 	if event is InputEventMouseButton:
-		var ui_node: Node = get_node_or_null("UI")
-		if ui_node != null and ui_node.has_method("_tem_popup_modal_aberto") and ui_node.call("_tem_popup_modal_aberto"):
+		if _esta_modal_aberto():
 			return
 
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
@@ -1361,6 +1614,50 @@ func _input(event: InputEvent) -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 
+	if event is InputEventMouseButton:
+		if event.button_index == MOUSE_BUTTON_MIDDLE:
+			if event.pressed and not _esta_modal_aberto():
+				_camera_dragging = true
+				get_viewport().set_input_as_handled()
+			elif not event.pressed:
+				_camera_dragging = false
+				get_viewport().set_input_as_handled()
+			return
+
+		if event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+			if _esta_modal_aberto():
+				return
+
+			var tool_manager: Node = get_tree().root.get_node_or_null("ToolManager")
+			if tool_manager == null or not tool_manager.has_method("get_active_tool"):
+				return
+
+			if int(tool_manager.call("get_active_tool")) != int(ToolManager.ToolType.HOE):
+				return
+
+			var click_position: Vector2 = get_global_mouse_position()
+			if _tem_colisor_no_ponto(click_position):
+				return
+
+			var grid_position: Vector2i = _converter_posicao_global_em_grid(click_position)
+			if grid_position == Vector2i(-1, -1):
+				return
+
+			if _tile_grid_esta_bloqueado(grid_position):
+				return
+
+			var plot: Node2D = _obter_ou_criar_farm_plot(grid_position.x, grid_position.y, farm_origin.x, farm_origin.y)
+			if plot != null and plot.has_method("_on_plot_clicked"):
+				plot.call("_on_plot_clicked")
+				_reconstruir_farm_grid_manager()
+				get_viewport().set_input_as_handled()
+			return
+
+	if event is InputEventMouseMotion and _camera_dragging and main_camera != null:
+		main_camera.position -= event.relative * main_camera.zoom
+		get_viewport().set_input_as_handled()
+		return
+
 	if event is InputEventKey and event.pressed and not event.echo:
 
 		if event.keycode == KEY_F5:
@@ -1378,5 +1675,7 @@ func _unhandled_input(event: InputEvent) -> void:
 				if ui_node and ui_node.has_method("reiniciar_objetivos_iniciais_apos_load"):
 
 					ui_node.call("reiniciar_objetivos_iniciais_apos_load")
+
+				_reconstruir_farm_grid_manager()
 
 				get_viewport().set_input_as_handled()

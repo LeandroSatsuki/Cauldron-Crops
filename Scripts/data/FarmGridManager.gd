@@ -40,6 +40,17 @@ func set_tile(position: Vector2i, tile: FarmTileData) -> void:
 	tile.grid_position = position
 	tiles[position] = tile
 
+func remove_tile(position: Vector2i) -> bool:
+	if not tiles.has(position):
+		return false
+
+	tiles.erase(position)
+	if tiles.is_empty():
+		clear()
+	else:
+		_recalcular_tamanho_da_grade()
+	return true
+
 func get_all_tiles() -> Array:
 	var result: Array = []
 	if tiles.is_empty():

@@ -6,7 +6,7 @@ const TEX_MOLHADA = preload("res://Assets/molhada.png")
 const TEX_SECA_ADUBADA = preload("res://Assets/seca_adubada.png")
 const TEX_MOLHADA_ADUBADA = preload("res://Assets/molhada_adubada.png")
 const COR_SOLO_NATURAL = Color(0.235294, 0.345098, 0.172549, 1.0)
-const GRID_SIZE = 64 # Tamanho padrao do tile
+const GRID_SIZE = 80 # Tamanho padrao do tile
 const TOOL_NONE := 0
 const TOOL_HOE := 1
 const TOOL_SEED := 2
@@ -20,6 +20,8 @@ enum State {
 	CRESCENDO,
 	PRONTO_PARA_COLHER
 }
+
+signal estado_alterado
 
 # O lote inicia no estado VAZIO
 var estado_atual: State = State.VAZIO
@@ -42,11 +44,6 @@ var regado: bool = false
 var expansion_blocked: bool = false
 
 func _ready() -> void:
-	# Trava o posicionamento no centro perfeito do grid
-	var snap_x = round(global_position.x / GRID_SIZE) * GRID_SIZE
-	var snap_y = round(global_position.y / GRID_SIZE) * GRID_SIZE
-	global_position = Vector2(snap_x, snap_y)
-
 	add_to_group("lotes_terra")
 	add_to_group("lote_plantacao")
 	# Configura o timer como one-shot e conecta o sinal de timeout
@@ -59,26 +56,29 @@ func _ready() -> void:
 	_aplicar_estado_expansao()
 	_atualizar_visual()
 
+func _notificar_estado_alterado() -> void:
+	estado_alterado.emit()
+
 func _process(_delta: float) -> void:
 	var base_z: int = int(global_position.y)
 	z_index = base_z
 	if color_rect:
-		color_rect.z_as_relative = false
-		color_rect.z_index = -100
+		color_rect.z_as_relative = true
+		color_rect.z_index = -1
 	if has_node("SpriteTerra"):
-		$SpriteTerra.z_as_relative = false
-		$SpriteTerra.z_index = -90
+		$SpriteTerra.z_as_relative = true
+		$SpriteTerra.z_index = 0
 	if visual_regado:
-		visual_regado.z_as_relative = false
-		visual_regado.z_index = -80
+		visual_regado.z_as_relative = true
+		visual_regado.z_index = 1
 	if has_node("SpritePlanta"):
 		$SpritePlanta.z_as_relative = true
-		$SpritePlanta.z_index = 1
+		$SpritePlanta.z_index = 2
 	if has_node("DropRaroVFX"):
-		$DropRaroVFX.z_as_relative = false
-		$DropRaroVFX.z_index = 2
+		$DropRaroVFX.z_as_relative = true
+		$DropRaroVFX.z_index = 3
 	if tooltip_area:
-		tooltip_area.z_as_relative = false
+		tooltip_area.z_as_relative = true
 		tooltip_area.z_index = 10
 	if not tooltip_area:
 		return
@@ -103,6 +103,9 @@ func _process(_delta: float) -> void:
 
 # Função para capturar cliques do mouse (usando _input_event)
 func _input_event(_viewport: Viewport, event: InputEvent, _shape_idx: int) -> void:
+	if expansion_blocked:
+		return
+
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
 		var ui_node: Node = get_tree().current_scene.get_node_or_null("UI")
 		if ui_node != null and ui_node.has_method("_tem_popup_modal_aberto") and ui_node.call("_tem_popup_modal_aberto"):
@@ -118,6 +121,9 @@ func is_expansion_blocked() -> bool:
 	return expansion_blocked
 
 func _on_plot_clicked() -> void:
+	if expansion_blocked:
+		return
+
 	var ferramenta_ativa: int = _obter_ferramenta_ativa()
 	if ferramenta_ativa != TOOL_NONE:
 		if ferramenta_ativa == TOOL_WATERING_CAN:
@@ -132,6 +138,7 @@ func _on_plot_clicked() -> void:
 				return
 			arado = true
 			_atualizar_visual()
+			_notificar_estado_alterado()
 			_mostrar_feedback("Lote arado!")
 			return
 		if ferramenta_ativa == TOOL_HARVEST:
@@ -188,6 +195,7 @@ func _on_plot_clicked() -> void:
 			# Muda o estado para CRESCENDO
 			estado_atual = State.CRESCENDO
 			_atualizar_visual()
+			_notificar_estado_alterado()
 			atualizar_visual_planta(semente_id_plantada, 0)
 			_mostrar_feedback("Semente plantada!")
 
@@ -229,6 +237,7 @@ func _regar_lote_por_ferramenta() -> bool:
 	if GlobalInventory.remover_item("agua", 1):
 		regado = true
 		_atualizar_visual()
+		_notificar_estado_alterado()
 		_mostrar_feedback("Lote regado!")
 		$SpriteTerra.texture = TEX_MOLHADA
 		if estado_atual == State.CRESCENDO:
@@ -254,6 +263,7 @@ func regar_por_golem() -> bool:
 
 	regado = true
 	_atualizar_visual()
+	_notificar_estado_alterado()
 	if timer and timer.time_left > 0.0:
 		timer.start(timer.time_left * 0.8)
 	return true
@@ -310,6 +320,7 @@ func debug_force_ready_to_harvest() -> void:
 	estado_atual = State.PRONTO_PARA_COLHER
 	pronto_para_colher = true
 	_atualizar_visual()
+	_notificar_estado_alterado()
 	atualizar_visual_planta(semente_id_plantada, 2)
 	print("Debug: lote forçado para colheita em ", get_path())
 
@@ -334,6 +345,7 @@ func debug_apply_daily_decay() -> bool:
 	tempo_total_crescimento = 0.0
 	arado = false
 	_atualizar_visual()
+	_notificar_estado_alterado()
 	atualizar_visual_planta("", 0)
 	return true
 
@@ -369,6 +381,7 @@ func get_save_data() -> Dictionary:
 		"semente_id_plantada": semente_id_plantada,
 		"regado": regado,
 		"arado": arado,
+		"expansion_blocked": expansion_blocked,
 		"tempo_restante": tempo_restante,
 		"tempo_total_crescimento": tempo_total,
 		"pronto_para_colher": pronto_para_colher
@@ -382,6 +395,7 @@ func load_save_data(data: Dictionary) -> void:
 		_concluir_colheita(false)
 		return
 
+	var expansion_blocked_salvo: bool = bool(data.get("expansion_blocked", expansion_blocked))
 	var estado_salvo: int = int(data.get("estado_atual", int(State.VAZIO)))
 	if estado_salvo < int(State.VAZIO) or estado_salvo > int(State.PRONTO_PARA_COLHER):
 		estado_salvo = int(State.VAZIO)
@@ -392,6 +406,7 @@ func load_save_data(data: Dictionary) -> void:
 	var pronto_salvo: bool = bool(data.get("pronto_para_colher", false))
 	var tempo_restante_salvo: float = maxf(float(data.get("tempo_restante", 0.0)), 0.0)
 	var tempo_total_salvo: float = maxf(float(data.get("tempo_total_crescimento", 0.0)), 0.0)
+	set_expansion_blocked(expansion_blocked_salvo)
 
 	var estado_final: int = estado_salvo
 	if estado_final == int(State.VAZIO) and semente_id_salva != "":
@@ -410,6 +425,7 @@ func load_save_data(data: Dictionary) -> void:
 		tempo_total_crescimento = 0.0
 		_atualizar_visual()
 		atualizar_visual_planta("", 0)
+		_notificar_estado_alterado()
 		return
 
 	var semente_dados: Dictionary = _obter_dados_semente_por_id(semente_id_salva)
@@ -432,6 +448,7 @@ func load_save_data(data: Dictionary) -> void:
 			pronto_para_colher = true
 			_atualizar_visual()
 			atualizar_visual_planta(semente_id_plantada, 2)
+			_notificar_estado_alterado()
 		State.CRESCENDO:
 			estado_atual = State.CRESCENDO
 			pronto_para_colher = false
@@ -440,11 +457,13 @@ func load_save_data(data: Dictionary) -> void:
 				pronto_para_colher = true
 				_atualizar_visual()
 				atualizar_visual_planta(semente_id_plantada, 2)
+				_notificar_estado_alterado()
 			else:
 				if timer:
 					timer.wait_time = tempo_restante_salvo
 					timer.start()
 				_atualizar_visual()
+				_notificar_estado_alterado()
 				var wait_t: float = tempo_total_crescimento if tempo_total_crescimento > 0.0 else tempo_restante_salvo
 				var progresso: float = (wait_t - tempo_restante_salvo) / wait_t if wait_t > 0.0 else 0.0
 				var estagio: int = 1 if progresso >= 0.5 else 0
@@ -622,6 +641,7 @@ func _concluir_colheita(preservar_arado: bool = true) -> void:
 	if has_node("SpriteTerra"):
 		_atualizar_visual()
 
+	_notificar_estado_alterado()
 	atualizar_visual_planta("", 0)
 
 # Quando o Timer emitir o sinal de timeout: o estado muda para PRONTO_PARA_COLHER
@@ -634,12 +654,14 @@ func _on_timer_timeout() -> void:
 				tempo_total_crescimento = 0.0
 				estado_atual = State.VAZIO
 				_atualizar_visual()
+				_notificar_estado_alterado()
 				atualizar_visual_planta("", 0)
 				print("A planta morreu de sede!")
 				return
 		
 		estado_atual = State.PRONTO_PARA_COLHER
 		_atualizar_visual()
+		_notificar_estado_alterado()
 		atualizar_visual_planta(semente_id_plantada, 2)
 		print("O tempo de crescimento acabou! Estado alterado para: PRONTO_PARA_COLHER.")
 
