@@ -108,6 +108,14 @@ func _unhandled_input(event: InputEvent) -> void:
 		print("FarmGridPreview: tile (%d, %d) mudou solo para %s" % [tile_position.x, tile_position.y, _get_soil_type_name(tile.soil_type)])
 		return
 
+	if mouse_button_event.button_index == MOUSE_BUTTON_MIDDLE:
+		if grid_manager.remove_tile(tile_position):
+			queue_redraw()
+			print("FarmGridPreview: tile (%d, %d) removido do grid." % [tile_position.x, tile_position.y])
+		else:
+			print("FarmGridPreview: remoção ignorada no tile (%d, %d)." % [tile_position.x, tile_position.y])
+		return
+
 func _usar_ferramenta_ativa(tile_position: Vector2i, tile: FarmTileData) -> void:
 	match active_tool:
 		ToolType.HOE:
