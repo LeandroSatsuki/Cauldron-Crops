@@ -1,6 +1,15 @@
 # Decisions
 
 
+## Decisão 76 - Purificação é a autoridade do bloqueio da expansão
+
+- Problema: durante reload na mesma sessão, o estado agrícola serializado do pocket 2x2 podia disputar com o estado do obstáculo e produzir uma sobreposição transitória de terra arada sob a área bloqueada.
+- Decisão: aplicar purificação antes dos dados agrícolas e não restaurar `expansion_blocked` pelo snapshot do grid nem pelo fallback legado; depois do cultivo, sincronizar novamente a área como guarda final.
+- Motivo: separar responsabilidades sem alterar schema: `farm_expansion` governa acesso, visibilidade e input; `farm_grid`/`farm_plots` restauram apenas o cultivo.
+- Compatibilidade: saves v3 e v4 continuam aceitos, as identidades dos 34 plots são preservadas e o estado agrícola do 2x2 volta a aparecer quando a mesma área é carregada como purificada.
+- Validação: o smoke test alterna o mesmo 2x2 arado entre saves purificado, bloqueado e purificado na mesma instância, verificando bloqueio, visibilidade, input e identidade.
+
+
 ## Decisão 75 - Identidade canônica de FarmPlot por coordenada
 
 - Problema: os `FarmPlot` da expansão participavam do snapshot de `FarmGridManager`, mas não do registro consultado pelo load, permitindo que a mesma coordenada ganhasse uma segunda instância.

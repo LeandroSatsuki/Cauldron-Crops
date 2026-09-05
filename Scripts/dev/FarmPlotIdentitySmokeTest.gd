@@ -69,27 +69,11 @@ func _run() -> void:
 		return
 	if not _assert_expansion_instances(main, expansion_instance_ids, "load v4 bloqueado"):
 		return
-
-	var modified_plot_variant: Variant = main.call(
-		"obter_farm_plot_por_grid_position",
-		EXPANSION_GRID_POSITIONS[0]
-	)
-	if not (modified_plot_variant is Node2D):
-		_fail("plot da expansao nao encontrado para teste purificado")
+	if not _assert_expansion_blocking(main, true, "load v4 bloqueado"):
 		return
 
-	var modified_plot: Node2D = modified_plot_variant
-	modified_plot.call("set_expansion_blocked", false)
-	modified_plot.call("load_save_data", {
-		"estado_atual": 0,
-		"semente_id_plantada": "",
-		"regado": false,
-		"arado": true,
-		"expansion_blocked": false,
-		"tempo_restante": 0.0,
-		"tempo_total_crescimento": 0.0,
-		"pronto_para_colher": false,
-	})
+	if not _prepare_tilled_expansion(main):
+		return
 	var purified_grid_data: Dictionary = (main.call("obter_farm_grid_manager") as FarmGridManager).to_save_data()
 	SaveManager.call("_apply_save_data", _build_save_data(purified_grid_data, true))
 	await get_tree().process_frame
@@ -98,6 +82,27 @@ func _run() -> void:
 	if not _assert_plot_count("load v4 com expansao purificada", EXPECTED_INITIAL_PLOT_COUNT):
 		return
 	if not _assert_expansion_instances(main, expansion_instance_ids, "load v4 purificado"):
+		return
+	if not _assert_expansion_blocking(main, false, "load v4 purificado"):
+		return
+
+	# Reproduz o relato manual: o mesmo 2x2 esta arado na sessao atual,
+	# mas o save carregado determina que a area voltou a estar bloqueada.
+	SaveManager.call("_apply_save_data", _build_save_data(purified_grid_data, false))
+	await get_tree().process_frame
+	await get_tree().process_frame
+
+	if not _assert_plot_count("reload bloqueado na mesma sessao", EXPECTED_INITIAL_PLOT_COUNT):
+		return
+	if not _assert_expansion_instances(main, expansion_instance_ids, "reload bloqueado na mesma sessao"):
+		return
+	if not _assert_expansion_blocking(main, true, "reload bloqueado na mesma sessao"):
+		return
+
+	SaveManager.call("_apply_save_data", _build_save_data(purified_grid_data, true))
+	await get_tree().process_frame
+	await get_tree().process_frame
+	if not _assert_expansion_blocking(main, false, "segundo load v4 purificado"):
 		return
 
 	var legacy_plots: Array = []
@@ -118,6 +123,8 @@ func _run() -> void:
 	if not _assert_plot_count("fallback legado v3", EXPECTED_INITIAL_PLOT_COUNT):
 		return
 	if not _assert_expansion_instances(main, expansion_instance_ids, "fallback v3"):
+		return
+	if not _assert_expansion_blocking(main, false, "fallback v3"):
 		return
 
 	var dynamic_plot_variant: Variant = main.call("garantir_farm_plot_por_grid_position", DYNAMIC_TEST_POSITION)
@@ -162,7 +169,7 @@ func _run() -> void:
 		return
 
 	print(
-		"FarmPlotIdentitySmokeTest: PASS - 34 plots preservados em load v4/v3; expansao e desregistro usam identidade canonica."
+		"FarmPlotIdentitySmokeTest: PASS - 34 plots preservados em load v4/v3; reload bloqueado do 2x2, expansao e desregistro estao coerentes."
 	)
 	main.queue_free()
 	await get_tree().process_frame
@@ -236,6 +243,52 @@ func _assert_expansion_instances(main: Node, expected_ids: Dictionary, context: 
 		var original_instance_id: int = int(expected_ids.get(str(grid_position), 0))
 		if (plot_variant as Node2D).get_instance_id() != original_instance_id:
 			_fail("%s substituiu o plot da expansao em %s" % [context, grid_position])
+			return false
+
+	return true
+
+
+func _prepare_tilled_expansion(main: Node) -> bool:
+	for grid_position in EXPANSION_GRID_POSITIONS:
+		var plot_variant: Variant = main.call("obter_farm_plot_por_grid_position", grid_position)
+		if not (plot_variant is Node2D) or not is_instance_valid(plot_variant):
+			_fail("plot da expansao nao encontrado para preparar o teste em %s" % grid_position)
+			return false
+
+		var plot: Node2D = plot_variant
+		plot.call("set_expansion_blocked", false)
+		plot.call("load_save_data", {
+			"estado_atual": 0,
+			"semente_id_plantada": "",
+			"regado": false,
+			"arado": true,
+			"tempo_restante": 0.0,
+			"tempo_total_crescimento": 0.0,
+			"pronto_para_colher": false,
+		})
+
+	return true
+
+
+func _assert_expansion_blocking(main: Node, expected_blocked: bool, context: String) -> bool:
+	for grid_position in EXPANSION_GRID_POSITIONS:
+		var plot_variant: Variant = main.call("obter_farm_plot_por_grid_position", grid_position)
+		if not (plot_variant is Node2D) or not is_instance_valid(plot_variant):
+			_fail("%s perdeu o plot da expansao em %s" % [context, grid_position])
+			return false
+
+		var plot: Node2D = plot_variant
+		if not plot.has_method("is_expansion_blocked"):
+			_fail("%s encontrou plot sem contrato de bloqueio em %s" % [context, grid_position])
+			return false
+		if bool(plot.call("is_expansion_blocked")) != expected_blocked:
+			_fail("%s restaurou bloqueio incorreto em %s" % [context, grid_position])
+			return false
+		if plot.visible == expected_blocked:
+			_fail("%s restaurou visibilidade incorreta em %s" % [context, grid_position])
+			return false
+		if plot.input_pickable == expected_blocked:
+			_fail("%s restaurou interacao incorreta em %s" % [context, grid_position])
 			return false
 
 	return true

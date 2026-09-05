@@ -171,6 +171,16 @@ func _apply_save_data(data: Dictionary) -> void:
 		if village_chest and village_chest.has_method("set_contents"):
 			village_chest.set_contents(village_chest_inventory)
 
+	if data.has("farm_expansion"):
+		var farm_expansion_data: Dictionary = _safe_dictionary(data.get("farm_expansion", {}))
+		var purification_obstacles_data: Dictionary = _safe_dictionary(farm_expansion_data.get("purification_obstacles", {}))
+		var purification_progress_data: Dictionary = _safe_dictionary(farm_expansion_data.get("purification_progress", {}))
+		_aplicar_estado_obstaculos_purificados(purification_obstacles_data, purification_progress_data)
+
+	var current_scene: Node = get_tree().current_scene if get_tree() != null else null
+	if current_scene != null and current_scene.has_method("sincronizar_area_bloqueada_v0"):
+		current_scene.call("sincronizar_area_bloqueada_v0")
+
 	var farm_grid_aplicado := false
 	if data.has("farm_grid"):
 		var saved_grid: Dictionary = _safe_dictionary(data.get("farm_grid", {}))
@@ -188,15 +198,10 @@ func _apply_save_data(data: Dictionary) -> void:
 				var lote: Node = lotes_terra[index]
 				var plot_data_variant: Variant = saved_plots[index]
 				if lote and lote.has_method("load_save_data") and typeof(plot_data_variant) == TYPE_DICTIONARY:
-					lote.load_save_data(plot_data_variant)
+					var plot_data: Dictionary = (plot_data_variant as Dictionary).duplicate(true)
+					plot_data.erase("expansion_blocked")
+					lote.load_save_data(plot_data)
 
-	if data.has("farm_expansion"):
-		var farm_expansion_data: Dictionary = _safe_dictionary(data.get("farm_expansion", {}))
-		var purification_obstacles_data: Dictionary = _safe_dictionary(farm_expansion_data.get("purification_obstacles", {}))
-		var purification_progress_data: Dictionary = _safe_dictionary(farm_expansion_data.get("purification_progress", {}))
-		_aplicar_estado_obstaculos_purificados(purification_obstacles_data, purification_progress_data)
-
-	var current_scene: Node = get_tree().current_scene if get_tree() != null else null
 	if current_scene != null and current_scene.has_method("sincronizar_area_bloqueada_v0"):
 		current_scene.call("sincronizar_area_bloqueada_v0")
 
@@ -298,7 +303,13 @@ func _converter_farm_tile_para_plot_save_data(tile: FarmTileData) -> Dictionary:
 
 	if tile.tile_state == FarmTileData.TileState.BLOQUEADO:
 		return {
-			"expansion_blocked": true
+			"estado_atual": 0,
+			"semente_id_plantada": "",
+			"regado": false,
+			"arado": false,
+			"tempo_restante": 0.0,
+			"tempo_total_crescimento": 0.0,
+			"pronto_para_colher": false
 		}
 
 	var regado: bool = tile.is_watered or tile.tile_state == FarmTileData.TileState.MOLHADO
@@ -311,7 +322,6 @@ func _converter_farm_tile_para_plot_save_data(tile: FarmTileData) -> Dictionary:
 			"semente_id_plantada": "",
 			"regado": regado,
 			"arado": true,
-			"expansion_blocked": false,
 			"tempo_restante": 0.0,
 			"tempo_total_crescimento": 0.0,
 			"pronto_para_colher": false
@@ -324,7 +334,6 @@ func _converter_farm_tile_para_plot_save_data(tile: FarmTileData) -> Dictionary:
 		"semente_id_plantada": tile.crop_id,
 		"regado": regado,
 		"arado": true,
-		"expansion_blocked": false,
 		"tempo_restante": tempo_restante,
 		"tempo_total_crescimento": maxf(tile.total_growth_time, tempo_restante),
 		"pronto_para_colher": tempo_restante <= 0.0

@@ -1,6 +1,12 @@
 # Changelog
 
 
+## 2026-09-05 - Coerência do pocket 2x2 no reload
+
+- O estado da purificação passou a ser a única autoridade de bloqueio, visibilidade e interação dos plots da expansão.
+- O grid e o fallback legado continuam restaurando o cultivo, mas não podem mais sobrescrever `expansion_blocked` durante o load.
+- A regressão de identidade agora alterna o mesmo pocket 2x2 arado entre estados purificado e bloqueado na mesma sessão, mantendo 34 instâncias e impedindo a sobreposição relatada no teste manual.
+
 
 ## 2026-09-04 - Identidade canônica dos lotes agrícolas
 
