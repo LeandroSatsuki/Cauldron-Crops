@@ -141,6 +141,16 @@ Pendencia registrada:
 - F5/F9 foi validado manualmente com lote dinamico e carregamento concluido com sucesso.
 - O launch headless do Godot 4.6.2 encerrou sem erros.
 
+## Politica de solo valido
+
+- `SoilValidityPolicy` e a unica regra espacial para responder se a enxada pode arar uma coordenada.
+- O `Main` fornece limite cultivavel, corrupcao/purificacao e a classificacao de agua, construcoes, obstaculos e zonas reservadas.
+- Personagens moveis, como o golem, nao transformam temporariamente uma celula em solo invalido.
+- O blockout visual nao define reservas; `reserved_cultivation_grid_areas` e a fonte explicita quando uma reserva real for configurada.
+- Novos plots so podem nascer dentro do limite `(-8, -5)` ate `(15, 8)` e fora dos bloqueios.
+- Plots registrados antes dessa politica continuam jogaveis mesmo fora do limite ou de reservas, preservando saves; corrupcao continua bloqueando.
+- A restauracao pelo `SaveManager` nao passa pelo gate de criacao nova e o schema do save permanece inalterado.
+
 ## Ferramenta Ativa V0
 
 O jogo principal ganhou uma base de ferramenta ativa global com `ToolManager` como `Autoload`.

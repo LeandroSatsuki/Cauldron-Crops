@@ -42,6 +42,10 @@ const EXPANSION_V0_OBSTACLE_ID: String = "first_obstacle"
 const BLOCKOUT_FARM_Z_INDEX: int = 40
 
 
+@export var cultivable_grid_bounds: Rect2i = Rect2i(Vector2i(-8, -5), Vector2i(24, 14))
+@export var reserved_cultivation_grid_areas: Array[Rect2i] = []
+
+
 
 var expansion_area_configs: Dictionary = {}
 
@@ -433,23 +437,118 @@ func _converter_posicao_global_em_grid(global_position: Vector2) -> Vector2i:
 	return Vector2i(grid_x, grid_y)
 
 
-func _tem_colisor_no_ponto(global_position: Vector2) -> bool:
+func _converter_grid_em_posicao_global(grid_position: Vector2i) -> Vector2:
+	return farm_origin + Vector2(grid_position) * float(FARM_SPACING)
+
+
+func avaliar_solo_para_arar(global_position: Vector2) -> Dictionary:
+	if farm_origin == Vector2.ZERO:
+		return SoilValidityPolicy.evaluate(Vector2i.ZERO, {"farm_ready": false})
+
+	return avaliar_grid_para_arar(_converter_posicao_global_em_grid(global_position))
+
+
+func avaliar_grid_para_arar(grid_position: Vector2i) -> Dictionary:
+	var existing_plot: Node2D = _obter_farm_plot_registrado(grid_position.x, grid_position.y)
+	var tile_is_blocked: bool = _tile_grid_esta_bloqueado(grid_position)
+	var blockers: Dictionary = {
+		"water": false,
+		"building": false,
+		"obstacle": false,
+		"corruption": false,
+	}
+	if existing_plot == null:
+		blockers = _obter_bloqueios_solo_na_celula(grid_position)
+
+	return SoilValidityPolicy.evaluate(grid_position, {
+		"farm_ready": farm_origin != Vector2.ZERO,
+		"has_existing_plot": existing_plot != null,
+		"inside_cultivable_bounds": cultivable_grid_bounds.has_point(grid_position),
+		"is_corrupted": tile_is_blocked or bool(blockers.get("corruption", false)),
+		"requires_purification": bool(blockers.get("corruption", false)),
+		"is_area_purified": not bool(blockers.get("corruption", false)),
+		"has_water": bool(blockers.get("water", false)),
+		"has_building": bool(blockers.get("building", false)),
+		"has_obstacle": bool(blockers.get("obstacle", false)),
+		"is_reserved_zone": _grid_esta_em_zona_cultivo_reservada(grid_position),
+	})
+
+
+func pode_arar_em_posicao_global(global_position: Vector2) -> bool:
+	return bool(avaliar_solo_para_arar(global_position).get("valid", false))
+
+
+func _grid_esta_em_zona_cultivo_reservada(grid_position: Vector2i) -> bool:
+	for reserved_area in reserved_cultivation_grid_areas:
+		if reserved_area.has_point(grid_position):
+			return true
+	return false
+
+
+func _obter_bloqueios_solo_na_celula(grid_position: Vector2i) -> Dictionary:
+	var blockers: Dictionary = {
+		"water": false,
+		"building": false,
+		"obstacle": false,
+		"corruption": false,
+	}
 
 	var world_2d: World2D = get_world_2d()
 	if world_2d == null:
-		return false
+		return blockers
 
 	var space_state: PhysicsDirectSpaceState2D = world_2d.direct_space_state
 	if space_state == null:
-		return false
+		return blockers
 
-	var query := PhysicsPointQueryParameters2D.new()
-	query.position = global_position
+	var cell_shape := RectangleShape2D.new()
+	cell_shape.size = Vector2.ONE * (float(FARM_SPACING) * 0.8)
+	var query := PhysicsShapeQueryParameters2D.new()
+	query.shape = cell_shape
+	query.transform = Transform2D(0.0, _converter_grid_em_posicao_global(grid_position))
 	query.collide_with_areas = true
 	query.collide_with_bodies = true
 
-	var resultados: Array = space_state.intersect_point(query, 32)
-	return not resultados.is_empty()
+	var results: Array[Dictionary] = space_state.intersect_shape(query, 32)
+	for result in results:
+		var collider_variant: Variant = result.get("collider")
+		if collider_variant is not Node:
+			continue
+		var collider: Node = collider_variant
+		if _node_ou_ancestral_no_grupo(collider, "lotes_terra") or _node_ou_ancestral_eh_personagem(collider):
+			continue
+		if _node_ou_ancestral_no_grupo(collider, "fishing_spot"):
+			blockers["water"] = true
+		elif _node_ou_ancestral_no_grupo(collider, "purification_obstacle"):
+			blockers["corruption"] = true
+		elif _node_ou_ancestral_no_grupo(collider, "cauldrons") or _node_ou_ancestral_no_grupo(collider, "village_chest"):
+			blockers["building"] = true
+		else:
+			blockers["obstacle"] = true
+
+	return blockers
+
+
+func _node_ou_ancestral_no_grupo(node: Node, group_name: StringName) -> bool:
+	var current: Node = node
+	while current != null:
+		if current.is_in_group(group_name):
+			return true
+		if current == self:
+			break
+		current = current.get_parent()
+	return false
+
+
+func _node_ou_ancestral_eh_personagem(node: Node) -> bool:
+	var current: Node = node
+	while current != null:
+		if current is CharacterBody2D:
+			return true
+		if current == self:
+			break
+		current = current.get_parent()
+	return false
 
 
 
@@ -1205,6 +1304,8 @@ func _aplicar_estado_area_expansao(obstacle_id: String, purificado: bool) -> voi
 
 				plot.call("set_expansion_blocked", not purificado)
 
+	_reconstruir_farm_grid_manager()
+
 
 
 func _sincronizar_areas_expansao() -> void:
@@ -1679,16 +1780,11 @@ func _unhandled_input(event: InputEvent) -> void:
 				return
 
 			var click_position: Vector2 = get_global_mouse_position()
-			if _tem_colisor_no_ponto(click_position):
+			var soil_evaluation: Dictionary = avaliar_solo_para_arar(click_position)
+			if not bool(soil_evaluation.get("valid", false)):
 				return
 
-			var grid_position: Vector2i = _converter_posicao_global_em_grid(click_position)
-			if grid_position == Vector2i(-1, -1):
-				return
-
-			if _tile_grid_esta_bloqueado(grid_position):
-				return
-
+			var grid_position: Vector2i = soil_evaluation.get("grid_position", Vector2i.ZERO)
 			var plot: Node2D = _obter_ou_criar_farm_plot(grid_position.x, grid_position.y, farm_origin.x, farm_origin.y)
 			if plot != null and plot.has_method("_on_plot_clicked"):
 				plot.call("_on_plot_clicked")

@@ -1,6 +1,15 @@
 # Changelog
 
 
+## 2026-09-05 - Política única de solo válido
+
+- A pergunta espacial `Posso arar aqui?` passou a ser respondida por `SoilValidityPolicy`, com motivo explícito para cada recusa.
+- Limite cultivável, corrupção/purificação, água, construções, obstáculos e zonas reservadas agora entram no mesmo contrato.
+- O clique de enxada em terreno vazio e o `FarmPlot` consultam a mesma política; plots já registrados continuam jogáveis por compatibilidade, salvo quando bloqueados por corrupção.
+- A purificação agora reconstrói imediatamente o snapshot agrícola após desbloquear seu pocket, removendo o estado `BLOQUEADO` transitório.
+- O schema de save não mudou e a restauração de plots dinâmicos antigos continua fora do gate de criação nova.
+
+
 ## 2026-09-05 - Contrato transitório FarmPlot/FarmGrid
 
 - `FarmPlot` foi formalizado como autoridade runtime do gameplay agrícola e o `FarmGridManager` como índice/snapshot de leitura.

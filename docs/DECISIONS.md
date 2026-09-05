@@ -1,6 +1,17 @@
 # Decisions
 
 
+## Decisão 79 - Política espacial única para arar
+
+- Problema: a criação dinâmica experimental decidia com verificações dispersas (`não há collider` e `tile não bloqueado`), sem limite cultivável nem representação explícita de água, construção, obstáculo e reserva.
+- Decisão: `SoilValidityPolicy` responde de forma determinística se uma coordenada pode ser arada e retorna o motivo; `Main` traduz o estado do mundo para esse contrato e tanto terreno vazio quanto `FarmPlot` consultam a mesma regra.
+- Limite transitório: o retângulo configurável vai de `(-8, -5)` a `(15, 8)`. Áreas reservadas possuem configuração própria e o blockout visual continua sem autoridade de gameplay.
+- Colisões: água, construções e obstáculos físicos permanentes bloqueiam novas células; `FarmPlot` registrados e personagens móveis não são tratados como obstáculos de solo.
+- Compatibilidade: plots já registrados, inclusive dinâmicos vindos de saves anteriores e fora do limite atual, continuam jogáveis; corrupção/bloqueio ainda prevalece. O load continua autorizado a restaurá-los e o schema v4 não muda.
+- Coerência: desbloquear uma expansão reconstrói imediatamente o snapshot, para que a política observe a purificação na mesma transição.
+- Validação: o smoke test cobre fazenda indisponível, limite, corrupção e purificação, água, construção, obstáculo genérico, reserva, célula livre e plot legado fora do limite.
+
+
 ## Decisão 78 - Snapshot isolado no contrato FarmPlot/FarmGrid
 
 - Problema: `Main.obter_farm_grid_manager()` expunha a instância interna mutável, permitindo que um consumidor de leitura alterasse o índice sem alterar o `FarmPlot` correspondente.

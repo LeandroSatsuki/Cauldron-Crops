@@ -130,6 +130,9 @@ func _on_plot_clicked() -> void:
 			_regar_lote_por_ferramenta()
 			return
 		if ferramenta_ativa == TOOL_HOE:
+			if not _solo_permite_arar():
+				_mostrar_feedback("A ferramenta nao pode ser usada aqui.")
+				return
 			if estado_atual != State.VAZIO:
 				_mostrar_feedback("A ferramenta nao pode ser usada aqui.")
 				return
@@ -210,6 +213,22 @@ func _on_plot_clicked() -> void:
 				print("Poção aplicada! Tempo reduzido pela metade.")
 			else:
 				_mostrar_feedback("A planta ainda está crescendo.")
+
+
+func _solo_permite_arar() -> bool:
+	var tree: SceneTree = get_tree()
+	if tree == null or tree.current_scene == null:
+		return false
+
+	var scene: Node = tree.current_scene
+	if not scene.has_method("avaliar_solo_para_arar"):
+		return true
+
+	var evaluation_variant: Variant = scene.call("avaliar_solo_para_arar", global_position)
+	if typeof(evaluation_variant) != TYPE_DICTIONARY:
+		return false
+	return bool((evaluation_variant as Dictionary).get("valid", false))
+
 
 func _obter_ferramenta_ativa() -> int:
 	var tree: SceneTree = get_tree()
