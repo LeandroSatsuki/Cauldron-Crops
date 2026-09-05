@@ -1,6 +1,15 @@
 # Decisions
 
 
+## Decisão 77 - Roteamento explícito do save agrícola por versão
+
+- Problema: `SAVE_VERSION = 4` era gravado, mas o load não lia a versão e tratava `farm_grid` ausente e vazio como o mesmo caso, podendo aplicar silenciosamente o fallback errado.
+- Decisão: considerar save sem versão como legado v3; usar `farm_plots` nas versões 1–3; na v4, usar `farm_grid` sempre que a chave existir, inclusive vazia, e recorrer a `farm_plots` apenas quando ela estiver ausente.
+- Segurança: versões inválidas/futuras e o payload agrícola selecionado com tipo incorreto são recusados antes de qualquer mutação de estado.
+- Compatibilidade: o schema v4 não mudou, `farm_plots` continua sendo gravado como fallback e saves v4 incompletos ainda podem recorrer ao legado quando `farm_grid` estiver ausente.
+- Validação: um smoke test dedicado cobre versão explícita, save sem versão, conflito grid/legado, grid vazio versus ausente e formato malformado; os quatro backups v3 e o save v4 real também foram carregados somente em memória.
+
+
 ## Decisão 76 - Purificação é a autoridade do bloqueio da expansão
 
 - Problema: durante reload na mesma sessão, o estado agrícola serializado do pocket 2x2 podia disputar com o estado do obstáculo e produzir uma sobreposição transitória de terra arada sob a área bloqueada.

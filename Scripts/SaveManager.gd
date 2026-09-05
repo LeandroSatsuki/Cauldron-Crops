@@ -2,6 +2,13 @@ extends Node
 
 const SAVE_PATH := "user://savegame.json"
 const SAVE_VERSION := 4
+const LEGACY_SAVE_VERSION := 3
+
+enum FarmSaveSource {
+	NONE,
+	LEGACY_PLOTS,
+	GRID_V4,
+}
 
 func has_save() -> bool:
 	return FileAccess.file_exists(SAVE_PATH)
@@ -52,7 +59,8 @@ func load_game() -> bool:
 		push_error("SaveManager: JSON invalido em %s" % SAVE_PATH)
 		return false
 
-	_apply_save_data(parsed)
+	if not _apply_save_data(parsed):
+		return false
 	_refresh_ui_after_load()
 	print("SaveManager: jogo carregado de %s" % SAVE_PATH)
 	return true
@@ -131,7 +139,22 @@ func _build_save_data() -> Dictionary:
 		}
 	}
 
-func _apply_save_data(data: Dictionary) -> void:
+func _apply_save_data(data: Dictionary) -> bool:
+	var save_version: int = _read_save_version(data)
+	if not _is_save_version_supported(save_version):
+		if save_version > SAVE_VERSION:
+			push_error(
+				"SaveManager: save da versao %d nao pode ser carregado pela versao atual %d."
+				% [save_version, SAVE_VERSION]
+			)
+			return false
+		push_error("SaveManager: versao de save invalida.")
+		return false
+	var farm_save_source: FarmSaveSource = _resolve_farm_save_source(data, save_version)
+	if not _is_farm_save_payload_valid(data, farm_save_source):
+		push_error("SaveManager: dados agricolas invalidos para o contrato do save.")
+		return false
+
 	var inventory_data: Dictionary = _safe_dictionary(data.get("inventory", {}))
 	var saved_inventory: Dictionary = _safe_dictionary(inventory_data.get("inventario", {}))
 	var current_inventory: Dictionary = GlobalInventory.inventario.duplicate(true)
@@ -181,14 +204,11 @@ func _apply_save_data(data: Dictionary) -> void:
 	if current_scene != null and current_scene.has_method("sincronizar_area_bloqueada_v0"):
 		current_scene.call("sincronizar_area_bloqueada_v0")
 
-	var farm_grid_aplicado := false
-	if data.has("farm_grid"):
+	if farm_save_source == FarmSaveSource.GRID_V4:
 		var saved_grid: Dictionary = _safe_dictionary(data.get("farm_grid", {}))
-		if not saved_grid.is_empty():
-			_aplicar_farm_grid_no_mundo(saved_grid)
-			_aplicar_farm_grid_aos_plots(saved_grid)
-			farm_grid_aplicado = true
-	if not farm_grid_aplicado and data.has("farm_plots"):
+		_aplicar_farm_grid_no_mundo(saved_grid)
+		_aplicar_farm_grid_aos_plots(saved_grid)
+	elif farm_save_source == FarmSaveSource.LEGACY_PLOTS:
 		var saved_plots: Array = _safe_array(data.get("farm_plots", []))
 		var tree: SceneTree = get_tree()
 		if tree != null:
@@ -204,6 +224,40 @@ func _apply_save_data(data: Dictionary) -> void:
 
 	if current_scene != null and current_scene.has_method("sincronizar_area_bloqueada_v0"):
 		current_scene.call("sincronizar_area_bloqueada_v0")
+
+	return true
+
+func _read_save_version(data: Dictionary) -> int:
+	if not data.has("version"):
+		return LEGACY_SAVE_VERSION
+
+	var version_variant: Variant = data.get("version")
+	if typeof(version_variant) == TYPE_INT:
+		return int(version_variant)
+	if typeof(version_variant) == TYPE_FLOAT:
+		var float_version: float = float(version_variant)
+		var int_version: int = int(float_version)
+		if float(int_version) == float_version:
+			return int_version
+
+	return -1
+
+func _is_save_version_supported(save_version: int) -> bool:
+	return save_version > 0 and save_version <= SAVE_VERSION
+
+func _resolve_farm_save_source(data: Dictionary, save_version: int) -> FarmSaveSource:
+	if save_version >= SAVE_VERSION and data.has("farm_grid"):
+		return FarmSaveSource.GRID_V4
+	if data.has("farm_plots"):
+		return FarmSaveSource.LEGACY_PLOTS
+	return FarmSaveSource.NONE
+
+func _is_farm_save_payload_valid(data: Dictionary, farm_save_source: FarmSaveSource) -> bool:
+	if farm_save_source == FarmSaveSource.GRID_V4:
+		return typeof(data.get("farm_grid")) == TYPE_DICTIONARY
+	if farm_save_source == FarmSaveSource.LEGACY_PLOTS:
+		return typeof(data.get("farm_plots")) == TYPE_ARRAY
+	return true
 
 func _refresh_ui_after_load() -> void:
 	var scene := get_tree().current_scene

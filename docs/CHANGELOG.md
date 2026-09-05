@@ -1,6 +1,14 @@
 # Changelog
 
 
+## 2026-09-05 - Contrato explícito de compatibilidade do save v4
+
+- O carregamento agora lê e valida `version` antes de alterar o estado do jogo.
+- Saves legados, incluindo arquivos sem versão, usam `farm_plots`; a v4 prioriza `farm_grid` quando a chave existe e só usa o fallback se ela estiver ausente.
+- Um grid v4 vazio deixou de ser confundido com grid ausente, e versões futuras ou payloads agrícolas malformados são recusados com segurança.
+- Foi adicionado um smoke test dedicado ao contrato e os cinco saves representativos locais foram carregados somente em memória.
+
+
 ## 2026-09-05 - Coerência do pocket 2x2 no reload
 
 - O estado da purificação passou a ser a única autoridade de bloqueio, visibilidade e interação dos plots da expansão.
