@@ -151,6 +151,15 @@ Pendencia registrada:
 - Plots registrados antes dessa politica continuam jogaveis mesmo fora do limite ou de reservas, preservando saves; corrupcao continua bloqueando.
 - A restauracao pelo `SaveManager` nao passa pelo gate de criacao nova e o schema do save permanece inalterado.
 
+## Piloto de agricultura livre
+
+- O piloto ocupa 6x2 celulas, de `(4, 5)` ate `(9, 6)`, e aparece com contorno e label no mundo.
+- Com a enxada ativa, clicar em uma celula vazia valida cria e ara um `FarmPlot` registrado na mesma acao.
+- Clicar novamente reutiliza a identidade existente e nao cria duplicata.
+- Fora do piloto, novas celulas nao sao criadas; plots antigos continuam jogaveis por compatibilidade.
+- O lote livre usa o mesmo ciclo real de plantio, rega, crescimento e colheita dos lotes pre-posicionados.
+- O save v4 persiste o novo lote por coordenada e loads repetidos preservam uma unica instancia.
+
 ## Ferramenta Ativa V0
 
 O jogo principal ganhou uma base de ferramenta ativa global com `ToolManager` como `Autoload`.

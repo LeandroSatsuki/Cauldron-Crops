@@ -130,19 +130,7 @@ func _on_plot_clicked() -> void:
 			_regar_lote_por_ferramenta()
 			return
 		if ferramenta_ativa == TOOL_HOE:
-			if not _solo_permite_arar():
-				_mostrar_feedback("A ferramenta nao pode ser usada aqui.")
-				return
-			if estado_atual != State.VAZIO:
-				_mostrar_feedback("A ferramenta nao pode ser usada aqui.")
-				return
-			if arado:
-				_mostrar_feedback("Lote já está arado.")
-				return
-			arado = true
-			_atualizar_visual()
-			_notificar_estado_alterado()
-			_mostrar_feedback("Lote arado!")
+			tentar_arar()
 			return
 		if ferramenta_ativa == TOOL_HARVEST:
 			if estado_atual == State.PRONTO_PARA_COLHER:
@@ -213,6 +201,28 @@ func _on_plot_clicked() -> void:
 				print("Poção aplicada! Tempo reduzido pela metade.")
 			else:
 				_mostrar_feedback("A planta ainda está crescendo.")
+
+
+func tentar_arar(mostrar_feedback: bool = true) -> bool:
+	if expansion_blocked or not _solo_permite_arar():
+		if mostrar_feedback:
+			_mostrar_feedback("A ferramenta nao pode ser usada aqui.")
+		return false
+	if estado_atual != State.VAZIO:
+		if mostrar_feedback:
+			_mostrar_feedback("A ferramenta nao pode ser usada aqui.")
+		return false
+	if arado:
+		if mostrar_feedback:
+			_mostrar_feedback("Lote já está arado.")
+		return false
+
+	arado = true
+	_atualizar_visual()
+	_notificar_estado_alterado()
+	if mostrar_feedback:
+		_mostrar_feedback("Lote arado!")
+	return true
 
 
 func _solo_permite_arar() -> bool:

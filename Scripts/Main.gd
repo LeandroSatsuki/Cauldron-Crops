@@ -40,10 +40,16 @@ const EXPANSION_POCKET_START_ROW: int = 0
 const EXPANSION_V0_OBSTACLE_ID: String = "first_obstacle"
 
 const BLOCKOUT_FARM_Z_INDEX: int = 40
+const FREE_FARMING_PILOT_Z_INDEX: int = 35
+const FREE_FARMING_REASON_OUTSIDE_PILOT: String = "outside_free_farming_pilot"
+const FREE_FARMING_REASON_HOE_REQUIRED: String = "hoe_required"
+const FREE_FARMING_REASON_PREPARATION_FAILED: String = "preparation_failed"
 
 
 @export var cultivable_grid_bounds: Rect2i = Rect2i(Vector2i(-8, -5), Vector2i(24, 14))
 @export var reserved_cultivation_grid_areas: Array[Rect2i] = []
+@export var free_farming_pilot_bounds: Rect2i = Rect2i(Vector2i(4, 5), Vector2i(6, 2))
+@export var show_free_farming_pilot_marker: bool = true
 
 
 
@@ -96,6 +102,7 @@ func _ready() -> void:
 	_reconstruir_farm_grid_manager()
 
 	_criar_blockout_fazenda_v0(start_x, start_y)
+	_criar_marcador_agricultura_livre()
 	_configurar_camera_inicial(start_x, start_y)
 
 
@@ -478,6 +485,98 @@ func pode_arar_em_posicao_global(global_position: Vector2) -> bool:
 	return bool(avaliar_solo_para_arar(global_position).get("valid", false))
 
 
+func avaliar_agricultura_livre(global_position: Vector2) -> Dictionary:
+	var evaluation: Dictionary = avaliar_solo_para_arar(global_position)
+	if not bool(evaluation.get("valid", false)):
+		return evaluation
+
+	var grid_position: Vector2i = evaluation.get("grid_position", Vector2i.ZERO)
+	if _obter_farm_plot_registrado(grid_position.x, grid_position.y) != null:
+		return evaluation
+	if free_farming_pilot_bounds.has_point(grid_position):
+		return evaluation
+
+	evaluation["valid"] = false
+	evaluation["reason"] = FREE_FARMING_REASON_OUTSIDE_PILOT
+	return evaluation
+
+
+func tentar_arar_agricultura_livre(global_position: Vector2, show_feedback: bool = true) -> Dictionary:
+	var evaluation: Dictionary = avaliar_agricultura_livre(global_position)
+	evaluation["created"] = false
+	evaluation["prepared"] = false
+
+	if not _enxada_esta_ativa():
+		evaluation["valid"] = false
+		evaluation["reason"] = FREE_FARMING_REASON_HOE_REQUIRED
+		if show_feedback:
+			_mostrar_feedback_agricultura_livre(evaluation, global_position)
+		return evaluation
+
+	if not bool(evaluation.get("valid", false)):
+		if show_feedback:
+			_mostrar_feedback_agricultura_livre(evaluation, global_position)
+		return evaluation
+
+	var grid_position: Vector2i = evaluation.get("grid_position", Vector2i.ZERO)
+	var plot: Node2D = _obter_farm_plot_registrado(grid_position.x, grid_position.y)
+	var created: bool = plot == null
+	if plot == null:
+		plot = _obter_ou_criar_farm_plot(grid_position.x, grid_position.y, farm_origin.x, farm_origin.y)
+
+	if plot == null or not plot.has_method("tentar_arar"):
+		evaluation["valid"] = false
+		evaluation["reason"] = FREE_FARMING_REASON_PREPARATION_FAILED
+		if show_feedback:
+			_mostrar_feedback_agricultura_livre(evaluation, global_position)
+		return evaluation
+
+	var prepared: bool = bool(plot.call("tentar_arar", show_feedback))
+	evaluation["created"] = created
+	evaluation["prepared"] = prepared
+	evaluation["plot"] = plot
+	_reconstruir_farm_grid_manager()
+	return evaluation
+
+
+func _enxada_esta_ativa() -> bool:
+	var tree: SceneTree = get_tree()
+	if tree == null:
+		return false
+	var tool_manager: Node = tree.root.get_node_or_null("ToolManager")
+	if tool_manager == null or not tool_manager.has_method("get_active_tool"):
+		return false
+	return int(tool_manager.call("get_active_tool")) == int(ToolManager.ToolType.HOE)
+
+
+func _mostrar_feedback_agricultura_livre(evaluation: Dictionary, global_position: Vector2) -> void:
+	var reason: String = str(evaluation.get("reason", ""))
+	var message: String = "Nao e possivel arar aqui."
+	match reason:
+		FREE_FARMING_REASON_OUTSIDE_PILOT:
+			message = "Cultivo livre disponivel apenas na area marcada."
+		FREE_FARMING_REASON_HOE_REQUIRED:
+			message = "Selecione a Enxada."
+		SoilValidityPolicy.REASON_OUTSIDE_CULTIVABLE_BOUNDS:
+			message = "Este terreno nao e cultivavel."
+		SoilValidityPolicy.REASON_CORRUPTED:
+			message = "Purifique esta area antes de cultivar."
+		SoilValidityPolicy.REASON_WATER:
+			message = "Nao e possivel arar a agua."
+		SoilValidityPolicy.REASON_BUILDING:
+			message = "Ha uma construcao neste espaco."
+		SoilValidityPolicy.REASON_OBSTACLE:
+			message = "Ha um obstaculo neste espaco."
+		SoilValidityPolicy.REASON_RESERVED_ZONE:
+			message = "Esta area esta reservada."
+
+	var ui: Node = get_node_or_null("UI")
+	if ui != null and ui.has_method("criar_texto_flutuante"):
+		ui.call("criar_texto_flutuante", message, global_position + Vector2(0.0, -28.0), Color(1.0, 0.78, 0.48, 1.0))
+	else:
+		print(message)
+
+
 func _grid_esta_em_zona_cultivo_reservada(grid_position: Vector2i) -> bool:
 	for reserved_area in reserved_cultivation_grid_areas:
 		if reserved_area.has_point(grid_position):
@@ -848,6 +947,47 @@ func _criar_area_bloqueada_visual() -> Node2D:
 
 	return bloqueio
 
+
+
+func _criar_marcador_agricultura_livre() -> void:
+	if not show_free_farming_pilot_marker or has_node("FreeFarmingPilotArea"):
+		return
+
+	var marker := Node2D.new()
+	marker.name = "FreeFarmingPilotArea"
+	marker.z_index = FREE_FARMING_PILOT_Z_INDEX
+	marker.z_as_relative = false
+
+	var area_size: Vector2 = Vector2(free_farming_pilot_bounds.size) * float(FARM_SPACING)
+	var first_cell_center: Vector2 = _converter_grid_em_posicao_global(free_farming_pilot_bounds.position)
+	marker.position = first_cell_center + (area_size - Vector2.ONE * float(FARM_SPACING)) * 0.5
+
+	var fill := Polygon2D.new()
+	fill.name = "Fill"
+	fill.color = Color(0.27451, 0.619608, 0.321569, 0.10)
+	fill.polygon = _criar_poligono_retangular(area_size - Vector2(8.0, 8.0))
+	marker.add_child(fill)
+
+	var outline := Line2D.new()
+	outline.name = "Outline"
+	outline.width = 3.0
+	outline.default_color = Color(0.643137, 0.905882, 0.52549, 0.78)
+	outline.antialiased = true
+	outline.closed = true
+	outline.points = _criar_pontos_retangulo(area_size - Vector2(8.0, 8.0))
+	marker.add_child(outline)
+
+	var label := Label.new()
+	label.name = "Label"
+	label.text = "Area de cultivo livre"
+	label.position = Vector2(-area_size.x * 0.5, -area_size.y * 0.5 - 32.0)
+	label.size = Vector2(area_size.x, 26.0)
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	label.modulate = Color(0.811765, 0.968627, 0.709804, 0.92)
+	marker.add_child(label)
+
+	add_child(marker)
 
 
 func _criar_blockout_fazenda_v0(start_x: float, start_y: float) -> void:
@@ -1780,16 +1920,8 @@ func _unhandled_input(event: InputEvent) -> void:
 				return
 
 			var click_position: Vector2 = get_global_mouse_position()
-			var soil_evaluation: Dictionary = avaliar_solo_para_arar(click_position)
-			if not bool(soil_evaluation.get("valid", false)):
-				return
-
-			var grid_position: Vector2i = soil_evaluation.get("grid_position", Vector2i.ZERO)
-			var plot: Node2D = _obter_ou_criar_farm_plot(grid_position.x, grid_position.y, farm_origin.x, farm_origin.y)
-			if plot != null and plot.has_method("_on_plot_clicked"):
-				plot.call("_on_plot_clicked")
-				_reconstruir_farm_grid_manager()
-				get_viewport().set_input_as_handled()
+			tentar_arar_agricultura_livre(click_position)
+			get_viewport().set_input_as_handled()
 			return
 
 	if event is InputEventMouseMotion and _camera_dragging and main_camera != null:

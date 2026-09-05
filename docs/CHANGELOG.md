@@ -1,6 +1,15 @@
 # Changelog
 
 
+## 2026-09-05 - Piloto oficial de agricultura livre
+
+- Uma área piloto 6x2, nas coordenadas `(4, 5)` a `(9, 6)`, passou a permitir criação de `FarmPlot` pelo clique da enxada sem lote pré-posicionado.
+- A região recebeu contorno e identificação visual, além de feedback para tentativas fora do piloto ou sobre solo inválido.
+- A operação livre agora consulta a política, reutiliza identidade existente, cria e ara o plot como uma única ação testável.
+- O novo lote usa o ciclo real de plantar, regar, crescer e colher, participa do snapshot e retorna pelo save v4 sem duplicação.
+- Plots dinâmicos de saves anteriores continuam compatíveis e o schema de persistência não mudou.
+
+
 ## 2026-09-05 - Política única de solo válido
 
 - A pergunta espacial `Posso arar aqui?` passou a ser respondida por `SoilValidityPolicy`, com motivo explícito para cada recusa.

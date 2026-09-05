@@ -1,6 +1,16 @@
 # Decisions
 
 
+## Decisão 80 - Piloto 6x2 de agricultura livre
+
+- Problema: já existia uma criação dinâmica experimental, mas sem região de rollout própria, indicação visual, feedback consistente ou operação verificável de ponta a ponta.
+- Decisão: oficializar somente o retângulo 6x2 entre `(4, 5)` e `(9, 6)` como piloto de criação livre; a enxada consulta `SoilValidityPolicy`, verifica identidade, cria um `FarmPlot` quando necessário e tenta ará-lo.
+- UX: a área possui marcador runtime e recusas informam limite do piloto ou motivo de solo inválido. O marcador não tem collider nem autoridade sobre o estado agrícola.
+- Autoridade: o lote criado entra no mesmo registro canônico, continua sendo a autoridade de gameplay e é espelhado no `FarmGridManager`; nenhuma rota paralela de cultivo foi criada.
+- Compatibilidade: plots dinâmicos já existentes dentro do retângulo participam do piloto. Outros plots antigos continuam restauráveis e jogáveis mesmo fora dele.
+- Validação: o teste dedicado cria e ara uma célula vazia, impede duplicação e criação fora do piloto, percorre plantar/regar/crescer/colher e confirma dois loads v4 sem trocar identidade.
+
+
 ## Decisão 79 - Política espacial única para arar
 
 - Problema: a criação dinâmica experimental decidia com verificações dispersas (`não há collider` e `tile não bloqueado`), sem limite cultivável nem representação explícita de água, construção, obstáculo e reserva.
