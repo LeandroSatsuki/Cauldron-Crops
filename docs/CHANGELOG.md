@@ -1,6 +1,16 @@
 # Changelog
 
 
+## 2026-09-05 - Contrato coerente de produção do caldeirão
+
+- O `RecipeResolver` passou a fornecer um contrato completo para cada receita e a localizar misturas pelos ingredientes, respeitando `ordem_importa` e priorizando `RecipeData`.
+- Mistura manual e produção em lote agora usam `resultado_quantidade`, `tempo_producao` e `recompensa_pontos_alquimia` declarados no Resource.
+- `desbloqueada_por_padrao` passou a alimentar o Livro de Receitas sem conceder recompensa de descoberta; descobertas por mistura continuam sendo registradas pelo ID canônico e recompensadas uma única vez.
+- O cancelamento de lote preserva resultados concluídos e devolve apenas os ingredientes dos crafts pendentes, inclusive quando cada craft produz múltiplas unidades.
+- `RecipeDatabase` e o fallback legado foram preservados; receitas legadas recebem defaults compatíveis de 1 resultado, 5 segundos e 1 ponto.
+- Um smoke test dedicado cobre Resource-first, ordem, fallback, quantidade, tempo, descoberta e refund.
+
+
 ## 2026-09-05 - Piloto oficial de agricultura livre
 
 - Uma área piloto 6x2, nas coordenadas `(4, 5)` a `(9, 6)`, passou a permitir criação de `FarmPlot` pelo clique da enxada sem lote pré-posicionado.

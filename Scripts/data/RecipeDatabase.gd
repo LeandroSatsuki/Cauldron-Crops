@@ -90,6 +90,8 @@ func validate_recipes() -> Array:
 			problems.append("%s: resultado_quantidade invalida (%s)." % [str(recipe_id), str(recipe.resultado_quantidade)])
 		if float(recipe.tempo_producao) <= 0.0:
 			problems.append("%s: tempo_producao invalido (%s)." % [str(recipe_id), str(recipe.tempo_producao)])
+		if int(recipe.recompensa_pontos_alquimia) < 0:
+			problems.append("%s: recompensa_pontos_alquimia invalida (%s)." % [str(recipe_id), str(recipe.recompensa_pontos_alquimia)])
 		if int(recipe.versao_do_schema) < 1:
 			problems.append("%s: versao_do_schema invalida (%s)." % [str(recipe_id), str(recipe.versao_do_schema)])
 

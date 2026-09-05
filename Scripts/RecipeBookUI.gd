@@ -99,6 +99,7 @@ func _refresh_recipe_list() -> void:
 	if not recipe_list:
 		return
 
+	_ensure_default_recipes_unlocked()
 	_last_discovered_count = GlobalInventory.receitas_descobertas.size()
 	var previous_selection := _selected_recipe_id
 	recipe_list.clear()
@@ -123,6 +124,14 @@ func _refresh_recipe_list() -> void:
 			target_index = found_index
 	recipe_list.select(target_index)
 	_show_recipe_by_index(target_index)
+
+func _ensure_default_recipes_unlocked() -> void:
+	if recipe_resolver == null:
+		return
+	for recipe_id_variant in recipe_resolver.get_default_unlocked_recipe_ids():
+		var recipe_id := str(recipe_id_variant)
+		if recipe_id != "" and not GlobalInventory.receitas_descobertas.has(recipe_id):
+			GlobalInventory.receitas_descobertas.append(recipe_id)
 
 func _get_unique_discovered_recipes() -> Array:
 	var seen := {}
@@ -210,10 +219,15 @@ func _show_recipe_from_resource(_recipe_id: String, recipe_data: RecipeData) -> 
 	_cache_inventory_snapshot()
 
 func _show_recipe_legacy(recipe_id: String) -> void:
-	var ingredientes: Array = recipe_resolver.get_ingredients(recipe_id) if recipe_resolver != null else []
-	var resultado: String = recipe_resolver.get_result(recipe_id) if recipe_resolver != null else ""
+	var recipe: Dictionary = recipe_resolver.get_recipe(recipe_id) if recipe_resolver != null else {}
+	var ingredientes: Array = recipe.get("ingredientes", [])
+	var resultado: String = str(recipe.get("resultado_item", ""))
 	recipe_id_label.text = "Receita: " + _format_recipe_name(recipe_id)
-	result_label.text = "Resultado: " + _format_item_name(resultado)
+	result_label.text = "Resultado: %sx %s\nTempo: %.1fs" % [
+		int(recipe.get("resultado_quantidade", 1)),
+		_format_item_name(resultado),
+		float(recipe.get("tempo_producao", 0.0))
+	]
 
 	if ingredientes.is_empty():
 		ingredients_label.text = "Ingredientes: nao foi possivel reconstruir os ingredientes desta receita."

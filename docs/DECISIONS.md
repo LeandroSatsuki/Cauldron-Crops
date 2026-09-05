@@ -1,6 +1,17 @@
 # Decisions
 
 
+## Decisão 81 - RecipeData governa a produção do caldeirão
+
+- Problema: o Livro de Receitas exibia quantidade e tempo do `RecipeData`, mas o caldeirão ainda produzia uma unidade em tempo global e concedia `+1` fixo na descoberta.
+- Decisão: o `RecipeResolver` entrega o contrato completo e resolve ingredientes; mistura e lote capturam quantidade, tempo e resultado desse contrato no início da operação.
+- Descoberta: uma mistura bem-sucedida registra o ID canônico e concede `recompensa_pontos_alquimia` apenas na primeira vez. Receitas com `desbloqueada_por_padrao` entram no livro sem recompensa.
+- Cancelamento: ingredientes continuam reservados no início do lote; resultados concluídos permanecem e somente os crafts não concluídos são reembolsados.
+- Compatibilidade: `RecipeDatabase`/Resources têm prioridade, mas receitas ausentes ou inválidas ainda podem usar `Database.receitas_alquimia` com defaults explícitos. O schema de save não muda e IDs já descobertos são preservados.
+- Golems: o caminho abstrato atual foi mantido por compatibilidade, mas quantidade produzida e limite de capacidade agora são coerentes com a receita. A criação de um golem físico permanece para o sprint próprio.
+- Validação: `CauldronRecipeContractSmokeTest` cobre saída 2x, tempo de 2 segundos, recompensa única, ordem, defaults legados e refund parcial após um craft concluído.
+
+
 ## Decisão 80 - Piloto 6x2 de agricultura livre
 
 - Problema: já existia uma criação dinâmica experimental, mas sem região de rollout própria, indicação visual, feedback consistente ou operação verificável de ponta a ponta.

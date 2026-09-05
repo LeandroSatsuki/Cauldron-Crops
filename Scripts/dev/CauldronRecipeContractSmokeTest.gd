@@ -1,0 +1,190 @@
+extends Node
+
+const CAULDRON_SCENE := preload("res://Scenes/Cauldron.tscn")
+const RecipeDatabaseScript = preload("res://Scripts/data/RecipeDatabase.gd")
+const RecipeResolverScript = preload("res://Scripts/data/RecipeResolver.gd")
+const RESOURCE_RECIPE_ID := "semente_basica_tomate_sol"
+const RESULT_ITEM_ID := "semente_verao"
+
+
+func _ready() -> void:
+	_run.call_deferred()
+
+
+func _run() -> void:
+	var resolver = RecipeResolverScript.new()
+	if not _assert_resource_contract(resolver):
+		return
+	if not _assert_order_contract(resolver):
+		return
+	if not _assert_legacy_fallback(resolver):
+		return
+
+	GlobalInventory.inventario = {
+		"semente_basica": 3,
+		"tomate_sol": 3,
+		RESULT_ITEM_ID: 0
+	}
+	GlobalInventory.receitas_descobertas = []
+	GlobalInventory.pontos_alquimia = 0
+
+	var cauldron: Node2D = CAULDRON_SCENE.instantiate()
+	add_child(cauldron)
+	await get_tree().process_frame
+
+	if not _exercise_manual_discovery(cauldron):
+		return
+	if not _exercise_batch_and_refund(cauldron):
+		return
+
+	print("CauldronRecipeContractSmokeTest: PASS - RecipeData governa quantidade, tempo, recompensa, descoberta e refund com fallback legado.")
+	await get_tree().create_timer(1.1).timeout
+	cauldron.queue_free()
+	await get_tree().process_frame
+	get_tree().quit(0)
+
+
+func _assert_resource_contract(resolver) -> bool:
+	var recipe: Dictionary = resolver.get_recipe(RESOURCE_RECIPE_ID)
+	if recipe.is_empty():
+		_fail("receita Resource nao foi resolvida")
+		return false
+	if str(recipe.get("source", "")) != "resource":
+		_fail("Resource nao teve prioridade sobre o fallback")
+		return false
+	if int(recipe.get("resultado_quantidade", 0)) != 2:
+		_fail("resultado_quantidade do RecipeData nao entrou no contrato")
+		return false
+	if not is_equal_approx(float(recipe.get("tempo_producao", 0.0)), 2.0):
+		_fail("tempo_producao do RecipeData nao entrou no contrato")
+		return false
+	if int(recipe.get("recompensa_pontos_alquimia", -1)) != 1:
+		_fail("recompensa de alquimia do RecipeData nao entrou no contrato")
+		return false
+
+	var database = RecipeDatabaseScript.new()
+	database.load_recipes()
+	var problems: Array = database.validate_recipes()
+	if not problems.is_empty():
+		_fail("catalogo Resource invalido: %s" % str(problems))
+		return false
+	return true
+
+
+func _assert_order_contract(resolver) -> bool:
+	var recipe_data: RecipeData = resolver.get_recipe_data(RESOURCE_RECIPE_ID)
+	if recipe_data == null:
+		_fail("RecipeData ausente no teste de ordem")
+		return false
+
+	var original_order_matters := recipe_data.ordem_importa
+	var original_default_unlock := recipe_data.desbloqueada_por_padrao
+	recipe_data.ordem_importa = true
+	recipe_data.desbloqueada_por_padrao = true
+	var direct: Dictionary = resolver.find_recipe_for_ingredients(["semente_basica", "tomate_sol"])
+	var reversed: Dictionary = resolver.find_recipe_for_ingredients(["tomate_sol", "semente_basica"])
+	var default_ids: Array = resolver.get_default_unlocked_recipe_ids()
+	recipe_data.ordem_importa = original_order_matters
+	recipe_data.desbloqueada_por_padrao = original_default_unlock
+
+	if str(direct.get("id", "")) != RESOURCE_RECIPE_ID:
+		_fail("ordem declarada nao aceitou a combinacao direta")
+		return false
+	if not reversed.is_empty():
+		_fail("fallback legado ignorou ordem_importa do Resource")
+		return false
+	if not default_ids.has(RESOURCE_RECIPE_ID):
+		_fail("desbloqueada_por_padrao nao entrou no contrato de descoberta")
+		return false
+	return true
+
+
+func _assert_legacy_fallback(resolver) -> bool:
+	const LEGACY_TEST_ID := "trigo_trigo"
+	const LEGACY_TEST_RESULT := "resultado_legado_teste"
+	Database.receitas_alquimia[LEGACY_TEST_ID] = LEGACY_TEST_RESULT
+	var recipe: Dictionary = resolver.find_recipe_for_ingredients(["trigo", "trigo"])
+	Database.receitas_alquimia.erase(LEGACY_TEST_ID)
+
+	if str(recipe.get("id", "")) != LEGACY_TEST_ID or str(recipe.get("source", "")) != "legacy":
+		_fail("fallback legado nao resolveu uma receita sem Resource")
+		return false
+	if int(recipe.get("resultado_quantidade", 0)) != 1:
+		_fail("fallback legado nao aplicou quantidade compativel")
+		return false
+	if not is_equal_approx(float(recipe.get("tempo_producao", 0.0)), 5.0):
+		_fail("fallback legado nao aplicou tempo compativel")
+		return false
+	if int(recipe.get("recompensa_pontos_alquimia", 0)) != 1:
+		_fail("fallback legado nao aplicou recompensa compativel")
+		return false
+	return true
+
+
+func _exercise_manual_discovery(cauldron: Node) -> bool:
+	var slot_1: Node = cauldron.get_node("PopupLayer/CenterContainer/PopupUI/DropSlot1")
+	var slot_2: Node = cauldron.get_node("PopupLayer/CenterContainer/PopupUI/DropSlot2")
+	slot_1.set("item_vinculado", "semente_basica")
+	slot_2.set("item_vinculado", "tomate_sol")
+	cauldron.call("_on_misturar_button_pressed")
+
+	if int(GlobalInventory.inventario.get("semente_basica", 0)) != 2 or int(GlobalInventory.inventario.get("tomate_sol", 0)) != 2:
+		_fail("mistura manual nao consumiu exatamente um craft")
+		return false
+	if not GlobalInventory.receitas_descobertas.has(RESOURCE_RECIPE_ID):
+		_fail("mistura manual nao registrou descoberta pelo id canonico")
+		return false
+	if GlobalInventory.pontos_alquimia != 1:
+		_fail("descoberta nao aplicou recompensa do RecipeData uma unica vez")
+		return false
+	var known_recipe: Dictionary = cauldron.get("recipe_resolver").get_recipe(RESOURCE_RECIPE_ID)
+	if bool(cauldron.call("_registrar_descoberta", known_recipe)) or GlobalInventory.pontos_alquimia != 1:
+		_fail("receita ja descoberta recebeu recompensa novamente")
+		return false
+
+	var brew_timer: Timer = cauldron.get_node("BrewTimer")
+	if not is_equal_approx(brew_timer.wait_time, 2.0):
+		_fail("mistura manual nao usou tempo_producao do RecipeData")
+		return false
+	brew_timer.stop()
+	cauldron.call("_on_brew_timer_timeout")
+	if int(GlobalInventory.inventario.get(RESULT_ITEM_ID, 0)) != 2:
+		_fail("mistura manual nao entregou resultado_quantidade do RecipeData")
+		return false
+	return true
+
+
+func _exercise_batch_and_refund(cauldron: Node) -> bool:
+	if not bool(cauldron.call("iniciar_producao_em_lote", RESOURCE_RECIPE_ID, 2)):
+		_fail("producao em lote foi recusada")
+		return false
+	if int(GlobalInventory.inventario.get("semente_basica", 0)) != 0 or int(GlobalInventory.inventario.get("tomate_sol", 0)) != 0:
+		_fail("lote nao reservou ingredientes para dois crafts")
+		return false
+
+	var batch_timer: Timer = cauldron.get_node("BatchTimer")
+	if not is_equal_approx(batch_timer.wait_time, 2.0):
+		_fail("lote nao usou tempo_producao por craft")
+		return false
+	batch_timer.stop()
+	cauldron.call("_processar_tick_lote")
+	if int(GlobalInventory.inventario.get(RESULT_ITEM_ID, 0)) != 4:
+		_fail("tick do lote nao entregou resultado_quantidade")
+		return false
+	if GlobalInventory.pontos_alquimia != 1:
+		_fail("producao conhecida concedeu recompensa de descoberta novamente")
+		return false
+
+	cauldron.call("cancelar_producao_em_lote")
+	if int(GlobalInventory.inventario.get("semente_basica", 0)) != 1 or int(GlobalInventory.inventario.get("tomate_sol", 0)) != 1:
+		_fail("cancelamento nao devolveu apenas o craft ainda pendente")
+		return false
+	if str(cauldron.get("estado_atual")) != "IDLE":
+		_fail("cancelamento nao liberou o caldeirao")
+		return false
+	return true
+
+
+func _fail(message: String) -> void:
+	push_error("CauldronRecipeContractSmokeTest: FAIL - %s" % message)
+	get_tree().quit(1)

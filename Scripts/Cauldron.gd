@@ -19,9 +19,12 @@ const RecipeResolverScript = preload("res://Scripts/data/RecipeResolver.gd")
 
 var estado_atual: String = "IDLE"
 var item_em_producao: String = ""
+var _item_quantidade_em_producao: int = 1
 var tempo_producao: float = 5.0
 var _batch_recipe_id: String = ""
 var _batch_resultado: String = ""
+var _batch_resultado_quantidade: int = 1
+var _batch_tempo_por_unidade: float = 5.0
 var _batch_ingredientes: Dictionary = {}
 var _batch_quantidade_total: int = 0
 var _batch_quantidade_concluida: int = 0
@@ -124,14 +127,15 @@ func iniciar_producao_em_lote(recipe_id: String, quantidade: int) -> bool:
 	if recipe_id == "":
 		push_warning("Cauldron: receita vazia recebida para producao em lote.")
 		return false
-	if not recipe_resolver.recipe_exists(recipe_id):
+	var recipe: Dictionary = recipe_resolver.get_recipe(recipe_id)
+	if recipe.is_empty():
 		push_warning("Cauldron: receita inexistente para producao em lote: %s" % recipe_id)
 		return false
 	if quantidade <= 0:
 		push_warning("Cauldron: quantidade invalida para producao em lote: %s" % str(quantidade))
 		return false
 
-	var ingredientes: Array = recipe_resolver.get_ingredients(recipe_id)
+	var ingredientes: Array = recipe.get("ingredientes", [])
 	if ingredientes.is_empty():
 		push_warning("Cauldron: nao foi possivel reconstruir os ingredientes da receita %s." % recipe_id)
 		return false
@@ -142,16 +146,24 @@ func iniciar_producao_em_lote(recipe_id: String, quantidade: int) -> bool:
 		return false
 
 	var quantidade_final := clampi(quantidade, 1, quantidade_maxima)
-	var resultado: String = str(recipe_resolver.get_result(recipe_id))
+	var resultado: String = str(recipe.get("resultado_item", ""))
+	var resultado_quantidade: int = int(recipe.get("resultado_quantidade", 0))
+	var tempo_por_unidade: float = float(recipe.get("tempo_producao", 0.0))
 	if resultado == "":
 		push_warning("Cauldron: resultado vazio para a receita %s." % recipe_id)
+		return false
+	if resultado_quantidade <= 0 or tempo_por_unidade <= 0.0:
+		push_warning("Cauldron: contrato de producao invalido para a receita %s." % recipe_id)
 		return false
 	if resultado == "golem_coletor":
 		var espacos_disponiveis := EconomyManager.max_golems - EconomyManager.total_golems
 		if espacos_disponiveis <= 0:
 			push_warning("Cauldron: capacidade maxima de Golems atingida.")
 			return false
-		quantidade_final = min(quantidade_final, espacos_disponiveis)
+		quantidade_final = min(quantidade_final, int(espacos_disponiveis / resultado_quantidade))
+		if quantidade_final <= 0:
+			push_warning("Cauldron: resultado da receita excede a capacidade disponivel de Golems.")
+			return false
 
 	var ingredientes_contados := _contar_ingredientes(ingredientes)
 	var removidos: Dictionary = {}
@@ -168,6 +180,8 @@ func iniciar_producao_em_lote(recipe_id: String, quantidade: int) -> bool:
 
 	_batch_recipe_id = recipe_id
 	_batch_resultado = resultado
+	_batch_resultado_quantidade = resultado_quantidade
+	_batch_tempo_por_unidade = tempo_por_unidade
 	_batch_ingredientes = ingredientes_contados
 	_batch_quantidade_total = quantidade_final
 	_batch_quantidade_concluida = 0
@@ -201,6 +215,8 @@ func cancelar_producao_em_lote() -> void:
 	item_em_producao = ""
 	_batch_recipe_id = ""
 	_batch_resultado = ""
+	_batch_resultado_quantidade = 1
+	_batch_tempo_por_unidade = tempo_producao
 	_batch_ingredientes.clear()
 	_batch_quantidade_total = 0
 	_batch_quantidade_concluida = 0
@@ -263,7 +279,7 @@ func _iniciar_proximo_tick_lote() -> void:
 
 	if batch_timer:
 		batch_timer.stop()
-		batch_timer.wait_time = max(0.1, tempo_producao)
+		batch_timer.wait_time = max(0.1, _batch_tempo_por_unidade)
 		batch_timer.start()
 	else:
 		_processar_tick_lote()
@@ -276,17 +292,14 @@ func _processar_tick_lote() -> void:
 		return
 
 	_batch_quantidade_concluida += 1
-	if _batch_resultado == "golem_coletor":
-		EconomyManager.total_golems += 1
-	elif _batch_resultado != "":
-		GlobalInventory.adicionar_item(_batch_resultado, 1)
+	_entregar_resultado(_batch_resultado, _batch_resultado_quantidade)
 
 	var ui = get_tree().current_scene.get_node_or_null("UI")
 	if ui and ui.has_method("criar_texto_flutuante"):
 		var nome_exibicao = "Golem" if _batch_resultado == "golem_coletor" else Database.obter_nome_item(_batch_resultado)
 		if nome_exibicao == "":
 			nome_exibicao = _batch_resultado
-		ui.criar_texto_flutuante("Lote pronto: " + nome_exibicao + "!", $BaseAnchor/SpriteCaldeirao.global_position, Color.GREEN)
+		ui.criar_texto_flutuante("Lote pronto: %sx %s!" % [_batch_resultado_quantidade, nome_exibicao], $BaseAnchor/SpriteCaldeirao.global_position, Color.GREEN)
 
 	if _batch_quantidade_concluida >= _batch_quantidade_total:
 		_finalizar_lote()
@@ -299,6 +312,8 @@ func _finalizar_lote() -> void:
 	item_em_producao = ""
 	_batch_recipe_id = ""
 	_batch_resultado = ""
+	_batch_resultado_quantidade = 1
+	_batch_tempo_por_unidade = tempo_producao
 	_batch_ingredientes.clear()
 	_batch_quantidade_total = 0
 	_batch_quantidade_concluida = 0
@@ -356,20 +371,9 @@ func _on_misturar_button_pressed() -> void:
 			resultado_label.text = "Ingredientes insuficientes!"
 		return
 		
-	# Determinar o resultado da combinação antes de consuming os ingredientes
-	var chave1 = item1 + "_" + item2
-	var chave2 = item2 + "_" + item1
-	var resultado = ""
-	var chave_combinacao = ""
-	
-	if recipe_resolver != null:
-		resultado = recipe_resolver.get_result(chave1)
-		if resultado != "":
-			chave_combinacao = chave1
-		else:
-			resultado = recipe_resolver.get_result(chave2)
-			if resultado != "":
-				chave_combinacao = chave2
+	# Resolve a combinacao pelo contrato rico, preservando fallback legado.
+	var recipe: Dictionary = recipe_resolver.find_recipe_for_ingredients([item1, item2]) if recipe_resolver != null else {}
+	var resultado: String = str(recipe.get("resultado_item", ""))
 		
 	if resultado == "":
 		# Se a mistura falhar:
@@ -381,8 +385,15 @@ func _on_misturar_button_pressed() -> void:
 			_limpar_slots()
 		return
 		
+	var resultado_quantidade: int = int(recipe.get("resultado_quantidade", 0))
+	var recipe_tempo_producao: float = float(recipe.get("tempo_producao", 0.0))
+	if resultado_quantidade <= 0 or recipe_tempo_producao <= 0.0:
+		if resultado_label:
+			resultado_label.text = "Receita com dados de produção inválidos!"
+		return
+
 	if resultado == "golem_coletor":
-		if EconomyManager.total_golems >= EconomyManager.max_golems:
+		if EconomyManager.total_golems + resultado_quantidade > EconomyManager.max_golems:
 			if resultado_label:
 				resultado_label.text = "Capacidade máxima de Golems atingida!"
 			return
@@ -391,16 +402,15 @@ func _on_misturar_button_pressed() -> void:
 		var removed_1 = GlobalInventory.remover_item(item1, 1)
 		var removed_2 = GlobalInventory.remover_item(item2, 1)
 		if removed_1 and removed_2:
-			if not GlobalInventory.receitas_descobertas.has(chave_combinacao):
-				GlobalInventory.pontos_alquimia += 1
-				GlobalInventory.receitas_descobertas.append(chave_combinacao)
+			_registrar_descoberta(recipe)
 			
 			# Iniciar produção
 			item_em_producao = "golem_coletor"
+			_item_quantidade_em_producao = resultado_quantidade
 			estado_atual = "BREWING"
 			popup_ui.visible = false
 			_iniciar_processo_de_mistura()
-			$BrewTimer.start(tempo_producao)
+			$BrewTimer.start(recipe_tempo_producao)
 			_limpar_slots()
 			fechar_popup()
 		else:
@@ -416,16 +426,15 @@ func _on_misturar_button_pressed() -> void:
 		var removed_2 = GlobalInventory.remover_item(item2, 1)
 		
 		if removed_1 and removed_2:
-			if not GlobalInventory.receitas_descobertas.has(chave_combinacao):
-				GlobalInventory.pontos_alquimia += 1
-				GlobalInventory.receitas_descobertas.append(chave_combinacao)
+			_registrar_descoberta(recipe)
 			
 			# Iniciar produção
 			item_em_producao = resultado
+			_item_quantidade_em_producao = resultado_quantidade
 			estado_atual = "BREWING"
 			popup_ui.visible = false
 			_iniciar_processo_de_mistura()
-			$BrewTimer.start(tempo_producao)
+			$BrewTimer.start(recipe_tempo_producao)
 			_limpar_slots()
 		else:
 			if removed_1:
@@ -459,19 +468,33 @@ func _on_brew_timer_timeout() -> void:
 	$BaseAnchor/SpriteCaldeirao.scale = Vector2(0.5, 0.5)
 	estado_atual = "IDLE"
 	
-	if item_em_producao == "golem_coletor":
-		EconomyManager.total_golems += 1
-	elif item_em_producao != "":
-		GlobalInventory.adicionar_item(item_em_producao, 1)
+	_entregar_resultado(item_em_producao, _item_quantidade_em_producao)
 		
 	var ui = get_tree().current_scene.get_node_or_null("UI")
 	if ui and ui.has_method("criar_texto_flutuante"):
 		var nome_exibicao = "Golem" if item_em_producao == "golem_coletor" else Database.obter_nome_item(item_em_producao)
 		if nome_exibicao == "":
 			nome_exibicao = item_em_producao
-		ui.criar_texto_flutuante("Sucesso: " + nome_exibicao + "!", $BaseAnchor/SpriteCaldeirao.global_position, Color.GREEN)
+		ui.criar_texto_flutuante("Sucesso: %sx %s!" % [_item_quantidade_em_producao, nome_exibicao], $BaseAnchor/SpriteCaldeirao.global_position, Color.GREEN)
 		
 	item_em_producao = ""
+	_item_quantidade_em_producao = 1
+
+func _registrar_descoberta(recipe: Dictionary) -> bool:
+	var recipe_id := str(recipe.get("id", ""))
+	if recipe_id == "" or GlobalInventory.receitas_descobertas.has(recipe_id):
+		return false
+	GlobalInventory.receitas_descobertas.append(recipe_id)
+	GlobalInventory.pontos_alquimia += max(int(recipe.get("recompensa_pontos_alquimia", 0)), 0)
+	return true
+
+func _entregar_resultado(resultado: String, quantidade: int) -> void:
+	if resultado == "" or quantidade <= 0:
+		return
+	if resultado == "golem_coletor":
+		EconomyManager.total_golems += quantidade
+	else:
+		GlobalInventory.adicionar_item(resultado, quantidade)
 
 
 func _iniciar_pulsar_magico():

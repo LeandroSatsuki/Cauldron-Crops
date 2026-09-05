@@ -2,6 +2,7 @@ extends RefCounted
 class_name RecipeResolver
 
 const LEGACY_DEFAULT_TEMPO := 5.0
+const LEGACY_DEFAULT_RECOMPENSA_ALQUIMIA := 1
 const RecipeDatabaseScript = preload("res://Scripts/data/RecipeDatabase.gd")
 
 var _recipe_database: RecipeDatabase = null
@@ -34,6 +35,9 @@ func get_recipe(recipe_id: String) -> Dictionary:
 			"resultado_item": recipe_data.resultado_item,
 			"resultado_quantidade": int(recipe_data.resultado_quantidade),
 			"tempo_producao": float(recipe_data.tempo_producao),
+			"recompensa_pontos_alquimia": int(recipe_data.recompensa_pontos_alquimia),
+			"ordem_importa": bool(recipe_data.ordem_importa),
+			"desbloqueada_por_padrao": bool(recipe_data.desbloqueada_por_padrao),
 			"source": "resource",
 			"resource": recipe_data
 		}
@@ -48,10 +52,57 @@ func get_recipe(recipe_id: String) -> Dictionary:
 			"resultado_item": get_result(recipe_id),
 			"resultado_quantidade": get_result_quantity(recipe_id),
 			"tempo_producao": LEGACY_DEFAULT_TEMPO,
+			"recompensa_pontos_alquimia": LEGACY_DEFAULT_RECOMPENSA_ALQUIMIA,
+			"ordem_importa": false,
+			"desbloqueada_por_padrao": false,
 			"source": "legacy"
 		}
 
 	return {}
+
+func find_recipe_for_ingredients(ingredients: Array) -> Dictionary:
+	if ingredients.is_empty():
+		return {}
+
+	var database := _get_recipe_database()
+	if database != null:
+		var resource_ids: Array = database.recipes_by_id.keys()
+		resource_ids.sort()
+		for recipe_id_variant in resource_ids:
+			var recipe_id := str(recipe_id_variant)
+			var recipe_data := get_recipe_data(recipe_id)
+			if recipe_data == null:
+				continue
+			if _ingredients_match(ingredients, recipe_data.ingredientes, recipe_data.ordem_importa):
+				return get_recipe(recipe_id)
+
+	if Database != null:
+		var legacy_ids: Array = Database.receitas_alquimia.keys()
+		legacy_ids.sort()
+		for recipe_id_variant in legacy_ids:
+			var recipe_id := str(recipe_id_variant)
+			if get_recipe_data(recipe_id) != null:
+				continue
+			var legacy_ingredients: Array = Database.obter_ingredientes_receita(recipe_id)
+			if _ingredients_match(ingredients, legacy_ingredients, false):
+				return get_recipe(recipe_id)
+
+	return {}
+
+func get_default_unlocked_recipe_ids() -> Array:
+	var ids: Array = []
+	var database := _get_recipe_database()
+	if database == null:
+		return ids
+
+	var resource_ids: Array = database.recipes_by_id.keys()
+	resource_ids.sort()
+	for recipe_id_variant in resource_ids:
+		var recipe_id := str(recipe_id_variant)
+		var recipe_data := get_recipe_data(recipe_id)
+		if recipe_data != null and recipe_data.desbloqueada_por_padrao:
+			ids.append(recipe_id)
+	return ids
 
 func get_ingredients(recipe_id: String) -> Array:
 	var recipe_data := get_recipe_data(recipe_id)
@@ -162,9 +213,29 @@ func _is_valid_recipe_data(recipe) -> bool:
 		return false
 	if float(recipe.tempo_producao) <= 0.0:
 		return false
+	if int(recipe.recompensa_pontos_alquimia) < 0:
+		return false
 	if int(recipe.versao_do_schema) < 1:
 		return false
 	return true
+
+func _ingredients_match(provided: Array, required: Array, order_matters: bool) -> bool:
+	if provided.size() != required.size():
+		return false
+	if order_matters:
+		for index in range(provided.size()):
+			if str(provided[index]) != str(required[index]):
+				return false
+		return true
+
+	return _count_ingredients(provided) == _count_ingredients(required)
+
+func _count_ingredients(ingredients: Array) -> Dictionary:
+	var counts: Dictionary = {}
+	for ingredient in ingredients:
+		var ingredient_id := str(ingredient)
+		counts[ingredient_id] = int(counts.get(ingredient_id, 0)) + 1
+	return counts
 
 func _format_recipe_name(recipe_id: String) -> String:
 	var nome := recipe_id.replace("_", " ").strip_edges()
