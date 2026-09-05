@@ -134,8 +134,10 @@ Pendencia registrada:
 
 - `farm_grid` preserva o snapshot dos lotes vivos sem remover o fallback legado de `farm_plots`.
 - Lotes dinamicos arados ou plantados sao recriados ao carregar quando ainda nao existem na cena.
-- Um `farm_grid` vazio usa o fallback legado em vez de impedir a restauracao dos lotes.
+- Um `farm_grid` v4 presente e vazio e autoritativo; o fallback legado so e usado quando a chave esta ausente.
 - O estado `expansion_blocked` e aplicado mesmo quando o lote restaurado esta vazio.
+- Consumidores externos recebem uma copia profunda do snapshot; alterar ou remover tiles dessa copia nao modifica o mundo.
+- Mudancas runtime partem do `FarmPlot`; o `SaveManager` e o unico bridge autorizado a aplicar um snapshot persistido de volta aos plots.
 - F5/F9 foi validado manualmente com lote dinamico e carregamento concluido com sucesso.
 - O launch headless do Godot 4.6.2 encerrou sem erros.
 

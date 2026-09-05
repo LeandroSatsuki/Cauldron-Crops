@@ -1,6 +1,15 @@
 # Decisions
 
 
+## Decisão 78 - Snapshot isolado no contrato FarmPlot/FarmGrid
+
+- Problema: `Main.obter_farm_grid_manager()` expunha a instância interna mutável, permitindo que um consumidor de leitura alterasse o índice sem alterar o `FarmPlot` correspondente.
+- Decisão: manter o manager real privado no `Main` e fazer tanto o novo `obter_farm_grid_snapshot()` quanto o alias legado retornarem cópias profundas; o save usa dados serializados próprios e não escreve diretamente no snapshot interno.
+- Autoridade: mudanças runtime nascem no `FarmPlot` e são espelhadas por sinal; somente o bridge explícito do `SaveManager` pode converter dados persistidos e aplicá-los aos plots existentes.
+- Escopo: `FarmTileData` continua contendo campos laboratoriais, mas eles não entram no gameplay e podem ser descartados quando um novo snapshot é derivado dos `FarmPlot`.
+- Validação: o teste `FarmGridContractSmokeTest` altera e remove tiles de uma cópia, confirma que mundo e snapshots seguintes permanecem intactos, altera um `FarmPlot` e confirma o espelhamento, e exercita o bridge de load sem trocar identidade.
+
+
 ## Decisão 77 - Roteamento explícito do save agrícola por versão
 
 - Problema: `SAVE_VERSION = 4` era gravado, mas o load não lia a versão e tratava `farm_grid` ausente e vazio como o mesmo caso, podendo aplicar silenciosamente o fallback errado.

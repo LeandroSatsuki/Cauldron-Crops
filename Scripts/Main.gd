@@ -374,7 +374,8 @@ func _tile_grid_esta_bloqueado(grid_position: Vector2i) -> bool:
 	if grid_position == Vector2i(-1, -1):
 		return false
 
-	var manager: FarmGridManager = obter_farm_grid_manager()
+	_garantir_farm_grid_manager()
+	var manager: FarmGridManager = farm_grid_manager
 	if manager == null or not manager.has_tile(grid_position):
 		return false
 
@@ -386,8 +387,22 @@ func _tile_grid_esta_bloqueado(grid_position: Vector2i) -> bool:
 
 
 func obter_farm_grid_manager() -> FarmGridManager:
+	return obter_farm_grid_snapshot()
+
+
+func obter_farm_grid_snapshot() -> FarmGridManager:
 	_garantir_farm_grid_manager()
-	return farm_grid_manager
+	var snapshot := FarmGridManager.new()
+	if farm_grid_manager != null:
+		snapshot.load_save_data(farm_grid_manager.to_save_data())
+	return snapshot
+
+
+func obter_farm_grid_save_data() -> Dictionary:
+	_garantir_farm_grid_manager()
+	if farm_grid_manager == null:
+		return {}
+	return farm_grid_manager.to_save_data()
 
 
 func obter_farm_plot_por_grid_position(grid_position: Vector2i) -> Node2D:

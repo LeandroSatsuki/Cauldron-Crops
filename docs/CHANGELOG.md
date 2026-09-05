@@ -1,6 +1,14 @@
 # Changelog
 
 
+## 2026-09-05 - Contrato transitório FarmPlot/FarmGrid
+
+- `FarmPlot` foi formalizado como autoridade runtime do gameplay agrícola e o `FarmGridManager` como índice/snapshot de leitura.
+- O snapshot interno deixou de ser exposto: consumidores recebem uma cópia profunda que pode ser consultada ou alterada sem afetar o mundo.
+- O `SaveManager` passou a obter dados serializados próprios e removeu a escrita redundante no manager antes de aplicar o grid persistido aos plots.
+- Um teste dedicado valida isolamento, espelhamento `FarmPlot` → snapshot, bridge de load e preservação das 34 identidades.
+
+
 ## 2026-09-05 - Contrato explícito de compatibilidade do save v4
 
 - O carregamento agora lê e valida `version` antes de alterar o estado do jogo.

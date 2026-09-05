@@ -85,7 +85,11 @@ func _build_save_data() -> Dictionary:
 				farm_plots.append({})
 
 		var scene: Node = tree.current_scene
-		if scene != null and scene.has_method("obter_farm_grid_manager"):
+		if scene != null and scene.has_method("obter_farm_grid_save_data"):
+			var farm_grid_variant: Variant = scene.call("obter_farm_grid_save_data")
+			if typeof(farm_grid_variant) == TYPE_DICTIONARY:
+				farm_grid = (farm_grid_variant as Dictionary).duplicate(true)
+		elif scene != null and scene.has_method("obter_farm_grid_manager"):
 			var grid_manager_variant: Variant = scene.call("obter_farm_grid_manager")
 			if grid_manager_variant is FarmGridManager:
 				farm_grid = (grid_manager_variant as FarmGridManager).to_save_data()
@@ -206,7 +210,6 @@ func _apply_save_data(data: Dictionary) -> bool:
 
 	if farm_save_source == FarmSaveSource.GRID_V4:
 		var saved_grid: Dictionary = _safe_dictionary(data.get("farm_grid", {}))
-		_aplicar_farm_grid_no_mundo(saved_grid)
 		_aplicar_farm_grid_aos_plots(saved_grid)
 	elif farm_save_source == FarmSaveSource.LEGACY_PLOTS:
 		var saved_plots: Array = _safe_array(data.get("farm_plots", []))
@@ -312,19 +315,6 @@ func _aplicar_estado_obstaculos_purificados(purification_obstacles_data: Diction
 			"purified": purified,
 			"purification_progress": progress_data
 		})
-
-func _aplicar_farm_grid_no_mundo(farm_grid_data: Dictionary) -> void:
-	var tree: SceneTree = get_tree()
-	if tree == null or tree.current_scene == null:
-		return
-
-	var scene: Node = tree.current_scene
-	if not scene.has_method("obter_farm_grid_manager"):
-		return
-
-	var grid_manager_variant: Variant = scene.call("obter_farm_grid_manager")
-	if grid_manager_variant is FarmGridManager:
-		(grid_manager_variant as FarmGridManager).load_save_data(farm_grid_data)
 
 func _aplicar_farm_grid_aos_plots(farm_grid_data: Dictionary) -> void:
 	var tree: SceneTree = get_tree()
