@@ -150,33 +150,16 @@ func _reconstruir_farm_grid_manager() -> void:
 	farm_grid_manager.clear()
 
 	for key_variant in farm_plot_registry.keys():
+		if typeof(key_variant) != TYPE_VECTOR2I:
+			continue
+
 		var plot_variant: Variant = farm_plot_registry.get(key_variant)
 		if plot_variant is not Node2D or not is_instance_valid(plot_variant):
 			continue
 
 		var plot: Node2D = plot_variant
-		var plot_position: Vector2i = _obter_posicao_grid_de_nome_farm_plot(plot.name)
-		if plot_position == Vector2i(-1, -1):
-			continue
-
+		var plot_position: Vector2i = key_variant
 		_sincronizar_farm_grid_manager_com_plot(plot_position, plot)
-
-	for obstacle_id in expansion_area_order:
-		var area_plots_variant: Variant = expansion_area_plots.get(obstacle_id, [])
-		if typeof(area_plots_variant) != TYPE_ARRAY:
-			continue
-
-		var area_plots: Array = area_plots_variant
-		for plot_variant in area_plots:
-			if plot_variant is not Node2D or not is_instance_valid(plot_variant):
-				continue
-
-			var plot: Node2D = plot_variant
-			var plot_position: Vector2i = _obter_posicao_grid_de_nome_farm_plot(plot.name)
-			if plot_position == Vector2i(-1, -1):
-				continue
-
-			_sincronizar_farm_grid_manager_com_plot(plot_position, plot)
 
 
 func _sincronizar_farm_grid_manager_com_plot(grid_position: Vector2i, plot: Node2D) -> void:
@@ -228,14 +211,6 @@ func _converter_farm_plot_para_tile_data(grid_position: Vector2i, plot: Node2D) 
 	return tile
 
 
-func _obter_posicao_grid_de_nome_farm_plot(nome: String) -> Vector2i:
-	var partes: PackedStringArray = nome.split("_")
-	if partes.size() < 3:
-		return Vector2i(-1, -1)
-
-	return Vector2i(int(partes[1]), int(partes[2]))
-
-
 func _esta_modal_aberto() -> bool:
 
 	var ui_node: Node = get_node_or_null("UI")
@@ -279,6 +254,9 @@ func _criar_farm_plot_extras_inferiores(start_x: float, start_y: float) -> void:
 
 
 func _instanciar_farm_plot(grid_x: int, grid_y: int, start_x: float, start_y: float) -> Node2D:
+	var plot_existente: Node2D = _obter_farm_plot_registrado(grid_x, grid_y)
+	if plot_existente != null:
+		return plot_existente
 
 	var plot: Node2D = farm_plot_scene.instantiate()
 
@@ -293,30 +271,75 @@ func _instanciar_farm_plot(grid_x: int, grid_y: int, start_x: float, start_y: fl
 	return plot
 
 
-func _farm_plot_key(grid_x: int, grid_y: int) -> String:
+func _farm_plot_key(grid_x: int, grid_y: int) -> Vector2i:
 
-	return "%d_%d" % [grid_x, grid_y]
+	return Vector2i(grid_x, grid_y)
 
 
-func _registrar_farm_plot(grid_x: int, grid_y: int, plot: Node2D) -> void:
+func _registrar_farm_plot(grid_x: int, grid_y: int, plot: Node2D) -> bool:
 
 	if plot == null or not is_instance_valid(plot):
-		return
+		return false
 
-	farm_plot_registry[_farm_plot_key(grid_x, grid_y)] = plot
+	var key: Vector2i = _farm_plot_key(grid_x, grid_y)
+	var plot_existente: Node2D = _obter_farm_plot_registrado(grid_x, grid_y)
+	if plot_existente != null and plot_existente != plot:
+		push_error(
+			"Main: coordenada agricola %s ja pertence ao plot %s; registro duplicado de %s recusado."
+			% [key, plot_existente.name, plot.name]
+		)
+		return false
+
+	for registered_key_variant in farm_plot_registry.keys():
+		if typeof(registered_key_variant) != TYPE_VECTOR2I:
+			continue
+		var registered_key: Vector2i = registered_key_variant
+		if registered_key == key:
+			continue
+		if farm_plot_registry.get(registered_key_variant) == plot:
+			push_error(
+				"Main: plot %s ja esta registrado na coordenada agricola %s; novo registro em %s recusado."
+				% [plot.name, registered_key, key]
+			)
+			return false
+
+	farm_plot_registry[key] = plot
 	if plot.has_signal("estado_alterado"):
 		var callback := Callable(self, "_on_farm_plot_estado_alterado")
 		if not plot.is_connected("estado_alterado", callback):
 			plot.connect("estado_alterado", callback)
+
+	var tree_exiting_callback := Callable(self, "_on_farm_plot_tree_exiting").bind(grid_x, grid_y, plot)
+	if not plot.tree_exiting.is_connected(tree_exiting_callback):
+		plot.tree_exiting.connect(tree_exiting_callback)
+	return true
 
 
 func _on_farm_plot_estado_alterado() -> void:
 	_reconstruir_farm_grid_manager()
 
 
+func _on_farm_plot_tree_exiting(grid_x: int, grid_y: int, plot: Node2D) -> void:
+	_desregistrar_farm_plot(grid_x, grid_y, plot)
+
+
+func _desregistrar_farm_plot(grid_x: int, grid_y: int, plot: Node2D) -> bool:
+	var key: Vector2i = _farm_plot_key(grid_x, grid_y)
+	if not farm_plot_registry.has(key):
+		return false
+
+	if farm_plot_registry.get(key) != plot:
+		return false
+
+	farm_plot_registry.erase(key)
+	if farm_grid_manager != null:
+		farm_grid_manager.remove_tile(Vector2i(grid_x, grid_y))
+	return true
+
+
 func _obter_farm_plot_registrado(grid_x: int, grid_y: int) -> Node2D:
 
-	var key: String = _farm_plot_key(grid_x, grid_y)
+	var key: Vector2i = _farm_plot_key(grid_x, grid_y)
 
 	if not farm_plot_registry.has(key):
 		return null
@@ -523,11 +546,15 @@ func _criar_pocket_expansao(obstacle_id: String, start_x: float, start_y: float)
 
 			var grid_y: int = pocket_start_row + y
 
-			var plot: Node2D = farm_plot_scene.instantiate()
-
-			plot.position = Vector2(start_x + (grid_x * FARM_SPACING), start_y + (grid_y * FARM_SPACING))
-
-			plot.name = "FarmPlot_%d_%d" % [grid_x, grid_y]
+			var plot: Node2D = _obter_farm_plot_registrado(grid_x, grid_y)
+			if plot == null:
+				plot = farm_plot_scene.instantiate()
+				plot.position = Vector2(start_x + (grid_x * FARM_SPACING), start_y + (grid_y * FARM_SPACING))
+				plot.name = "FarmPlot_%d_%d" % [grid_x, grid_y]
+				add_child(plot)
+				if not _registrar_farm_plot(grid_x, grid_y, plot):
+					plot.queue_free()
+					continue
 
 			if plot.has_method("set_expansion_blocked"):
 
@@ -535,10 +562,7 @@ func _criar_pocket_expansao(obstacle_id: String, start_x: float, start_y: float)
 
 			plot.visible = false
 
-			add_child(plot)
-
 			area_plots.append(plot)
-			_sincronizar_farm_grid_manager_com_plot(Vector2i(grid_x, grid_y), plot)
 
 
 

@@ -1,6 +1,16 @@
 # Decisions
 
 
+## Decisão 75 - Identidade canônica de FarmPlot por coordenada
+
+- Problema: os `FarmPlot` da expansão participavam do snapshot de `FarmGridManager`, mas não do registro consultado pelo load, permitindo que a mesma coordenada ganhasse uma segunda instância.
+- Decisão: manter `FarmPlot` como autoridade do gameplay e usar `farm_plot_registry`, indexado diretamente por `Vector2i`, como lookup canônico de todos os plots, incluindo base, plots dinâmicos e pockets de expansão. O registro recusa colisões, reutiliza a instância existente e remove somente a instância correspondente quando ela sai da árvore.
+- Motivo: estabilizar save/load, expansão e seleção de alvos sem migrar a autoridade para `FarmGridManager` nem alterar o schema do save.
+- Compatibilidade: `farm_plots` continua como fallback legado e `farm_grid` mantém o formato v4 atual.
+- Validação: a cena dev `FarmPlotIdentitySmokeTest.tscn` confirma as 34 identidades iniciais, reaplica saves v4 com expansão bloqueada e purificada, exercita o fallback v3 e valida criação, reutilização, desregistro e recriação de um plot dinâmico.
+- Risco: a regra ainda depende do contrato de coordenadas atual; origem, tamanho de célula e coordenadas negativas continuam como decisões futuras.
+
+
 
 ## Decisão 57 - Layout Pass V1 visual e runtime-only
 

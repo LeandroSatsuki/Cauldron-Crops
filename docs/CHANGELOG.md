@@ -2,6 +2,15 @@
 
 
 
+## 2026-09-04 - Identidade canônica dos lotes agrícolas
+
+- Todos os `FarmPlot`, incluindo o pocket de expansão, passaram a usar o mesmo registro por coordenada `Vector2i` no `Main`.
+- O registro recusa colisões de identidade, reutiliza uma instância já existente na coordenada e desregistra com segurança plots que saem da árvore.
+- A reconstrução do `FarmGridManager` passou a consumir somente o registro canônico, mantendo `FarmPlot` como autoridade do gameplay.
+- O schema do save v4 e o fallback legado de `farm_plots` foram preservados.
+- Foi adicionada uma cena dev de regressão que preserva 34 plots em loads v4 bloqueado/purificado e no fallback v3, além de validar criação, reutilização, desregistro e recriação dinâmica.
+
+
 ## 2026-06-08 - P02C2 primeira leva definitiva de receitas
 
 - Foram promovidas duas receitas resource-first iniciais para o catálogo definitivo sem mexer em `SaveManager` ou em `Database.gd`.
