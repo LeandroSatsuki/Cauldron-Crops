@@ -2612,6 +2612,8 @@ func _toggle_debug_panel() -> void:
 
 
 func abrir_debug_panel() -> void:
+	if not debug_shortcuts_enabled:
+		return
 
 
 

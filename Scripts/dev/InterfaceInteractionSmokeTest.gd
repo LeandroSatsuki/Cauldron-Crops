@@ -28,6 +28,12 @@ func _run() -> void:
 	if ToolManager.get_active_tool() != ToolManager.ToolType.FISHING_ROD or GlobalInventory.semente_selecionada != "" or str(ui.get("item_focado_id")) != "":
 		_fail("item comum alterou o modo de interacao")
 		return
+	var wheat_before_right_click := int(GlobalInventory.inventario.get("trigo", 0))
+	var coins_before_right_click := int(EconomyManager.moedas)
+	ui.call("_on_slot_clicado", "trigo", true, null)
+	if int(GlobalInventory.inventario.get("trigo", 0)) != wheat_before_right_click or int(EconomyManager.moedas) != coins_before_right_click:
+		_fail("clique direito ainda vende itens no runtime da V0")
+		return
 
 	ui.call("_on_slot_clicado", "semente_basica", false, null)
 	if GlobalInventory.semente_selecionada != "semente_basica" or ToolManager.get_active_tool() != ToolManager.ToolType.NONE:
@@ -51,6 +57,10 @@ func _run() -> void:
 	if debug_panel != null and debug_panel.visible:
 		_fail("F10 abriu o painel de debug no runtime normal")
 		return
+	ui.call("abrir_debug_panel")
+	if debug_panel != null and debug_panel.visible:
+		_fail("painel de debug abriu sem habilitacao explicita")
+		return
 
 	var objectives_panel: Control = ui.get("initial_objectives_panel")
 	var objectives_toggle: Button = ui.get("initial_objectives_toggle_button")
@@ -66,9 +76,25 @@ func _run() -> void:
 	if not objectives_panel.visible:
 		_fail("objetivos nao voltaram apos minimizar")
 		return
-	if ui.get_node("LeftPanel/HeaderLoja").visible or ui.get_node("LeftPanel/GridSementes").visible or ui.get_node("LeftPanel/HeaderUpgrades").visible:
-		_fail("lojas iniciais continuam visiveis")
-		return
+	var release_hidden_paths: Array[String] = [
+		"StatusPanel/MoedasLabel",
+		"StatusPanel/SementeLabel",
+		"StatusPanel/CapacityLabel",
+		"StatusPanel/ChestStatusLabel",
+		"LeftPanel/DormirButton",
+		"LeftPanel/AbrirSkillTreeButton",
+		"LeftPanel/AbrirQuestsButton",
+		"LeftPanel/HeaderLoja",
+		"LeftPanel/GridSementes",
+		"LeftPanel/HeaderUpgrades",
+		"LeftPanel/ComprarCosmeticoButton",
+		"SellMenu"
+	]
+	for path in release_hidden_paths:
+		var deferred_control := ui.get_node_or_null(path) as Control
+		if deferred_control == null or deferred_control.visible:
+			_fail("controle adiado continua acessivel na V0: %s" % path)
+			return
 
 	GlobalInventory.inventario = original_inventory
 	GlobalInventory.semente_selecionada = original_seed
