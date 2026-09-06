@@ -39,7 +39,9 @@ const EXPANSION_POCKET_START_ROW: int = 0
 
 const EXPANSION_V0_OBSTACLE_ID: String = "first_obstacle"
 
+# Referência legada das funções de blockout. Elas não são mais chamadas no runtime.
 const BLOCKOUT_FARM_Z_INDEX: int = 40
+
 const FREE_FARMING_PILOT_Z_INDEX: int = 35
 const FREE_FARMING_REASON_OUTSIDE_PILOT: String = "outside_free_farming_pilot"
 const FREE_FARMING_REASON_HOE_REQUIRED: String = "hoe_required"
@@ -49,7 +51,7 @@ const FREE_FARMING_REASON_PREPARATION_FAILED: String = "preparation_failed"
 @export var cultivable_grid_bounds: Rect2i = Rect2i(Vector2i(-8, -5), Vector2i(24, 14))
 @export var reserved_cultivation_grid_areas: Array[Rect2i] = []
 @export var free_farming_pilot_bounds: Rect2i = Rect2i(Vector2i(4, 5), Vector2i(6, 2))
-@export var show_free_farming_pilot_marker: bool = true
+@export var show_free_farming_pilot_marker: bool = false
 
 
 
@@ -104,7 +106,6 @@ func _ready() -> void:
 	_garantir_primeira_descoberta_lore()
 	_reconstruir_farm_grid_manager()
 
-	_criar_blockout_fazenda_v0(start_x, start_y)
 	_criar_marcador_agricultura_livre()
 	_configurar_camera_inicial(start_x, start_y)
 

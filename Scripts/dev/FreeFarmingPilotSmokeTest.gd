@@ -15,6 +15,8 @@ func _run() -> void:
 	ToolManager.force_select_tool(ToolManager.ToolType.HOE)
 
 	var main: Node2D = MAIN_SCENE.instantiate()
+	# O marcador e' uma ajuda de desenvolvimento, desligada na apresentacao normal.
+	main.set("show_free_farming_pilot_marker", true)
 	get_tree().root.add_child(main)
 	get_tree().current_scene = main
 	await get_tree().process_frame
