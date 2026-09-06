@@ -5,6 +5,9 @@ extends CharacterBody2D
 @export var harvest_duration: float = 0.5
 @export var deposit_duration: float = 0.3
 @export var carry_capacity: int = 1
+@export var idle_look_duration: float = 1.5
+@export var rest_duration: float = 3.0
+@export var react_duration: float = 1.0
 
 @onready var crop_sensor_area: Area2D = $CropSensorArea
 @onready var navigation_agent: NavigationAgent2D = $NavigationAgent2D
@@ -33,6 +36,12 @@ var _final_destination: Vector2 = Vector2.ZERO
 var _current_avoidance_point: Vector2 = Vector2.ZERO
 var _avoidance_attempts: int = 0
 var _caldeirao_anchor_path: NodePath = NodePath("CauldronUI/BaseAnchor")
+var life_state: String = "IDLE"
+var life_action: String = "aguardando trabalho"
+var _life_timer: Timer
+var _home_position: Vector2 = Vector2.ZERO
+var _idle_cycle_count: int = 0
+var _rest_point: Node2D = null
 
 func _ready() -> void:
 	_think_timer = Timer.new()
@@ -45,12 +54,21 @@ func _ready() -> void:
 	if crop_sensor_area and not crop_sensor_area.area_entered.is_connected(_on_crop_sensor_area_area_entered):
 		crop_sensor_area.area_entered.connect(_on_crop_sensor_area_area_entered)
 	_last_position = global_position
+	_home_position = global_position
+	life_state = "IDLE"
+	life_action = "aguardando trabalho"
+	_rest_point = _encontrar_ponto_descanso()
+	_life_timer = Timer.new()
+	_life_timer.one_shot = true
+	_life_timer.timeout.connect(_on_life_timer_timeout)
+	add_child(_life_timer)
 
 func _process(_delta: float) -> void:
 	z_index = int(global_position.y) + 3
+	_atualizar_visual_vida()
 
 func _physics_process(delta: float) -> void:
-	var esta_em_movimento: bool = state == "MOVING_TO_PLOT" or state == "MOVING_TO_CHEST"
+	var esta_em_movimento: bool = _esta_em_movimento()
 	if navigation_agent == null:
 		if esta_em_movimento:
 			var direcao_emergencial: Vector2 = _final_destination - global_position
@@ -100,12 +118,15 @@ func _physics_process(delta: float) -> void:
 func _on_think_timer_timeout() -> void:
 	if state != "IDLE":
 		return
+	if life_state != "IDLE":
+		return
 
 	if work_priority == PRIORITY_PAUSED:
 		_registrar_acao("pausado")
 		return
 
 	if not carried_rewards.is_empty():
+		_cancelar_vida_ociosa()
 		_registrar_acao("indo ao baú")
 		_procurar_bau()
 		return
@@ -146,6 +167,7 @@ func _on_think_timer_timeout() -> void:
 				_registrar_acao("sem lote seco")
 			else:
 				_registrar_acao("sem lote maduro")
+	_iniciar_vida_ociosa()
 
 func _tem_skill_golem_irrigador() -> bool:
 	return "skill_golem_irrigador" in GlobalInventory.skills_desbloqueadas
@@ -164,6 +186,7 @@ func set_work_priority(nova_prioridade: int) -> bool:
 		return false
 
 	work_priority = nova_prioridade
+	_cancelar_vida_ociosa()
 	if work_priority == PRIORITY_PAUSED:
 		_parar_execucao_atual()
 	else:
@@ -195,6 +218,14 @@ func get_talent_irrigator_label() -> String:
 func get_current_task_label() -> String:
 	if work_priority == PRIORITY_PAUSED:
 		return "Pausado"
+	if life_state == "LOOKING":
+		return "Olhando ao redor"
+	if life_state == "GOING_TO_REST":
+		return "Indo descansar"
+	if life_state == "RESTING":
+		return "Descansando"
+	if life_state == "REACTING":
+		return "Reagindo à chuva"
 
 	if _prioridade_exige_talento_irrigador(work_priority) and not _tem_skill_golem_irrigador():
 		if work_priority == PRIORITY_WATER_FIRST and lotes_maduros_encontrados > 0:
@@ -243,6 +274,8 @@ func get_last_target_label() -> String:
 	return ultimo_alvo_detectado if ultimo_alvo_detectado != "" else "Nenhum"
 
 func get_last_action_label() -> String:
+	if life_state != "IDLE":
+		return life_action
 	return ultima_acao if ultima_acao != "" else "aguardando trabalho"
 
 func get_mature_plots_found() -> int:
@@ -265,6 +298,7 @@ func _parar_execucao_atual() -> void:
 		navigation_agent.target_position = global_position
 	_limpar_alvo_lote()
 	target_chest = null
+	_cancelar_vida_ociosa()
 	state = "IDLE"
 	ultima_acao = "pausado"
 
@@ -381,6 +415,7 @@ func _procurar_lote() -> bool:
 		return false
 
 	target_plot = melhor_lote
+	_cancelar_vida_ociosa()
 	_registrar_alvo(target_plot)
 	_registrar_acao("indo ao lote")
 	state = "MOVING_TO_PLOT"
@@ -440,6 +475,7 @@ func _procurar_lote_para_regar() -> bool:
 		return false
 
 	target_plot = melhor_lote
+	_cancelar_vida_ociosa()
 	_registrar_alvo(target_plot)
 	_registrar_acao("indo ao lote")
 	state = "MOVING_TO_PLOT"
@@ -447,6 +483,7 @@ func _procurar_lote_para_regar() -> bool:
 	return true
 
 func _procurar_bau() -> void:
+	_cancelar_vida_ociosa()
 	target_chest = _encontrar_bau()
 	if target_chest == null:
 		push_warning("Golem: nenhum Baú da Vila encontrado.")
@@ -503,7 +540,7 @@ func _retomar_destino_final() -> void:
 		navigation_agent.target_position = _final_destination
 
 func _monitorar_travamento(delta: float) -> void:
-	var esta_em_movimento: bool = state == "MOVING_TO_PLOT" or state == "MOVING_TO_CHEST"
+	var esta_em_movimento: bool = _esta_em_movimento()
 	if not esta_em_movimento:
 		_last_position = global_position
 		_stuck_time = 0.0
@@ -559,6 +596,9 @@ func _abortar_movimento(mensagem: String) -> void:
 		_limpar_alvo_lote()
 	elif state == "MOVING_TO_CHEST":
 		target_chest = null
+	elif state == "MOVING_TO_REST":
+		life_state = "IDLE"
+		life_action = "descanso indisponivel"
 	state = "IDLE"
 
 func _calcular_desvio_caldeirao(destino_final: Vector2) -> Vector2:
@@ -615,6 +655,105 @@ func _obter_centro_caldeirao() -> Vector2:
 		return (cauldron_ui as Node2D).global_position
 
 	return Vector2.ZERO
+
+func _esta_em_movimento() -> bool:
+	return state == "MOVING_TO_PLOT" or state == "MOVING_TO_CHEST" or state == "MOVING_TO_REST"
+
+func get_life_state() -> String:
+	return life_state
+
+func get_life_action_label() -> String:
+	return life_action
+
+func get_rest_point_position() -> Vector2:
+	var point := _encontrar_ponto_descanso()
+	return point.global_position if point != null else _home_position
+
+func reagir_a_chuva() -> bool:
+	if state != "IDLE" or work_priority == PRIORITY_PAUSED:
+		return false
+	_cancelar_vida_ociosa()
+	life_state = "REACTING"
+	life_action = "reagindo a chuva"
+	if _life_timer:
+		_life_timer.start(max(0.1, react_duration))
+	return true
+
+func notify_weather_reaction(weather_id: String) -> bool:
+	if weather_id.strip_edges().to_lower() in ["rain", "chuva"]:
+		return reagir_a_chuva()
+	return false
+
+func _iniciar_vida_ociosa() -> void:
+	if state != "IDLE" or work_priority == PRIORITY_PAUSED or not carried_rewards.is_empty() or life_state != "IDLE":
+		return
+	_idle_cycle_count += 1
+	if _idle_cycle_count % 3 == 0:
+		_ir_para_descanso()
+	else:
+		life_state = "LOOKING"
+		life_action = "olhando ao redor"
+		if _life_timer:
+			_life_timer.start(max(0.1, idle_look_duration))
+
+func _ir_para_descanso() -> void:
+	_rest_point = _encontrar_ponto_descanso()
+	var destination := get_rest_point_position()
+	life_state = "GOING_TO_REST"
+	life_action = "procurando descanso"
+	if global_position.distance_to(destination) <= 10.0:
+		_chegar_ao_descanso()
+		return
+	state = "MOVING_TO_REST"
+	_iniciar_deslocamento(destination, Callable(self, "_chegar_ao_descanso"))
+
+func _chegar_ao_descanso() -> void:
+	if state != "MOVING_TO_REST" and life_state != "GOING_TO_REST":
+		return
+	state = "IDLE"
+	life_state = "RESTING"
+	life_action = "descansando"
+	if _life_timer:
+		_life_timer.start(max(0.1, rest_duration))
+
+func _on_life_timer_timeout() -> void:
+	if life_state == "LOOKING" or life_state == "RESTING" or life_state == "REACTING":
+		life_state = "IDLE"
+		life_action = "aguardando trabalho"
+
+func _cancelar_vida_ociosa() -> void:
+	if _life_timer:
+		_life_timer.stop()
+	life_state = "IDLE"
+	life_action = "aguardando trabalho"
+
+func _encontrar_ponto_descanso() -> Node2D:
+	if get_tree() == null:
+		return null
+	for node in get_tree().get_nodes_in_group("golem_rest_point"):
+		if node is Node2D and is_instance_valid(node):
+			return node as Node2D
+	return null
+
+func _atualizar_visual_vida() -> void:
+	var visual := get_node_or_null("ColorRect") as Control
+	if visual == null:
+		return
+
+	var pulso := sin(float(Time.get_ticks_msec()) * 0.004) * 0.025
+	visual.rotation = 0.0
+	visual.scale = Vector2.ONE
+	visual.modulate = Color.WHITE
+	match life_state:
+		"LOOKING":
+			visual.rotation = pulso
+			visual.modulate = Color(1.0, 1.0, 0.78, 1.0)
+		"RESTING":
+			visual.scale = Vector2(1.08, 0.82)
+			visual.modulate = Color(0.72, 0.9, 1.0, 1.0)
+		"REACTING":
+			visual.rotation = pulso * 2.0
+			visual.modulate = Color(0.72, 0.9, 1.0, 1.0)
 
 func _chegar_ao_lote() -> void:
 	if state != "MOVING_TO_PLOT":

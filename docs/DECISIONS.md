@@ -1,6 +1,17 @@
 # Decisions
 
 
+## Decisão 82 - Vida mínima do Golem separada do trabalho
+
+- Problema: o golem já executava a cadeia física de automação, mas quando não encontrava trabalho permanecia apenas em `IDLE`, sem demonstrar presença de criatura.
+- Decisão: adicionar uma camada de vida independente (`LOOKING`, `GOING_TO_REST`, `RESTING`, `REACTING`) sem substituir os estados de navegação e trabalho existentes.
+- Ritmo: após ciclos sem tarefa, o golem olha ao redor e periodicamente procura um ponto do grupo `golem_rest_point`; a posição inicial é o fallback seguro.
+- Visual: o placeholder atual usa pequenas mudanças de rotação, escala e modulação, evitando exigir arte final ou um novo sistema de animação.
+- Clima: como não há clima runtime na V0 atual, `reagir_a_chuva` fica como API explícita para integração futura e não interrompe tarefas em andamento.
+- Compatibilidade: prioridade, pausa, colheita, rega, transporte, depósito e save permanecem inalterados; a prioridade ou uma nova tarefa cancela a vida ociosa pendente.
+- Validação: `GolemLifeSmokeTest` cobre estados de vida, rótulos da interface, reação a chuva e bloqueio quando pausado.
+
+
 ## Decisão 81 - RecipeData governa a produção do caldeirão
 
 - Problema: o Livro de Receitas exibia quantidade e tempo do `RecipeData`, mas o caldeirão ainda produzia uma unidade em tempo global e concedia `+1` fixo na descoberta.

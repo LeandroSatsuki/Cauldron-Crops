@@ -1,6 +1,16 @@
 # Changelog
 
 
+## 2026-09-05 - Primeira camada de vida do Golem V0
+
+- O golem agora alterna entre trabalho, olhar ao redor, deslocamento para descanso e repouso quando não há tarefa disponível.
+- Um ponto de descanso explícito foi adicionado à cena principal; se ele não existir, o golem usa sua posição inicial como fallback.
+- Os estados de vida aparecem no painel existente do golem e usam variações visuais leves no placeholder atual.
+- Foi adicionada uma reação preparada para chuva (`reagir_a_chuva`/`notify_weather_reaction`), sem criar um sistema de clima antes do marco próprio.
+- Navegação, colheita, transporte, depósito, rega, prioridade e pausa continuam usando o fluxo anterior.
+- `GolemLifeSmokeTest` valida idle, olhar, descanso, reação climática e pausa.
+
+
 ## 2026-09-05 - Contrato coerente de produção do caldeirão
 
 - O `RecipeResolver` passou a fornecer um contrato completo para cada receita e a localizar misturas pelos ingredientes, respeitando `ordem_importa` e priorizando `RecipeData`.

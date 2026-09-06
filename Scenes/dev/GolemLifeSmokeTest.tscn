@@ -1,0 +1,11 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="PackedScene" path="res://Scenes/Golem.tscn" id="1_golem"]
+[ext_resource type="Script" path="res://Scripts/dev/GolemLifeSmokeTest.gd" id="2_test"]
+
+[node name="GolemLifeSmokeTest" type="Node"]
+script = ExtResource("2_test")
+
+[node name="Golem" parent="." instance=ExtResource("1_golem")]
+
+[node name="RestPoint" type="Marker2D" parent="." groups=["golem_rest_point"]]
