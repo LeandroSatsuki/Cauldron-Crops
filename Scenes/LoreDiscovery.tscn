@@ -1,0 +1,49 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://Scripts/LoreDiscovery.gd" id="1_lorediscovery"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_lore"]
+radius = 30.0
+
+[node name="LoreDiscovery" type="Area2D"]
+z_index = 55
+input_pickable = true
+script = ExtResource("1_lorediscovery")
+
+[node name="Glow" type="Polygon2D" parent="."]
+color = Color(0.34, 0.53, 0.76, 0.28)
+polygon = PackedVector2Array(0, -34, 26, -12, 30, 14, 0, 32, -28, 14, -25, -14)
+
+[node name="Stone" type="Polygon2D" parent="."]
+color = Color(0.30, 0.38, 0.43, 1)
+polygon = PackedVector2Array(-16, 20, -21, -6, -8, -25, 12, -20, 22, 3, 15, 22, -4, 27)
+
+[node name="Mark" type="Line2D" parent="."]
+width = 3.0
+default_color = Color(0.62, 0.82, 1, 0.94)
+points = PackedVector2Array(-7, -12, 5, 0, -4, 10, 9, 17)
+
+[node name="PromptLabel" type="Label" parent="."]
+offset_left = -100.0
+offset_top = -62.0
+offset_right = 100.0
+offset_bottom = -34.0
+text = "Pedra das Marcas\nClique para investigar"
+horizontal_alignment = 1
+theme_override_colors/font_color = Color(0.76, 0.9, 1, 1)
+theme_override_font_sizes/font_size = 14
+
+[node name="TextLabel" type="Label" parent="."]
+visible = false
+offset_left = -150.0
+offset_top = -86.0
+offset_right = 150.0
+offset_bottom = -34.0
+text = "As marcas sob a pedra ainda pulsam.\n\"Eles não nasceram da pedra.\""
+horizontal_alignment = 1
+autowrap_mode = 2
+theme_override_colors/font_color = Color(0.82, 0.92, 1, 1)
+theme_override_font_sizes/font_size = 14
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_lore")

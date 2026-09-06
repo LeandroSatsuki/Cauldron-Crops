@@ -61,6 +61,8 @@ var expansion_area_visuals: Dictionary = {}
 
 var expansion_area_plots: Dictionary = {}
 
+var lore_discoveries: Dictionary = {}
+
 var farm_plot_registry: Dictionary = {}
 var farm_grid_manager: FarmGridManager = null
 
@@ -99,6 +101,7 @@ func _ready() -> void:
 	_conectar_obstaculos_purificacao()
 
 	_sincronizar_areas_expansao()
+	_garantir_primeira_descoberta_lore()
 	_reconstruir_farm_grid_manager()
 
 	_criar_blockout_fazenda_v0(start_x, start_y)
@@ -1444,6 +1447,11 @@ func _aplicar_estado_area_expansao(obstacle_id: String, purificado: bool) -> voi
 
 				plot.call("set_expansion_blocked", not purificado)
 
+	if lore_discoveries.has(obstacle_id):
+		var lore_discovery: Node = lore_discoveries[obstacle_id]
+		if lore_discovery != null and is_instance_valid(lore_discovery) and lore_discovery.has_method("set_area_purified"):
+			lore_discovery.call("set_area_purified", purificado)
+
 	_reconstruir_farm_grid_manager()
 
 
@@ -1469,6 +1477,23 @@ func _on_obstaculo_purificado(obstacle_id: String) -> void:
 		return
 
 	_aplicar_estado_area_expansao(obstacle_id, true)
+
+func _garantir_primeira_descoberta_lore() -> void:
+	if lore_discoveries.has(EXPANSION_V0_OBSTACLE_ID):
+		return
+	var lore_scene := load("res://Scenes/LoreDiscovery.tscn") as PackedScene
+	if lore_scene == null:
+		push_warning("Main: cena de descoberta de lore nao foi encontrada.")
+		return
+	var discovery := lore_scene.instantiate() as Area2D
+	if discovery == null:
+		return
+	var area_config := _obter_config_area_expansao(EXPANSION_V0_OBSTACLE_ID)
+	discovery.name = "LoreDiscovery_FirstPurifiedArea"
+	discovery.position = Vector2(area_config.get("visual_position", Vector2.ZERO)) + Vector2(54.0, -36.0)
+	add_child(discovery)
+	lore_discoveries[EXPANSION_V0_OBSTACLE_ID] = discovery
+	discovery.call("set_area_purified", _obter_estado_purificacao_obstaculo(EXPANSION_V0_OBSTACLE_ID))
 
 func _garantir_lago_da_fazenda() -> void:
 

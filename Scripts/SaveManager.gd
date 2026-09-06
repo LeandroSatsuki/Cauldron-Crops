@@ -120,6 +120,7 @@ func _build_save_data() -> Dictionary:
 			"skills_desbloqueadas": GlobalInventory.skills_desbloqueadas.duplicate(true),
 			"colecao_pesca_descobertas": GlobalInventory.colecao_pesca_descobertas.duplicate(),
 			"colecao_pesca_concluida": GlobalInventory.colecao_pesca_concluida,
+			"lore_descobertas": GlobalInventory.lore_descobertas.duplicate(),
 		},
 		"economy": {
 			"moedas": EconomyManager.moedas
@@ -177,6 +178,9 @@ func _apply_save_data(data: Dictionary) -> bool:
 	GlobalInventory.aplicar_colecao_pesca_save(
 		_safe_array(inventory_data.get("colecao_pesca_descobertas", GlobalInventory.colecao_pesca_descobertas)),
 		bool(inventory_data.get("colecao_pesca_concluida", GlobalInventory.colecao_pesca_concluida))
+	)
+	GlobalInventory.apply_lore_discoveries_save(
+		_safe_array(inventory_data.get("lore_descobertas", GlobalInventory.lore_descobertas))
 	)
 
 	var economy_data: Dictionary = _safe_dictionary(data.get("economy", {}))

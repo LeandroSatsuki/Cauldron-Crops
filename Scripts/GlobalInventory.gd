@@ -14,6 +14,7 @@ var pontos_alquimia: int = 0
 var skills_desbloqueadas: Array = []
 var colecao_pesca_descobertas: Array[String] = []
 var colecao_pesca_concluida: bool = false
+var lore_descobertas: Array[String] = []
 
 func adicionar_item(produto: String, quantidade: int = 1) -> void:
 	if inventario.has(produto):
@@ -63,6 +64,22 @@ func aplicar_colecao_pesca_save(descobertas: Array, concluida: bool) -> void:
 
 func possui_bonus_colecao_pesca() -> bool:
 	return colecao_pesca_concluida
+
+func register_lore_discovery(discovery_id: String) -> bool:
+	if discovery_id == "" or discovery_id in lore_descobertas:
+		return false
+	lore_descobertas.append(discovery_id)
+	return true
+
+func has_lore_discovery(discovery_id: String) -> bool:
+	return discovery_id in lore_descobertas
+
+func apply_lore_discoveries_save(discoveries: Array) -> void:
+	lore_descobertas.clear()
+	for discovery_variant in discoveries:
+		var discovery_id := str(discovery_variant)
+		if discovery_id != "" and not discovery_id in lore_descobertas:
+			lore_descobertas.append(discovery_id)
 
 func _colecao_pesca_esta_completa() -> bool:
 	_normalizar_colecao_pesca()
