@@ -71,6 +71,12 @@ layout_mode = 2
 text = "Resultado: aguardando..."
 horizontal_alignment = 1
 
+[node name="CollectionLabel" type="Label" parent="PopupPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Coleção do Lago: 0/2 descobertas"
+horizontal_alignment = 1
+autowrap_mode = 2
+
 [node name="ButtonsRow" type="HBoxContainer" parent="PopupPanel/MarginContainer/VBoxContainer"]
 layout_mode = 2
 alignment = 1

@@ -10,6 +10,7 @@ const MARKER_SIZE: Vector2 = Vector2(8.0, 36.0)
 const MARKER_SPEED: float = 230.0
 const PERFECT_TOLERANCE: float = 10.0
 const GOOD_TOLERANCE: float = 30.0
+const COLECAO_BONUS_TOLERANCE: float = 8.0
 const POPUP_MARGIN: float = 24.0
 const AUTO_CLOSE_DELAY: float = 1.5
 
@@ -28,6 +29,7 @@ enum FishingResult {
 @onready var hit_zone: ColorRect = $PopupPanel/MarginContainer/VBoxContainer/BarArea/HitZone
 @onready var marker: ColorRect = $PopupPanel/MarginContainer/VBoxContainer/BarArea/Marker
 @onready var result_label: Label = $PopupPanel/MarginContainer/VBoxContainer/ResultLabel
+@onready var collection_label: Label = $PopupPanel/MarginContainer/VBoxContainer/CollectionLabel
 @onready var close_button: Button = $PopupPanel/MarginContainer/VBoxContainer/ButtonsRow/CloseButton
 @onready var auto_close_timer: Timer = $AutoCloseTimer
 
@@ -89,6 +91,7 @@ func _ready() -> void:
 
 	_rng.randomize()
 	_resetar_barra()
+	_atualizar_label_colecao()
 	_aplicar_estado_visivel(false)
 
 func abrir_popup(origem_global: Vector2) -> Control:
@@ -110,6 +113,7 @@ func abrir_popup(origem_global: Vector2) -> Control:
 	if result_label:
 		result_label.text = "Resultado: aguardando a ressonância..."
 		result_label.modulate = Color(1.0, 1.0, 1.0, 1.0)
+	_atualizar_label_colecao()
 	if close_button:
 		close_button.disabled = false
 	if auto_close_timer:
@@ -213,7 +217,7 @@ func _avaliar_resultado() -> FishingResult:
 
 	if distancia <= PERFECT_TOLERANCE:
 		return FishingResult.PERFECT
-	if distancia <= GOOD_TOLERANCE:
+	if distancia <= _obter_good_tolerance():
 		return FishingResult.GOOD
 	return FishingResult.MISS
 
@@ -225,12 +229,31 @@ func _aplicar_recompensa(resultado: FishingResult) -> void:
 	match resultado:
 		FishingResult.GOOD:
 			GlobalInventory.adicionar_item("peixe_comum", 1)
+			GlobalInventory.registrar_item_colecao_pesca("peixe_comum")
 			_atualizar_ui_pos_recompensa()
 		FishingResult.PERFECT:
 			GlobalInventory.adicionar_item("escama_brilhante", 1)
+			GlobalInventory.registrar_item_colecao_pesca("escama_brilhante")
 			_atualizar_ui_pos_recompensa()
 		FishingResult.MISS:
 			pass
+	_atualizar_label_colecao()
+
+func _obter_good_tolerance() -> float:
+	if GlobalInventory.possui_bonus_colecao_pesca():
+		return GOOD_TOLERANCE + COLECAO_BONUS_TOLERANCE
+	return GOOD_TOLERANCE
+
+func _atualizar_label_colecao() -> void:
+	if collection_label == null:
+		return
+	var progresso := GlobalInventory.obter_progresso_colecao_pesca()
+	if bool(progresso.get("concluida", false)):
+		collection_label.text = "Coleção do Lago completa — %s: zona boa ampliada." % str(progresso.get("bonus_nome", "Bônus ativo"))
+		collection_label.modulate = Color(0.65, 0.96, 0.8, 1.0)
+		return
+	collection_label.text = "Coleção do Lago: %d/%d descobertas" % [int(progresso.get("quantidade", 0)), int(progresso.get("total", 0))]
+	collection_label.modulate = Color(0.72, 0.83, 0.98, 1.0)
 
 func _atualizar_ui_pos_recompensa() -> void:
 	var ui: Node = _obter_ui_principal()

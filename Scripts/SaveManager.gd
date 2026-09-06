@@ -117,7 +117,9 @@ func _build_save_data() -> Dictionary:
 			"semente_selecionada": GlobalInventory.semente_selecionada,
 			"receitas_descobertas": GlobalInventory.receitas_descobertas.duplicate(true),
 			"pontos_alquimia": GlobalInventory.pontos_alquimia,
-			"skills_desbloqueadas": GlobalInventory.skills_desbloqueadas.duplicate(true)
+			"skills_desbloqueadas": GlobalInventory.skills_desbloqueadas.duplicate(true),
+			"colecao_pesca_descobertas": GlobalInventory.colecao_pesca_descobertas.duplicate(),
+			"colecao_pesca_concluida": GlobalInventory.colecao_pesca_concluida,
 		},
 		"economy": {
 			"moedas": EconomyManager.moedas
@@ -172,6 +174,10 @@ func _apply_save_data(data: Dictionary) -> bool:
 	GlobalInventory.receitas_descobertas = _safe_array(inventory_data.get("receitas_descobertas", GlobalInventory.receitas_descobertas)).duplicate(true)
 	GlobalInventory.pontos_alquimia = int(inventory_data.get("pontos_alquimia", GlobalInventory.pontos_alquimia))
 	GlobalInventory.skills_desbloqueadas = _safe_array(inventory_data.get("skills_desbloqueadas", GlobalInventory.skills_desbloqueadas)).duplicate(true)
+	GlobalInventory.aplicar_colecao_pesca_save(
+		_safe_array(inventory_data.get("colecao_pesca_descobertas", GlobalInventory.colecao_pesca_descobertas)),
+		bool(inventory_data.get("colecao_pesca_concluida", GlobalInventory.colecao_pesca_concluida))
+	)
 
 	var economy_data: Dictionary = _safe_dictionary(data.get("economy", {}))
 	EconomyManager.moedas = int(economy_data.get("moedas", EconomyManager.moedas))
