@@ -1517,7 +1517,8 @@ func _garantir_primeiro_projeto_restauracao() -> void:
 		return
 	var area_config := _obter_config_area_expansao(EXPANSION_V0_OBSTACLE_ID)
 	project.name = "RestorationProject_FirstHerbarium"
-	project.position = Vector2(area_config.get("visual_position", Vector2.ZERO)) + Vector2(-54.0, 66.0)
+	# Fica ao lado do pocket 2x2: projeto e lotes nunca disputam o mesmo clique.
+	project.position = Vector2(area_config.get("visual_position", Vector2.ZERO)) + Vector2(180.0, 110.0)
 	add_child(project)
 	restoration_projects[EXPANSION_V0_OBSTACLE_ID] = project
 	project.call("set_area_purified", _obter_estado_purificacao_obstaculo(EXPANSION_V0_OBSTACLE_ID))

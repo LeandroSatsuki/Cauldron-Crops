@@ -23,6 +23,15 @@ func _run() -> void:
 	if project.visible or project.input_pickable:
 		_fail("projeto apareceu antes da purificacao")
 		return
+	var expansion_projects: Dictionary = main.get("expansion_area_plots")
+	var pocket_variant: Variant = expansion_projects.get("first_obstacle", [])
+	if typeof(pocket_variant) != TYPE_ARRAY:
+		_fail("pocket da expansao nao foi encontrado para validar layout")
+		return
+	for plot_variant in pocket_variant:
+		if plot_variant is Node2D and project.global_position.distance_to((plot_variant as Node2D).global_position) < 90.0:
+			_fail("projeto de restauracao sobrepoe um FarmPlot da expansao")
+			return
 
 	var obstacle: Node = main.get_node_or_null("PurificationObstacle")
 	if obstacle == null or not obstacle.has_method("load_save_data"):
