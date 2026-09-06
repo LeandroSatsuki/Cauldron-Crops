@@ -1,0 +1,66 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://Scripts/RestorationProject.gd" id="1_restoration"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_restoration"]
+radius = 42.0
+
+[node name="RestorationProject" type="Area2D"]
+z_index = 48
+input_pickable = true
+script = ExtResource("1_restoration")
+
+[node name="RuinedVisual" type="Node2D" parent="."]
+
+[node name="Ground" type="Polygon2D" parent="RuinedVisual"]
+color = Color(0.23, 0.31, 0.17, 0.94)
+polygon = PackedVector2Array(-48, 22, -24, -2, 4, -12, 36, 4, 48, 26, 20, 40, -22, 38)
+
+[node name="BrokenFrame" type="Line2D" parent="RuinedVisual"]
+width = 7.0
+default_color = Color(0.29, 0.18, 0.09, 1)
+points = PackedVector2Array(-28, 26, -28, -24, 2, -39, 29, -20, 29, 24)
+
+[node name="Vines" type="Line2D" parent="RuinedVisual"]
+width = 4.0
+default_color = Color(0.33, 0.55, 0.18, 0.94)
+points = PackedVector2Array(-20, 21, -5, 6, 7, 15, 19, -2)
+
+[node name="RestoredVisual" type="Node2D" parent="."]
+visible = false
+
+[node name="Ground" type="Polygon2D" parent="RestoredVisual"]
+color = Color(0.18, 0.42, 0.22, 0.96)
+polygon = PackedVector2Array(-50, 23, -24, -5, 4, -15, 39, 4, 50, 26, 20, 42, -25, 39)
+
+[node name="Frame" type="Line2D" parent="RestoredVisual"]
+width = 7.0
+default_color = Color(0.49, 0.29, 0.12, 1)
+points = PackedVector2Array(-30, 27, -30, -28, 0, -43, 30, -28, 30, 27)
+
+[node name="Shelves" type="Line2D" parent="RestoredVisual"]
+width = 5.0
+default_color = Color(0.76, 0.56, 0.28, 1)
+points = PackedVector2Array(-25, -3, 25, -3, -25, 17, 25, 17)
+
+[node name="Herb" type="Polygon2D" parent="RestoredVisual"]
+color = Color(0.57, 0.95, 0.44, 1)
+polygon = PackedVector2Array(0, -29, 8, -13, 21, -20, 13, -5, 27, 3, 8, 5, 0, 25, -8, 5, -27, 3, -13, -5, -21, -20, -8, -13)
+
+[node name="Spark" type="Polygon2D" parent="RestoredVisual"]
+position = Vector2(24, -30)
+color = Color(0.86, 1, 0.62, 0.95)
+polygon = PackedVector2Array(0, -6, 3, -2, 6, 0, 3, 2, 0, 6, -3, 2, -6, 0, -3, -2)
+
+[node name="PromptLabel" type="Label" parent="."]
+offset_left = -116.0
+offset_top = -82.0
+offset_right = 116.0
+offset_bottom = -38.0
+text = "Herbario em ruinas\nClique para restaurar (5 Trigo + 1 Agua)"
+horizontal_alignment = 1
+theme_override_colors/font_color = Color(0.78, 0.96, 0.7, 1)
+theme_override_font_sizes/font_size = 13
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_restoration")

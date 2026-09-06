@@ -20,4 +20,6 @@
 
 - O `FarmBlockoutV0` e o marcador visível de agricultura livre eram guias de desenvolvimento e não fazem parte da apresentação ao jogador; ambos ficam desativados no runtime padrão.
 - O lago, o caldeirão, o baú, os lotes, a primeira purificação e a Pedra das Marcas continuam sendo elementos reais do mapa atual.
+- A primeira área purificada também contém o Herbário das Marcas: uma ruína que pode ser restaurada com recursos já existentes, muda visualmente o local e revela uma Rama Encantada.
+- O estado de restauração é salvo como dado opcional da expansão, preservando a compatibilidade do save v4.
 - A arquitetura atual permanece local à Fazenda/Vila. Não há implementação antecipada de sistema global de regiões, personagem ou navegação entre mapas.

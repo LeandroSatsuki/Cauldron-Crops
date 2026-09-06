@@ -7,6 +7,7 @@ var farm_plot_scene = preload("res://Scenes/FarmPlot.tscn")
 const FISHING_SPOT_SCENE_PATH: String = "res://Scenes/FishingSpot.tscn"
 
 const FISHING_SPOT_SCRIPT_PATH: String = "res://Scripts/FishingSpot.gd"
+const RESTORATION_PROJECT_SCENE_PATH: String = "res://Scenes/RestorationProject.tscn"
 
 @onready var navigation_region: NavigationRegion2D = $NavigationRegion2D
 @onready var main_camera: Camera2D = get_node_or_null("MainCamera") as Camera2D
@@ -64,6 +65,7 @@ var expansion_area_visuals: Dictionary = {}
 var expansion_area_plots: Dictionary = {}
 
 var lore_discoveries: Dictionary = {}
+var restoration_projects: Dictionary = {}
 
 var farm_plot_registry: Dictionary = {}
 var farm_grid_manager: FarmGridManager = null
@@ -104,6 +106,7 @@ func _ready() -> void:
 
 	_sincronizar_areas_expansao()
 	_garantir_primeira_descoberta_lore()
+	_garantir_primeiro_projeto_restauracao()
 	_reconstruir_farm_grid_manager()
 
 	_criar_marcador_agricultura_livre()
@@ -1453,6 +1456,11 @@ func _aplicar_estado_area_expansao(obstacle_id: String, purificado: bool) -> voi
 		if lore_discovery != null and is_instance_valid(lore_discovery) and lore_discovery.has_method("set_area_purified"):
 			lore_discovery.call("set_area_purified", purificado)
 
+	if restoration_projects.has(obstacle_id):
+		var restoration_project: Node = restoration_projects[obstacle_id]
+		if restoration_project != null and is_instance_valid(restoration_project) and restoration_project.has_method("set_area_purified"):
+			restoration_project.call("set_area_purified", purificado)
+
 	_reconstruir_farm_grid_manager()
 
 
@@ -1495,6 +1503,24 @@ func _garantir_primeira_descoberta_lore() -> void:
 	add_child(discovery)
 	lore_discoveries[EXPANSION_V0_OBSTACLE_ID] = discovery
 	discovery.call("set_area_purified", _obter_estado_purificacao_obstaculo(EXPANSION_V0_OBSTACLE_ID))
+
+
+func _garantir_primeiro_projeto_restauracao() -> void:
+	if restoration_projects.has(EXPANSION_V0_OBSTACLE_ID):
+		return
+	var restoration_scene := load(RESTORATION_PROJECT_SCENE_PATH) as PackedScene
+	if restoration_scene == null:
+		push_warning("Main: cena do projeto de restauracao nao foi encontrada.")
+		return
+	var project := restoration_scene.instantiate() as Area2D
+	if project == null:
+		return
+	var area_config := _obter_config_area_expansao(EXPANSION_V0_OBSTACLE_ID)
+	project.name = "RestorationProject_FirstHerbarium"
+	project.position = Vector2(area_config.get("visual_position", Vector2.ZERO)) + Vector2(-54.0, 66.0)
+	add_child(project)
+	restoration_projects[EXPANSION_V0_OBSTACLE_ID] = project
+	project.call("set_area_purified", _obter_estado_purificacao_obstaculo(EXPANSION_V0_OBSTACLE_ID))
 
 func _garantir_lago_da_fazenda() -> void:
 

@@ -96,6 +96,7 @@ func _build_save_data() -> Dictionary:
 
 	var purification_obstacles: Dictionary = {}
 	var purification_progress: Dictionary = {}
+	var restoration_projects: Dictionary = {}
 	if tree != null:
 		var obstacles: Array = tree.get_nodes_in_group("purification_obstacle")
 		for obstacle_variant in obstacles:
@@ -108,6 +109,17 @@ func _build_save_data() -> Dictionary:
 					purification_obstacles[obstacle_id] = bool(obstacle_data.get("purified", false))
 					var obstacle_progress: Dictionary = _safe_dictionary(obstacle_data.get("purification_progress", {}))
 					purification_progress[obstacle_id] = obstacle_progress.duplicate(true)
+		var projects: Array = tree.get_nodes_in_group("restoration_project")
+		for project_variant in projects:
+			var project: Node = project_variant
+			if project == null or not project.has_method("get_save_data"):
+				continue
+			var project_data_variant: Variant = project.call("get_save_data")
+			if typeof(project_data_variant) != TYPE_DICTIONARY:
+				continue
+			var project_data: Dictionary = project_data_variant
+			var restoration_id: String = str(project_data.get("restoration_id", project.name))
+			restoration_projects[restoration_id] = bool(project_data.get("restored", false))
 
 	return {
 		"version": SAVE_VERSION,
@@ -142,7 +154,8 @@ func _build_save_data() -> Dictionary:
 		"farm_grid": farm_grid,
 		"farm_expansion": {
 			"purification_obstacles": purification_obstacles,
-			"purification_progress": purification_progress
+			"purification_progress": purification_progress,
+			"restoration_projects": restoration_projects
 		}
 	}
 
@@ -213,6 +226,7 @@ func _apply_save_data(data: Dictionary) -> bool:
 		var purification_obstacles_data: Dictionary = _safe_dictionary(farm_expansion_data.get("purification_obstacles", {}))
 		var purification_progress_data: Dictionary = _safe_dictionary(farm_expansion_data.get("purification_progress", {}))
 		_aplicar_estado_obstaculos_purificados(purification_obstacles_data, purification_progress_data)
+		_aplicar_estado_projetos_restauracao(_safe_dictionary(farm_expansion_data.get("restoration_projects", {})))
 
 	var current_scene: Node = get_tree().current_scene if get_tree() != null else null
 	if current_scene != null and current_scene.has_method("sincronizar_area_bloqueada_v0"):
@@ -237,6 +251,9 @@ func _apply_save_data(data: Dictionary) -> bool:
 
 	if current_scene != null and current_scene.has_method("sincronizar_area_bloqueada_v0"):
 		current_scene.call("sincronizar_area_bloqueada_v0")
+	if data.has("farm_expansion"):
+		var farm_expansion_data: Dictionary = _safe_dictionary(data.get("farm_expansion", {}))
+		_aplicar_estado_projetos_restauracao(_safe_dictionary(farm_expansion_data.get("restoration_projects", {})))
 
 	return true
 
@@ -324,6 +341,26 @@ func _aplicar_estado_obstaculos_purificados(purification_obstacles_data: Diction
 			"obstacle_id": obstacle_id,
 			"purified": purified,
 			"purification_progress": progress_data
+		})
+
+
+func _aplicar_estado_projetos_restauracao(restoration_projects_data: Dictionary) -> void:
+	var tree: SceneTree = get_tree()
+	if tree == null:
+		return
+	var projects: Array = tree.get_nodes_in_group("restoration_project")
+	for project_variant in projects:
+		var project: Node = project_variant
+		if project == null or not is_instance_valid(project) or not project.has_method("load_save_data"):
+			continue
+		var restoration_id: String = project.name
+		if project.has_method("get_save_data"):
+			var project_data_variant: Variant = project.call("get_save_data")
+			if typeof(project_data_variant) == TYPE_DICTIONARY:
+				restoration_id = str((project_data_variant as Dictionary).get("restoration_id", restoration_id))
+		project.call("load_save_data", {
+			"restoration_id": restoration_id,
+			"restored": bool(restoration_projects_data.get(restoration_id, false))
 		})
 
 func _aplicar_farm_grid_aos_plots(farm_grid_data: Dictionary) -> void:
