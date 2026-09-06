@@ -253,7 +253,7 @@ func _obter_good_tolerance() -> float:
 func _atualizar_label_colecao() -> void:
 	if collection_label == null:
 		return
-	var progresso := GlobalInventory.obter_progresso_colecao_pesca()
+	var progresso: Dictionary = GlobalInventory.obter_progresso_colecao_pesca()
 	var event_label := EventDirector.get_rare_fish_window_label()
 	if bool(progresso.get("concluida", false)):
 		collection_label.text = "Coleção do Lago completa — %s: zona boa ampliada.\n%s" % [str(progresso.get("bonus_nome", "Bônus ativo")), event_label]

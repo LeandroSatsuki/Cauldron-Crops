@@ -11550,7 +11550,7 @@ func atualizar_painel_purificacao() -> void:
 
 
 
-		var icon_text := Database.obter_icone_item(item_id)
+		var icon_text: String = str(Database.obter_icone_item(item_id))
 
 
 

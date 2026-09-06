@@ -67,8 +67,8 @@ func _criar_preview_drag(item_id_preview: String) -> Control:
 
 func _atualizar_visual() -> void:
 	var item_ativo := item_id != ""
-	var icone := Database.obter_icone_item(item_id) if item_ativo else ""
-	var nome := Database.obter_nome_item(item_id) if item_ativo else ""
+	var icone: String = str(Database.obter_icone_item(item_id)) if item_ativo else ""
+	var nome: String = str(Database.obter_nome_item(item_id)) if item_ativo else ""
 
 	if icon_label:
 		icon_label.text = "%s" % icone

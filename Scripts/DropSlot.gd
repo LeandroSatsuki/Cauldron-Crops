@@ -67,8 +67,8 @@ func _atualizar_visual() -> void:
 		icon_rect.texture = null
 
 	var item_ativo := _item_vinculado != ""
-	var icone := Database.obter_icone_item(_item_vinculado) if item_ativo else ""
-	var nome := Database.obter_nome_item(_item_vinculado) if item_ativo else ""
+	var icone: String = str(Database.obter_icone_item(_item_vinculado)) if item_ativo else ""
+	var nome: String = str(Database.obter_nome_item(_item_vinculado)) if item_ativo else ""
 
 	if item_text_label:
 		item_text_label.visible = item_ativo

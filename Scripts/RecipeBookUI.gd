@@ -67,7 +67,7 @@ func _process(delta: float) -> void:
 		return
 	_refresh_check_accum = 0.0
 
-	var current_count := GlobalInventory.receitas_descobertas.size()
+	var current_count: int = GlobalInventory.receitas_descobertas.size()
 	if current_count != _last_discovered_count:
 		_refresh_recipe_list()
 	elif _inventory_changed() and _selected_recipe_id != "":
