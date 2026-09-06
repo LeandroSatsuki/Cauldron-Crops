@@ -287,6 +287,18 @@ var itens: Dictionary = {
 		"origem": "pesca",
 		"descricao": "Escama luminosa útil em receitas aquáticas e mágicas.",
 		"icone": "✨"
+	},
+	"fragmento_celestial": {
+		"nome": "Fragmento Celestial",
+		"categoria": "colecionavel",
+		"raridade": "raro",
+		"valor_base": 35,
+		"pode_vender": true,
+		"pode_usar_em_receita": false,
+		"tags": ["evento", "celestial", "colecionavel"],
+		"origem": "evento_mundo",
+		"descricao": "Um fragmento curioso que surgiu durante uma breve manifestacao no mundo.",
+		"icone": "*"
 	}
 }
 

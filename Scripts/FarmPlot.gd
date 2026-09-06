@@ -312,6 +312,7 @@ func harvest_by_golem() -> Array:
 	if recompensas.is_empty():
 		return []
 
+	EventDirector.notify_harvest(global_position)
 	_concluir_colheita()
 	return recompensas
 
@@ -335,6 +336,7 @@ func _colher_manualmente(mostrar_textos: bool = true) -> bool:
 		ui = tree.current_scene.get_node_or_null("UI")
 
 	_aplicar_recompensas_colheita(recompensas, ui, global_position, mostrar_textos)
+	EventDirector.notify_harvest(global_position)
 	_concluir_colheita()
 	_mostrar_feedback("Colhido!")
 	return true

@@ -2,7 +2,7 @@ extends Control
 
 signal minigame_closed
 
-const POPUP_SIZE: Vector2 = Vector2(560.0, 260.0)
+const POPUP_SIZE: Vector2 = Vector2(560.0, 290.0)
 const BAR_SIZE: Vector2 = Vector2(440.0, 36.0)
 const BAR_HIT_ZONE_SIZE: Vector2 = Vector2(88.0, 36.0)
 const BAR_HIT_ZONE_POSITION: Vector2 = Vector2(176.0, 0.0)
@@ -41,6 +41,7 @@ var _recompensa_aplicada: bool = false
 var pesca_favorecida: bool = false
 var _marker_position_x: float = 0.0
 var _marker_direction: float = 1.0
+var _mare_cintilante_rewarded: bool = false
 
 func _ready() -> void:
 	set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -99,6 +100,7 @@ func abrir_popup(origem_global: Vector2) -> Control:
 	_resultado_travado = false
 	_resultado_atual = FishingResult.MISS
 	_recompensa_aplicada = false
+	_mare_cintilante_rewarded = false
 	_aplicar_estado_visivel(true)
 	if popup_panel:
 		popup_panel.custom_minimum_size = POPUP_SIZE
@@ -196,7 +198,10 @@ func _confirmar_tentativa() -> void:
 					result_label.text = "Ressonância perfeita! Você encontrou %s." % Database.obter_nome_item("escama_brilhante")
 				result_label.modulate = Color(0.98, 0.92, 0.42, 1.0)
 			FishingResult.GOOD:
-				result_label.text = "Boa sincronia. Você pescou %s." % Database.obter_nome_item("peixe_comum")
+				if _mare_cintilante_rewarded:
+					result_label.text = "Maré Cintilante! Você pescou %s e encontrou uma Escama Brilhante." % Database.obter_nome_item("peixe_comum")
+				else:
+					result_label.text = "Boa sincronia. Você pescou %s." % Database.obter_nome_item("peixe_comum")
 				result_label.modulate = Color(0.55, 0.93, 1.0, 1.0)
 			_:
 				result_label.text = "O pulso se perdeu."
@@ -230,6 +235,7 @@ func _aplicar_recompensa(resultado: FishingResult) -> void:
 		FishingResult.GOOD:
 			GlobalInventory.adicionar_item("peixe_comum", 1)
 			GlobalInventory.registrar_item_colecao_pesca("peixe_comum")
+			_mare_cintilante_rewarded = EventDirector.reward_rare_fish_window()
 			_atualizar_ui_pos_recompensa()
 		FishingResult.PERFECT:
 			GlobalInventory.adicionar_item("escama_brilhante", 1)
@@ -248,11 +254,12 @@ func _atualizar_label_colecao() -> void:
 	if collection_label == null:
 		return
 	var progresso := GlobalInventory.obter_progresso_colecao_pesca()
+	var event_label := EventDirector.get_rare_fish_window_label()
 	if bool(progresso.get("concluida", false)):
-		collection_label.text = "Coleção do Lago completa — %s: zona boa ampliada." % str(progresso.get("bonus_nome", "Bônus ativo"))
+		collection_label.text = "Coleção do Lago completa — %s: zona boa ampliada.\n%s" % [str(progresso.get("bonus_nome", "Bônus ativo")), event_label]
 		collection_label.modulate = Color(0.65, 0.96, 0.8, 1.0)
 		return
-	collection_label.text = "Coleção do Lago: %d/%d descobertas" % [int(progresso.get("quantidade", 0)), int(progresso.get("total", 0))]
+	collection_label.text = "Coleção do Lago: %d/%d descobertas\n%s" % [int(progresso.get("quantidade", 0)), int(progresso.get("total", 0)), event_label]
 	collection_label.modulate = Color(0.72, 0.83, 0.98, 1.0)
 
 func _atualizar_ui_pos_recompensa() -> void:
