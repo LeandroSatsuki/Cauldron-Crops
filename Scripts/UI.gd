@@ -758,6 +758,9 @@ var purification_obstacle_ref: Node = null
 
 @onready var initial_objectives_footer_label: Label = $InitialObjectivesPanel/MarginContainer/VBoxObjectives/FooterLabel
 
+var initial_objectives_toggle_button: Button = null
+var _initial_objectives_minimized: bool = false
+
 
 
 
@@ -781,6 +784,8 @@ var ultimo_estado_inventario: Dictionary = {}
 
 
 var item_focado_id: String = ""
+
+@export var debug_shortcuts_enabled: bool = false
 
 
 
@@ -1749,6 +1754,7 @@ func _ready() -> void:
 
 
 		initial_objectives_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_configurar_controle_objetivos_iniciais()
 
 
 
@@ -2428,7 +2434,7 @@ func _input(event: InputEvent) -> void:
 
 
 
-	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_F10:
+	if debug_shortcuts_enabled and event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_F10:
 
 
 
@@ -2872,7 +2878,7 @@ func _process(delta: float) -> void:
 
 
 
-		season_label.text = "Estação: " + SeasonManager.obter_nome_estacao() + " | Ano: " + str(SeasonManager.ano)
+		season_label.text = "🌱 %s · Ano %d" % [SeasonManager.obter_nome_estacao(), int(SeasonManager.ano)]
 
 
 
@@ -2888,7 +2894,7 @@ func _process(delta: float) -> void:
 
 
 
-		cargas_label.text = "Água: " + str(int(GlobalInventory.inventario.get("agua", 0)))
+		cargas_label.text = "💧 %d" % int(GlobalInventory.inventario.get("agua", 0))
 
 
 
@@ -2976,7 +2982,7 @@ func _process(delta: float) -> void:
 
 
 
-		golems_label.text = "Golems Ativos: " + str(EconomyManager.total_golems)
+		golems_label.text = "🪨 Golem %d" % int(EconomyManager.total_golems)
 
 
 
@@ -3109,7 +3115,7 @@ func atualizar_status_jogo() -> void:
 
 
 
-		season_label.text = "Estação: %s | Ano %d" % [SeasonManager.obter_nome_estacao(), int(SeasonManager.ano)]
+		season_label.text = "🌱 %s · Ano %d" % [SeasonManager.obter_nome_estacao(), int(SeasonManager.ano)]
 
 
 
@@ -3125,7 +3131,7 @@ func atualizar_status_jogo() -> void:
 
 
 
-		cargas_label.text = "Água: %d" % int(GlobalInventory.inventario.get("agua", 0))
+		cargas_label.text = "💧 %d" % int(GlobalInventory.inventario.get("agua", 0))
 
 
 
@@ -3157,7 +3163,7 @@ func atualizar_status_jogo() -> void:
 
 
 
-		golems_label.text = "Golems: %d/%d" % [int(EconomyManager.total_golems), int(EconomyManager.max_golems)]
+		golems_label.text = "🪨 Golem %d" % int(EconomyManager.total_golems)
 
 
 
@@ -3205,7 +3211,7 @@ func atualizar_status_jogo() -> void:
 
 
 
-		tool_label.text = "Ferramenta: %s" % _obter_nome_ferramenta_ativa()
+		tool_label.text = "🛠 %s" % _obter_nome_ferramenta_ativa()
 
 
 
@@ -4014,6 +4020,25 @@ func atualizar_destaques() -> void:
 
 
 func _on_slot_clicado(item_id: String, is_right_click: bool, slot_node: Control) -> void:
+	# Inventario e' consulta; somente sementes entram em modo de plantio.
+	# Venda e loja ficam fora da V0 ate a economia receber contexto narrativo.
+	if is_right_click:
+		return
+	if item_id.begins_with("semente_"):
+		if GlobalInventory.semente_selecionada == item_id:
+			GlobalInventory.semente_selecionada = ""
+		else:
+			GlobalInventory.semente_selecionada = item_id
+			var tool_manager: Node = _obter_tool_manager()
+			if tool_manager != null and tool_manager.has_method("clear_tool"):
+				tool_manager.call("clear_tool")
+		item_focado_id = ""
+		atualizar_destaques()
+		atualizar_status_jogo()
+		return
+	item_focado_id = ""
+	atualizar_destaques()
+	return
 
 
 
@@ -5709,6 +5734,39 @@ func _capturar_baseline_objetivos_iniciais() -> void:
 
 
 
+func _configurar_controle_objetivos_iniciais() -> void:
+	if initial_objectives_toggle_button != null:
+		return
+	initial_objectives_toggle_button = Button.new()
+	initial_objectives_toggle_button.name = "InitialObjectivesToggleButton"
+	initial_objectives_toggle_button.focus_mode = Control.FOCUS_NONE
+	initial_objectives_toggle_button.tooltip_text = "Minimizar objetivos iniciais"
+	initial_objectives_toggle_button.set_anchors_preset(Control.PRESET_TOP_RIGHT)
+	initial_objectives_toggle_button.offset_left = -54.0
+	initial_objectives_toggle_button.offset_top = 24.0
+	initial_objectives_toggle_button.offset_right = -24.0
+	initial_objectives_toggle_button.offset_bottom = 52.0
+	add_child(initial_objectives_toggle_button)
+	initial_objectives_toggle_button.pressed.connect(_alternar_objetivos_iniciais)
+	_atualizar_visibilidade_objetivos_iniciais()
+
+
+func _alternar_objetivos_iniciais() -> void:
+	if _initial_objectives_completed:
+		return
+	_initial_objectives_minimized = not _initial_objectives_minimized
+	_atualizar_visibilidade_objetivos_iniciais()
+
+
+func _atualizar_visibilidade_objetivos_iniciais() -> void:
+	if initial_objectives_panel:
+		initial_objectives_panel.visible = not _initial_objectives_minimized and not (_initial_objectives_completed and _initial_objectives_completion_timer >= INITIAL_OBJECTIVES_HIDE_DELAY)
+	if initial_objectives_toggle_button:
+		initial_objectives_toggle_button.visible = not (_initial_objectives_completed and _initial_objectives_completion_timer >= INITIAL_OBJECTIVES_HIDE_DELAY)
+		initial_objectives_toggle_button.text = "▤" if _initial_objectives_minimized else "−"
+		initial_objectives_toggle_button.tooltip_text = "Mostrar objetivos iniciais" if _initial_objectives_minimized else "Minimizar objetivos iniciais"
+
+
 func _atualizar_objetivos_iniciais(delta: float) -> void:
 
 
@@ -5853,7 +5911,7 @@ func _atualizar_objetivos_iniciais(delta: float) -> void:
 
 
 
-			initial_objectives_panel.visible = false
+			_atualizar_visibilidade_objetivos_iniciais()
 
 
 
@@ -7549,7 +7607,7 @@ func _renderizar_objetivos_iniciais(estado: Dictionary) -> void:
 
 
 
-	if initial_objectives_panel.visible == false and not bool(estado.get("complete", false)):
+	if initial_objectives_panel.visible == false and not _initial_objectives_minimized and not bool(estado.get("complete", false)):
 
 
 
@@ -7917,7 +7975,8 @@ func _marcar_objetivos_iniciais_concluidos() -> void:
 
 
 
-		initial_objectives_panel.visible = true
+		_initial_objectives_minimized = false
+		_atualizar_visibilidade_objetivos_iniciais()
 
 
 
@@ -12921,7 +12980,8 @@ func reiniciar_objetivos_iniciais_apos_load() -> void:
 
 
 
-		initial_objectives_panel.visible = true
+		_initial_objectives_minimized = false
+		_atualizar_visibilidade_objetivos_iniciais()
 
 
 

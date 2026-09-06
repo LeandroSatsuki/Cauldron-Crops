@@ -8,7 +8,7 @@ var inventario: Dictionary = {
 	"semente_inverno": 0
 }
 var cargas_crescimento: int = 0
-var semente_selecionada: String = "semente_basica"
+var semente_selecionada: String = ""
 var receitas_descobertas: Array = []
 var pontos_alquimia: int = 0
 var skills_desbloqueadas: Array = []

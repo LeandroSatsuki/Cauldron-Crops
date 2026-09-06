@@ -14,12 +14,13 @@ script = ExtResource("1_uigd")
 [node name="StatusPanel" type="VBoxContainer" parent="." unique_id=2048173949]
 offset_left = 20.0
 offset_top = 20.0
-offset_right = 250.0
-offset_bottom = 180.0
+offset_right = 210.0
+offset_bottom = 130.0
 theme = ExtResource("3_pixeltheme")
 theme_override_constants/separation = 5
 
 [node name="MoedasLabel" type="Label" parent="StatusPanel" unique_id=1932157237]
+visible = false
 layout_mode = 2
 text = "Moedas: 0"
 
@@ -32,6 +33,7 @@ layout_mode = 2
 text = "Água: 0"
 
 [node name="SementeLabel" type="Label" parent="StatusPanel" unique_id=14489961]
+visible = false
 layout_mode = 2
 text = "Semente Atual: Trigo"
 
@@ -40,10 +42,12 @@ layout_mode = 2
 text = "Golems Ativos: 0"
 
 [node name="CapacityLabel" type="Label" parent="StatusPanel" unique_id=2147483646]
+visible = false
 layout_mode = 2
 text = "Capacidade: 0/0"
 
 [node name="ChestStatusLabel" type="Label" parent="StatusPanel" unique_id=2147483645]
+visible = false
 layout_mode = 2
 text = "Baú: não encontrado"
 
@@ -60,34 +64,42 @@ theme = ExtResource("3_pixeltheme")
 theme_override_constants/separation = 8
 
 [node name="BtnToolHoe" type="Button" parent="ToolBarPanel" unique_id=1730000002]
+focus_mode = 0
 layout_mode = 2
 tooltip_text = "Enxada"
 text = "1 Enxada"
 icon = ExtResource("4_toolhoe")
 
 [node name="BtnToolWateringCan" type="Button" parent="ToolBarPanel" unique_id=1730000004]
+focus_mode = 0
 layout_mode = 2
 tooltip_text = "Regador"
 text = "2 Regador"
 icon = ExtResource("5_toolwateringcan")
 
 [node name="BtnToolHarvest" type="Button" parent="ToolBarPanel" unique_id=1730000005]
+focus_mode = 0
 layout_mode = 2
 tooltip_text = "Colheita"
 text = "3 Colheita"
 icon = ExtResource("6_toolharvest")
 
 [node name="BtnToolFishingRod" type="Button" parent="ToolBarPanel" unique_id=1730000006]
+focus_mode = 0
 layout_mode = 2
 tooltip_text = "Vara de Pesca"
 text = "4 Vara"
 icon = ExtResource("7_toolfishingrod")
 
 [node name="InitialObjectivesPanel" type="PanelContainer" parent="." unique_id=1905000001]
-offset_left = 965.0
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -315.0
 offset_top = 20.0
-offset_right = 1260.0
+offset_right = -20.0
 offset_bottom = 260.0
+grow_horizontal = 0
 mouse_filter = 2
 theme = ExtResource("3_pixeltheme")
 
@@ -132,10 +144,11 @@ theme_override_constants/separation = 10
 [node name="HeaderAcoes" type="Label" parent="LeftPanel" unique_id=1722522138]
 modulate = Color(1, 1, 0, 1)
 layout_mode = 2
-text = "--- GERENCIAMENTO ---"
+text = "Caderno da Fazenda"
 horizontal_alignment = 1
 
 [node name="DormirButton" type="Button" parent="LeftPanel" unique_id=2091208078]
+visible = false
 layout_mode = 2
 text = "Dormir (Mudar Estação)"
 
@@ -144,6 +157,7 @@ layout_mode = 2
 text = "Usar Poção (3 Cargas)"
 
 [node name="AbrirSkillTreeButton" type="Button" parent="LeftPanel" unique_id=1432251359]
+visible = false
 layout_mode = 2
 text = "Árvore de Alquimia"
 
@@ -152,6 +166,7 @@ layout_mode = 2
 text = "Golem / Ajudante"
 
 [node name="AbrirQuestsButton" type="Button" parent="LeftPanel" unique_id=2117830448]
+visible = false
 layout_mode = 2
 text = "Mural de Demandas"
 
@@ -178,12 +193,14 @@ text = "Livro de Receitas"
 layout_mode = 2
 
 [node name="HeaderLoja" type="Label" parent="LeftPanel" unique_id=1646114359]
+visible = false
 modulate = Color(1, 1, 0, 1)
 layout_mode = 2
 text = "--- LOJA DE RECURSOS ---"
 horizontal_alignment = 1
 
 [node name="GridSementes" type="HBoxContainer" parent="LeftPanel" unique_id=248111658]
+visible = false
 layout_mode = 2
 theme_override_constants/separation = 10
 
@@ -198,15 +215,18 @@ layout_mode = 2
 text = "🍅 $10"
 
 [node name="Separator3" type="HSeparator" parent="LeftPanel" unique_id=1108179252]
+visible = false
 layout_mode = 2
 
 [node name="HeaderUpgrades" type="Label" parent="LeftPanel" unique_id=1519303709]
+visible = false
 modulate = Color(1, 1, 0, 1)
 layout_mode = 2
 text = "--- LOJA DE APRIMORAMENTOS ---"
 horizontal_alignment = 1
 
 [node name="ComprarCosmeticoButton" type="Button" parent="LeftPanel" unique_id=737885919]
+visible = false
 layout_mode = 2
 text = "Comprar Tema Verde (50 Moedas)"
 

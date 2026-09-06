@@ -19,6 +19,7 @@ var item_vinculado: String:
 @onready var destaque: ReferenceRect = $Destaque
 
 func _ready() -> void:
+	focus_mode = Control.FOCUS_NONE
 	# A MÁGICA ESTÁ AQUI: Garantir que o destaque visual
 	# NUNCA bloqueie os cliques do mouse quando estiver visível.
 	if destaque:

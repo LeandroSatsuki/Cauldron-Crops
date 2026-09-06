@@ -151,6 +151,9 @@ func _on_plot_clicked() -> void:
 		State.VAZIO:
 			# Se o lote for clicado no estado VAZIO:
 			var semente_id = GlobalInventory.semente_selecionada
+			if semente_id == "":
+				_mostrar_feedback("Selecione uma semente no inventario.")
+				return
 			if semente_id in Database:
 				semente_atual = Database.get(semente_id)
 			else:

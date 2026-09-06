@@ -16,6 +16,8 @@ func select_tool(tool: ToolType) -> void:
 		clear_tool()
 		return
 
+	if tool != ToolType.NONE:
+		GlobalInventory.semente_selecionada = ""
 	active_tool = tool
 	print("ToolManager: ferramenta ativa = %s" % get_tool_name(active_tool))
 
@@ -38,6 +40,8 @@ func force_select_tool(tool: ToolType) -> void:
 	if active_tool == tool:
 		return
 
+	if tool != ToolType.NONE:
+		GlobalInventory.semente_selecionada = ""
 	active_tool = tool
 	print("ToolManager: ferramenta ativa = %s" % get_tool_name(active_tool))
 
