@@ -1,5 +1,9 @@
 # Checklist de Release — V0
 
+**Status: APROVADA em 13 de setembro de 2026.**
+
+O autor validou manualmente a `V0-RC1` produzida pelo commit `8634b5d`. A candidata passou pelos 14 smoke tests em um worktree limpo, sem aceitar erros registrados pelo Godot.
+
 Use uma build limpa e, para testar a rota completa, inicie um save novo.
 
 ## Sessão principal
@@ -43,4 +47,4 @@ Use uma build limpa e, para testar a rota completa, inicie um save novo.
 
 ## Critério de aprovação
 
-A V0 está pronta para fechar quando o loop puder ser realizado sem sobreposição visual, clique ambíguo, duplicação de lote ou perda de estado após carregar.
+A V0 foi aprovada após o loop ser realizado sem sobreposição visual, clique ambíguo, duplicação de lote ou perda de estado após carregar.
