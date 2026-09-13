@@ -9,6 +9,7 @@ signal transition_failed(request: Dictionary, reason: String)
 const REGION_SCENE_PATHS: Dictionary = {
 	"farm_village": "res://Scenes/Main.tscn",
 	"transition_test_region": "res://Scenes/PrototypeExternalRegion.tscn",
+	"foraging_grove": "res://Scenes/ForagingGroveRegion.tscn",
 }
 const DEFAULT_FADE_DURATION_SECONDS: float = 0.2
 
@@ -275,8 +276,9 @@ func _exit_tree() -> void:
 	# Cenas inativas não possuem parent e precisam ser liberadas. A cena atual ainda
 	# pertence ao root e será liberada pelo próprio SceneTree durante o encerramento.
 	for scene_variant in _cached_region_scenes.values():
-		if scene_variant is Node and is_instance_valid(scene_variant):
-			var scene: Node = scene_variant
-			if scene.get_parent() == null:
-				scene.free()
+		if not is_instance_valid(scene_variant):
+			continue
+		var scene: Node = scene_variant as Node
+		if scene != null and scene.get_parent() == null:
+			scene.free()
 	_cached_region_scenes.clear()

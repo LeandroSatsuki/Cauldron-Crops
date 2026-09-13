@@ -1,0 +1,238 @@
+[gd_scene load_steps=12 format=3]
+
+[ext_resource type="Script" path="res://Scripts/ForagingGroveRegion.gd" id="1_region"]
+[ext_resource type="Script" path="res://Scripts/WorldRegion.gd" id="2_worldregion"]
+[ext_resource type="Script" path="res://Scripts/RegionEntryPoint.gd" id="3_entry"]
+[ext_resource type="PackedScene" path="res://Scenes/PlayerAvatar.tscn" id="4_player"]
+[ext_resource type="PackedScene" path="res://Scenes/PlayerDestinationMarker.tscn" id="5_marker"]
+[ext_resource type="PackedScene" path="res://Scenes/RegionGateway.tscn" id="6_gateway"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_title"]
+font_size = 24
+font_color = Color(0.91, 0.95, 0.81, 1)
+outline_size = 6
+outline_color = Color(0.045, 0.075, 0.045, 0.92)
+
+[sub_resource type="CircleShape2D" id="CircleShape_tree"]
+radius = 58.0
+
+[sub_resource type="CircleShape2D" id="CircleShape_rock_a"]
+radius = 35.0
+
+[sub_resource type="CircleShape2D" id="CircleShape_rock_b"]
+radius = 31.0
+
+[sub_resource type="CircleShape2D" id="CircleShape_rock_c"]
+radius = 33.0
+
+[node name="ForagingGroveRegion" type="Node2D"]
+script = ExtResource("1_region")
+navigation_bounds = Rect2(0, 0, 2560, 1440)
+navigation_polygon_vertices = PackedVector2Array(80, 900, 560, 900, 820, 980, 930, 1160, 1120, 1320, 1530, 1360, 1760, 1240, 1840, 1040, 2030, 940, 2480, 940, 2480, 500, 2080, 500, 1900, 430, 1940, 230, 1770, 100, 900, 100, 760, 220, 780, 360, 720, 480, 540, 560, 80, 560)
+
+[node name="Background" type="Polygon2D" parent="."]
+z_index = -120
+color = Color(0.075, 0.19, 0.105, 1)
+polygon = PackedVector2Array(0, 0, 0, 1440, 2560, 1440, 2560, 0)
+
+[node name="WalkableGround" type="Polygon2D" parent="."]
+z_index = -110
+color = Color(0.22, 0.43, 0.2, 1)
+polygon = PackedVector2Array(80, 560, 540, 560, 720, 480, 780, 360, 760, 220, 900, 100, 1770, 100, 1940, 230, 1900, 430, 2080, 500, 2480, 500, 2480, 940, 2030, 940, 1840, 1040, 1760, 1240, 1530, 1360, 1120, 1320, 930, 1160, 820, 980, 560, 900, 80, 900)
+
+[node name="MainPath" type="Line2D" parent="."]
+z_index = -100
+width = 142.0
+default_color = Color(0.43, 0.36, 0.21, 0.82)
+points = PackedVector2Array(100, 730, 430, 720, 720, 720, 960, 770, 1230, 750, 1530, 700, 1840, 720, 2160, 710, 2470, 720)
+joint_mode = 1
+begin_cap_mode = 2
+end_cap_mode = 2
+antialiased = true
+
+[node name="OptionalBranchPath" type="Line2D" parent="."]
+z_index = -99
+width = 104.0
+default_color = Color(0.39, 0.34, 0.2, 0.78)
+points = PackedVector2Array(980, 750, 1080, 570, 1280, 410, 1510, 310, 1750, 300)
+joint_mode = 1
+begin_cap_mode = 2
+end_cap_mode = 2
+antialiased = true
+
+[node name="LowerClearingPath" type="Line2D" parent="."]
+z_index = -99
+width = 112.0
+default_color = Color(0.38, 0.33, 0.2, 0.72)
+points = PackedVector2Array(1230, 760, 1320, 920, 1450, 1090, 1570, 1220)
+joint_mode = 1
+begin_cap_mode = 2
+end_cap_mode = 2
+antialiased = true
+
+[node name="ForestTop" type="Polygon2D" parent="."]
+z_index = -80
+color = Color(0.09, 0.29, 0.13, 1)
+polygon = PackedVector2Array(0, 0, 2560, 0, 2560, 430, 2250, 420, 2070, 450, 1940, 380, 1990, 210, 1790, 60, 870, 60, 700, 190, 700, 380, 520, 500, 0, 500)
+
+[node name="ForestBottom" type="Polygon2D" parent="."]
+z_index = -80
+color = Color(0.07, 0.26, 0.12, 1)
+polygon = PackedVector2Array(0, 960, 550, 960, 760, 1040, 870, 1210, 1060, 1380, 2560, 1380, 2560, 1440, 0, 1440)
+
+[node name="RegionContext" type="Node2D" parent="."]
+script = ExtResource("2_worldregion")
+region_id = &"foraging_grove"
+display_name = "Bosque de Forrageamento"
+default_entry_id = &"from_farm"
+
+[node name="FromFarm" type="Marker2D" parent="RegionContext"]
+position = Vector2(340, 720)
+script = ExtResource("3_entry")
+entry_id = &"from_farm"
+
+[node name="NavigationRegion2D" type="NavigationRegion2D" parent="."]
+
+[node name="MainCamera" type="Camera2D" parent="."]
+position = Vector2(960, 720)
+
+[node name="PlayerAvatar" parent="." instance=ExtResource("4_player")]
+position = Vector2(340, 720)
+
+[node name="PlayerDestinationMarker" parent="." instance=ExtResource("5_marker")]
+
+[node name="ReturnGateway" parent="." instance=ExtResource("6_gateway")]
+position = Vector2(170, 720)
+target_region_id = &"farm_village"
+target_entry_id = &"from_foraging_grove"
+source_exit_id = &"grove_entrance"
+label_text = "Retornar à Fazenda/Vila"
+
+[node name="EntryLandmark" type="Node2D" parent="." groups=["region_landmark"]]
+position = Vector2(440, 720)
+
+[node name="LeftStone" type="Polygon2D" parent="EntryLandmark"]
+position = Vector2(-28, 36)
+color = Color(0.38, 0.43, 0.3, 1)
+polygon = PackedVector2Array(-16, 18, -22, 0, -12, -24, 10, -26, 24, -6, 18, 18)
+
+[node name="RightStone" type="Polygon2D" parent="EntryLandmark"]
+position = Vector2(30, 32)
+color = Color(0.43, 0.47, 0.32, 1)
+polygon = PackedVector2Array(-18, 18, -24, -2, -10, -28, 14, -24, 24, 0, 16, 20)
+
+[node name="CentralTreeLandmark" type="Node2D" parent="." groups=["region_landmark"]]
+position = Vector2(1240, 750)
+z_index = 760
+
+[node name="Shadow" type="Polygon2D" parent="CentralTreeLandmark"]
+position = Vector2(0, 48)
+color = Color(0.04, 0.1, 0.045, 0.5)
+polygon = PackedVector2Array(-88, 0, -56, -24, 12, -30, 80, -12, 94, 10, 58, 28, -30, 30)
+
+[node name="Trunk" type="Polygon2D" parent="CentralTreeLandmark"]
+color = Color(0.3, 0.2, 0.105, 1)
+polygon = PackedVector2Array(-22, 58, -34, 0, -20, -68, 22, -68, 34, 0, 24, 58)
+
+[node name="CanopyBack" type="Polygon2D" parent="CentralTreeLandmark"]
+position = Vector2(0, -72)
+color = Color(0.09, 0.34, 0.13, 1)
+polygon = PackedVector2Array(-92, 10, -78, -48, -28, -82, 34, -78, 84, -38, 96, 18, 62, 62, 0, 76, -58, 58)
+
+[node name="CanopyLight" type="Polygon2D" parent="CentralTreeLandmark"]
+position = Vector2(-12, -88)
+color = Color(0.2, 0.52, 0.22, 1)
+polygon = PackedVector2Array(-58, 4, -40, -40, 4, -58, 48, -32, 62, 8, 38, 40, -10, 48, -48, 32)
+
+[node name="Body" type="StaticBody2D" parent="CentralTreeLandmark"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CentralTreeLandmark/Body"]
+position = Vector2(0, 18)
+shape = SubResource("CircleShape_tree")
+
+[node name="NavigationObstacle2D" type="NavigationObstacle2D" parent="CentralTreeLandmark"]
+position = Vector2(0, 18)
+radius = 72.0
+avoidance_enabled = true
+
+[node name="OptionalGlowLandmark" type="Node2D" parent="." groups=["region_landmark"]]
+position = Vector2(1600, 300)
+z_index = 310
+
+[node name="Glow" type="Polygon2D" parent="OptionalGlowLandmark"]
+color = Color(0.3, 0.72, 0.64, 0.32)
+polygon = PackedVector2Array(0, -70, 52, -48, 76, 0, 52, 48, 0, 70, -52, 48, -76, 0, -52, -48)
+
+[node name="Ring" type="Line2D" parent="OptionalGlowLandmark"]
+width = 6.0
+default_color = Color(0.65, 0.92, 0.72, 0.82)
+points = PackedVector2Array(0, -48, 34, -34, 48, 0, 34, 34, 0, 48, -34, 34, -48, 0, -34, -34, 0, -48)
+antialiased = true
+
+[node name="DeepClearingLandmark" type="Node2D" parent="." groups=["region_landmark"]]
+position = Vector2(2160, 710)
+z_index = 710
+
+[node name="LeafPatch" type="Polygon2D" parent="DeepClearingLandmark"]
+color = Color(0.58, 0.65, 0.2, 0.74)
+polygon = PackedVector2Array(-120, 34, -92, -42, -20, -70, 58, -56, 120, -8, 92, 54, 18, 76, -66, 68)
+
+[node name="Center" type="Polygon2D" parent="DeepClearingLandmark"]
+color = Color(0.72, 0.76, 0.3, 0.78)
+polygon = PackedVector2Array(-54, 22, -42, -26, 0, -48, 48, -20, 56, 24, 10, 46)
+
+[node name="BoundaryRocks" type="Node2D" parent="."]
+
+[node name="RockA" type="StaticBody2D" parent="BoundaryRocks"]
+position = Vector2(770, 510)
+
+[node name="Visual" type="Polygon2D" parent="BoundaryRocks/RockA"]
+color = Color(0.34, 0.39, 0.29, 1)
+polygon = PackedVector2Array(-34, 20, -42, -4, -20, -36, 18, -34, 42, -4, 30, 26)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BoundaryRocks/RockA"]
+shape = SubResource("CircleShape_rock_a")
+
+[node name="Obstacle" type="NavigationObstacle2D" parent="BoundaryRocks/RockA"]
+radius = 42.0
+avoidance_enabled = true
+
+[node name="RockB" type="StaticBody2D" parent="BoundaryRocks"]
+position = Vector2(1840, 475)
+
+[node name="Visual" type="Polygon2D" parent="BoundaryRocks/RockB"]
+color = Color(0.31, 0.37, 0.27, 1)
+polygon = PackedVector2Array(-30, 18, -38, -6, -16, -34, 20, -30, 38, 0, 24, 24)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BoundaryRocks/RockB"]
+shape = SubResource("CircleShape_rock_b")
+
+[node name="Obstacle" type="NavigationObstacle2D" parent="BoundaryRocks/RockB"]
+radius = 39.0
+avoidance_enabled = true
+
+[node name="RockC" type="StaticBody2D" parent="BoundaryRocks"]
+position = Vector2(1810, 1030)
+
+[node name="Visual" type="Polygon2D" parent="BoundaryRocks/RockC"]
+color = Color(0.37, 0.4, 0.28, 1)
+polygon = PackedVector2Array(-32, 22, -40, -8, -12, -36, 24, -28, 40, 4, 22, 28)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BoundaryRocks/RockC"]
+shape = SubResource("CircleShape_rock_c")
+
+[node name="Obstacle" type="NavigationObstacle2D" parent="BoundaryRocks/RockC"]
+radius = 41.0
+avoidance_enabled = true
+
+[node name="TitleLayer" type="CanvasLayer" parent="."]
+
+[node name="Title" type="Label" parent="TitleLayer"]
+offset_left = 0.0
+offset_top = 28.0
+offset_right = 1920.0
+offset_bottom = 66.0
+mouse_filter = 2
+text = "Bosque de Forrageamento — shell navegável"
+label_settings = SubResource("LabelSettings_title")
+horizontal_alignment = 1

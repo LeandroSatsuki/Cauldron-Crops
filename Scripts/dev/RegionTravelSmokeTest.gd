@@ -58,7 +58,8 @@ func _run() -> void:
 		_fail("cena externa nao se tornou a regiao atual")
 		return
 	var external_identity: Dictionary = external_region.call("get_current_region_identity")
-	if external_identity.get("region_id", "") != "transition_test_region":
+	var expected_region_id: String = String(outward_gateway.target_region_id)
+	if external_identity.get("region_id", "") != expected_region_id:
 		_fail("identidade da cena externa esta incorreta")
 		return
 	var external_entry: Dictionary = external_region.call("resolve_region_entry", &"from_farm")
@@ -99,12 +100,12 @@ func _run() -> void:
 	if int(returned_farm.get_meta("region_travel_preservation_probe", 0)) != 73:
 		_fail("estado runtime da Fazenda/Vila foi perdido durante a viagem")
 		return
-	var return_entry: Dictionary = returned_farm.call("resolve_region_entry", &"from_transition_test")
+	var return_entry: Dictionary = returned_farm.call("resolve_region_entry", &"from_foraging_grove")
 	var returned_player: CharacterBody2D = returned_farm.get_node_or_null("PlayerAvatar") as CharacterBody2D
 	if returned_player == null or not returned_player.global_position.is_equal_approx(return_entry.get("global_position", Vector2.ZERO)):
 		_fail("familiar nao retornou pela entrada correspondente")
 		return
-	if coordinator.call("get_cached_region_scene", &"transition_test_region") != external_region:
+	if coordinator.call("get_cached_region_scene", StringName(expected_region_id)) != external_region:
 		_fail("regiao externa nao foi preservada para uma nova visita")
 		return
 	if bool(coordinator.call("is_input_blocked")) or float(coordinator.call("get_transition_overlay_alpha")) > 0.01:

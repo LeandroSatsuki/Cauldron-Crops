@@ -2,7 +2,20 @@
 
 ## Status
 
-Plano técnico e de design. Ainda não autoriza conteúdo final, lore definitiva, novos itens ou expansão do save.
+Fase A implementada e automatizada; aguarda validação manual antes da Fase B.
+
+Continua sem autorização para conteúdo final, lore definitiva, novos itens ou expansão do save.
+
+### Entrega da Fase A
+
+- `ForagingGroveRegion` é uma cena nova; o protótipo técnico foi preservado.
+- A Fazenda/Vila conduz ao bosque e recebe o familiar por uma entrada correspondente no retorno.
+- O shell artesanal possui entrada segura, clareira principal, ramo opcional, clareira inferior e marcos visuais.
+- A navegação usa um polígono côncavo triangulado; mata fechada, limites e obstáculos centrais não aceitam movimento direto.
+- A câmera respeita os limites de `2560 × 1440` e o retorno permanece disponível.
+- Ainda não existem pontos de coleta, recursos, descoberta, lore ou persistência adicional nessa região.
+- `ForagingGroveShellSmokeTest` valida identidade, entrada, limites, câmera, marcos, áreas caminháveis/bloqueadas e deslocamento.
+- `RegionTravelSmokeTest` valida a viagem real entre Fazenda/Vila e bosque, o retorno e a preservação do estado runtime.
 
 ## Estado de partida
 
@@ -130,6 +143,8 @@ Uma regra de renovação por dia/estação só deve ser criada quando o tempo re
 - Configurar `WorldRegion`, entradas, câmera, navegação e retorno.
 - Construir apenas terreno, caminhos, limites e três landmarks em blockout coeso.
 - Validar ida, exploração e retorno sem coleta.
+
+Estado: implementada; pendente apenas de validação manual.
 
 ### Fase B — coleta vertical
 
