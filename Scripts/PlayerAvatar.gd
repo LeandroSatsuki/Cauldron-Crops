@@ -18,18 +18,33 @@ func _ready() -> void:
 	_requested_destination = global_position
 	if navigation_agent:
 		navigation_agent.max_speed = move_speed_pixels_per_second
+		if not navigation_agent.velocity_computed.is_connected(_on_navigation_velocity_computed):
+			navigation_agent.velocity_computed.connect(_on_navigation_velocity_computed)
 
 
 func _physics_process(_delta: float) -> void:
 	z_index = int(global_position.y) + 6
 	if not _has_active_destination():
-		velocity = Vector2.ZERO
-		move_and_slide()
+		_apply_velocity(Vector2.ZERO)
 		return
 
 	var next_path_position: Vector2 = navigation_agent.get_next_path_position()
 	var direction: Vector2 = global_position.direction_to(next_path_position)
-	velocity = direction * move_speed_pixels_per_second
+	var desired_velocity: Vector2 = direction * move_speed_pixels_per_second
+	if navigation_agent.avoidance_enabled:
+		navigation_agent.velocity = desired_velocity
+	else:
+		_apply_velocity(desired_velocity)
+
+
+func _on_navigation_velocity_computed(safe_velocity: Vector2) -> void:
+	if not _has_destination:
+		return
+	_apply_velocity(safe_velocity)
+
+
+func _apply_velocity(new_velocity: Vector2) -> void:
+	velocity = new_velocity
 	move_and_slide()
 
 

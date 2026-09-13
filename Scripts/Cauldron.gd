@@ -31,9 +31,11 @@ var _batch_quantidade_concluida: int = 0
 var _batch_ativo: bool = false
 var _drag_helper: UIDragHelper = null
 var recipe_resolver = null
+var _navigation_obstacle: NavigationObstacle2D = null
 
 func _ready() -> void:
 	add_to_group("cauldrons")
+	_navigation_obstacle = _ensure_navigation_obstacle($BaseAnchor, 62.0)
 	if popup_ui and is_instance_valid(popup_ui):
 		var title_handle := popup_ui.get_node_or_null("TitleLabel") as Control
 		if title_handle:
@@ -72,6 +74,17 @@ func _ready() -> void:
 	# Shader Material
 	material = ShaderMaterial.new()
 	material.shader = load("res://Shaders/transparencia.gdshader")
+
+
+func _ensure_navigation_obstacle(parent_node: Node2D, obstacle_radius: float) -> NavigationObstacle2D:
+	var obstacle: NavigationObstacle2D = parent_node.get_node_or_null("PlayerNavigationObstacle") as NavigationObstacle2D
+	if obstacle == null:
+		obstacle = NavigationObstacle2D.new()
+		obstacle.name = "PlayerNavigationObstacle"
+		parent_node.add_child(obstacle)
+	obstacle.radius = obstacle_radius
+	obstacle.avoidance_enabled = true
+	return obstacle
 
 func _initialize_recipe_resolver() -> void:
 	recipe_resolver = RecipeResolverScript.new()

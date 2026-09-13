@@ -14,6 +14,10 @@ avoidance_enabled = true
 path_desired_distance = 7.0
 target_desired_distance = 8.0
 radius = 13.0
+neighbor_distance = 180.0
+max_neighbors = 8
+time_horizon_agents = 0.8
+time_horizon_obstacles = 0.8
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0, 4)

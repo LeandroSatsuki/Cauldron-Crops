@@ -15,13 +15,27 @@ var purification_progress: Dictionary = {}
 
 @onready var collision_shape: CollisionShape2D = $CollisionShape2D
 @onready var visual_root: Node2D = $Visual
+var _navigation_obstacle: NavigationObstacle2D = null
 
 func _ready() -> void:
 	add_to_group("purification_obstacle")
+	_navigation_obstacle = _ensure_navigation_obstacle()
 	input_pickable = true
 	_normalizar_progresso()
 	_aplicar_estado()
 	print("PurificationObstacle: ready. parent=%s global_position=%s visible=%s purificado=%s" % [str(get_parent().get_path() if get_parent() else "null"), str(global_position), str(visible), str(purified_state)])
+
+
+func _ensure_navigation_obstacle() -> NavigationObstacle2D:
+	var obstacle: NavigationObstacle2D = get_node_or_null("PlayerNavigationObstacle") as NavigationObstacle2D
+	if obstacle == null:
+		obstacle = NavigationObstacle2D.new()
+		obstacle.name = "PlayerNavigationObstacle"
+		obstacle.position = interaction_offset
+		add_child(obstacle)
+	obstacle.radius = maxf(interaction_size.x, interaction_size.y) * 0.48
+	obstacle.avoidance_enabled = not purified_state
+	return obstacle
 
 func _input_event(_viewport: Viewport, event: InputEvent, _shape_idx: int) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
@@ -281,6 +295,8 @@ func _aplicar_estado() -> void:
 	input_pickable = not purified_state
 	visible = not purified_state
 	modulate = Color(1, 1, 1, 1.0)
+	if _navigation_obstacle:
+		_navigation_obstacle.avoidance_enabled = not purified_state
 
 func _notificar_interface_purificacao() -> void:
 	var ui := _obter_ui()

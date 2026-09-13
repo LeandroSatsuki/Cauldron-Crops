@@ -12,6 +12,7 @@ const RESTORATION_PROJECT_SCENE_PATH: String = "res://Scenes/RestorationProject.
 @onready var navigation_region: NavigationRegion2D = $NavigationRegion2D
 @onready var main_camera: Camera2D = get_node_or_null("MainCamera") as Camera2D
 @onready var player_avatar: CharacterBody2D = get_node_or_null("PlayerAvatar") as CharacterBody2D
+@onready var player_destination_marker: Node2D = get_node_or_null("PlayerDestinationMarker") as Node2D
 
 
 
@@ -48,6 +49,7 @@ const FREE_FARMING_PILOT_Z_INDEX: int = 35
 const FREE_FARMING_REASON_OUTSIDE_PILOT: String = "outside_free_farming_pilot"
 const FREE_FARMING_REASON_HOE_REQUIRED: String = "hoe_required"
 const FREE_FARMING_REASON_PREPARATION_FAILED: String = "preparation_failed"
+const WORLD_NAVIGATION_BOUNDS: Rect2 = Rect2(-512.0, -384.0, 3072.0, 2304.0)
 
 
 @export var cultivable_grid_bounds: Rect2i = Rect2i(Vector2i(-8, -5), Vector2i(24, 14))
@@ -125,6 +127,7 @@ func _process(delta: float) -> void:
 		_process_pending_player_interaction()
 		return
 	if not player_avatar.has_method("has_active_destination") or not bool(player_avatar.call("has_active_destination")):
+		_clear_player_destination_marker()
 		return
 	if _player_movement_is_blocked_by_mode() and player_avatar.has_method("stop_moving"):
 		player_avatar.call("stop_moving")
@@ -139,15 +142,11 @@ func _configurar_regiao_navegacao() -> void:
 
 
 
-	var screen_size := get_viewport_rect().size
-
-	var margem := 192.0
-
 	var vertices := PackedVector2Array([
-		Vector2(-margem, -margem),
-		Vector2(screen_size.x + margem, -margem),
-		Vector2(screen_size.x + margem, screen_size.y + margem),
-		Vector2(-margem, screen_size.y + margem)
+		WORLD_NAVIGATION_BOUNDS.position,
+		Vector2(WORLD_NAVIGATION_BOUNDS.position.x, WORLD_NAVIGATION_BOUNDS.end.y),
+		WORLD_NAVIGATION_BOUNDS.end,
+		Vector2(WORLD_NAVIGATION_BOUNDS.end.x, WORLD_NAVIGATION_BOUNDS.position.y)
 	])
 
 	var polygon := NavigationPolygon.new()
@@ -291,7 +290,10 @@ func try_move_player_to(world_position: Vector2, check_interaction_colliders: bo
 		return false
 	_cancel_pending_player_interaction(false)
 	set_camera_follow_enabled(true)
-	return bool(player_avatar.request_move(world_position))
+	var move_requested: bool = bool(player_avatar.request_move(world_position))
+	if move_requested:
+		_show_player_destination_marker(world_position, false)
+	return move_requested
 
 
 func request_player_interaction(target: Node, target_position: Vector2, interaction_distance: float, callback: Callable) -> bool:
@@ -308,6 +310,7 @@ func request_player_interaction(target: Node, target_position: Vector2, interact
 	if player_avatar.global_position.distance_to(target_position) <= safe_distance:
 		if player_avatar.has_method("stop_moving"):
 			player_avatar.call("stop_moving")
+		_clear_player_destination_marker()
 		callback.call()
 		return true
 
@@ -325,6 +328,7 @@ func request_player_interaction(target: Node, target_position: Vector2, interact
 	if not bool(player_avatar.request_move(approach_position)):
 		_pending_player_interaction.clear()
 		return false
+	_show_player_destination_marker(target_position, true)
 	return true
 
 
@@ -370,6 +374,7 @@ func _process_pending_player_interaction() -> void:
 		_pending_player_interaction.clear()
 		if player_avatar.has_method("stop_moving"):
 			player_avatar.call("stop_moving")
+		_clear_player_destination_marker()
 		callback.call()
 		return
 
@@ -379,8 +384,19 @@ func _process_pending_player_interaction() -> void:
 
 func _cancel_pending_player_interaction(stop_player: bool) -> void:
 	_pending_player_interaction.clear()
+	_clear_player_destination_marker()
 	if stop_player and player_avatar != null and is_instance_valid(player_avatar) and player_avatar.has_method("stop_moving"):
 		player_avatar.call("stop_moving")
+
+
+func _show_player_destination_marker(world_position: Vector2, interaction: bool) -> void:
+	if player_destination_marker != null and player_destination_marker.has_method("show_destination"):
+		player_destination_marker.call("show_destination", world_position, interaction)
+
+
+func _clear_player_destination_marker() -> void:
+	if player_destination_marker != null and player_destination_marker.visible and player_destination_marker.has_method("clear_destination"):
+		player_destination_marker.call("clear_destination")
 
 
 func _get_player_action_signature() -> String:

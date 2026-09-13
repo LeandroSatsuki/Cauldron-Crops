@@ -27,9 +27,11 @@ var moving_area_base_position: Vector2 = Vector2.ZERO
 var moving_area_base_scale: Vector2 = Vector2.ONE
 var moving_area_base_modulate: Color = Color(1.0, 1.0, 1.0, 1.0)
 var moving_area_configured_logged: bool = false
+var _navigation_obstacle: NavigationObstacle2D = null
 
 func _ready() -> void:
 	add_to_group("fishing_spot")
+	_navigation_obstacle = _ensure_navigation_obstacle(145.0)
 	input_pickable = true
 	set_process(true)
 	_ensure_moving_fishing_area()
@@ -45,6 +47,17 @@ func _ready() -> void:
 			fishing_bite_timer.wait_time = 3.0
 		fishing_bite_timer.one_shot = true
 	_definir_estado(FishingState.IDLE)
+
+
+func _ensure_navigation_obstacle(obstacle_radius: float) -> NavigationObstacle2D:
+	var obstacle: NavigationObstacle2D = get_node_or_null("PlayerNavigationObstacle") as NavigationObstacle2D
+	if obstacle == null:
+		obstacle = NavigationObstacle2D.new()
+		obstacle.name = "PlayerNavigationObstacle"
+		add_child(obstacle)
+	obstacle.radius = obstacle_radius
+	obstacle.avoidance_enabled = true
+	return obstacle
 
 func _process(delta: float) -> void:
 	_atualizar_area_com_movimento(delta)

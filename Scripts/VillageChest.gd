@@ -3,11 +3,24 @@ class_name VillageChest
 
 var inventory: Dictionary = {}
 @onready var clickable_area: Area2D = $ClickableArea
+var _navigation_obstacle: NavigationObstacle2D = null
 
 func _ready() -> void:
 	add_to_group("village_chest")
+	_navigation_obstacle = _ensure_navigation_obstacle(42.0)
 	if clickable_area and not clickable_area.input_event.is_connected(_on_clickable_area_input_event):
 		clickable_area.input_event.connect(_on_clickable_area_input_event)
+
+
+func _ensure_navigation_obstacle(obstacle_radius: float) -> NavigationObstacle2D:
+	var obstacle: NavigationObstacle2D = get_node_or_null("PlayerNavigationObstacle") as NavigationObstacle2D
+	if obstacle == null:
+		obstacle = NavigationObstacle2D.new()
+		obstacle.name = "PlayerNavigationObstacle"
+		add_child(obstacle)
+	obstacle.radius = obstacle_radius
+	obstacle.avoidance_enabled = true
+	return obstacle
 
 func _process(_delta: float) -> void:
 	z_index = int(global_position.y) + 15

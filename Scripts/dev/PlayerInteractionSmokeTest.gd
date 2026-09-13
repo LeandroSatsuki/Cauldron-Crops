@@ -46,6 +46,10 @@ func _run() -> void:
 	if not bool(main.call("request_player_interaction", chest, chest.global_position, 52.0, Callable(self, "_mark_interaction_complete"))):
 		_fail("interacao distante nao foi aceita")
 		return
+	var marker: Node2D = main.get_node_or_null("PlayerDestinationMarker") as Node2D
+	if marker == null or not marker.visible or not bool(marker.call("is_interaction_destination")):
+		_fail("marcador de interacao nao apareceu com o estado correto")
+		return
 	if _interaction_completed or not bool(main.call("has_pending_player_interaction")):
 		_fail("interacao distante executou sem aproximacao")
 		return
@@ -53,6 +57,9 @@ func _run() -> void:
 	main.call("_process_pending_player_interaction")
 	if not _interaction_completed or bool(main.call("has_pending_player_interaction")):
 		_fail("interacao nao executou ao entrar no alcance")
+		return
+	if marker.visible:
+		_fail("marcador de interacao nao desapareceu ao concluir")
 		return
 
 	_interaction_completed = false
