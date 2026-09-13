@@ -122,6 +122,7 @@ func _ready() -> void:
 
 	_criar_marcador_agricultura_livre()
 	_configurar_camera_inicial(start_x, start_y)
+	_register_with_travel_coordinator.call_deferred()
 
 
 func _configurar_contexto_regiao() -> void:
@@ -133,6 +134,29 @@ func _configurar_contexto_regiao() -> void:
 	var entry: Dictionary = world_region.resolve_entry()
 	if player_avatar != null and bool(entry.get("found", false)):
 		player_avatar.global_position = entry.get("global_position", player_avatar.global_position)
+
+
+func enter_region_at(entry_id: StringName = &"") -> bool:
+	if world_region == null or player_avatar == null or not is_instance_valid(player_avatar):
+		return false
+	world_region.refresh_entry_points()
+	var entry: Dictionary = world_region.resolve_entry(entry_id)
+	if not bool(entry.get("found", false)):
+		return false
+	_cancel_pending_player_interaction(true)
+	player_avatar.global_position = entry.get("global_position", player_avatar.global_position)
+	player_avatar.call("stop_moving")
+	if main_camera != null:
+		main_camera.make_current()
+		main_camera.global_position = player_avatar.global_position
+	_camera_follow_enabled = true
+	return true
+
+
+func _register_with_travel_coordinator() -> void:
+	var coordinator: Node = get_tree().root.get_node_or_null("RegionTravelCoordinator")
+	if coordinator != null and coordinator.has_method("register_region_scene"):
+		coordinator.call("register_region_scene", self)
 
 
 func get_current_region_identity() -> Dictionary:

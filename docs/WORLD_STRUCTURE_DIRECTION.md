@@ -23,5 +23,7 @@
 - A primeira área purificada também contém o Herbário das Marcas: uma ruína que pode ser restaurada com recursos já existentes, muda visualmente o local e revela uma Rama Encantada.
 - O estado de restauração é salvo como dado opcional da expansão, preservando a compatibilidade do save v4.
 - A Fazenda/Vila declara a identidade `farm_village`, o ponto de entrada `village_arrival` e um contrato local de pedido de transição.
-- O contrato apenas preserva origem e destino e emite o pedido; ele não carrega cenas, cria regiões externas ou altera o save.
-- A arquitetura continua local à Fazenda/Vila. Não há `RegionManager` global nem simulação antecipada de mapas descarregados.
+- `RegionTravelCoordinator` executa a troca entre cenas e mantém as regiões visitadas em memória, sem salvar automaticamente nem alterar o schema de save.
+- `PrototypeExternalRegion` é uma área estritamente técnica para validar ida, retorno, pontos de entrada e preservação da Fazenda; não define conteúdo ou lore de uma região final.
+- A Fazenda sai da árvore enquanto outra região está ativa, portanto seus timers e sistemas locais não continuam processando em segundo plano.
+- Ainda não há simulação abstrata de mapas descarregados, catálogo extensível de regiões ou persistência da localização do jogador entre sessões.

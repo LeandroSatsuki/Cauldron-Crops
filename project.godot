@@ -27,6 +27,7 @@ QuestManager="*res://Scripts/QuestManager.gd"
 SaveManager="*res://Scripts/SaveManager.gd"
 ToolManager="*res://Scripts/ToolManager.gd"
 EventDirector="*res://Scripts/EventDirector.gd"
+RegionTravelCoordinator="*res://Scripts/RegionTravelCoordinator.gd"
 
 [display]
 

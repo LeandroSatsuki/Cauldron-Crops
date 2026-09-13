@@ -1,0 +1,85 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://Scripts/PrototypeExternalRegion.gd" id="1_region"]
+[ext_resource type="Script" path="res://Scripts/WorldRegion.gd" id="2_worldregion"]
+[ext_resource type="Script" path="res://Scripts/RegionEntryPoint.gd" id="3_entry"]
+[ext_resource type="PackedScene" path="res://Scenes/PlayerAvatar.tscn" id="4_player"]
+[ext_resource type="PackedScene" path="res://Scenes/PlayerDestinationMarker.tscn" id="5_marker"]
+[ext_resource type="PackedScene" path="res://Scenes/RegionGateway.tscn" id="6_gateway"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_title"]
+font_size = 28
+font_color = Color(0.94, 0.96, 0.83, 1)
+outline_size = 7
+outline_color = Color(0.08, 0.12, 0.09, 0.92)
+
+[node name="PrototypeExternalRegion" type="Node2D"]
+script = ExtResource("1_region")
+
+[node name="Background" type="Polygon2D" parent="."]
+z_index = -100
+color = Color(0.18, 0.38, 0.2, 1)
+polygon = PackedVector2Array(0, 0, 0, 1080, 1920, 1080, 1920, 0)
+
+[node name="Path" type="Polygon2D" parent="."]
+z_index = -90
+color = Color(0.46, 0.4, 0.24, 0.76)
+polygon = PackedVector2Array(0, 470, 0, 640, 520, 650, 850, 590, 1180, 620, 1530, 550, 1920, 590, 1920, 430, 1530, 390, 1180, 460, 850, 430, 520, 490)
+
+[node name="Clearing" type="Polygon2D" parent="."]
+z_index = -89
+color = Color(0.3, 0.52, 0.27, 1)
+polygon = PackedVector2Array(650, 360, 820, 260, 1080, 250, 1260, 360, 1320, 560, 1230, 760, 1000, 830, 760, 750, 620, 560)
+
+[node name="RegionContext" type="Node2D" parent="."]
+script = ExtResource("2_worldregion")
+region_id = &"transition_test_region"
+display_name = "Caminho Externo (Validação)"
+default_entry_id = &"from_farm"
+
+[node name="FromFarm" type="Marker2D" parent="RegionContext"]
+position = Vector2(420, 540)
+script = ExtResource("3_entry")
+entry_id = &"from_farm"
+
+[node name="NavigationRegion2D" type="NavigationRegion2D" parent="."]
+
+[node name="MainCamera" type="Camera2D" parent="."]
+position = Vector2(960, 540)
+limit_left = 0
+limit_top = 0
+limit_right = 1920
+limit_bottom = 1080
+
+[node name="PlayerAvatar" parent="." instance=ExtResource("4_player")]
+position = Vector2(420, 540)
+
+[node name="PlayerDestinationMarker" parent="." instance=ExtResource("5_marker")]
+
+[node name="ReturnGateway" parent="." instance=ExtResource("6_gateway")]
+position = Vector2(220, 540)
+target_region_id = &"farm_village"
+target_entry_id = &"from_transition_test"
+source_exit_id = &"return_path"
+label_text = "Retornar à Fazenda/Vila"
+
+[node name="TitleLayer" type="CanvasLayer" parent="."]
+
+[node name="Title" type="Label" parent="TitleLayer"]
+offset_left = 0.0
+offset_top = 34.0
+offset_right = 1920.0
+offset_bottom = 78.0
+mouse_filter = 2
+text = "Caminho Externo — área de validação"
+label_settings = SubResource("LabelSettings_title")
+horizontal_alignment = 1
+
+[node name="Instructions" type="Label" parent="TitleLayer"]
+offset_left = 0.0
+offset_top = 80.0
+offset_right = 1920.0
+offset_bottom = 110.0
+mouse_filter = 2
+text = "Clique no terreno para caminhar • use o portal à esquerda para retornar"
+horizontal_alignment = 1
