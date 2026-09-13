@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" path="res://Scenes/VillageChest.tscn" id="5_villagechestscene"]
 [ext_resource type="PackedScene" path="res://Scenes/FishingSpot.tscn" id="6_fishingspotscene"]
 [ext_resource type="PackedScene" uid="uid://clnoa0v1rcc6a" path="res://Scenes/PurificationObstacle.tscn" id="7_purificationobstaclescene"]
+[ext_resource type="PackedScene" path="res://Scenes/PlayerAvatar.tscn" id="8_playeravatar"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_vy5pj"]
 texture = ExtResource("2_50glp")
@@ -53,6 +54,9 @@ position = Vector2(208, 748)
 
 [node name="GolemRestPoint" type="Marker2D" parent="." unique_id=2147483646 groups=["golem_rest_point"]]
 position = Vector2(208, 680)
+
+[node name="PlayerAvatar" parent="." instance=ExtResource("8_playeravatar")]
+position = Vector2(1180, 700)
 
 [node name="VillageChest" parent="." unique_id=432701269 instance=ExtResource("5_villagechestscene")]
 position = Vector2(286, 716)

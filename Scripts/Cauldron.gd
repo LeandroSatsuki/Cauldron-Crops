@@ -103,8 +103,10 @@ func _on_area_2d_input_event(viewport, event, shape_idx):
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_LEFT:
 		if _batch_ativo:
 			cancelar_producao_em_lote()
+			viewport.set_input_as_handled()
 			return
 		abrir_popup()
+		viewport.set_input_as_handled()
 
 func _on_btn_livro_receitas_pressed() -> void:
 	print("DEBUG Cauldron: botão livro de receitas clicado")

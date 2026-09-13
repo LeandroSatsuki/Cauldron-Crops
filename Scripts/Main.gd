@@ -11,6 +11,7 @@ const RESTORATION_PROJECT_SCENE_PATH: String = "res://Scenes/RestorationProject.
 
 @onready var navigation_region: NavigationRegion2D = $NavigationRegion2D
 @onready var main_camera: Camera2D = get_node_or_null("MainCamera") as Camera2D
+@onready var player_avatar: CharacterBody2D = get_node_or_null("PlayerAvatar") as CharacterBody2D
 
 
 
@@ -111,6 +112,15 @@ func _ready() -> void:
 
 	_criar_marcador_agricultura_livre()
 	_configurar_camera_inicial(start_x, start_y)
+
+
+func _process(_delta: float) -> void:
+	if player_avatar == null or not is_instance_valid(player_avatar):
+		return
+	if not player_avatar.has_method("has_active_destination") or not bool(player_avatar.call("has_active_destination")):
+		return
+	if _player_movement_is_blocked_by_mode() and player_avatar.has_method("stop_moving"):
+		player_avatar.call("stop_moving")
 
 
 
@@ -236,6 +246,57 @@ func _esta_modal_aberto() -> bool:
 
 		return bool(ui_node.call("_tem_popup_modal_aberto"))
 
+	return false
+
+
+func can_issue_player_move(world_position: Vector2, check_interaction_colliders: bool = true) -> bool:
+	if player_avatar == null or not is_instance_valid(player_avatar):
+		return false
+	if _player_movement_is_blocked_by_mode():
+		return false
+	if check_interaction_colliders and _world_position_has_interaction_collider(world_position):
+		return false
+	return true
+
+
+func _player_movement_is_blocked_by_mode() -> bool:
+	if _esta_modal_aberto() or _camera_dragging:
+		return true
+
+	var tool_manager: Node = get_tree().root.get_node_or_null("ToolManager")
+	if tool_manager != null and tool_manager.has_method("get_active_tool"):
+		if int(tool_manager.call("get_active_tool")) != int(ToolManager.ToolType.NONE):
+			return true
+	if GlobalInventory.semente_selecionada != "":
+		return true
+	return false
+
+
+func try_move_player_to(world_position: Vector2, check_interaction_colliders: bool = true) -> bool:
+	if not can_issue_player_move(world_position, check_interaction_colliders):
+		return false
+	return bool(player_avatar.request_move(world_position))
+
+
+func _world_position_has_interaction_collider(world_position: Vector2) -> bool:
+	if not is_inside_tree() or get_world_2d() == null:
+		return false
+
+	var query := PhysicsPointQueryParameters2D.new()
+	query.position = world_position
+	query.collide_with_areas = true
+	query.collide_with_bodies = true
+	query.collision_mask = 0x7FFFFFFF
+	var hits: Array[Dictionary] = get_world_2d().direct_space_state.intersect_point(query, 16)
+	for hit in hits:
+		var collider: Object = hit.get("collider")
+		if collider == null or not is_instance_valid(collider):
+			continue
+		if collider == player_avatar:
+			continue
+		if collider is Node and player_avatar.is_ancestor_of(collider as Node):
+			continue
+		return true
 	return false
 
 
@@ -1966,16 +2027,19 @@ func _unhandled_input(event: InputEvent) -> void:
 				return
 
 			var tool_manager: Node = get_tree().root.get_node_or_null("ToolManager")
-			if tool_manager == null or not tool_manager.has_method("get_active_tool"):
-				return
-
-			if int(tool_manager.call("get_active_tool")) != int(ToolManager.ToolType.HOE):
-				return
-
 			var click_position: Vector2 = get_global_mouse_position()
-			tentar_arar_agricultura_livre(click_position)
-			get_viewport().set_input_as_handled()
-			return
+			if tool_manager != null and tool_manager.has_method("get_active_tool"):
+				var active_tool: int = int(tool_manager.call("get_active_tool"))
+				if active_tool == int(ToolManager.ToolType.HOE):
+					tentar_arar_agricultura_livre(click_position)
+					get_viewport().set_input_as_handled()
+					return
+				if active_tool != int(ToolManager.ToolType.NONE):
+					return
+
+			if try_move_player_to(click_position):
+				get_viewport().set_input_as_handled()
+				return
 
 	if event is InputEventMouseMotion and _camera_dragging and main_camera != null:
 		main_camera.position -= event.relative * main_camera.zoom

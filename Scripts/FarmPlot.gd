@@ -111,6 +111,7 @@ func _input_event(_viewport: Viewport, event: InputEvent, _shape_idx: int) -> vo
 		if ui_node != null and ui_node.has_method("_tem_popup_modal_aberto") and ui_node.call("_tem_popup_modal_aberto"):
 			return
 		_on_plot_clicked()
+		_viewport.set_input_as_handled()
 
 func set_expansion_blocked(blocked: bool) -> void:
 	expansion_blocked = blocked
