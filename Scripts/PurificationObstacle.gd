@@ -51,11 +51,21 @@ func try_handle_global_click(global_point: Vector2) -> bool:
 		return false
 
 	print("PurificationObstacle: clique recebido na area bloqueada.")
+	var main: Node = get_tree().current_scene
+	if main != null and main.has_method("request_player_interaction"):
+		var interaction_center: Vector2 = global_position + interaction_offset
+		var interaction_distance: float = maxf(interaction_size.x, interaction_size.y) * 0.55
+		return bool(main.call("request_player_interaction", self, interaction_center, interaction_distance, Callable(self, "_perform_purification_interaction")))
+	_perform_purification_interaction()
+	return true
+
+
+func _perform_purification_interaction() -> void:
+	var ui := _obter_ui()
 	if ui != null and ui.has_method("abrir_painel_purificacao"):
 		ui.call("abrir_painel_purificacao", self)
 	else:
 		_mostrar_feedback(_format_requirements_text())
-	return true
 
 func get_obstacle_id() -> String:
 	return obstacle_id

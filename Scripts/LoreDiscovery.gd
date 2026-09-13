@@ -39,6 +39,11 @@ func _on_input_event(viewport: Viewport, event: InputEvent, _shape_index: int) -
 	if not _area_purified:
 		return
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		var main: Node = get_tree().current_scene
+		if main != null and main.has_method("request_player_interaction"):
+			if bool(main.call("request_player_interaction", self, global_position, 48.0, Callable(self, "investigate"))):
+				viewport.set_input_as_handled()
+				return
 		investigate()
 		viewport.set_input_as_handled()
 

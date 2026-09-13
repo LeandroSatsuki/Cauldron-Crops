@@ -50,9 +50,18 @@ func withdraw_all_to_global_inventory() -> Dictionary:
 
 func _on_clickable_area_input_event(viewport: Viewport, event: InputEvent, _shape_idx: int) -> void:
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-		var ui = get_tree().current_scene.get_node_or_null("UI")
-		if ui and ui.has_method("abrir_bau_vila"):
-			ui.abrir_bau_vila(self)
-			viewport.set_input_as_handled()
-		else:
-			push_warning("VillageChest: UI nao encontrada ou metodo abrir_bau_vila ausente.")
+		var main: Node = get_tree().current_scene
+		if main != null and main.has_method("request_player_interaction"):
+			if bool(main.call("request_player_interaction", self, global_position, 52.0, Callable(self, "_open_chest"))):
+				viewport.set_input_as_handled()
+				return
+		_open_chest()
+		viewport.set_input_as_handled()
+
+
+func _open_chest() -> void:
+	var ui = get_tree().current_scene.get_node_or_null("UI")
+	if ui and ui.has_method("abrir_bau_vila"):
+		ui.abrir_bau_vila(self)
+	else:
+		push_warning("VillageChest: UI nao encontrada ou metodo abrir_bau_vila ausente.")

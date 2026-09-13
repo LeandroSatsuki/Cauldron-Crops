@@ -101,12 +101,20 @@ func fechar_popup() -> void:
 
 func _on_area_2d_input_event(viewport, event, shape_idx):
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_LEFT:
-		if _batch_ativo:
-			cancelar_producao_em_lote()
-			viewport.set_input_as_handled()
-			return
-		abrir_popup()
+		var main: Node = get_tree().current_scene
+		if main != null and main.has_method("request_player_interaction"):
+			if bool(main.call("request_player_interaction", $Area2D, $Area2D.global_position, 64.0, Callable(self, "_perform_primary_interaction"))):
+				viewport.set_input_as_handled()
+				return
+		_perform_primary_interaction()
 		viewport.set_input_as_handled()
+
+
+func _perform_primary_interaction() -> void:
+	if _batch_ativo:
+		cancelar_producao_em_lote()
+		return
+	abrir_popup()
 
 func _on_btn_livro_receitas_pressed() -> void:
 	print("DEBUG Cauldron: botão livro de receitas clicado")

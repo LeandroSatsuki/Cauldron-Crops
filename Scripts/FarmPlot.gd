@@ -110,6 +110,11 @@ func _input_event(_viewport: Viewport, event: InputEvent, _shape_idx: int) -> vo
 		var ui_node: Node = get_tree().current_scene.get_node_or_null("UI")
 		if ui_node != null and ui_node.has_method("_tem_popup_modal_aberto") and ui_node.call("_tem_popup_modal_aberto"):
 			return
+		var main: Node = get_tree().current_scene
+		if main != null and main.has_method("request_player_interaction"):
+			if bool(main.call("request_player_interaction", self, global_position, 46.0, Callable(self, "_on_plot_clicked"))):
+				_viewport.set_input_as_handled()
+				return
 		_on_plot_clicked()
 		_viewport.set_input_as_handled()
 

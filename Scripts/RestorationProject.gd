@@ -91,8 +91,13 @@ func _input_event(viewport: Viewport, event: InputEvent, _shape_index: int) -> v
 	if not area_purified or restored_state:
 		return
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-		if try_restore():
-			viewport.set_input_as_handled()
+		var main: Node = get_tree().current_scene
+		if main != null and main.has_method("request_player_interaction"):
+			if bool(main.call("request_player_interaction", self, global_position, 64.0, Callable(self, "try_restore"))):
+				viewport.set_input_as_handled()
+				return
+		try_restore()
+		viewport.set_input_as_handled()
 
 
 func _refresh_state() -> void:

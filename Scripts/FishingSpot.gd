@@ -59,11 +59,21 @@ func _input_event(viewport: Viewport, event: InputEvent, shape_idx: int) -> void
 	if ui_node != null and ui_node.has_method("_tem_popup_modal_aberto") and ui_node.call("_tem_popup_modal_aberto"):
 		return
 
-	_on_lake_clicked()
+	var click_global_position: Vector2 = get_global_mouse_position()
+	var main: Node = get_tree().current_scene
+	if main != null and main.has_method("request_player_interaction"):
+		if bool(main.call("request_player_interaction", self, global_position, 150.0, Callable(self, "_on_lake_clicked_at").bind(click_global_position))):
+			viewport.set_input_as_handled()
+			return
+	_on_lake_clicked_at(click_global_position)
 	viewport.set_input_as_handled()
 
 func _on_lake_clicked() -> void:
 	var click_global_position: Vector2 = get_global_mouse_position()
+	_on_lake_clicked_at(click_global_position)
+
+
+func _on_lake_clicked_at(click_global_position: Vector2) -> void:
 	if fishing_state == FishingState.MINIGAME_ACTIVE:
 		_mostrar_feedback("Finalize a pesca atual.", click_global_position)
 		return

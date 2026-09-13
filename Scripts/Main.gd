@@ -54,6 +54,7 @@ const FREE_FARMING_REASON_PREPARATION_FAILED: String = "preparation_failed"
 @export var reserved_cultivation_grid_areas: Array[Rect2i] = []
 @export var free_farming_pilot_bounds: Rect2i = Rect2i(Vector2i(4, 5), Vector2i(6, 2))
 @export var show_free_farming_pilot_marker: bool = false
+@export var camera_follow_speed: float = 7.0
 
 
 
@@ -74,6 +75,8 @@ var farm_grid_manager: FarmGridManager = null
 var farm_origin: Vector2 = Vector2.ZERO
 
 var _camera_dragging: bool = false
+var _camera_follow_enabled: bool = true
+var _pending_player_interaction: Dictionary = {}
 
 func _ready() -> void:
 
@@ -114,8 +117,12 @@ func _ready() -> void:
 	_configurar_camera_inicial(start_x, start_y)
 
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
 	if player_avatar == null or not is_instance_valid(player_avatar):
+		return
+	_process_camera_follow(delta)
+	if not _pending_player_interaction.is_empty():
+		_process_pending_player_interaction()
 		return
 	if not player_avatar.has_method("has_active_destination") or not bool(player_avatar.call("has_active_destination")):
 		return
@@ -158,7 +165,10 @@ func _configurar_camera_inicial(start_x: float, start_y: float) -> void:
 
 	main_camera.make_current()
 	main_camera.zoom = Vector2.ONE
-	main_camera.position = Vector2(start_x + (2.8 * FARM_SPACING), start_y + (1.6 * FARM_SPACING))
+	if player_avatar != null and is_instance_valid(player_avatar):
+		main_camera.position = player_avatar.global_position
+	else:
+		main_camera.position = Vector2(start_x + (2.8 * FARM_SPACING), start_y + (1.6 * FARM_SPACING))
 	main_camera.limit_left = -512
 	main_camera.limit_top = -384
 	main_camera.limit_right = 2560
@@ -260,7 +270,7 @@ func can_issue_player_move(world_position: Vector2, check_interaction_colliders:
 
 
 func _player_movement_is_blocked_by_mode() -> bool:
-	if _esta_modal_aberto() or _camera_dragging:
+	if _player_movement_is_blocked_by_context():
 		return true
 
 	var tool_manager: Node = get_tree().root.get_node_or_null("ToolManager")
@@ -272,10 +282,113 @@ func _player_movement_is_blocked_by_mode() -> bool:
 	return false
 
 
+func _player_movement_is_blocked_by_context() -> bool:
+	return _esta_modal_aberto() or _camera_dragging
+
+
 func try_move_player_to(world_position: Vector2, check_interaction_colliders: bool = true) -> bool:
 	if not can_issue_player_move(world_position, check_interaction_colliders):
 		return false
+	_cancel_pending_player_interaction(false)
+	set_camera_follow_enabled(true)
 	return bool(player_avatar.request_move(world_position))
+
+
+func request_player_interaction(target: Node, target_position: Vector2, interaction_distance: float, callback: Callable) -> bool:
+	if player_avatar == null or not is_instance_valid(player_avatar):
+		return false
+	if target == null or not is_instance_valid(target) or not callback.is_valid():
+		return false
+	if _player_movement_is_blocked_by_context():
+		return false
+
+	_cancel_pending_player_interaction(false)
+	set_camera_follow_enabled(true)
+	var safe_distance: float = maxf(interaction_distance, 24.0)
+	if player_avatar.global_position.distance_to(target_position) <= safe_distance:
+		if player_avatar.has_method("stop_moving"):
+			player_avatar.call("stop_moving")
+		callback.call()
+		return true
+
+	var direction_from_target: Vector2 = target_position.direction_to(player_avatar.global_position)
+	if direction_from_target.is_zero_approx():
+		direction_from_target = Vector2.DOWN
+	var approach_position: Vector2 = target_position + direction_from_target * maxf(safe_distance - 8.0, 16.0)
+	_pending_player_interaction = {
+		"target_ref": weakref(target),
+		"target_position": target_position,
+		"interaction_distance": safe_distance,
+		"callback": callback,
+		"action_signature": _get_player_action_signature(),
+	}
+	if not bool(player_avatar.request_move(approach_position)):
+		_pending_player_interaction.clear()
+		return false
+	return true
+
+
+func has_pending_player_interaction() -> bool:
+	return not _pending_player_interaction.is_empty()
+
+
+func set_camera_follow_enabled(enabled: bool, snap_to_player: bool = false) -> void:
+	_camera_follow_enabled = enabled
+	if enabled and snap_to_player and main_camera != null and player_avatar != null and is_instance_valid(player_avatar):
+		main_camera.position = player_avatar.global_position
+
+
+func is_camera_follow_enabled() -> bool:
+	return _camera_follow_enabled
+
+
+func _process_camera_follow(delta: float) -> void:
+	if not _camera_follow_enabled or main_camera == null or player_avatar == null or not is_instance_valid(player_avatar):
+		return
+	var weight: float = clampf(maxf(camera_follow_speed, 0.1) * delta, 0.0, 1.0)
+	main_camera.position = main_camera.position.lerp(player_avatar.global_position, weight)
+
+
+func _process_pending_player_interaction() -> void:
+	if _player_movement_is_blocked_by_context():
+		_cancel_pending_player_interaction(true)
+		return
+	if str(_pending_player_interaction.get("action_signature", "")) != _get_player_action_signature():
+		_cancel_pending_player_interaction(true)
+		return
+
+	var target_ref: WeakRef = _pending_player_interaction.get("target_ref") as WeakRef
+	var target: Object = target_ref.get_ref() if target_ref != null else null
+	var callback: Callable = _pending_player_interaction.get("callback", Callable())
+	if target == null or not is_instance_valid(target) or not callback.is_valid():
+		_cancel_pending_player_interaction(true)
+		return
+
+	var target_position: Vector2 = _pending_player_interaction.get("target_position", player_avatar.global_position)
+	var interaction_distance: float = float(_pending_player_interaction.get("interaction_distance", 48.0))
+	if player_avatar.global_position.distance_to(target_position) <= interaction_distance:
+		_pending_player_interaction.clear()
+		if player_avatar.has_method("stop_moving"):
+			player_avatar.call("stop_moving")
+		callback.call()
+		return
+
+	if player_avatar.has_method("has_active_destination") and not bool(player_avatar.call("has_active_destination")):
+		_cancel_pending_player_interaction(false)
+
+
+func _cancel_pending_player_interaction(stop_player: bool) -> void:
+	_pending_player_interaction.clear()
+	if stop_player and player_avatar != null and is_instance_valid(player_avatar) and player_avatar.has_method("stop_moving"):
+		player_avatar.call("stop_moving")
+
+
+func _get_player_action_signature() -> String:
+	var active_tool: int = int(ToolManager.ToolType.NONE)
+	var tool_manager: Node = get_tree().root.get_node_or_null("ToolManager")
+	if tool_manager != null and tool_manager.has_method("get_active_tool"):
+		active_tool = int(tool_manager.call("get_active_tool"))
+	return "%d|%s" % [active_tool, GlobalInventory.semente_selecionada]
 
 
 func _world_position_has_interaction_collider(world_position: Vector2) -> bool:
@@ -2016,6 +2129,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		if event.button_index == MOUSE_BUTTON_MIDDLE:
 			if event.pressed and not _esta_modal_aberto():
 				_camera_dragging = true
+				set_camera_follow_enabled(false)
+				_cancel_pending_player_interaction(true)
 				get_viewport().set_input_as_handled()
 			elif not event.pressed:
 				_camera_dragging = false

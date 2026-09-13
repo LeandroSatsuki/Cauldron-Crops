@@ -169,6 +169,11 @@ func _on_world_event_input(_viewport: Viewport, event: InputEvent, _shape_index:
 	if marker != _world_event_marker:
 		return
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		var main: Node = get_tree().current_scene
+		if main != null and main.has_method("request_player_interaction"):
+			if bool(main.call("request_player_interaction", marker, marker.global_position, 48.0, Callable(self, "collect_world_event"))):
+				get_viewport().set_input_as_handled()
+				return
 		collect_world_event()
 		get_viewport().set_input_as_handled()
 
