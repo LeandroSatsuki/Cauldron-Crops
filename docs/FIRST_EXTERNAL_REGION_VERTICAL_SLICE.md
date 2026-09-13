@@ -2,7 +2,7 @@
 
 ## Status
 
-Fase A aprovada. Fase B implementada e automatizada; aguarda validação manual.
+Fases A e B aprovadas. Fase C implementada e automatizada; aguarda validação manual.
 
 Continua sem autorização para conteúdo final, lore definitiva, novos itens ou expansão do save.
 
@@ -27,6 +27,14 @@ Continua sem autorização para conteúdo final, lore definitiva, novos itens ou
 - Cada ponto aceita apenas uma coleta e permanece esgotado enquanto a mesma instância do bosque existir.
 - Não houve alteração de `SAVE_VERSION`; ao iniciar outra sessão, os pontos voltam ao estado inicial conforme o contrato temporário.
 - `ForagingCollectionSmokeTest` valida aproximação física, ganho exato, rejeição de duplicação, feedback e reentrada na mesma instância.
+
+### Entrega da Fase C
+
+- A ramificação opcional abriga as Luzes do Bosque, uma curiosidade atmosférica sem recompensa material.
+- O enxame mantém uma animação discreta e reage à proximidade do familiar com brilho e movimento mais vivos.
+- Ao observar as luzes, o familiar se aproxima e recebe apenas uma mensagem local; não há item, receita, moeda, lore persistente ou bloqueio de progresso.
+- A curiosidade pode ser revisitada livremente e não altera o save.
+- `GroveFireflyCuriositySmokeTest` valida aproximação, reação ambiental, feedback e ausência de alteração na Mochila ou nas descobertas de lore.
 
 ## Estado de partida
 
@@ -172,6 +180,8 @@ Estado: implementada; pendente apenas de validação manual.
 - Adicionar uma curiosidade opcional.
 - Adicionar um único comportamento ambiental barato.
 - Evitar recompensa obrigatória ou lore estrutural.
+
+Estado: implementada; pendente apenas de validação manual.
 
 ### Fase D — validação
 

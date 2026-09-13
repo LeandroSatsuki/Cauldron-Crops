@@ -1,0 +1,99 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://Scripts/GroveFireflyCuriosity.gd" id="1_curiosity"]
+
+[sub_resource type="CircleShape2D" id="CircleShape_curiosity"]
+radius = 58.0
+
+[sub_resource type="LabelSettings" id="LabelSettings_curiosity"]
+font_size = 17
+font_color = Color(0.78, 0.98, 0.76, 1)
+outline_size = 5
+outline_color = Color(0.035, 0.07, 0.04, 0.94)
+
+[node name="GroveFireflyCuriosity" type="Area2D"]
+z_index = 340
+script = ExtResource("1_curiosity")
+
+[node name="FireflyCluster" type="Node2D" parent="."]
+
+[node name="FireflyA" type="Node2D" parent="FireflyCluster"]
+position = Vector2(-42, -18)
+
+[node name="Glow" type="Polygon2D" parent="FireflyCluster/FireflyA"]
+color = Color(0.34, 0.96, 0.56, 0.28)
+polygon = PackedVector2Array(0, -18, 12, -12, 18, 0, 12, 12, 0, 18, -12, 12, -18, 0, -12, -12)
+
+[node name="Core" type="Polygon2D" parent="FireflyCluster/FireflyA"]
+color = Color(0.82, 1, 0.64, 1)
+polygon = PackedVector2Array(0, -5, 4, -2, 5, 2, 0, 5, -4, 2, -4, -2)
+
+[node name="FireflyB" type="Node2D" parent="FireflyCluster"]
+position = Vector2(-12, 16)
+
+[node name="Glow" type="Polygon2D" parent="FireflyCluster/FireflyB"]
+color = Color(0.4, 0.95, 0.7, 0.26)
+polygon = PackedVector2Array(0, -16, 11, -10, 16, 0, 11, 10, 0, 16, -11, 10, -16, 0, -11, -10)
+
+[node name="Core" type="Polygon2D" parent="FireflyCluster/FireflyB"]
+color = Color(0.86, 1, 0.72, 1)
+polygon = PackedVector2Array(0, -5, 4, -2, 5, 2, 0, 5, -4, 2, -4, -2)
+
+[node name="FireflyC" type="Node2D" parent="FireflyCluster"]
+position = Vector2(24, -30)
+
+[node name="Glow" type="Polygon2D" parent="FireflyCluster/FireflyC"]
+color = Color(0.42, 0.94, 0.62, 0.3)
+polygon = PackedVector2Array(0, -17, 12, -11, 17, 0, 12, 11, 0, 17, -12, 11, -17, 0, -12, -11)
+
+[node name="Core" type="Polygon2D" parent="FireflyCluster/FireflyC"]
+color = Color(0.88, 1, 0.68, 1)
+polygon = PackedVector2Array(0, -5, 4, -2, 5, 2, 0, 5, -4, 2, -4, -2)
+
+[node name="FireflyD" type="Node2D" parent="FireflyCluster"]
+position = Vector2(46, 12)
+
+[node name="Glow" type="Polygon2D" parent="FireflyCluster/FireflyD"]
+color = Color(0.3, 0.9, 0.52, 0.27)
+polygon = PackedVector2Array(0, -15, 10, -10, 15, 0, 10, 10, 0, 15, -10, 10, -15, 0, -10, -10)
+
+[node name="Core" type="Polygon2D" parent="FireflyCluster/FireflyD"]
+color = Color(0.8, 1, 0.62, 1)
+polygon = PackedVector2Array(0, -5, 4, -2, 5, 2, 0, 5, -4, 2, -4, -2)
+
+[node name="FireflyE" type="Node2D" parent="FireflyCluster"]
+position = Vector2(4, -56)
+
+[node name="Glow" type="Polygon2D" parent="FireflyCluster/FireflyE"]
+color = Color(0.46, 0.98, 0.7, 0.24)
+polygon = PackedVector2Array(0, -14, 10, -9, 14, 0, 10, 9, 0, 14, -10, 9, -14, 0, -10, -9)
+
+[node name="Core" type="Polygon2D" parent="FireflyCluster/FireflyE"]
+color = Color(0.9, 1, 0.74, 1)
+polygon = PackedVector2Array(0, -5, 4, -2, 5, 2, 0, 5, -4, 2, -4, -2)
+
+[node name="PromptLabel" type="Label" parent="."]
+visible = false
+offset_left = -110.0
+offset_top = -100.0
+offset_right = 110.0
+offset_bottom = -70.0
+mouse_filter = 2
+text = "Observar luzes"
+label_settings = SubResource("LabelSettings_curiosity")
+horizontal_alignment = 1
+
+[node name="FeedbackLabel" type="Label" parent="."]
+visible = false
+offset_left = -160.0
+offset_top = -126.0
+offset_right = 160.0
+offset_bottom = -82.0
+mouse_filter = 2
+text = "As luzes dançam entre as folhas."
+label_settings = SubResource("LabelSettings_curiosity")
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape_curiosity")

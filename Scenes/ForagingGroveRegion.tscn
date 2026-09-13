@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3]
+[gd_scene load_steps=14 format=3]
 
 [ext_resource type="Script" path="res://Scripts/ForagingGroveRegion.gd" id="1_region"]
 [ext_resource type="Script" path="res://Scripts/WorldRegion.gd" id="2_worldregion"]
@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" path="res://Scenes/PlayerDestinationMarker.tscn" id="5_marker"]
 [ext_resource type="PackedScene" path="res://Scenes/RegionGateway.tscn" id="6_gateway"]
 [ext_resource type="PackedScene" path="res://Scenes/ForageNode.tscn" id="7_forage"]
+[ext_resource type="PackedScene" path="res://Scenes/GroveFireflyCuriosity.tscn" id="8_curiosity"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_title"]
 font_size = 24
@@ -173,6 +174,9 @@ avoidance_enabled = true
 [node name="OptionalGlowLandmark" type="Node2D" parent="." groups=["region_landmark"]]
 position = Vector2(1600, 300)
 z_index = 310
+
+[node name="FireflyCuriosity" parent="." instance=ExtResource("8_curiosity")]
+position = Vector2(1600, 300)
 
 [node name="Glow" type="Polygon2D" parent="OptionalGlowLandmark"]
 color = Color(0.3, 0.72, 0.64, 0.32)
