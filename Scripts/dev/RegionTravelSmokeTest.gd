@@ -4,6 +4,9 @@ extends Node
 const MAIN_SCENE := preload("res://Scenes/Main.tscn")
 
 
+var _last_failure_reason: String = ""
+
+
 func _ready() -> void:
 	_run.call_deferred()
 
@@ -13,6 +16,7 @@ func _run() -> void:
 	if coordinator == null:
 		_fail("coordenador de viagens nao foi carregado")
 		return
+	coordinator.transition_failed.connect(_on_transition_failed)
 
 	var farm: Node = MAIN_SCENE.instantiate()
 	get_tree().root.add_child(farm)
@@ -44,6 +48,10 @@ func _run() -> void:
 		await get_tree().physics_frame
 		if get_tree().current_scene != farm:
 			break
+	for _frame in range(90):
+		if not bool(coordinator.call("is_transition_in_progress")):
+			break
+		await get_tree().process_frame
 
 	var external_region: Node = get_tree().current_scene
 	if external_region == null or external_region == farm:
@@ -79,6 +87,10 @@ func _run() -> void:
 		await get_tree().physics_frame
 		if get_tree().current_scene == farm:
 			break
+	for _frame in range(90):
+		if not bool(coordinator.call("is_transition_in_progress")):
+			break
+		await get_tree().process_frame
 
 	var returned_farm: Node = get_tree().current_scene
 	if returned_farm == null or returned_farm.get_instance_id() != farm_instance_id:
@@ -95,9 +107,43 @@ func _run() -> void:
 	if coordinator.call("get_cached_region_scene", &"transition_test_region") != external_region:
 		_fail("regiao externa nao foi preservada para uma nova visita")
 		return
+	if bool(coordinator.call("is_input_blocked")) or float(coordinator.call("get_transition_overlay_alpha")) > 0.01:
+		_fail("fade nao liberou o input ao terminar a viagem")
+		return
 
-	print("RegionTravelSmokeTest: PASS - ida, retorno, entradas e preservacao em memoria estao coerentes.")
+	_last_failure_reason = ""
+	if not bool(returned_farm.call("request_region_transition", &"missing_region", &"missing_entry", &"test_exit")):
+		_fail("pedido para destino invalido nao chegou ao coordenador")
+		return
+	if bool(returned_farm.call("request_region_transition", &"transition_test_region", &"from_farm", &"duplicate_exit")):
+		_fail("pedido duplicado foi aceito durante uma transicao")
+		return
+	if not bool(coordinator.call("is_input_blocked")):
+		_fail("overlay nao bloqueou input durante a transicao")
+		return
+	for _frame in range(120):
+		if not bool(coordinator.call("is_transition_in_progress")):
+			break
+		await get_tree().process_frame
+	if get_tree().current_scene != returned_farm:
+		_fail("falha de destino removeu a regiao de origem")
+		return
+	if _last_failure_reason != "unknown_target_region":
+		_fail("falha de destino nao foi comunicada de forma deterministica")
+		return
+	if bool(coordinator.call("is_input_blocked")) or float(coordinator.call("get_transition_overlay_alpha")) > 0.01:
+		_fail("falha de transicao deixou tela ou input bloqueados")
+		return
+	if not returned_farm.call("peek_pending_region_transition").is_empty():
+		_fail("falha de transicao deixou pedido pendente na regiao")
+		return
+
+	print("RegionTravelSmokeTest: PASS - ida, retorno, fade, bloqueio e recuperacao de falha estao coerentes.")
 	get_tree().quit(0)
+
+
+func _on_transition_failed(_request: Dictionary, reason: String) -> void:
+	_last_failure_reason = reason
 
 
 func _fail(message: String) -> void:

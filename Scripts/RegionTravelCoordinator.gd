@@ -10,12 +10,25 @@ const REGION_SCENE_PATHS: Dictionary = {
 	"farm_village": "res://Scenes/Main.tscn",
 	"transition_test_region": "res://Scenes/PrototypeExternalRegion.tscn",
 }
+const DEFAULT_FADE_DURATION_SECONDS: float = 0.2
 
 
 var _active_scene: Node = null
 var _active_region_id: String = ""
 var _cached_region_scenes: Dictionary = {}
 var _transition_in_progress: bool = false
+var _transition_overlay: ColorRect = null
+var _transition_label: Label = null
+var _fade_tween: Tween = null
+
+
+func _ready() -> void:
+	_create_transition_overlay()
+
+
+func _input(_event: InputEvent) -> void:
+	if _transition_in_progress and get_viewport() != null:
+		get_viewport().set_input_as_handled()
 
 
 func register_region_scene(scene: Node) -> bool:
@@ -51,6 +64,14 @@ func is_transition_in_progress() -> bool:
 	return _transition_in_progress
 
 
+func is_input_blocked() -> bool:
+	return _transition_overlay != null and _transition_overlay.mouse_filter == Control.MOUSE_FILTER_STOP
+
+
+func get_transition_overlay_alpha() -> float:
+	return _transition_overlay.modulate.a if _transition_overlay != null else 0.0
+
+
 func get_cached_region_scene(region_id: StringName) -> Node:
 	var scene_variant: Variant = _cached_region_scenes.get(String(region_id))
 	if scene_variant is Node and is_instance_valid(scene_variant):
@@ -65,9 +86,16 @@ func _on_region_transition_requested(request: Dictionary) -> void:
 		return
 
 	_transition_in_progress = true
+	_set_transition_overlay_blocking(true)
 	var safe_request: Dictionary = request.duplicate(true)
 	transition_started.emit(safe_request.duplicate(true))
-	_perform_transition.call_deferred(safe_request)
+	_run_transition.call_deferred(safe_request)
+
+
+func _run_transition(request: Dictionary) -> void:
+	_set_transition_message("Cruzando o caminho...")
+	await _fade_overlay_to(1.0)
+	_perform_transition(request)
 
 
 func _perform_transition(request: Dictionary) -> void:
@@ -118,8 +146,7 @@ func _perform_transition(request: Dictionary) -> void:
 		_fail_transition(request, "target_entry_failed")
 		return
 
-	_transition_in_progress = false
-	transition_completed.emit(request.duplicate(true))
+	_complete_transition(request)
 
 
 func _get_or_create_region_scene(region_id: String) -> Node:
@@ -159,8 +186,81 @@ func _rollback_to_source(source_scene: Node, source_region_id: String, failed_ta
 
 
 func _fail_transition(request: Dictionary, reason: String) -> void:
+	_set_transition_message("O caminho não respondeu")
+	await _fade_overlay_to(0.0)
 	_transition_in_progress = false
+	_set_transition_overlay_blocking(false)
 	transition_failed.emit(request.duplicate(true), reason)
+
+
+func _complete_transition(request: Dictionary) -> void:
+	# Um frame totalmente coberto permite que câmera e navegação da nova região
+	# estabilizem antes de ela ser revelada.
+	await get_tree().process_frame
+	_set_transition_message("Chegando...")
+	await _fade_overlay_to(0.0)
+	_transition_in_progress = false
+	_set_transition_overlay_blocking(false)
+	transition_completed.emit(request.duplicate(true))
+
+
+func _create_transition_overlay() -> void:
+	var canvas_layer := CanvasLayer.new()
+	canvas_layer.name = "RegionTransitionLayer"
+	canvas_layer.layer = 10000
+	add_child(canvas_layer)
+
+	_transition_overlay = ColorRect.new()
+	_transition_overlay.name = "Fade"
+	_transition_overlay.color = Color(0.035, 0.055, 0.04, 1.0)
+	_transition_overlay.modulate.a = 0.0
+	_transition_overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	canvas_layer.add_child(_transition_overlay)
+	_transition_overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+
+	_transition_label = Label.new()
+	_transition_label.name = "Message"
+	_transition_label.text = "Cruzando o caminho..."
+	_transition_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_transition_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	_transition_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_transition_label.add_theme_font_size_override("font_size", 22)
+	_transition_label.add_theme_color_override("font_color", Color(0.86, 0.94, 0.78, 1.0))
+	_transition_label.add_theme_color_override("font_outline_color", Color(0.02, 0.035, 0.025, 0.95))
+	_transition_label.add_theme_constant_override("outline_size", 6)
+	_transition_overlay.add_child(_transition_label)
+	_transition_label.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
+	_transition_label.position = Vector2(-210.0, -30.0)
+	_transition_label.size = Vector2(420.0, 60.0)
+
+
+func _set_transition_message(message: String) -> void:
+	if _transition_label != null:
+		_transition_label.text = message
+
+
+func _set_transition_overlay_blocking(blocking: bool) -> void:
+	if _transition_overlay == null:
+		return
+	_transition_overlay.mouse_filter = Control.MOUSE_FILTER_STOP if blocking else Control.MOUSE_FILTER_IGNORE
+
+
+func _fade_overlay_to(target_alpha: float) -> void:
+	if _transition_overlay == null:
+		return
+	if _fade_tween != null and _fade_tween.is_valid():
+		_fade_tween.kill()
+	_fade_tween = create_tween()
+	_fade_tween.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
+	_fade_tween.set_trans(Tween.TRANS_SINE)
+	_fade_tween.set_ease(Tween.EASE_IN_OUT)
+	_fade_tween.tween_property(
+		_transition_overlay,
+		"modulate:a",
+		clampf(target_alpha, 0.0, 1.0),
+		DEFAULT_FADE_DURATION_SECONDS
+	)
+	await _fade_tween.finished
 
 
 func _disconnect_active_scene() -> void:

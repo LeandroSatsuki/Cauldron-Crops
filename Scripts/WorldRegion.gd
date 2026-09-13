@@ -65,6 +65,8 @@ func request_transition(
 	target_entry_id: StringName,
 	source_exit_id: StringName = &""
 ) -> bool:
+	if not _pending_transition.is_empty():
+		return false
 	var normalized_target_region: String = String(target_region_id).strip_edges()
 	var normalized_target_entry: String = String(target_entry_id).strip_edges()
 	if normalized_target_region.is_empty() or normalized_target_entry.is_empty():
