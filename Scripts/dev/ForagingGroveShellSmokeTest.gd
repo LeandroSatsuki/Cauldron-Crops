@@ -63,10 +63,6 @@ func _run() -> void:
 	if get_tree().get_nodes_in_group("region_landmark").size() < 3:
 		_fail("shell nao possui marcos visuais suficientes para orientar a exploracao")
 		return
-	if not get_tree().get_nodes_in_group("forage_node").is_empty():
-		_fail("Fase A introduziu coleta antes da autorizacao")
-		return
-
 	for sample: Vector2 in NAVIGABLE_SAMPLES:
 		if not bool(grove.call("is_world_position_navigable", sample)):
 			_fail("ponto planejado nao e navegavel: %s" % sample)
@@ -103,7 +99,7 @@ func _run() -> void:
 
 	grove.queue_free()
 	await get_tree().process_frame
-	print("ForagingGroveShellSmokeTest: PASS - shell, navegacao, camera, marcos e retorno estao coerentes; coleta permanece fora da Fase A.")
+	print("ForagingGroveShellSmokeTest: PASS - shell, navegacao, camera, marcos e retorno estao coerentes.")
 	get_tree().quit(0)
 
 

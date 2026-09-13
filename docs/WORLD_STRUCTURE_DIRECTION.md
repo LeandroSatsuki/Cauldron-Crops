@@ -27,7 +27,9 @@
 - A troca possui fade curto, bloqueia o input até a nova região estabilizar, rejeita pedidos duplicados e restaura a origem quando o destino é inválido.
 - `PrototypeExternalRegion` é uma área estritamente técnica para validar ida, retorno, pontos de entrada e preservação da Fazenda; não define conteúdo ou lore de uma região final.
 - `ForagingGroveRegion` é o primeiro shell externo jogável: mapa artesanal finito, caminho principal, ramificação opcional, câmera limitada e retorno físico à Fazenda/Vila.
-- O bosque ainda é um blockout funcional da Fase A; não contém coleta, recursos, descoberta, lore definitiva ou persistência própria.
+- O bosque ainda usa apresentação de blockout, mas já contém a coleta vertical mínima da Fase B: quatro pontos determinísticos de um recurso comum existente.
+- A coleta externa entra no bridge temporário da Mochila, não no `VillageChest`; os pontos mantêm o estado apenas na instância da sessão e não alteram o schema de save.
+- Descoberta, vida ambiental, lore definitiva e persistência própria continuam fora da região.
 - A Fazenda sai da árvore enquanto outra região está ativa, portanto seus timers e sistemas locais não continuam processando em segundo plano.
 - Ainda não há simulação abstrata de mapas descarregados, catálogo extensível de regiões ou persistência da localização do jogador entre sessões.
 
@@ -35,5 +37,5 @@
 
 - A proposta da primeira região com conteúdo está em `FIRST_EXTERNAL_REGION_VERTICAL_SLICE.md`.
 - A recomendação é um pequeno bosque de forrageamento, ainda sem nome ou lore definitivos.
-- O shell navegável da Fase A está implementado e aguarda validação manual.
-- Após a aprovação, a Fase B deve introduzir somente a coleta vertical, mantendo descoberta e vida ambiental para a fase seguinte.
+- O shell navegável da Fase A foi aprovado.
+- A coleta vertical da Fase B está implementada e aguarda validação manual, mantendo descoberta e vida ambiental para a fase seguinte.

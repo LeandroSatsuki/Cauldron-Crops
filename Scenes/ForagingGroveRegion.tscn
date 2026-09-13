@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3]
+[gd_scene load_steps=13 format=3]
 
 [ext_resource type="Script" path="res://Scripts/ForagingGroveRegion.gd" id="1_region"]
 [ext_resource type="Script" path="res://Scripts/WorldRegion.gd" id="2_worldregion"]
@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" path="res://Scenes/PlayerAvatar.tscn" id="4_player"]
 [ext_resource type="PackedScene" path="res://Scenes/PlayerDestinationMarker.tscn" id="5_marker"]
 [ext_resource type="PackedScene" path="res://Scenes/RegionGateway.tscn" id="6_gateway"]
+[ext_resource type="PackedScene" path="res://Scenes/ForageNode.tscn" id="7_forage"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_title"]
 font_size = 24
@@ -107,6 +108,20 @@ target_region_id = &"farm_village"
 target_entry_id = &"from_foraging_grove"
 source_exit_id = &"grove_entrance"
 label_text = "Retornar à Fazenda/Vila"
+
+[node name="ForageNodes" type="Node2D" parent="."]
+
+[node name="CharcoalNearEntry" parent="ForageNodes" instance=ExtResource("7_forage")]
+position = Vector2(690, 720)
+
+[node name="CharcoalOptionalBranch" parent="ForageNodes" instance=ExtResource("7_forage")]
+position = Vector2(1260, 410)
+
+[node name="CharcoalMainClearing" parent="ForageNodes" instance=ExtResource("7_forage")]
+position = Vector2(1530, 720)
+
+[node name="CharcoalDeepClearing" parent="ForageNodes" instance=ExtResource("7_forage")]
+position = Vector2(2180, 740)
 
 [node name="EntryLandmark" type="Node2D" parent="." groups=["region_landmark"]]
 position = Vector2(440, 720)
@@ -233,6 +248,6 @@ offset_top = 28.0
 offset_right = 1920.0
 offset_bottom = 66.0
 mouse_filter = 2
-text = "Bosque de Forrageamento — shell navegável"
+text = "Bosque de Forrageamento"
 label_settings = SubResource("LabelSettings_title")
 horizontal_alignment = 1

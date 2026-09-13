@@ -2,7 +2,7 @@
 
 ## Status
 
-Fase A implementada e automatizada; aguarda validação manual antes da Fase B.
+Fase A aprovada. Fase B implementada e automatizada; aguarda validação manual.
 
 Continua sem autorização para conteúdo final, lore definitiva, novos itens ou expansão do save.
 
@@ -16,6 +16,17 @@ Continua sem autorização para conteúdo final, lore definitiva, novos itens ou
 - Ainda não existem pontos de coleta, recursos, descoberta, lore ou persistência adicional nessa região.
 - `ForagingGroveShellSmokeTest` valida identidade, entrada, limites, câmera, marcos, áreas caminháveis/bloqueadas e deslocamento.
 - `RegionTravelSmokeTest` valida a viagem real entre Fazenda/Vila e bosque, o retorno e a preservação do estado runtime.
+
+### Entrega da Fase B
+
+- `ForageNode` concentra interação, aproximação, estado disponível/esgotado e feedback visual.
+- Quatro pontos físicos oferecem `carvao x1`; é um recurso comum já catalogado com origem de coleta.
+- A aquisição é determinística, sem RNG e sem criar item, receita ou regra econômica nova.
+- O resultado entra em `GlobalInventory`, usado somente como bridge temporário da Mochila neste slice.
+- `VillageChest` não é acessado: coleta externa não teleporta recursos para o armazenamento da vila.
+- Cada ponto aceita apenas uma coleta e permanece esgotado enquanto a mesma instância do bosque existir.
+- Não houve alteração de `SAVE_VERSION`; ao iniciar outra sessão, os pontos voltam ao estado inicial conforme o contrato temporário.
+- `ForagingCollectionSmokeTest` valida aproximação física, ganho exato, rejeição de duplicação, feedback e reentrada na mesma instância.
 
 ## Estado de partida
 
@@ -153,6 +164,8 @@ Estado: implementada; pendente apenas de validação manual.
 - Depositar o resultado no bridge atual da Mochila.
 - Exibir feedback curto no mundo, sem abrir painel modal.
 - Manter coleta determinística e sem respawn arbitrário durante a sessão.
+
+Estado: implementada; pendente apenas de validação manual.
 
 ### Fase C — descoberta e vida
 
