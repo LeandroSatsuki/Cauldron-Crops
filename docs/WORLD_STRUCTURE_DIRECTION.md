@@ -28,3 +28,9 @@
 - `PrototypeExternalRegion` é uma área estritamente técnica para validar ida, retorno, pontos de entrada e preservação da Fazenda; não define conteúdo ou lore de uma região final.
 - A Fazenda sai da árvore enquanto outra região está ativa, portanto seus timers e sistemas locais não continuam processando em segundo plano.
 - Ainda não há simulação abstrata de mapas descarregados, catálogo extensível de regiões ou persistência da localização do jogador entre sessões.
+
+## Próximo vertical slice
+
+- A proposta da primeira região com conteúdo está em `FIRST_EXTERNAL_REGION_VERTICAL_SLICE.md`.
+- A recomendação é um pequeno bosque de forrageamento, ainda sem nome ou lore definitivos.
+- A implementação deve começar pelo shell navegável e só então introduzir coleta, descoberta e vida ambiental em fases separadas.
