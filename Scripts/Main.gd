@@ -1,6 +1,9 @@
 extends Node2D
 
 
+signal region_transition_requested(request: Dictionary)
+
+
 
 var farm_plot_scene = preload("res://Scenes/FarmPlot.tscn")
 
@@ -13,6 +16,7 @@ const RESTORATION_PROJECT_SCENE_PATH: String = "res://Scenes/RestorationProject.
 @onready var main_camera: Camera2D = get_node_or_null("MainCamera") as Camera2D
 @onready var player_avatar: CharacterBody2D = get_node_or_null("PlayerAvatar") as CharacterBody2D
 @onready var player_destination_marker: Node2D = get_node_or_null("PlayerDestinationMarker") as Node2D
+@onready var world_region: WorldRegion = get_node_or_null("RegionContext") as WorldRegion
 
 
 
@@ -81,6 +85,7 @@ var _camera_follow_enabled: bool = true
 var _pending_player_interaction: Dictionary = {}
 
 func _ready() -> void:
+	_configurar_contexto_regiao()
 
 	_configurar_regiao_navegacao()
 
@@ -117,6 +122,56 @@ func _ready() -> void:
 
 	_criar_marcador_agricultura_livre()
 	_configurar_camera_inicial(start_x, start_y)
+
+
+func _configurar_contexto_regiao() -> void:
+	if world_region == null:
+		return
+	if not world_region.transition_requested.is_connected(_on_region_transition_requested):
+		world_region.transition_requested.connect(_on_region_transition_requested)
+
+	var entry: Dictionary = world_region.resolve_entry()
+	if player_avatar != null and bool(entry.get("found", false)):
+		player_avatar.global_position = entry.get("global_position", player_avatar.global_position)
+
+
+func get_current_region_identity() -> Dictionary:
+	if world_region == null:
+		return {}
+	return world_region.get_identity()
+
+
+func resolve_region_entry(entry_id: StringName = &"") -> Dictionary:
+	if world_region == null:
+		return {"found": false, "entry_id": String(entry_id)}
+	return world_region.resolve_entry(entry_id)
+
+
+func request_region_transition(
+	target_region_id: StringName,
+	target_entry_id: StringName,
+	source_exit_id: StringName = &""
+) -> bool:
+	if world_region == null:
+		return false
+	return world_region.request_transition(target_region_id, target_entry_id, source_exit_id)
+
+
+func peek_pending_region_transition() -> Dictionary:
+	if world_region == null:
+		return {}
+	return world_region.peek_pending_transition()
+
+
+func consume_pending_region_transition() -> Dictionary:
+	if world_region == null:
+		return {}
+	return world_region.consume_pending_transition()
+
+
+func _on_region_transition_requested(request: Dictionary) -> void:
+	# A troca de cena pertence a uma camada futura; o mapa apenas publica o contrato.
+	region_transition_requested.emit(request.duplicate(true))
 
 
 func _process(delta: float) -> void:
