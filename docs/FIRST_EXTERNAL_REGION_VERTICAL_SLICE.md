@@ -2,7 +2,7 @@
 
 ## Status
 
-Fases A e B aprovadas. Fase C implementada e automatizada; aguarda validação manual.
+Fases A, B, C e D implementadas, automatizadas e aprovadas manualmente. O vertical slice técnico do Bosque de Forrageamento está concluído.
 
 Continua sem autorização para conteúdo final, lore definitiva, novos itens ou expansão do save.
 
@@ -163,7 +163,7 @@ Uma regra de renovação por dia/estação só deve ser criada quando o tempo re
 - Construir apenas terreno, caminhos, limites e três landmarks em blockout coeso.
 - Validar ida, exploração e retorno sem coleta.
 
-Estado: implementada; pendente apenas de validação manual.
+Estado: implementada e aprovada.
 
 ### Fase B — coleta vertical
 
@@ -173,7 +173,7 @@ Estado: implementada; pendente apenas de validação manual.
 - Exibir feedback curto no mundo, sem abrir painel modal.
 - Manter coleta determinística e sem respawn arbitrário durante a sessão.
 
-Estado: implementada; pendente apenas de validação manual.
+Estado: implementada e aprovada.
 
 ### Fase C — descoberta e vida
 
@@ -181,7 +181,7 @@ Estado: implementada; pendente apenas de validação manual.
 - Adicionar um único comportamento ambiental barato.
 - Evitar recompensa obrigatória ou lore estrutural.
 
-Estado: implementada; pendente apenas de validação manual.
+Estado: implementada e aprovada.
 
 ### Fase D — validação
 
@@ -189,6 +189,12 @@ Estado: implementada; pendente apenas de validação manual.
 - Smoke test de coleta única e destino correto do item.
 - Smoke test de ida/retorno e preservação da Fazenda.
 - Teste manual de leitura espacial, orientação e sensação de duração.
+
+Estado: validação automatizada e manual concluída; fase aprovada.
+
+`ForagingGroveVerticalSliceSmokeTest` executa, numa mesma sessão, a saída da Fazenda/Vila, uma coleta física, a curiosidade opcional, o retorno pelo portal, a preservação da instância da Fazenda e a separação entre Mochila temporária e Village Storage.
+
+O fechamento manual também confirmou a aproximação segura aos obstáculos interativos da Fazenda/Vila. `CoreWorldInteractionSmokeTest` protege baú, caldeirão, pesca e lote agrícola contra regressões de destino inalcançável ou interação executada dentro da colisão.
 
 ## Critérios de aceite
 

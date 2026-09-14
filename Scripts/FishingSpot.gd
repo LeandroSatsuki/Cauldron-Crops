@@ -77,7 +77,7 @@ func _input_event(viewport: Viewport, event: InputEvent, shape_idx: int) -> void
 	if main != null and main.has_method("request_player_interaction"):
 		if bool(main.call("request_player_interaction", self, global_position, 150.0, Callable(self, "_on_lake_clicked_at").bind(click_global_position))):
 			viewport.set_input_as_handled()
-			return
+		return
 	_on_lake_clicked_at(click_global_position)
 	viewport.set_input_as_handled()
 

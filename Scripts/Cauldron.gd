@@ -116,9 +116,9 @@ func _on_area_2d_input_event(viewport, event, shape_idx):
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_LEFT:
 		var main: Node = get_tree().current_scene
 		if main != null and main.has_method("request_player_interaction"):
-			if bool(main.call("request_player_interaction", $Area2D, $Area2D.global_position, 64.0, Callable(self, "_perform_primary_interaction"))):
+			if bool(main.call("request_player_interaction", self, $BaseAnchor.global_position, 64.0, Callable(self, "_perform_primary_interaction"))):
 				viewport.set_input_as_handled()
-				return
+			return
 		_perform_primary_interaction()
 		viewport.set_input_as_handled()
 

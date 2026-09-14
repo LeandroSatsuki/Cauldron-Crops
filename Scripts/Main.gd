@@ -54,6 +54,8 @@ const FREE_FARMING_REASON_OUTSIDE_PILOT: String = "outside_free_farming_pilot"
 const FREE_FARMING_REASON_HOE_REQUIRED: String = "hoe_required"
 const FREE_FARMING_REASON_PREPARATION_FAILED: String = "preparation_failed"
 const WORLD_NAVIGATION_BOUNDS: Rect2 = Rect2(-512.0, -384.0, 3072.0, 2304.0)
+const INTERACTION_CLEARANCE_MARGIN: float = 16.0
+const INTERACTION_APPROACH_INSET: float = 8.0
 
 
 @export var cultivable_grid_bounds: Rect2i = Rect2i(Vector2i(-8, -5), Vector2i(24, 14))
@@ -385,7 +387,7 @@ func request_player_interaction(target: Node, target_position: Vector2, interact
 
 	_cancel_pending_player_interaction(false)
 	set_camera_follow_enabled(true)
-	var safe_distance: float = maxf(interaction_distance, 24.0)
+	var safe_distance: float = _resolve_safe_interaction_distance(target, target_position, interaction_distance)
 	if player_avatar.global_position.distance_to(target_position) <= safe_distance:
 		if player_avatar.has_method("stop_moving"):
 			player_avatar.call("stop_moving")
@@ -396,7 +398,10 @@ func request_player_interaction(target: Node, target_position: Vector2, interact
 	var direction_from_target: Vector2 = target_position.direction_to(player_avatar.global_position)
 	if direction_from_target.is_zero_approx():
 		direction_from_target = Vector2.DOWN
-	var approach_position: Vector2 = target_position + direction_from_target * maxf(safe_distance - 8.0, 16.0)
+	var approach_position: Vector2 = target_position + direction_from_target * maxf(
+		safe_distance - INTERACTION_APPROACH_INSET,
+		16.0
+	)
 	_pending_player_interaction = {
 		"target_ref": weakref(target),
 		"target_position": target_position,
@@ -407,8 +412,30 @@ func request_player_interaction(target: Node, target_position: Vector2, interact
 	if not bool(player_avatar.request_move(approach_position)):
 		_pending_player_interaction.clear()
 		return false
-	_show_player_destination_marker(target_position, true)
+	_show_player_destination_marker(approach_position, true)
 	return true
+
+
+func _resolve_safe_interaction_distance(target: Node, target_position: Vector2, requested_distance: float) -> float:
+	var safe_distance: float = maxf(requested_distance, 24.0)
+	var player_radius: float = 13.0
+	if player_avatar != null and is_instance_valid(player_avatar):
+		var agent: NavigationAgent2D = player_avatar.get_node_or_null("NavigationAgent2D") as NavigationAgent2D
+		if agent != null:
+			player_radius = maxf(agent.radius, player_radius)
+	var obstacles: Array[Node] = []
+	if target is NavigationObstacle2D:
+		obstacles.append(target)
+	if target != null and is_instance_valid(target):
+		obstacles.append_array(target.find_children("*", "NavigationObstacle2D", true, false))
+	for obstacle_variant: Node in obstacles:
+		var obstacle: NavigationObstacle2D = obstacle_variant as NavigationObstacle2D
+		if obstacle == null or not obstacle.avoidance_enabled:
+			continue
+		var required_clearance: float = target_position.distance_to(obstacle.global_position) \
+			+ obstacle.radius + player_radius + INTERACTION_CLEARANCE_MARGIN
+		safe_distance = maxf(safe_distance, required_clearance)
+	return safe_distance
 
 
 func has_pending_player_interaction() -> bool:
@@ -815,6 +842,28 @@ func tentar_arar_agricultura_livre(global_position: Vector2, show_feedback: bool
 	return evaluation
 
 
+func handle_hoe_world_click(global_position: Vector2) -> Dictionary:
+	var grid_position: Vector2i = _converter_posicao_global_em_grid(global_position)
+	var existing_plot: Node2D = _obter_farm_plot_registrado(grid_position.x, grid_position.y)
+	if existing_plot != null:
+		var accepted: bool = request_player_interaction(
+			existing_plot,
+			existing_plot.global_position,
+			46.0,
+			Callable(existing_plot, "_on_plot_clicked")
+		)
+		return {
+			"handled": accepted,
+			"existing_plot": true,
+			"grid_position": grid_position,
+			"plot": existing_plot,
+		}
+	var evaluation: Dictionary = tentar_arar_agricultura_livre(global_position)
+	evaluation["handled"] = true
+	evaluation["existing_plot"] = false
+	return evaluation
+
+
 func _enxada_esta_ativa() -> bool:
 	var tree: SceneTree = get_tree()
 	if tree == null:
@@ -830,7 +879,7 @@ func _mostrar_feedback_agricultura_livre(evaluation: Dictionary, global_position
 	var message: String = "Nao e possivel arar aqui."
 	match reason:
 		FREE_FARMING_REASON_OUTSIDE_PILOT:
-			message = "Cultivo livre disponivel apenas na area marcada."
+			message = "Cultivo livre disponivel no terreno ao sul dos lotes."
 		FREE_FARMING_REASON_HOE_REQUIRED:
 			message = "Selecione a Enxada."
 		SoilValidityPolicy.REASON_OUTSIDE_CULTIVABLE_BOUNDS:
@@ -2241,7 +2290,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			if tool_manager != null and tool_manager.has_method("get_active_tool"):
 				var active_tool: int = int(tool_manager.call("get_active_tool"))
 				if active_tool == int(ToolManager.ToolType.HOE):
-					tentar_arar_agricultura_livre(click_position)
+					handle_hoe_world_click(click_position)
 					get_viewport().set_input_as_handled()
 					return
 				if active_tool != int(ToolManager.ToolType.NONE):

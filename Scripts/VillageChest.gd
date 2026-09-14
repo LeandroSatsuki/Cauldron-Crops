@@ -67,7 +67,7 @@ func _on_clickable_area_input_event(viewport: Viewport, event: InputEvent, _shap
 		if main != null and main.has_method("request_player_interaction"):
 			if bool(main.call("request_player_interaction", self, global_position, 52.0, Callable(self, "_open_chest"))):
 				viewport.set_input_as_handled()
-				return
+			return
 		_open_chest()
 		viewport.set_input_as_handled()
 

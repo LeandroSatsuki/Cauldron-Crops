@@ -40,4 +40,5 @@
 - A recomendação é um pequeno bosque de forrageamento, ainda sem nome ou lore definitivos.
 - O shell navegável da Fase A foi aprovado.
 - A coleta vertical da Fase B foi aprovada.
-- A curiosidade e a vida ambiental mínima da Fase C estão implementadas e aguardam validação manual; a próxima etapa é a validação integrada do vertical slice.
+- A curiosidade e a vida ambiental mínima da Fase C foram aprovadas.
+- A validação integrada da Fase D foi automatizada e aprovada manualmente; o vertical slice técnico do Bosque de Forrageamento está concluído.

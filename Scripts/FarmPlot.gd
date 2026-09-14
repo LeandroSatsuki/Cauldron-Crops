@@ -114,7 +114,7 @@ func _input_event(_viewport: Viewport, event: InputEvent, _shape_idx: int) -> vo
 		if main != null and main.has_method("request_player_interaction"):
 			if bool(main.call("request_player_interaction", self, global_position, 46.0, Callable(self, "_on_plot_clicked"))):
 				_viewport.set_input_as_handled()
-				return
+			return
 		_on_plot_clicked()
 		_viewport.set_input_as_handled()
 
