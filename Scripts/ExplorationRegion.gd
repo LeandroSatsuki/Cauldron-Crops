@@ -137,8 +137,6 @@ func _register_with_travel_coordinator() -> void:
 func can_issue_player_move(world_position: Vector2, check_interaction_colliders: bool = true) -> bool:
 	if player_avatar == null or not is_instance_valid(player_avatar):
 		return false
-	if ToolManager.get_active_tool() != ToolManager.ToolType.NONE or GlobalInventory.semente_selecionada != "":
-		return false
 	if not navigation_bounds.has_point(world_position):
 		return false
 	if not is_world_position_navigable(world_position):

@@ -29,6 +29,19 @@ func _run() -> void:
 
 	farm.set_meta("region_travel_preservation_probe", 73)
 	var farm_instance_id: int = farm.get_instance_id()
+	var growing_plot: Node = farm.call("obter_farm_plot_por_grid_position", Vector2i(0, 0))
+	if growing_plot == null or not growing_plot.has_method("load_save_data"):
+		_fail("lote de controle nao foi encontrado para validar tempo inativo")
+		return
+	growing_plot.call("load_save_data", {
+		"estado_atual": 1,
+		"semente_id_plantada": "semente_basica",
+		"regado": true,
+		"arado": true,
+		"tempo_restante": 8.0,
+		"tempo_total_crescimento": 8.0,
+		"pronto_para_colher": false,
+	})
 	ToolManager.clear_tool()
 	GlobalInventory.semente_selecionada = ""
 	var outward_gateway: RegionGateway = farm.get_node_or_null("ExternalPathGateway") as RegionGateway
@@ -70,6 +83,8 @@ func _run() -> void:
 	if farm.is_inside_tree():
 		_fail("Fazenda/Vila continuou processando enquanto estava fora da arvore")
 		return
+	var inactive_time_before: float = float(growing_plot.call("get_save_data").get("tempo_restante", 0.0))
+	await get_tree().create_timer(0.7).timeout
 
 	var return_gateway: RegionGateway = external_region.get_node_or_null("ReturnGateway") as RegionGateway
 	if return_gateway == null:
@@ -99,6 +114,13 @@ func _run() -> void:
 		return
 	if int(returned_farm.get_meta("region_travel_preservation_probe", 0)) != 73:
 		_fail("estado runtime da Fazenda/Vila foi perdido durante a viagem")
+		return
+	var inactive_time_after: float = float(growing_plot.call("get_save_data").get("tempo_restante", 0.0))
+	if inactive_time_after >= inactive_time_before - 0.5:
+		_fail("tempo do cultivo nao avancou enquanto a Fazenda estava em cache (antes=%.2f depois=%.2f)" % [inactive_time_before, inactive_time_after])
+		return
+	if returned_farm.call("obter_farm_plot_por_grid_position", Vector2i(0, 0)) != growing_plot:
+		_fail("cache da regiao removeu a identidade canonica do lote")
 		return
 	var return_entry: Dictionary = returned_farm.call("resolve_region_entry", &"from_foraging_grove")
 	var returned_player: CharacterBody2D = returned_farm.get_node_or_null("PlayerAvatar") as CharacterBody2D

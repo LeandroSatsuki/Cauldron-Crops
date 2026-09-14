@@ -17,6 +17,7 @@ const DEFAULT_FADE_DURATION_SECONDS: float = 0.2
 var _active_scene: Node = null
 var _active_region_id: String = ""
 var _cached_region_scenes: Dictionary = {}
+var _region_inactive_since_msec: Dictionary = {}
 var _transition_in_progress: bool = false
 var _transition_overlay: ColorRect = null
 var _transition_label: Label = null
@@ -130,14 +131,20 @@ func _perform_transition(request: Dictionary) -> void:
 
 	_disconnect_active_scene()
 	_cached_region_scenes[source_region_id] = source_scene
+	if source_scene.has_method("on_region_became_inactive"):
+		source_scene.call("on_region_became_inactive")
 	tree.current_scene = null
 	var source_parent: Node = source_scene.get_parent()
 	if source_parent != null:
 		source_parent.remove_child(source_scene)
+	_region_inactive_since_msec[source_region_id] = Time.get_ticks_msec()
 
 	if target_scene.get_parent() == null:
 		tree.root.add_child(target_scene)
 	tree.current_scene = target_scene
+	if target_scene.has_method("on_region_became_active"):
+		target_scene.call("on_region_became_active")
+	_reconcile_inactive_region_time(target_scene, target_region_id)
 	if not register_region_scene(target_scene):
 		_rollback_to_source(source_scene, source_region_id, target_scene)
 		_fail_transition(request, "target_registration_failed")
@@ -172,6 +179,17 @@ func _region_scene_has_entry(scene: Node, entry_id: String) -> bool:
 	return bool(region_context.resolve_entry(StringName(entry_id)).get("found", false))
 
 
+func _reconcile_inactive_region_time(scene: Node, region_id: String) -> float:
+	if not _region_inactive_since_msec.has(region_id):
+		return 0.0
+	var inactive_since_msec: int = int(_region_inactive_since_msec.get(region_id, Time.get_ticks_msec()))
+	_region_inactive_since_msec.erase(region_id)
+	var elapsed_seconds: float = maxf(float(Time.get_ticks_msec() - inactive_since_msec) / 1000.0, 0.0)
+	if scene != null and is_instance_valid(scene) and scene.has_method("advance_inactive_time"):
+		scene.call("advance_inactive_time", elapsed_seconds)
+	return elapsed_seconds
+
+
 func _rollback_to_source(source_scene: Node, source_region_id: String, failed_target: Node) -> void:
 	var tree: SceneTree = get_tree()
 	if tree == null:
@@ -182,6 +200,9 @@ func _rollback_to_source(source_scene: Node, source_region_id: String, failed_ta
 	if source_scene != null and is_instance_valid(source_scene) and source_scene.get_parent() == null:
 		tree.root.add_child(source_scene)
 	tree.current_scene = source_scene
+	if source_scene != null and source_scene.has_method("on_region_became_active"):
+		source_scene.call("on_region_became_active")
+	_reconcile_inactive_region_time(source_scene, source_region_id)
 	register_region_scene(source_scene)
 	_active_region_id = source_region_id
 
@@ -282,3 +303,4 @@ func _exit_tree() -> void:
 		if scene != null and scene.get_parent() == null:
 			scene.free()
 	_cached_region_scenes.clear()
+	_region_inactive_since_msec.clear()

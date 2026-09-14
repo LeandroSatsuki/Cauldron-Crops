@@ -62,6 +62,19 @@ func _ready() -> void:
 	_life_timer.one_shot = true
 	_life_timer.timeout.connect(_on_life_timer_timeout)
 	add_child(_life_timer)
+	_configure_player_collision_exception.call_deferred()
+
+
+func _configure_player_collision_exception() -> void:
+	var tree: SceneTree = get_tree()
+	if tree == null:
+		return
+	for player_variant in tree.get_nodes_in_group("player_avatar"):
+		var player_body: PhysicsBody2D = player_variant as PhysicsBody2D
+		if player_body == null or not is_instance_valid(player_body):
+			continue
+		add_collision_exception_with(player_body)
+		player_body.add_collision_exception_with(self)
 
 func _process(_delta: float) -> void:
 	z_index = int(global_position.y) + 3
@@ -596,6 +609,8 @@ func _abortar_movimento(mensagem: String) -> void:
 		_limpar_alvo_lote()
 	elif state == "MOVING_TO_CHEST":
 		target_chest = null
+		if not carried_rewards.is_empty():
+			_registrar_acao("entrega aguardando caminho")
 	elif state == "MOVING_TO_REST":
 		life_state = "IDLE"
 		life_action = "descanso indisponivel"

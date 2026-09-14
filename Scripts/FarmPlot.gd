@@ -511,6 +511,22 @@ func load_save_data(data: Dictionary) -> void:
 		_:
 			_concluir_colheita()
 
+
+func advance_inactive_time(elapsed_seconds: float) -> bool:
+	if elapsed_seconds <= 0.0 or estado_atual != State.CRESCENDO or timer == null:
+		return false
+	var remaining_seconds: float = maxf(timer.time_left, 0.0)
+	if remaining_seconds <= 0.0:
+		return false
+	if elapsed_seconds >= remaining_seconds:
+		timer.stop()
+		_on_timer_timeout()
+		return true
+	timer.start(maxf(remaining_seconds - elapsed_seconds, 0.001))
+	_atualizar_visual()
+	_notificar_estado_alterado()
+	return true
+
 func _obter_dados_semente_por_id(semente_id: String) -> Dictionary:
 	match semente_id:
 		"semente_basica":

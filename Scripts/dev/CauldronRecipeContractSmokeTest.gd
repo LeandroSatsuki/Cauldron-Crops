@@ -36,6 +36,8 @@ func _run() -> void:
 		return
 	if not _exercise_batch_and_refund(cauldron):
 		return
+	if not _exercise_inactive_time(cauldron):
+		return
 
 	print("CauldronRecipeContractSmokeTest: PASS - RecipeData governa quantidade, tempo, recompensa, descoberta e refund com fallback legado.")
 	await get_tree().create_timer(1.1).timeout
@@ -181,6 +183,23 @@ func _exercise_batch_and_refund(cauldron: Node) -> bool:
 		return false
 	if str(cauldron.get("estado_atual")) != "IDLE":
 		_fail("cancelamento nao liberou o caldeirao")
+		return false
+	return true
+
+
+func _exercise_inactive_time(cauldron: Node) -> bool:
+	var result_before: int = int(GlobalInventory.inventario.get(RESULT_ITEM_ID, 0))
+	if not bool(cauldron.call("iniciar_producao_em_lote", RESOURCE_RECIPE_ID, 1)):
+		_fail("lote de controle para tempo inativo foi recusado")
+		return false
+	if not bool(cauldron.call("advance_inactive_time", 2.1)):
+		_fail("caldeirao nao aceitou reconciliacao do tempo inativo")
+		return false
+	if int(GlobalInventory.inventario.get(RESULT_ITEM_ID, 0)) != result_before + 2:
+		_fail("tempo inativo nao concluiu exatamente um craft do caldeirao")
+		return false
+	if str(cauldron.get("estado_atual")) != "IDLE" or bool(cauldron.get("_batch_ativo")):
+		_fail("caldeirao permaneceu ocupado depois de concluir o tempo inativo")
 		return false
 	return true
 

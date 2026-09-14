@@ -310,6 +310,44 @@ func _iniciar_proximo_tick_lote() -> void:
 func _on_batch_timer_timeout() -> void:
 	_processar_tick_lote()
 
+
+func advance_inactive_time(elapsed_seconds: float) -> bool:
+	var remaining_elapsed: float = maxf(elapsed_seconds, 0.0)
+	if remaining_elapsed <= 0.0:
+		return false
+	var advanced: bool = false
+
+	if _batch_ativo and batch_timer != null:
+		var current_tick_remaining: float = maxf(batch_timer.time_left, 0.0)
+		if current_tick_remaining <= 0.0:
+			current_tick_remaining = maxf(_batch_tempo_por_unidade, 0.1)
+		batch_timer.stop()
+		while _batch_ativo and remaining_elapsed >= current_tick_remaining:
+			remaining_elapsed -= current_tick_remaining
+			_processar_tick_lote()
+			advanced = true
+			if _batch_ativo:
+				batch_timer.stop()
+				current_tick_remaining = maxf(_batch_tempo_por_unidade, 0.1)
+		if _batch_ativo:
+			batch_timer.stop()
+			batch_timer.start(maxf(current_tick_remaining - remaining_elapsed, 0.001))
+			advanced = advanced or remaining_elapsed > 0.0
+		return advanced
+
+	var brew_timer: Timer = get_node_or_null("BrewTimer") as Timer
+	if estado_atual == "BREWING" and brew_timer != null:
+		var brew_remaining: float = maxf(brew_timer.time_left, 0.0)
+		if brew_remaining <= 0.0:
+			return false
+		brew_timer.stop()
+		if remaining_elapsed >= brew_remaining:
+			_on_brew_timer_timeout()
+		else:
+			brew_timer.start(maxf(brew_remaining - remaining_elapsed, 0.001))
+		return true
+	return false
+
 func _processar_tick_lote() -> void:
 	if not _batch_ativo:
 		return

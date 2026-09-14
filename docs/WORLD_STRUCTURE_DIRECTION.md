@@ -31,7 +31,7 @@
 - A coleta externa entra no bridge temporário da Mochila, não no `VillageChest`; os pontos mantêm o estado apenas na instância da sessão e não alteram o schema de save.
 - A ramificação opcional contém as Luzes do Bosque: curiosidade atmosférica repetível, sem recompensa e sem registro persistente, cujo enxame reage à proximidade do familiar.
 - Lore definitiva e persistência própria continuam fora da região.
-- A Fazenda sai da árvore enquanto outra região está ativa, portanto seus timers e sistemas locais não continuam processando em segundo plano.
+- A Fazenda sai da árvore enquanto outra região está ativa, evitando duas cenas físicas concorrentes. O coordenador registra o tempo de sessão fora dela e, no retorno, reconcilia os timers de cultivo e do caldeirão; o golem retoma seu trabalho físico somente quando a Fazenda volta a ficar ativa.
 - Ainda não há simulação abstrata de mapas descarregados, catálogo extensível de regiões ou persistência da localização do jogador entre sessões.
 
 ## Próximo vertical slice
@@ -42,3 +42,4 @@
 - A coleta vertical da Fase B foi aprovada.
 - A curiosidade e a vida ambiental mínima da Fase C foram aprovadas.
 - A validação integrada da Fase D foi automatizada e aprovada manualmente; o vertical slice técnico do Bosque de Forrageamento está concluído.
+- Correções posteriores permitem click-to-move no bosque mesmo com seleção persistente, reconciliam o tempo da Fazenda no retorno e evitam deadlock físico entre familiar e golem; a revalidação manual foi aprovada.

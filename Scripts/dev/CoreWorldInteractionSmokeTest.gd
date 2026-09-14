@@ -42,11 +42,13 @@ func _run() -> void:
 		return
 	if not await _test_existing_plot_approach(player):
 		return
+	if not await _test_golem_delivery_through_player(player, chest):
+		return
 
 	_restore_global_state()
 	_main.queue_free()
 	await get_tree().process_frame
-	print("CoreWorldInteractionSmokeTest: PASS - bau, caldeirao, pesca e lote concluem apos aproximacao segura.")
+	print("CoreWorldInteractionSmokeTest: PASS - interacoes concluem com aproximacao segura e o golem entrega sem colidir com o familiar.")
 	get_tree().quit(0)
 
 
@@ -150,6 +152,35 @@ func _test_existing_plot_approach(player: PlayerAvatar) -> bool:
 		_fail("lote existente nao foi arado depois da aproximacao")
 		return false
 	return _assert_approach_completed(player, plot.global_position, 46.0, "lote", false)
+
+
+func _test_golem_delivery_through_player(player: PlayerAvatar, chest: VillageChest) -> bool:
+	var golem: CharacterBody2D = _main.get_node_or_null("Golem") as CharacterBody2D
+	if golem == null:
+		_fail("golem ausente para validar entrega obstruida")
+		return false
+	var think_timer: Timer = golem.get("_think_timer") as Timer
+	if think_timer != null:
+		think_timer.stop()
+	var wheat_before: int = int(chest.get_contents().get("trigo", 0))
+	golem.set("move_speed_pixels_per_second", 220.0)
+	golem.set("carried_rewards", [{"item_id": "trigo", "quantidade": 1}])
+	golem.global_position = chest.global_position + Vector2(260.0, 0.0)
+	_place_player(player, chest.global_position + Vector2(130.0, 0.0))
+	await get_tree().physics_frame
+	golem.call("_procurar_bau")
+	for _frame in range(MAX_APPROACH_FRAMES):
+		await get_tree().physics_frame
+		if int(chest.get_contents().get("trigo", 0)) == wheat_before + 1:
+			break
+	if int(chest.get_contents().get("trigo", 0)) != wheat_before + 1:
+		_fail("colisao com o familiar cancelou a entrega do golem")
+		return false
+	var carried_rewards: Array = golem.get("carried_rewards") as Array
+	if not carried_rewards.is_empty() or str(golem.get("state")) != "IDLE":
+		_fail("golem depositou, mas manteve carga ou estado de entrega")
+		return false
+	return true
 
 
 func _place_player(player: PlayerAvatar, position: Vector2) -> void:

@@ -2,7 +2,7 @@
 
 ## Status
 
-Fases A, B, C e D implementadas, automatizadas e aprovadas manualmente. O vertical slice técnico do Bosque de Forrageamento está concluído.
+Fases A, B, C e D implementadas, automatizadas e aprovadas manualmente. As correções posteriores de continuidade também foram automatizadas e aprovadas manualmente.
 
 Continua sem autorização para conteúdo final, lore definitiva, novos itens ou expansão do save.
 
@@ -42,6 +42,7 @@ Continua sem autorização para conteúdo final, lore definitiva, novos itens ou
 - A viagem entre cenas já possui entrada/saída nomeada, fade, bloqueio de input, retorno seguro e cache em memória.
 - `PrototypeExternalRegion` valida somente a infraestrutura e não deve ser promovida diretamente a mapa final.
 - O estado runtime da Fazenda é preservado durante a viagem, mas regiões externas e a posição do jogador ainda não são persistidas entre sessões.
+- Enquanto a Fazenda fica em cache, o tempo decorrido na sessão é aplicado aos cultivos e ao caldeirão quando o jogador retorna; isso não constitui ainda uma simulação offline completa do golem ou da vila.
 - `GlobalInventory.inventario` e `VillageChest.inventory` já são armazenamentos tecnicamente separados, embora o primeiro ainda misture responsabilidades de protótipo.
 
 ## Recomendação de tema

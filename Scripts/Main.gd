@@ -85,6 +85,7 @@ var farm_origin: Vector2 = Vector2.ZERO
 var _camera_dragging: bool = false
 var _camera_follow_enabled: bool = true
 var _pending_player_interaction: Dictionary = {}
+var _region_being_cached: bool = false
 
 func _ready() -> void:
 	_configurar_contexto_regiao()
@@ -152,7 +153,36 @@ func enter_region_at(entry_id: StringName = &"") -> bool:
 		main_camera.make_current()
 		main_camera.global_position = player_avatar.global_position
 	_camera_follow_enabled = true
+	_region_being_cached = false
 	return true
+
+
+func on_region_became_inactive() -> void:
+	_region_being_cached = true
+	_cancel_pending_player_interaction(true)
+
+
+func on_region_became_active() -> void:
+	_region_being_cached = false
+
+
+func advance_inactive_time(elapsed_seconds: float) -> Dictionary:
+	var safe_elapsed: float = maxf(elapsed_seconds, 0.0)
+	var advanced_plots: int = 0
+	if safe_elapsed > 0.0:
+		for plot_variant in farm_plot_registry.values():
+			var plot: Node = plot_variant as Node
+			if plot != null and is_instance_valid(plot) and plot.has_method("advance_inactive_time"):
+				if bool(plot.call("advance_inactive_time", safe_elapsed)):
+					advanced_plots += 1
+		var cauldron: Node = get_node_or_null("CauldronUI")
+		if cauldron != null and cauldron.has_method("advance_inactive_time"):
+			cauldron.call("advance_inactive_time", safe_elapsed)
+		_reconstruir_farm_grid_manager()
+	return {
+		"elapsed_seconds": safe_elapsed,
+		"advanced_plots": advanced_plots,
+	}
 
 
 func _register_with_travel_coordinator() -> void:
@@ -634,6 +664,8 @@ func _on_farm_plot_estado_alterado() -> void:
 
 
 func _on_farm_plot_tree_exiting(grid_x: int, grid_y: int, plot: Node2D) -> void:
+	if _region_being_cached:
+		return
 	_desregistrar_farm_plot(grid_x, grid_y, plot)
 
 

@@ -72,6 +72,17 @@ func _run() -> void:
 		_fail("curiosidade criou progresso de lore persistente")
 		return
 
+	ToolManager.force_select_tool(ToolManager.ToolType.HOE)
+	GlobalInventory.semente_selecionada = "semente_basica"
+	var movement_destination := Vector2(1570.0, 1220.0)
+	if not bool(grove.call("try_move_player_to", movement_destination)):
+		_fail("selecao ativa bloqueou movimento comum depois de observar as luzes")
+		return
+	var player: PlayerAvatar = grove.get_node_or_null("PlayerAvatar") as PlayerAvatar
+	if player == null or not player.has_active_destination():
+		_fail("movimento comum nao permaneceu ativo depois da curiosidade")
+		return
+
 	_restore_globals()
 	grove.queue_free()
 	await get_tree().process_frame
@@ -82,6 +93,8 @@ func _run() -> void:
 func _restore_globals() -> void:
 	GlobalInventory.inventario = _inventory_before.duplicate(true)
 	GlobalInventory.lore_descobertas = _lore_before.duplicate()
+	GlobalInventory.semente_selecionada = ""
+	ToolManager.clear_tool()
 
 
 func _get_inventory_without_water() -> Dictionary:
