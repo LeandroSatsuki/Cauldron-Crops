@@ -36,6 +36,31 @@ func deposit_item(item_id: String, quantidade: int = 1) -> void:
 		int(inventory[item_id])
 	])
 
+
+func get_item_quantity(item_id: String) -> int:
+	if item_id == "":
+		return 0
+	return maxi(int(inventory.get(item_id, 0)), 0)
+
+
+func withdraw_item(item_id: String, quantidade: int = 1) -> bool:
+	if item_id == "" or quantidade <= 0:
+		return false
+	var current_quantity: int = get_item_quantity(item_id)
+	if current_quantity < quantidade:
+		return false
+	var remaining_quantity: int = current_quantity - quantidade
+	if remaining_quantity > 0:
+		inventory[item_id] = remaining_quantity
+	else:
+		inventory.erase(item_id)
+	print("VillageChest: retirou %s x%d. Restam: %d" % [
+		item_id,
+		quantidade,
+		remaining_quantity,
+	])
+	return true
+
 func get_contents() -> Dictionary:
 	return inventory.duplicate(true)
 
