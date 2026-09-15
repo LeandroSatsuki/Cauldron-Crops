@@ -48,7 +48,11 @@ Assets atuais e placeholders são evidência do estado do protótipo, não aprov
 Preserve estes pilares enquanto não houver decisão explícita em contrário:
 
 - pixel art 2D em visão top-down;
-- atmosfera cozy, viva, mágica e legível;
+- resolução virtual-base de **640×360**, com escala inteira;
+- módulo-base de terreno de **16×16 pixels**; personagens, criaturas e objetos podem ocupar múltiplos módulos e não ficam limitados a 16×16;
+- atmosfera **high fantasy/Feywild**, cozy, viva, intensamente mágica e legível — não low fantasy;
+- a magia deve estar presente o tempo todo, mas variar de intensidade para preservar hierarquia e descoberta;
+- o mundo deve recompensar contemplação: vegetação, criaturas, luz e pequenos fenômenos continuam vivos mesmo sem ação do jogador;
 - o caldeirão é o coração visual e sistêmico da vila;
 - corrupção e purificação devem criar contraste visual e sensação de recuperação;
 - plantas misturam espécies reconhecíveis e fantasia para favorecer descoberta e memorização;
@@ -58,13 +62,100 @@ Preserve estes pilares enquanto não houver decisão explícita em contrário:
 
 A referência estética registrada no GDD, **Tiny Terraces**, é apenas inspiração. Nunca solicite imitação direta de artista vivo, estúdio ou propriedade intelectual. Traduza referências para atributos genéricos e originais.
 
+## Direção visual consolidada
+
+Estas decisões vieram de protótipos aprovados pelo criador e devem orientar novos estudos.
+
+### Linguagem geral e contraste
+
+- O cenário deve ser exuberante, encantador e observável, sem transformar cada área em um ponto de máximo contraste.
+- Use hierarquia: terreno-base com contraste baixo; vegetação decorativa com contraste baixo a médio; personagens e criaturas com contraste médio; rostos, partes funcionais, magia ativa, objetivos e perigos com contraste alto apenas em áreas pequenas.
+- A unidade entre famílias de assets vem das mesmas regras de desenho — densidade de detalhes, tamanho aparente dos pixels, direção de luz, quantidade de sombras e lógica dos brilhos — e não da repetição da mesma paleta em todos os seres.
+- Evite preto puro e contorno preto uniforme e espesso. O protótipo do golem mostrou que isso recorta o personagem do cenário.
+- **Em validação:** contornos seletivos e coloridos por material — marrons profundos para matéria quente, verdes-floresta para vegetação e valores mais escuros nas áreas inferiores/sombreadas.
+- **Em aberto:** paleta mestra definitiva, quantidade final de níveis por material e valores exatos de contraste. Não transforme o estudo atual em paleta final sem teste no tamanho real.
+
+### Caldeirão
+
+- Deve transmitir vínculo com natureza ancestral por meio de raízes integradas à construção.
+- Sua forma precisa parecer antiga, poderosa e organicamente ligada ao lugar.
+- O líquido deve comunicar mistura alquímica em movimento, com fluxo, redemoinho e cores que se combinam; não deve parecer uma superfície estática.
+- Caldeirão e líquido têm funções visuais diferentes: a estrutura carrega ancestralidade e peso; o conteúdo carrega transformação e descoberta.
+
+### Grama e terreno vivo
+
+A grama não é preenchimento. Ela ocupa a maior parte do mapa e deve sustentar a sensação de mundo vivo sem competir com gameplay.
+
+Direção aprovada: combinar três linguagens dentro de uma mesma família visual:
+
+1. **Prado macio:** base predominante, com massas simples, variação suave de valor e áreas de descanso.
+2. **Jardim feérico:** clovers, pequenas folhas, samambaias e raros acentos ciano/lavanda para marcar concentração mágica.
+3. **Mosaico biodiverso:** variedade vegetal controlada em bordas, clareiras e regiões menos cuidadas.
+
+Regras:
+
+- Não distribuir flores ou detalhes uniformemente.
+- Trabalhar em agrupamentos, ritmos e zonas de silêncio.
+- Manter o centro de áreas interativas mais calmo e concentrar riqueza nas bordas e espaços de contemplação.
+- Separar base do solo, tufos reativos, plantas decorativas e fenômenos mágicos em camadas quando tecnicamente viável.
+- Permitir movimento ambiental: vento, inclinação após passagem, pólen, folhas, abertura e fechamento de pequenas plantas.
+- A variedade deve crescer gradualmente: prado macio → biodiversidade → concentração feérica, sem parecer troca abrupta de tileset.
+- A grama aprovada em concept é referência de atmosfera, não sprite final. Reconstruir e validar módulos reais de 16×16, repetição, transições e leitura sob personagens.
+
+### Golens
+
+- São espíritos naturais encarnados em materiais, não robôs, bonecos humanos ou mascotes padronizados.
+- A anatomia deve revelar os elementos que os formaram. Ver um golem é decifrar a origem da magia dele.
+- Material determina anatomia; catalisador pode determinar comportamento; personalidade determina movimento.
+- São customizáveis conforme os materiais utilizados em sua criação.
+- Devem ser fofos sem perder a essência natural. A doçura vem de postura, gesto, hesitação, curiosidade e relação com o trabalho — não de rostos humanos padronizados.
+- Evite mãos, dentes, sorrisos, sobrancelhas e proporções humanoides genéricas quando o material não justificar.
+- Golens demonstram personalidade principalmente enquanto trabalham.
+- No golem de abóbora, a abóbora forma o corpo, raízes curtas sustentam o peso, a folha participa dos gestos e os cipós funcionam como braços expressivos. Os cipós são o principal veículo de docilidade.
+- O rosto do golem de abóbora deve permanecer simples: olhos em forma de sementes sob a superfície e sem necessidade de boca.
+
+### Fauna mágica da fazenda
+
+- Animais convencionais são substituídos por espécies mágicas reconhecíveis; exemplo inicial: galinha → cocatriz doméstica.
+- Fauna mágica é parte de um ecossistema fantástico e nasceu daquela forma. Não deve parecer construída, montada, costurada ou animada por um núcleo.
+- Ao primeiro olhar, o jogador reconhece a categoria animal e a espécie-base; ao observar, descobre sua biologia mágica.
+- Magia deve parecer biológica e funcional, não acessório: uma propriedade impossível integrada a penas, escamas, alimentação, sono, reprodução ou comportamento.
+- Animais fornecem recursos, mas sua segunda função indispensável é dar vida à fazenda. Devem comer, dormir, brincar, ciscar, reagir ao clima, socializar e ocupar o espaço mesmo quando não são coletados.
+- Animais demonstram personalidade principalmente enquanto vivem; golens, enquanto trabalham.
+- A fofura deve nascer de comportamento e linguagem corporal animal. Evite rosto humano, olhos enormes padronizados, mãos, dentes humanos e sorriso permanente.
+- Híbridos precisam apresentar transições anatômicas coerentes e parecer uma espécie que evoluiu daquela forma, não uma aberração.
+
+### Cocatriz doméstica
+
+- Direção aprovada: **galinha-dracônica**, aproximadamente ave primeiro e réptil depois; nunca um pequeno dinossauro ou monstro agressivo.
+- Leitura imediata de ave da fazenda por bico, postura, pernas e massa de penas.
+- Magia secundária e restrita: crista e pontas de penas minerais podem armazenar luz dourada.
+- Cauda reptiliana deve nascer naturalmente da coluna. Suas pontas podem lembrar penas minerais, mas não devem parecer um ramo vegetal ou linguagem de golem.
+- Personalidade: cautelosa, curiosa, gentil e ligeiramente orgulhosa.
+- Comportamentos-chave: ciscar energicamente e dormir com a cauda enrolada ao redor do corpo.
+- O concept anatômico foi aprovado; o acabamento deve evitar gradações pastéis excessivas e seguir as mesmas regras de contraste, contorno, luz e densidade dos demais assets.
+- Em cenas conjuntas, a cocatriz deve parecer um animal nascido e o golem uma criatura formada por material, ainda que ambos compartilhem a mesma magia natural.
+
+### Regra de validação conjunta
+
+Nunca aprove uma família de criaturas apenas em prancha isolada. Antes da produção, teste ao menos:
+
+- criatura ao lado de um golem;
+- ambos sobre a grama aprovada;
+- mesma luz e escala aparente;
+- leitura no tamanho real de gameplay;
+- versão em movimento;
+- silhueta e interação sem depender de brilho máximo.
+
+A cena conjunta de golem de abóbora, cocatriz e grama confirmou a coerência geral da direção, mas também revelou correções pendentes: reduzir o contorno preto do golem, simplificar detalhes para escala real, acalmar a grama perto de interações e diferenciar melhor penas minerais de formas vegetais.
+
 ## O que não está definido
 
 Não trate como decidido sem evidência:
 
-- tamanho-base de tiles e sprites;
+- dimensões finais das células de personagens, criaturas e objetos — o módulo de terreno 16×16 não limita o tamanho dessas famílias;
 - paleta mestra e paletas por região/estação;
-- regras de contorno, iluminação, sombra e textura;
+- valores finais de contorno, iluminação, sombra e textura — a direção de evitar preto puro uniforme está aprovada, mas os valores ainda exigem teste;
 - escala relativa de personagens, criaturas, prédios e vegetação;
 - quantidade de quadros e cadência de animações;
 - grid definitivo e regras do mapa final;
