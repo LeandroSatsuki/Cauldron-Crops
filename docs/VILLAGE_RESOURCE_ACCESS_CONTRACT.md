@@ -32,6 +32,15 @@ Fundação técnica da transição entre Mochila e Village Storage, com o caldei
 - O resultado continua indo para o destino atual até existir uma decisão específica para saídas de produção.
 - A mistura experimental por slots ainda exige que o tipo de item esteja visível na Mochila; receitas conhecidas pelo Livro podem usar somente o Village Storage.
 
+## Piloto da purificação
+
+- Status: validado automaticamente e aprovado manualmente em 2026-09-17.
+- Entregas individuais e `Entregar tudo disponível` consultam Village Storage + Mochila.
+- Cada requisito consome primeiro do Village Storage e completa pela Mochila.
+- O progresso parcial, a conclusão e o schema de save permanecem inalterados.
+- A entrega é definitiva como antes; não existe rollback após o recurso virar progresso de purificação.
+- O painel permanece responsável apenas por apresentar e acionar o contrato do obstáculo.
+
 ## Próximo passo recomendado
 
-Depois que o piloto estiver automatizado e aprovado manualmente, o mesmo contrato poderá ser avaliado separadamente para purificação e projetos de restauração. A transferência manual Mochila → Village Storage só deve entrar quando depositar não tornar recursos inutilizáveis para os sistemas da vila.
+Avaliar separadamente o mesmo contrato nos projetos de restauração. A transferência manual Mochila → Village Storage só deve entrar quando depositar não tornar recursos inutilizáveis para os sistemas da vila.

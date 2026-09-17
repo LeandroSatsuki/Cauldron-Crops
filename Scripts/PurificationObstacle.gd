@@ -2,6 +2,8 @@ extends Area2D
 
 signal purified(obstacle_id: String)
 
+const VillageResourceAccessScript = preload("res://Scripts/VillageResourceAccess.gd")
+
 @export var obstacle_id: String = "first_obstacle"
 @export var purified_state: bool = false
 @export var interaction_size: Vector2 = Vector2(360, 240)
@@ -16,6 +18,7 @@ var purification_progress: Dictionary = {}
 @onready var collision_shape: CollisionShape2D = $CollisionShape2D
 @onready var visual_root: Node2D = $Visual
 var _navigation_obstacle: NavigationObstacle2D = null
+var _village_resource_access = null
 
 func _ready() -> void:
 	add_to_group("purification_obstacle")
@@ -36,6 +39,26 @@ func _ensure_navigation_obstacle() -> NavigationObstacle2D:
 	obstacle.radius = maxf(interaction_size.x, interaction_size.y) * 0.48
 	obstacle.avoidance_enabled = not purified_state
 	return obstacle
+
+
+func _get_village_resource_access():
+	var village_storage: Node = _find_village_storage()
+	if _village_resource_access == null:
+		_village_resource_access = VillageResourceAccessScript.new(village_storage)
+	else:
+		_village_resource_access.set_village_storage(village_storage)
+	return _village_resource_access
+
+
+func _find_village_storage() -> Node:
+	var tree: SceneTree = get_tree()
+	if tree == null:
+		return null
+	for chest_variant in tree.get_nodes_in_group("village_chest"):
+		var chest: Node = chest_variant as Node
+		if chest != null and is_instance_valid(chest) and chest.has_method("get_item_quantity"):
+			return chest
+	return null
 
 func _input_event(_viewport: Viewport, event: InputEvent, _shape_idx: int) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
@@ -142,16 +165,18 @@ func deliver_requirement(item_id: String) -> int:
 	if missing_quantity <= 0:
 		return 0
 
-	var inventory_quantity: int = int(GlobalInventory.inventario.get(item_id, 0))
-	if inventory_quantity <= 0:
+	var resource_access = _get_village_resource_access()
+	var available_quantity: int = resource_access.get_available(item_id)
+	if available_quantity <= 0:
 		return 0
 
-	var quantity_to_deliver: int = min(missing_quantity, inventory_quantity)
+	var quantity_to_deliver: int = min(missing_quantity, available_quantity)
 	if quantity_to_deliver <= 0:
 		return 0
 
-	if not GlobalInventory.remover_item(item_id, quantity_to_deliver):
-		push_warning("PurificationObstacle: falha ao remover %s x%d do inventario." % [item_id, quantity_to_deliver])
+	var receipt: Dictionary = resource_access.consume({item_id: quantity_to_deliver})
+	if not bool(receipt.get("success", false)):
+		push_warning("PurificationObstacle: falha ao reservar %s x%d para purificacao." % [item_id, quantity_to_deliver])
 		return 0
 
 	purification_progress[item_id] = min(delivered_quantity + quantity_to_deliver, requirement_quantity)

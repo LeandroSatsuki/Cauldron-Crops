@@ -1,0 +1,6 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://Scripts/dev/PurificationResourceAccessSmokeTest.gd" id="1_purification_resource_access"]
+
+[node name="PurificationResourceAccessSmokeTest" type="Node"]
+script = ExtResource("1_purification_resource_access")
