@@ -3,6 +3,7 @@ extends Node2D
 const MOUSE_LEFT = MOUSE_BUTTON_LEFT
 const UIDragHelperScript = preload("res://Scripts/UIDragHelper.gd")
 const RecipeResolverScript = preload("res://Scripts/data/RecipeResolver.gd")
+const VillageResourceAccessScript = preload("res://Scripts/VillageResourceAccess.gd")
 
 @onready var drop_slot_1: Panel = $PopupLayer/CenterContainer/PopupUI/DropSlot1
 @onready var drop_slot_2: Panel = $PopupLayer/CenterContainer/PopupUI/DropSlot2
@@ -29,8 +30,10 @@ var _batch_ingredientes: Dictionary = {}
 var _batch_quantidade_total: int = 0
 var _batch_quantidade_concluida: int = 0
 var _batch_ativo: bool = false
+var _batch_reservation_receipts: Array[Dictionary] = []
 var _drag_helper: UIDragHelper = null
 var recipe_resolver = null
+var _village_resource_access = null
 var _navigation_obstacle: NavigationObstacle2D = null
 
 func _ready() -> void:
@@ -88,6 +91,46 @@ func _ensure_navigation_obstacle(parent_node: Node2D, obstacle_radius: float) ->
 
 func _initialize_recipe_resolver() -> void:
 	recipe_resolver = RecipeResolverScript.new()
+
+
+func _get_village_resource_access():
+	var village_storage: Node = _find_village_storage()
+	if _village_resource_access == null:
+		_village_resource_access = VillageResourceAccessScript.new(village_storage)
+	elif _batch_reservation_receipts.is_empty():
+		_village_resource_access.set_village_storage(village_storage)
+	return _village_resource_access
+
+
+func _find_village_storage() -> Node:
+	var tree: SceneTree = get_tree()
+	if tree == null:
+		return null
+	for chest_variant in tree.get_nodes_in_group("village_chest"):
+		var chest: Node = chest_variant as Node
+		if chest != null and is_instance_valid(chest) and chest.has_method("get_item_quantity"):
+			return chest
+	return null
+
+
+func get_resource_availability_snapshot() -> Dictionary:
+	var snapshot: Dictionary = GlobalInventory.inventario.duplicate(true)
+	var village_storage: Node = _find_village_storage()
+	if village_storage == null or not village_storage.has_method("get_contents"):
+		return snapshot
+	var storage_contents_variant: Variant = village_storage.call("get_contents")
+	if not (storage_contents_variant is Dictionary):
+		return snapshot
+	var storage_contents: Dictionary = storage_contents_variant
+	for item_variant in storage_contents.keys():
+		var item_id: String = str(item_variant)
+		var quantity: int = maxi(int(storage_contents[item_variant]), 0)
+		snapshot[item_id] = maxi(int(snapshot.get(item_id, 0)), 0) + quantity
+	return snapshot
+
+
+func calcular_quantidade_maxima_para_ingredientes(ingredientes: Array) -> int:
+	return _calcular_quantidade_maxima_ingredientes(ingredientes)
 
 func _process(_delta: float) -> void:
 	if $BaseAnchor/SpriteCaldeirao.frame >= 4:
@@ -189,17 +232,16 @@ func iniciar_producao_em_lote(recipe_id: String, quantidade: int) -> bool:
 			return false
 
 	var ingredientes_contados := _contar_ingredientes(ingredientes)
-	var removidos: Dictionary = {}
-	for ingrediente_id in ingredientes_contados.keys():
-		var total_necessario := int(ingredientes_contados[ingrediente_id]) * quantidade_final
-		if total_necessario <= 0:
-			continue
-		if not GlobalInventory.remover_item(str(ingrediente_id), total_necessario):
-			for rollback_id in removidos.keys():
-				GlobalInventory.adicionar_item(str(rollback_id), int(removidos[rollback_id]))
-			push_warning("Cauldron: falha ao consumir ingredientes para o lote de %s." % recipe_id)
+	var resource_access = _get_village_resource_access()
+	var reservation_receipts: Array[Dictionary] = []
+	for _unit_index in range(quantidade_final):
+		var receipt: Dictionary = resource_access.consume(ingredientes_contados)
+		if not bool(receipt.get("success", false)):
+			for previous_receipt in reservation_receipts:
+				resource_access.refund(previous_receipt)
+			push_warning("Cauldron: falha ao reservar ingredientes para o lote de %s." % recipe_id)
 			return false
-		removidos[ingrediente_id] = total_necessario
+		reservation_receipts.append(receipt)
 
 	_batch_recipe_id = recipe_id
 	_batch_resultado = resultado
@@ -208,6 +250,7 @@ func iniciar_producao_em_lote(recipe_id: String, quantidade: int) -> bool:
 	_batch_ingredientes = ingredientes_contados
 	_batch_quantidade_total = quantidade_final
 	_batch_quantidade_concluida = 0
+	_batch_reservation_receipts = reservation_receipts
 	_batch_ativo = true
 	estado_atual = "BATCH"
 	item_em_producao = resultado
@@ -223,12 +266,13 @@ func cancelar_producao_em_lote() -> void:
 		return
 
 	var restante: int = int(max(_batch_quantidade_total - _batch_quantidade_concluida, 0))
-	if restante > 0 and not _batch_ingredientes.is_empty():
-		for ingrediente_id in _batch_ingredientes.keys():
-			var quantidade_por_unidade: int = int(_batch_ingredientes[ingrediente_id])
-			var quantidade_devolvida: int = int(quantidade_por_unidade) * int(restante)
-			if quantidade_devolvida > 0:
-				GlobalInventory.adicionar_item(str(ingrediente_id), quantidade_devolvida)
+	var resource_access = _get_village_resource_access()
+	var unidades_devolvidas: int = 0
+	for receipt in _batch_reservation_receipts:
+		if resource_access.refund(receipt):
+			unidades_devolvidas += 1
+		else:
+			push_warning("Cauldron: nao foi possivel devolver uma reserva do lote %s." % _batch_recipe_id)
 
 	if batch_timer:
 		batch_timer.stop()
@@ -243,6 +287,7 @@ func cancelar_producao_em_lote() -> void:
 	_batch_ingredientes.clear()
 	_batch_quantidade_total = 0
 	_batch_quantidade_concluida = 0
+	_batch_reservation_receipts.clear()
 
 	if batch_progress_bar:
 		batch_progress_bar.value = 0.0
@@ -254,7 +299,7 @@ func cancelar_producao_em_lote() -> void:
 	var ui = get_tree().current_scene.get_node_or_null("UI")
 	if ui and ui.has_method("criar_texto_flutuante"):
 		ui.criar_texto_flutuante("Produção cancelada", $BaseAnchor/SpriteCaldeirao.global_position, Color.YELLOW)
-	print("Cauldron: producao em lote cancelada. Ingredientes devolvidos para ", restante, " unidade(s) restante(s).")
+	print("Cauldron: producao em lote cancelada. Reservas devolvidas: %d/%d unidade(s)." % [unidades_devolvidas, restante])
 
 func _contar_ingredientes(ingredientes: Array) -> Dictionary:
 	var contagem: Dictionary = {}
@@ -268,9 +313,10 @@ func _calcular_quantidade_maxima_ingredientes(ingredientes: Array) -> int:
 		return 0
 
 	var contagem_necessaria := _contar_ingredientes(ingredientes)
+	var resource_access = _get_village_resource_access()
 	var quantidade_maxima := -1
 	for ingrediente_id in contagem_necessaria.keys():
-		var quantidade_no_inventario := int(GlobalInventory.inventario.get(str(ingrediente_id), 0))
+		var quantidade_no_inventario: int = resource_access.get_available(str(ingrediente_id))
 		var quantidade_necessaria := int(contagem_necessaria[ingrediente_id])
 		if quantidade_no_inventario < quantidade_necessaria:
 			return 0
@@ -352,6 +398,10 @@ func _processar_tick_lote() -> void:
 	if not _batch_ativo:
 		return
 
+	if not _batch_reservation_receipts.is_empty():
+		_batch_reservation_receipts.pop_front()
+	else:
+		push_warning("Cauldron: lote ativo sem recibo de reserva para a unidade atual.")
 	_batch_quantidade_concluida += 1
 	_entregar_resultado(_batch_resultado, _batch_resultado_quantidade)
 
@@ -378,6 +428,7 @@ func _finalizar_lote() -> void:
 	_batch_ingredientes.clear()
 	_batch_quantidade_total = 0
 	_batch_quantidade_concluida = 0
+	_batch_reservation_receipts.clear()
 	if batch_timer:
 		batch_timer.stop()
 	if batch_progress_bar:
@@ -408,26 +459,17 @@ func _on_misturar_button_pressed() -> void:
 	if not drop_slot_1 or not drop_slot_2:
 		return
 		
-	var item1 = drop_slot_1.item_vinculado
-	var item2 = drop_slot_2.item_vinculado
+	var item1: String = str(drop_slot_1.item_vinculado)
+	var item2: String = str(drop_slot_2.item_vinculado)
 	
 	if item1 == "" or item2 == "":
 		if resultado_label:
 			resultado_label.text = "Solte ingredientes nos slots!"
 		return
 		
-	var qtd1 = GlobalInventory.inventario.get(item1, 0)
-	var qtd2 = GlobalInventory.inventario.get(item2, 0)
-	
-	var ok = false
-	if item1 == item2:
-		if qtd1 >= 2:
-			ok = true
-	else:
-		if qtd1 >= 1 and qtd2 >= 1:
-			ok = true
-			
-	if not ok:
+	var requirements: Dictionary = _contar_ingredientes([item1, item2])
+	var resource_access = _get_village_resource_access()
+	if not resource_access.can_consume(requirements):
 		if resultado_label:
 			resultado_label.text = "Ingredientes insuficientes!"
 		return
@@ -437,13 +479,13 @@ func _on_misturar_button_pressed() -> void:
 	var resultado: String = str(recipe.get("resultado_item", ""))
 		
 	if resultado == "":
-		# Se a mistura falhar:
-		var removed_1 = GlobalInventory.remover_item(item1, 1)
-		var removed_2 = GlobalInventory.remover_item(item2, 1)
-		if removed_1 and removed_2:
+		var failed_mix_receipt: Dictionary = resource_access.consume(requirements)
+		if bool(failed_mix_receipt.get("success", false)):
 			if resultado_label:
 				resultado_label.text = "Mistura falhou! Ingredientes perdidos."
 			_limpar_slots()
+		elif resultado_label:
+			resultado_label.text = "Erro ao consumir ingredientes!"
 		return
 		
 	var resultado_quantidade: int = int(recipe.get("resultado_quantidade", 0))
@@ -458,52 +500,23 @@ func _on_misturar_button_pressed() -> void:
 			if resultado_label:
 				resultado_label.text = "Capacidade máxima de Golems atingida!"
 			return
-		
-		# Consome os ingredientes
-		var removed_1 = GlobalInventory.remover_item(item1, 1)
-		var removed_2 = GlobalInventory.remover_item(item2, 1)
-		if removed_1 and removed_2:
-			_registrar_descoberta(recipe)
-			
-			# Iniciar produção
-			item_em_producao = "golem_coletor"
-			_item_quantidade_em_producao = resultado_quantidade
-			estado_atual = "BREWING"
-			popup_ui.visible = false
-			_iniciar_processo_de_mistura()
-			$BrewTimer.start(recipe_tempo_producao)
-			_limpar_slots()
-			fechar_popup()
-		else:
-			if removed_1:
-				GlobalInventory.adicionar_item(item1, 1)
-			if removed_2:
-				GlobalInventory.adicionar_item(item2, 1)
-			if resultado_label:
-				resultado_label.text = "Erro ao consumir ingredientes!"
-	else:
-		# Comportamento normal das outras poções
-		var removed_1 = GlobalInventory.remover_item(item1, 1)
-		var removed_2 = GlobalInventory.remover_item(item2, 1)
-		
-		if removed_1 and removed_2:
-			_registrar_descoberta(recipe)
-			
-			# Iniciar produção
-			item_em_producao = resultado
-			_item_quantidade_em_producao = resultado_quantidade
-			estado_atual = "BREWING"
-			popup_ui.visible = false
-			_iniciar_processo_de_mistura()
-			$BrewTimer.start(recipe_tempo_producao)
-			_limpar_slots()
-		else:
-			if removed_1:
-				GlobalInventory.adicionar_item(item1, 1)
-			if removed_2:
-				GlobalInventory.adicionar_item(item2, 1)
-			if resultado_label:
-				resultado_label.text = "Erro ao consumir ingredientes!"
+
+	var receipt: Dictionary = resource_access.consume(requirements)
+	if not bool(receipt.get("success", false)):
+		if resultado_label:
+			resultado_label.text = "Erro ao consumir ingredientes!"
+		return
+
+	_registrar_descoberta(recipe)
+	item_em_producao = resultado
+	_item_quantidade_em_producao = resultado_quantidade
+	estado_atual = "BREWING"
+	popup_ui.visible = false
+	_iniciar_processo_de_mistura()
+	$BrewTimer.start(recipe_tempo_producao)
+	_limpar_slots()
+	if resultado == "golem_coletor":
+		fechar_popup()
 
 func _limpar_slots() -> void:
 	if drop_slot_1:

@@ -286,6 +286,9 @@ func _show_unavailable_recipe(recipe_id: String) -> void:
 func _calcular_quantidade_maxima(ingredientes: Array) -> int:
 	if ingredientes.is_empty():
 		return 0
+	var cauldron := _get_valid_cauldron()
+	if cauldron != null and cauldron.has_method("calcular_quantidade_maxima_para_ingredientes"):
+		return int(cauldron.call("calcular_quantidade_maxima_para_ingredientes", ingredientes))
 
 	var contagem_necessaria := {}
 	for ingrediente in ingredientes:
@@ -474,19 +477,29 @@ func get_cauldron_reference() -> Node:
 	return cauldron_ref
 
 func _cache_inventory_snapshot() -> void:
-	_last_inventory_snapshot = GlobalInventory.inventario.duplicate()
+	_last_inventory_snapshot = _get_resource_availability_snapshot()
 
 func _inventory_changed() -> bool:
-	if _last_inventory_snapshot.size() != GlobalInventory.inventario.size():
+	var current_snapshot: Dictionary = _get_resource_availability_snapshot()
+	if _last_inventory_snapshot.size() != current_snapshot.size():
 		return true
 
-	for item_id in GlobalInventory.inventario:
+	for item_id in current_snapshot:
 		if not _last_inventory_snapshot.has(item_id):
 			return true
-		if int(_last_inventory_snapshot[item_id]) != int(GlobalInventory.inventario[item_id]):
+		if int(_last_inventory_snapshot[item_id]) != int(current_snapshot[item_id]):
 			return true
 
 	return false
+
+
+func _get_resource_availability_snapshot() -> Dictionary:
+	var cauldron := _get_valid_cauldron()
+	if cauldron != null and cauldron.has_method("get_resource_availability_snapshot"):
+		var snapshot_variant: Variant = cauldron.call("get_resource_availability_snapshot")
+		if snapshot_variant is Dictionary:
+			return (snapshot_variant as Dictionary).duplicate(true)
+	return GlobalInventory.inventario.duplicate(true)
 
 func _format_recipe_name(recipe_id: String) -> String:
 	return _format_item_name(recipe_id)

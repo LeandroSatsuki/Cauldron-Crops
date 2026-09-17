@@ -1,6 +1,8 @@
 extends Node
 
 const CAULDRON_SCENE := preload("res://Scenes/Cauldron.tscn")
+const RECIPE_BOOK_SCENE := preload("res://Scenes/RecipeBookUI.tscn")
+const VILLAGE_CHEST_SCENE := preload("res://Scenes/VillageChest.tscn")
 const RecipeDatabaseScript = preload("res://Scripts/data/RecipeDatabase.gd")
 const RecipeResolverScript = preload("res://Scripts/data/RecipeResolver.gd")
 const RESOURCE_RECIPE_ID := "semente_basica_tomate_sol"
@@ -28,9 +30,15 @@ func _run() -> void:
 	GlobalInventory.receitas_descobertas = []
 	GlobalInventory.pontos_alquimia = 0
 
+	var chest: VillageChest = VILLAGE_CHEST_SCENE.instantiate() as VillageChest
+	add_child(chest)
+	chest.set_contents({})
 	var cauldron: Node2D = CAULDRON_SCENE.instantiate()
 	add_child(cauldron)
+	var recipe_book: Control = RECIPE_BOOK_SCENE.instantiate() as Control
+	add_child(recipe_book)
 	await get_tree().process_frame
+	recipe_book.call("set_cauldron", cauldron)
 
 	if not _exercise_manual_discovery(cauldron):
 		return
@@ -38,10 +46,14 @@ func _run() -> void:
 		return
 	if not _exercise_inactive_time(cauldron):
 		return
+	if not _exercise_village_storage_pilot(cauldron, chest, recipe_book):
+		return
 
-	print("CauldronRecipeContractSmokeTest: PASS - RecipeData governa quantidade, tempo, recompensa, descoberta e refund com fallback legado.")
+	print("CauldronRecipeContractSmokeTest: PASS - RecipeData e acesso transacional governam quantidade, tempo, recompensa, origem e refund.")
 	await get_tree().create_timer(1.1).timeout
+	recipe_book.queue_free()
 	cauldron.queue_free()
+	chest.queue_free()
 	await get_tree().process_frame
 	get_tree().quit(0)
 
@@ -200,6 +212,71 @@ func _exercise_inactive_time(cauldron: Node) -> bool:
 		return false
 	if str(cauldron.get("estado_atual")) != "IDLE" or bool(cauldron.get("_batch_ativo")):
 		_fail("caldeirao permaneceu ocupado depois de concluir o tempo inativo")
+		return false
+	return true
+
+
+func _exercise_village_storage_pilot(cauldron: Node, chest: VillageChest, recipe_book: Control) -> bool:
+	GlobalInventory.inventario = {
+		"semente_basica": 0,
+		"tomate_sol": 1,
+		RESULT_ITEM_ID: 0,
+	}
+	chest.set_contents({"semente_basica": 1})
+	var ingredientes: Array = ["semente_basica", "tomate_sol"]
+	if int(recipe_book.call("_calcular_quantidade_maxima", ingredientes)) != 1:
+		_fail("Livro de Receitas nao somou Village Storage e Mochila")
+		return false
+
+	var slot_1: Node = cauldron.get_node("PopupLayer/CenterContainer/PopupUI/DropSlot1")
+	var slot_2: Node = cauldron.get_node("PopupLayer/CenterContainer/PopupUI/DropSlot2")
+	slot_1.set("item_vinculado", "semente_basica")
+	slot_2.set("item_vinculado", "tomate_sol")
+	cauldron.call("_on_misturar_button_pressed")
+	if str(cauldron.get("estado_atual")) != "BREWING":
+		_fail("mistura manual nao iniciou com ingredientes divididos entre as origens")
+		return false
+	if chest.get_item_quantity("semente_basica") != 0 or int(GlobalInventory.inventario.get("tomate_sol", -1)) != 0:
+		_fail("mistura manual nao consumiu cada ingrediente da origem disponivel")
+		return false
+	var brew_timer: Timer = cauldron.get_node("BrewTimer")
+	brew_timer.stop()
+	cauldron.call("_on_brew_timer_timeout")
+	if int(GlobalInventory.inventario.get(RESULT_ITEM_ID, 0)) != 2:
+		_fail("resultado do piloto manual mudou de destino")
+		return false
+
+	GlobalInventory.inventario = {
+		"semente_basica": 1,
+		"tomate_sol": 2,
+		RESULT_ITEM_ID: 2,
+	}
+	chest.set_contents({"semente_basica": 2, "tomate_sol": 1})
+	if int(recipe_book.call("_calcular_quantidade_maxima", ingredientes)) != 3:
+		_fail("Livro de Receitas nao calculou tres crafts combinados")
+		return false
+	if not bool(cauldron.call("iniciar_producao_em_lote", RESOURCE_RECIPE_ID, 3)):
+		_fail("lote combinado foi recusado")
+		return false
+	if chest.get_item_quantity("semente_basica") != 0 or chest.get_item_quantity("tomate_sol") != 0:
+		_fail("reserva em lote nao priorizou o Village Storage")
+		return false
+	if int(GlobalInventory.inventario.get("semente_basica", -1)) != 0 or int(GlobalInventory.inventario.get("tomate_sol", -1)) != 0:
+		_fail("reserva em lote nao completou a quantidade pela Mochila")
+		return false
+
+	var batch_timer: Timer = cauldron.get_node("BatchTimer")
+	batch_timer.stop()
+	cauldron.call("_processar_tick_lote")
+	cauldron.call("cancelar_producao_em_lote")
+	if chest.get_item_quantity("semente_basica") != 1 or chest.get_item_quantity("tomate_sol") != 0:
+		_fail("cancelamento nao devolveu ao Village Storage apenas as reservas pendentes")
+		return false
+	if int(GlobalInventory.inventario.get("semente_basica", -1)) != 1 or int(GlobalInventory.inventario.get("tomate_sol", -1)) != 2:
+		_fail("cancelamento nao devolveu a parte pendente a Mochila")
+		return false
+	if int(GlobalInventory.inventario.get(RESULT_ITEM_ID, 0)) != 4:
+		_fail("unidade concluida antes do cancelamento nao entregou o resultado")
 		return false
 	return true
 

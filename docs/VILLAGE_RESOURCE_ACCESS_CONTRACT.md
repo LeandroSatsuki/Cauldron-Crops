@@ -2,7 +2,7 @@
 
 ## Status
 
-Fundação técnica da transição entre Mochila e Village Storage. Esta fase não altera o gameplay, a interface nem o save.
+Fundação técnica da transição entre Mochila e Village Storage, com o caldeirão como primeiro consumidor-piloto automatizado e aprovado manualmente. O save e o destino dos resultados permanecem inalterados.
 
 ## Responsabilidades
 
@@ -18,12 +18,20 @@ Fundação técnica da transição entre Mochila e Village Storage. Esta fase n�
 
 - Nenhum item é transferido automaticamente.
 - O painel do baú permanece inalterado.
-- Caldeirão, purificação, restauração e demais consumidores ainda não usam o novo contrato.
+- Purificação, restauração e demais consumidores ainda não usam o novo contrato.
 - Não há capacidade, stacks, peso, filtros, múltiplos baús ou mudança de schema do save.
 - O contrato não define o destino dos resultados produzidos pelos sistemas da vila.
 
-## Próximo piloto recomendado
+## Piloto do caldeirão
 
-Migrar apenas a consulta, reserva e cancelamento de ingredientes do caldeirão para `VillageResourceAccess`. O resultado continua no destino atual até existir uma decisão específica para saídas de produção.
+- O Livro de Receitas calcula a quantidade fabricável usando Village Storage + Mochila.
+- Produção manual e em lote usam reservas transacionais.
+- Cada unidade do lote possui recibo próprio; unidades concluídas descartam seu recibo.
+- Cancelar o lote devolve somente as unidades pendentes e respeita a origem de cada item.
+- Misturas inválidas continuam consumindo os ingredientes, conforme a regra vigente.
+- O resultado continua indo para o destino atual até existir uma decisão específica para saídas de produção.
+- A mistura experimental por slots ainda exige que o tipo de item esteja visível na Mochila; receitas conhecidas pelo Livro podem usar somente o Village Storage.
 
-Depois que o piloto estiver automatizado e aprovado, o mesmo contrato poderá ser avaliado separadamente para purificação e projetos de restauração. A transferência manual Mochila → Village Storage só deve entrar quando depositar não tornar recursos inutilizáveis para os sistemas da vila.
+## Próximo passo recomendado
+
+Depois que o piloto estiver automatizado e aprovado manualmente, o mesmo contrato poderá ser avaliado separadamente para purificação e projetos de restauração. A transferência manual Mochila → Village Storage só deve entrar quando depositar não tornar recursos inutilizáveis para os sistemas da vila.
