@@ -17,7 +17,8 @@ func _run() -> void:
 	await get_tree().process_frame
 
 	var project: Node = main.get_node_or_null("RestorationProject_FirstHerbarium")
-	if project == null or not project.has_method("try_restore") or not project.has_method("get_save_data"):
+	var chest: VillageChest = main.get_node_or_null("VillageChest") as VillageChest
+	if project == null or not project.has_method("try_restore") or not project.has_method("get_save_data") or chest == null:
 		_fail("projeto de restauracao nao foi criado com contrato interativo")
 		return
 	if project.visible or project.input_pickable:
@@ -43,15 +44,35 @@ func _run() -> void:
 		_fail("projeto nao ficou disponivel apos a purificacao")
 		return
 
-	GlobalInventory.inventario = original_inventory.duplicate(true)
-	GlobalInventory.inventario["trigo"] = 5
-	GlobalInventory.inventario["agua"] = 1
-	GlobalInventory.inventario["rama_encantada"] = 0
-	if not bool(project.call("try_restore")):
-		_fail("projeto nao foi restaurado com requisitos validos")
+	GlobalInventory.inventario = {
+		"trigo": 1,
+		"agua": 0,
+		"rama_encantada": 0,
+	}
+	chest.set_contents({
+		"trigo": 3,
+		"agua": 1,
+	})
+	var missing: Dictionary = project.call("get_missing_requirements")
+	if int(missing.get("trigo", 0)) != 1:
+		_fail("consulta combinada nao identificou o trigo faltante")
 		return
-	if int(GlobalInventory.inventario.get("trigo", -1)) != 0 or int(GlobalInventory.inventario.get("agua", -1)) != 0:
-		_fail("restauracao nao consumiu os requisitos corretos")
+	if bool(project.call("try_restore")):
+		_fail("projeto aceitou recursos combinados insuficientes")
+		return
+	if chest.get_item_quantity("trigo") != 3 or chest.get_item_quantity("agua") != 1 or int(GlobalInventory.inventario.get("trigo", 0)) != 1:
+		_fail("falha de preflight consumiu recursos parcialmente")
+		return
+
+	GlobalInventory.inventario["trigo"] = 3
+	if not bool(project.call("try_restore")):
+		_fail("projeto nao foi restaurado com recursos combinados validos")
+		return
+	if chest.get_item_quantity("trigo") != 0 or chest.get_item_quantity("agua") != 0:
+		_fail("restauracao nao priorizou o Village Storage")
+		return
+	if int(GlobalInventory.inventario.get("trigo", -1)) != 1 or int(GlobalInventory.inventario.get("agua", -1)) != 0:
+		_fail("Mochila nao completou apenas os recursos restantes")
 		return
 	if int(GlobalInventory.inventario.get("rama_encantada", 0)) != 1:
 		_fail("restauracao nao liberou a Rama Encantada")
@@ -79,7 +100,7 @@ func _run() -> void:
 	GlobalInventory.inventario = original_inventory
 	main.queue_free()
 	await get_tree().process_frame
-	print("RestorationProjectSmokeTest: PASS - purificacao, restauracao, recompensa unica e save estao coerentes.")
+	print("RestorationProjectSmokeTest: PASS - restauracao usa Village Storage primeiro, completa pela Mochila e preserva recompensa e save.")
 	get_tree().quit(0)
 
 

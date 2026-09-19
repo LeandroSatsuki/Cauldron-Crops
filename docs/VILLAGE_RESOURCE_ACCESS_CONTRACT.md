@@ -41,6 +41,15 @@ Fundação técnica da transição entre Mochila e Village Storage, com o caldei
 - A entrega é definitiva como antes; não existe rollback após o recurso virar progresso de purificação.
 - O painel permanece responsável apenas por apresentar e acionar o contrato do obstáculo.
 
+## Piloto da restauração
+
+- A consulta de requisitos combina Village Storage + Mochila.
+- A restauração reserva todos os requisitos em uma única transação, priorizando o Village Storage.
+- Recurso insuficiente não causa consumo parcial.
+- A recompensa continua indo para a Mochila, preservando o comportamento atual.
+- Interação, condição de desbloqueio, estado restaurado e schema de save permanecem inalterados.
+- Status: validado automaticamente e aprovado manualmente em 2026-09-19.
+
 ## Próximo passo recomendado
 
-Avaliar separadamente o mesmo contrato nos projetos de restauração. A transferência manual Mochila → Village Storage só deve entrar quando depositar não tornar recursos inutilizáveis para os sistemas da vila.
+Depois da validação manual da restauração, revisar o fechamento desta etapa antes de escolher outro consumidor. A transferência manual Mochila → Village Storage só deve entrar quando depositar não tornar recursos inutilizáveis para os sistemas da vila.

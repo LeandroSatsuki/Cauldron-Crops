@@ -2,6 +2,8 @@ extends Area2D
 
 signal restored(restoration_id: String)
 
+const VillageResourceAccessScript = preload("res://Scripts/VillageResourceAccess.gd")
+
 @export var restoration_id: String = "first_herbarium"
 @export var required_purification_obstacle_id: String = "first_obstacle"
 @export var restoration_requirements: Array[Dictionary] = [
@@ -13,6 +15,7 @@ signal restored(restoration_id: String)
 
 var restored_state: bool = false
 var area_purified: bool = false
+var _village_resource_access = null
 
 @onready var collision_shape: CollisionShape2D = $CollisionShape2D
 @onready var ruined_visual: Node2D = $RuinedVisual
@@ -39,14 +42,15 @@ func try_restore() -> bool:
 	if not missing.is_empty():
 		_show_feedback(_format_missing_requirements(missing))
 		return false
-	for requirement_variant in restoration_requirements:
-		if typeof(requirement_variant) != TYPE_DICTIONARY:
-			continue
-		var requirement: Dictionary = requirement_variant
-		var item_id := str(requirement.get("item_id", ""))
-		var quantity := int(requirement.get("quantity", 0))
-		if item_id != "" and quantity > 0:
-			GlobalInventory.remover_item(item_id, quantity)
+	var requirements := _build_requirement_totals()
+	if not requirements.is_empty():
+		var receipt: Dictionary = _get_village_resource_access().consume(requirements)
+		if not bool(receipt.get("success", false)):
+			var failed_missing: Dictionary = receipt.get("missing", {})
+			if failed_missing.is_empty():
+				failed_missing = get_missing_requirements()
+			_show_feedback(_format_missing_requirements(failed_missing) if not failed_missing.is_empty() else "Recursos indisponiveis para restauracao.")
+			return false
 	restored_state = true
 	_refresh_state()
 	if restoration_reward_item_id != "" and restoration_reward_quantity > 0:
@@ -57,7 +61,14 @@ func try_restore() -> bool:
 
 
 func get_missing_requirements() -> Dictionary:
-	var missing: Dictionary = {}
+	var requirements := _build_requirement_totals()
+	if requirements.is_empty():
+		return {}
+	return _get_village_resource_access().get_missing(requirements)
+
+
+func _build_requirement_totals() -> Dictionary:
+	var requirements: Dictionary = {}
 	for requirement_variant in restoration_requirements:
 		if typeof(requirement_variant) != TYPE_DICTIONARY:
 			continue
@@ -66,10 +77,28 @@ func get_missing_requirements() -> Dictionary:
 		var quantity := int(requirement.get("quantity", 0))
 		if item_id == "" or quantity <= 0:
 			continue
-		var available := int(GlobalInventory.inventario.get(item_id, 0))
-		if available < quantity:
-			missing[item_id] = quantity - available
-	return missing
+		requirements[item_id] = int(requirements.get(item_id, 0)) + quantity
+	return requirements
+
+
+func _get_village_resource_access():
+	var village_storage: Node = _find_village_storage()
+	if _village_resource_access == null:
+		_village_resource_access = VillageResourceAccessScript.new(village_storage)
+	else:
+		_village_resource_access.set_village_storage(village_storage)
+	return _village_resource_access
+
+
+func _find_village_storage() -> Node:
+	var tree: SceneTree = get_tree()
+	if tree == null:
+		return null
+	for chest_variant in tree.get_nodes_in_group("village_chest"):
+		var chest: Node = chest_variant as Node
+		if chest != null and is_instance_valid(chest) and chest.has_method("get_item_quantity"):
+			return chest
+	return null
 
 
 func get_save_data() -> Dictionary:
