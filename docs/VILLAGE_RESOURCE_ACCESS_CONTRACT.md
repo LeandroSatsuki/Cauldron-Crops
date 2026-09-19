@@ -2,7 +2,7 @@
 
 ## Status
 
-Fundação técnica da transição entre Mochila e Village Storage, com o caldeirão como primeiro consumidor-piloto automatizado e aprovado manualmente. O save e o destino dos resultados permanecem inalterados.
+Fundação técnica da transição entre Mochila e Village Storage. Caldeirão, purificação e restauração foram automatizados e aprovados manualmente como consumidores-piloto. O save e o destino dos resultados permanecem inalterados.
 
 ## Responsabilidades
 
@@ -18,7 +18,7 @@ Fundação técnica da transição entre Mochila e Village Storage, com o caldei
 
 - Nenhum item é transferido automaticamente.
 - O painel do baú permanece inalterado.
-- Purificação, restauração e demais consumidores ainda não usam o novo contrato.
+- Requests e comércio ainda não usam o contrato porque seus fluxos permanecem fora da V0 atual.
 - Não há capacidade, stacks, peso, filtros, múltiplos baús ou mudança de schema do save.
 - O contrato não define o destino dos resultados produzidos pelos sistemas da vila.
 
@@ -50,6 +50,17 @@ Fundação técnica da transição entre Mochila e Village Storage, com o caldei
 - Interação, condição de desbloqueio, estado restaurado e schema de save permanecem inalterados.
 - Status: validado automaticamente e aprovado manualmente em 2026-09-19.
 
+## Auditoria de fechamento dos consumidores atuais
+
+- O caldeirão, a purificação e o projeto de restauração cobrem os consumidores fixos ativos da vila na V0 atual.
+- Plantar sementes e regar continuam consumindo da Mochila por representarem ações físicas do personagem, não consumo remoto da vila.
+- Coleta externa continua entrando apenas na Mochila até o jogador retornar e depositar fisicamente.
+- `QuestBoard` está oculto e o fluxo de requests ainda não foi retomado; migrá-lo agora anteciparia um sistema fora do escopo atual.
+- Venda e comércio permanecem desativados enquanto a economia aguarda contexto narrativo; o `SellMenu` legado não deve governar o próximo passo.
+- O caminho normal do Livro de Receitas delega o cálculo ao caldeirão e já enxerga os recursos combinados. O fallback local só é usado quando não existe um caldeirão válido.
+- O F10 permanece desativado e suas ações legadas não fazem parte do contrato de gameplay.
+- Conclusão: não existe outro consumidor ativo que deva ser migrado nesta etapa.
+
 ## Próximo passo recomendado
 
-Depois da validação manual da restauração, revisar o fechamento desta etapa antes de escolher outro consumidor. A transferência manual Mochila → Village Storage só deve entrar quando depositar não tornar recursos inutilizáveis para os sistemas da vila.
+Fazer uma fase de desenho mínimo para o depósito físico Mochila → Village Storage. Antes de implementar, definir uma interação seletiva que não esconda sementes ou água necessárias às ações pessoais e que não transforme o baú em microgerenciamento constante. Requests e comércio devem aguardar seus próprios sprints.
