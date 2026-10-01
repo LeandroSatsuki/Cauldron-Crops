@@ -10,6 +10,8 @@ func _ready() -> void:
 func _run() -> void:
 	var colecao_original: Array = GlobalInventory.colecao_pesca_descobertas.duplicate()
 	var concluida_original := GlobalInventory.colecao_pesca_concluida
+	var inventario_original: Dictionary = GlobalInventory.inventario.duplicate(true)
+	var capacidade_original: bool = GlobalInventory.is_capacity_enforced()
 	GlobalInventory.aplicar_colecao_pesca_save([], false)
 
 	var progresso_inicial := GlobalInventory.obter_progresso_colecao_pesca()
@@ -37,6 +39,36 @@ func _run() -> void:
 	if int(minigame.call("_avaliar_resultado")) != 1:
 		_fail("bonus da colecao nao ampliou a zona de boa sincronia")
 		return
+
+	GlobalInventory.aplicar_colecao_pesca_save([], false)
+	var constrained_inventory: Dictionary = {"peixe_comum": 98, "escama_brilhante": 99, "agua": 4}
+	for index in range(10):
+		constrained_inventory["item_teste_%02d" % index] = GlobalInventory.DEFAULT_STACK_LIMIT
+	GlobalInventory.set_inventory_contents(constrained_inventory)
+	GlobalInventory.set_capacity_enforced(true)
+	EventDirector.debug_reset_for_test()
+	EventDirector.set("_session_elapsed", EventDirector.RARE_FISH_FIRST_WINDOW_DELAY)
+	if bool(minigame.call("_aplicar_recompensa", 1)):
+		_fail("pesca aceitou apenas parte da recompensa da Mare Cintilante")
+		return
+	if GlobalInventory.get_item_quantity("peixe_comum") != 98 or GlobalInventory.get_item_quantity("escama_brilhante") != 99:
+		_fail("pesca recusada alterou parte do inventario")
+		return
+	if int(GlobalInventory.obter_progresso_colecao_pesca().get("quantidade", -1)) != 0:
+		_fail("colecao registrou captura ainda pendente")
+		return
+	if not GlobalInventory.remover_item("item_teste_00", GlobalInventory.DEFAULT_STACK_LIMIT):
+		_fail("nao foi possivel liberar espaco para captura pendente")
+		return
+	minigame.call("_process", 0.0)
+	if GlobalInventory.get_item_quantity("peixe_comum") != 99 or GlobalInventory.get_item_quantity("escama_brilhante") != 100:
+		_fail("captura pendente nao foi entregue integralmente")
+		return
+	if not GlobalInventory.possui_bonus_colecao_pesca():
+		_fail("captura pendente nao atualizou a colecao apos entrega")
+		return
+	GlobalInventory.set_capacity_enforced(false)
+	GlobalInventory.set_inventory_contents(inventario_original)
 	minigame.queue_free()
 
 	var snapshot: Dictionary = SaveManager.call("_build_save_data")
@@ -60,10 +92,14 @@ func _run() -> void:
 		return
 
 	GlobalInventory.aplicar_colecao_pesca_save(colecao_original, concluida_original)
+	GlobalInventory.set_capacity_enforced(capacidade_original)
+	GlobalInventory.set_inventory_contents(inventario_original)
+	EventDirector.debug_reset_for_test()
 	print("FishingCollectionSmokeTest: PASS - progresso, bonus e persistencia da colecao estao coerentes.")
 	get_tree().quit(0)
 
 
 func _fail(message: String) -> void:
+	GlobalInventory.set_capacity_enforced(false)
 	push_error("FishingCollectionSmokeTest: FAIL - %s" % message)
 	get_tree().quit(1)

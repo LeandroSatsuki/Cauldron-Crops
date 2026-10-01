@@ -43,6 +43,29 @@ func get_item_quantity(item_id: String) -> int:
 	return maxi(int(inventory.get(item_id, 0)), 0)
 
 
+func get_depositable_personal_items() -> Dictionary:
+	var items: Dictionary = {}
+	for item_variant in GlobalInventory.inventario:
+		var item_id := str(item_variant)
+		var quantity := int(GlobalInventory.inventario[item_variant])
+		# Agua pertence a reserva regeneravel do poco, fora dos slots da Mochila.
+		if item_id != "" and item_id != "agua" and quantity > 0:
+			items[item_id] = quantity
+	return items
+
+
+func deposit_from_personal_inventory(item_id: String, quantity: int) -> bool:
+	if quantity <= 0 or int(get_depositable_personal_items().get(item_id, 0)) < quantity:
+		return false
+	# Operacao sincrona: o destino atual nao possui capacidade nem pode recusar.
+	if not GlobalInventory.remover_item(item_id, quantity):
+		return false
+	deposit_item(item_id, quantity)
+	if GlobalInventory.semente_selecionada == item_id and int(GlobalInventory.inventario.get(item_id, 0)) == 0:
+		GlobalInventory.semente_selecionada = ""
+	return true
+
+
 func withdraw_item(item_id: String, quantidade: int = 1) -> bool:
 	if item_id == "" or quantidade <= 0:
 		return false
@@ -61,6 +84,26 @@ func withdraw_item(item_id: String, quantidade: int = 1) -> bool:
 	])
 	return true
 
+func withdraw_to_personal_inventory(item_id: String, quantity: int) -> bool:
+	if item_id == "" or quantity <= 0 or get_item_quantity(item_id) < quantity:
+		return false
+	var acceptance: Dictionary = GlobalInventory.get_acceptance(item_id, quantity)
+	if int(acceptance.get("accepted", 0)) != quantity:
+		return false
+	if not withdraw_item(item_id, quantity):
+		return false
+	var insertion: Dictionary = GlobalInventory.try_add_item(item_id, quantity)
+	if int(insertion.get("accepted", 0)) != quantity:
+		# Defesa transacional: se o destino mudar inesperadamente entre consulta e
+		# insercao, desfaz qualquer parte aceita e restaura a origem completa.
+		var accepted := int(insertion.get("accepted", 0))
+		if accepted > 0:
+			GlobalInventory.remover_item(item_id, accepted)
+		deposit_item(item_id, quantity)
+		return false
+	return true
+
+
 func get_contents() -> Dictionary:
 	return inventory.duplicate(true)
 
@@ -75,15 +118,15 @@ func withdraw_all_to_global_inventory() -> Dictionary:
 		print("VillageChest: baú vazio, nada para retirar.")
 		return {}
 
-	var retirado: Dictionary = inventory.duplicate()
-	for item_id in retirado.keys():
-		var quantidade: int = int(retirado[item_id])
+	var snapshot: Dictionary = inventory.duplicate()
+	var retirado: Dictionary = {}
+	for item_id in snapshot.keys():
+		var quantidade: int = int(snapshot[item_id])
 		if quantidade <= 0:
 			continue
-		GlobalInventory.adicionar_item(str(item_id), quantidade)
-		print("VillageChest: retirado %s x%d para o inventário global." % [str(item_id), quantidade])
-
-	inventory.clear()
+		if withdraw_to_personal_inventory(str(item_id), quantidade):
+			retirado[item_id] = quantidade
+			print("VillageChest: retirado %s x%d para a Mochila." % [str(item_id), quantidade])
 	return retirado
 
 func _on_clickable_area_input_event(viewport: Viewport, event: InputEvent, _shape_idx: int) -> void:

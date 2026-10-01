@@ -1,8 +1,8 @@
-# Plano Macro da Fazenda - Fase 1.5
+# Mapa Macro da Fazenda — Fase 1.5
 
-**Objetivo:** documentar o layout macro da fazenda antes da implementação de solo livre, mantendo intactos o loop da Fase 1, os `FarmPlot` atuais e a base de salvamento, e já reservar um envelope fixo para a vila/área inicial.
+**Objetivo:** documentar o layout macro da fazenda antes da implementação de solo livre, mantendo intactos o loop da Fase 1, os `FarmPlot` atuais e a base de salvamento, e já reservar um envelope fixo para a vila/área inicial. A Fase 2 técnica já fechou a ponte runtime-only; este documento continua servindo como base visual para a evolução seguinte.
 
-**Escopo:** planejamento e blockout visual leve. Nada aqui altera gameplay, cena, `FarmPlot`, `SaveManager` ou o laboratório do `FarmGridPreview`.
+**Escopo:** blockout visual leve e documentação de layout. Nada aqui altera gameplay, cena, `FarmPlot`, `SaveManager` ou o laboratório do `FarmGridPreview`.
 
 ---
 
@@ -25,9 +25,9 @@ Para evitar retrabalho e permitir blockout, textura e leitura espacial enquanto 
 
 - **Sugestão base:** 3200 x 1800.
 - **Sugestão conservadora:** 2400 x 1600.
-- **Regra prática:** a área útil central deve ficar claramente menor que o envelope, com bordas reservadas para expansão futura.
+- **Regra prática:** a área útil central fica claramente menor que o envelope, com bordas reservadas para expansão adicional.
 
-Esse envelope não precisa virar um grid rígido agora; ele serve como moldura cenográfica e reserva espacial para as fases futuras.
+Esse envelope não precisa virar um grid rígido agora; ele serve como moldura cenográfica e reserva espacial para fases seguintes.
 
 ## 2) Problema atual
 
@@ -35,21 +35,21 @@ O diagnóstico atual é que muitos sistemas importantes ficaram concentrados na 
 
 - sensação de mapa “amontoado”;
 - dificuldade de leitura espacial;
-- falta de espaço reservado para crescimento futuro.
+- falta de espaço reservado para crescimento adicional.
 
 Em termos de design, o protótipo já funciona, mas o mundo ainda não comunica bem uma fazenda grande e organizada por funções.
 
 ## 3) Decisão de fase
 
 - **Fase 1:** manter os lotes fixos, o loop validado e a demo estável.
-- **Fase 1.5:** planejar o layout macro e fazer apenas blockout visual leve da fazenda.
+- **Fase 1.5:** documentar o layout macro e fazer apenas blockout visual leve da fazenda.
 - **Fase 2:** implementar solo livre / `FarmGrid` real e expansão sistêmica maior.
 
 A Fase 1.5 existe para evitar retrabalho de mapa e para separar visualmente zonas que hoje estão próximas demais.
 
 ## 4) Zonas macro recomendadas
 
-A fazenda final do protótipo deve ser pensada como um conjunto de zonas com função clara, mas com cultivo livre em qualquer solo utilizável:
+A fazenda final do protótipo é pensada como um conjunto de zonas com função clara, mas com cultivo livre em qualquer solo utilizável:
 
 - **Área inicial**
   - caldeirão no centro visual;
@@ -66,16 +66,16 @@ A fazenda final do protótipo deve ser pensada como um conjunto de zonas com fun
 
 - **Área corrompida 1**
   - primeira área bloqueada/purificável;
-  - já deve ser lida como destino separado do núcleo inicial;
+  - já é lida como destino separado do núcleo inicial;
   - o lago fica bloqueado dentro dela.
 
-- **Área corrompida 2 futura**
+- **Área corrompida 2 reservada**
   - reservada no layout, mas sem gameplay agora;
   - só entra quando houver decisão clara de expansão.
 
 - **Área de criaturas / animais mágicos**
   - zona mais orgânica e separada do cultivo;
-  - ideal para conteúdo sistêmico futuro.
+  - ideal para conteúdo sistêmico adicional.
 
 - **Área de golems / ajudantes**
   - próxima do baú ou da logística da fazenda;
@@ -89,7 +89,7 @@ A fazenda final do protótipo deve ser pensada como um conjunto de zonas com fun
   - espaço de coleta, materiais e progressão lateral;
   - pode funcionar como zona de transição entre áreas principais.
 
-- **Área de ruína / mistério futura**
+- **Área de ruína / mistério reservada**
   - opcional, se houver necessidade narrativa;
   - deve permanecer apenas como reserva de layout por enquanto.
 
@@ -97,14 +97,14 @@ A fazenda final do protótipo deve ser pensada como um conjunto de zonas com fun
 
 - Não alterar a ordem dos `FarmPlot` existentes.
 - Novos `FarmPlot` reais só entram depois de uma decisão explícita sobre o save.
-- Áreas futuras podem existir como blockout visual, mas sem gameplay.
+- Áreas reservadas podem existir como blockout visual, mas sem gameplay.
 - Qualquer área bloqueada visual **não deve** entrar no grupo `lotes_terra`.
 - `FarmGridPreview` continua sendo um laboratório isolado.
-- O plano macro não deve acoplar o `FarmGridManager` ao jogo principal.
+- O mapa macro continua separado do gameplay principal; a leitura real de `FarmGridManager` acontece no `Main` como snapshot runtime-only, não no mapa macro.
 
-## 6) Plano de Fase 1.5
+## 6) Fase 1.5
 
-A Fase 1.5 deve ser pequena e segura:
+A Fase 1.5 é pequena e segura:
 
 1. **Documentar o layout**
    - registrar as zonas macro, o envelope fixo do mapa e os limites do núcleo atual.
@@ -122,9 +122,9 @@ A Fase 1.5 deve ser pequena e segura:
 5. **Manter a Fase 1 intacta**
    - sem mexer em `FarmPlot`, `SaveManager`, cenas ou fluxo validado.
 
-## 7) O que fica para a Fase 2
+## 7) O que fica para a próxima evolução
 
-A Fase 2 deve concentrar as mudanças sistêmicas de fato:
+A próxima evolução deve concentrar as mudanças sistêmicas de fato:
 
 - solo livre;
 - grid real;
@@ -133,8 +133,10 @@ A Fase 2 deve concentrar as mudanças sistêmicas de fato:
 - expansão maior do save;
 - migração real para `FarmGrid`, se aprovada.
 
+Esses itens permanecem reservados porque a fase técnica atual já fechou com snapshot runtime-only no `Main`, golem lendo o grid e save/load persistindo `farm_grid`.
+
 ## 8) Observações finais
 
-Este plano existe para organizar a escala da fazenda antes do salto para um sistema mais livre. A prioridade é evitar que o crescimento futuro empurre tudo para a mesma região inicial e comprometa leitura, ritmo e expansão.
+Este documento existe para organizar a escala da fazenda antes do salto para um sistema mais livre. A prioridade é evitar que o crescimento adicional empurre tudo para a mesma região inicial e comprometa leitura, ritmo e expansão.
 
-O resultado esperado da Fase 1.5 não é mais gameplay: é um mapa melhor planejado, com espaço reservado para as próximas fases.
+O resultado esperado da Fase 1.5 não é mais gameplay: é um mapa melhor estruturado, com espaço reservado para as fases seguintes.

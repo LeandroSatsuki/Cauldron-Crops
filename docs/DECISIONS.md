@@ -1,5 +1,94 @@
 # Decisions
 
+## Decisão 91 - Cada fechamento de etapa inclui atualização no GitHub
+
+- Direção explícita do autor em 2026-10-01: ao finalizar uma etapa, criar commit e enviar ao GitHub, sem acumular o desenvolvimento somente na máquina local.
+- Procedimento: validar proporcionalmente, registrar decisões/pendências, revisar e selecionar arquivos do incremento, verificar remoto/branch, fazer commit e push e confirmar sincronização. A autorização substitui instruções históricas de não fazer commit.
+- Validação manual: implementação que passou em testes automáticos, mas ainda aguarda o autor, pode ser publicada como checkpoint com essa pendência explícita; isso não equivale a aprovação nem autoriza iniciar o próximo marco.
+- Segurança: preservar mudanças remotas e locais; não usar push forçado, não incluir segredos/saves/builds/caches ou arquivos pessoais de agentes, nem incorporar arte não utilizada por conveniência.
+- Recuperação inicial: integrar o histórico local acumulado e a apresentação do README que já existia no remoto. O checkpoint inclui Mochila/Village Storage e persistência do caldeirão; 31 smoke tests aprovados e teste manual da persistência pendente.
+
+## Decisão 90 - Produção e reservas do caldeirão fazem parte do snapshot
+
+- Problema: o save guardava os ingredientes já consumidos, mas não a mistura/lote nem o resultado pronto. Reabrir o jogo podia perder produção; carregar estoques antigos mantendo timers atuais podia duplicar resultados ou refunds.
+- Decisão: acrescentar `cauldrons` opcional ao save v4, indexado pelo caminho relativo do caldeirão na cena. O próprio caldeirão serializa/valida/restaura estado, resultado capturado, quantidade, tempo restante e, para lotes, contadores, ingredientes, reservas por origem e flags de espera/cancelamento.
+- Transação: o load valida o payload antes de alterar estoques e substitui o produtor sem reembolsar o runtime anterior nem reservar ingredientes novamente. Somente crafts ainda não entregues mantêm recibos. Um refund bloqueado preserva o lote em cancelamento pendente para nova tentativa, inclusive após save/load.
+- Tempo: retomar usa o tempo restante salvo; esperar espaço ou cancelamento mantém timers parados. Não há avanço por tempo offline neste incremento. A reconciliação entre regiões já existente permanece funcional.
+- Compatibilidade: saves completos antigos sem `cauldrons` carregam o produtor em `IDLE`, sem refund; produção que nunca foi registrada no save antigo não pode ser reconstruída. Payloads parciais sem estoques nem caldeirão preservam o runtime atual.
+- Golems: o caminho abstrato legado continua sem spawn físico novo. Contagem e limite existentes passam a acompanhar o snapshot em `economy`, pois também são o destino de um resultado do caldeirão; carregar repetidamente não pode acumular esse resultado fora do save.
+- Limite: os caminhos relativos dependem da estrutura atual da cena; renomear/mover o caldeirão exige revisão de compatibilidade. Payloads inválidos ou com identidade desconhecida são recusados antes da aplicação.
+- Validação: `CauldronPersistenceSmokeTest` cobre JSON em memória, reconstrução da cena, timers reais, mistura/pronto/lote/espera/cancelamento, origens mistas, loads repetidos, resultado legado de golem, saves v3/v4 antigos e recusa sem mutação. Os 31 smoke tests passaram. Capacidade permanece desligada até aprovação manual e próximo incremento autorizado.
+
+## Decisão 89 - Seleção por tipo de semente, não por pilha visual
+
+- Problema: dividir um item em pilhas visuais exige preservar o modo de plantio quando uma pilha desaparece, sem destacar slots vazios nem selecionar itens já removidos. O load também podia restaurar uma semente sem limpar a ferramenta ativa.
+- Decisão: qualquer pilha ocupada da mesma semente seleciona/desseleciona o mesmo tipo; todas as suas pilhas recebem destaque. Consumo e depósito parciais preservam seleção, e a última unidade removida a limpa. Slots vazios nunca recebem destaque e callbacks sem estoque são ignorados.
+- Save: somente uma seleção de semente com quantidade positiva é restaurada; nesse caso, a ferramenta ativa é limpa. JSON continua persistindo quantidades agregadas no save v4, sem posições de slots.
+- Validação: testes de interface cobrem cliques nas duas pilhas, consumo, depósitos e callback obsoleto; testes de JSON em memória cobrem Mochila vazia, parcial e cheia, seleção inválida e exclusividade com ferramenta.
+- Escopo: nenhum limite, sistema econômico ou F10 foi ativado. Persistência do resultado pendente do caldeirão continua sendo o gate antes da capacidade real.
+
+## Decisão 88 - Doze slots visuais antes da capacidade real
+
+- Problema: ativar a recusa e redesenhar a barra ao mesmo tempo dificultaria separar regressões de gameplay de problemas puramente visuais.
+- Decisão: renderizar primeiro 12 slots fixos, dividir quantidades pelo limite de stack e mostrar ocupação, mantendo `_personal_capacity_enforced` desligado.
+- Motivo: validar leitura, espaço e seleção da Mochila antes de permitir que capacidade afete recompensas reais.
+- Regra transitória: se um save ou ferramenta desativada produzir mais de 12 pilhas enquanto o limite está desligado, a barra exibe slots extras em vez de ocultar itens; o indicador recebe cor de atenção.
+- Risco: o overflow pode ultrapassar a largura planejada, mas só existe como compatibilidade transitória. Ele deve desaparecer do gameplay normal quando a capacidade for ativada com segurança.
+
+## Decisão 87 - Fechamento da migração distingue gameplay ativo de legado desativado
+
+- Problema: as últimas chamadas compatíveis de inserção misturavam água regenerável, requests ocultos, loja desativada, comandos F10 e testes, sugerindo uma superfície de gameplay maior do que a real.
+- Decisão: tratar água como recurso sem slot; proteger transacionalmente a recompensa do `QuestBoard` sem reativá-lo; fortalecer o rollback de recursos; manter loja e F10 ocultos/desativados e não migrar seus comandos como se fossem sistemas vigentes.
+- Motivo: fechar a Fase C sem ampliar o escopo nem ressuscitar economia, comércio ou ferramentas de desenvolvimento removidas da experiência normal.
+- Regra atual: todas as entradas ativas de gameplay usam a API estruturada. O wrapper `adicionar_item` permanece somente em ferramentas inativas e testes de compatibilidade até sua remoção futura.
+- Risco: se loja, F10 ou requests forem reativados, seus contratos completos de UX, economia e capacidade precisam de revisão específica; a presença do código legado não equivale a autorização de uso.
+
+## Decisão 86 - Resultados fixos da vila permanecem no produtor quando bloqueados
+
+- Problema: caldeirão e restauração consumiam recursos antes de inserir recompensas na Mochila; ativar capacidade poderia apagar resultados ou concluir projetos sem recompensa.
+- Decisão: manter a Mochila como destino atual, sem fallback automático para Village Storage. A restauração valida o destino antes do consumo; o caldeirão retém o resultado pronto e, no lote, pausa sem confirmar o craft até a inserção integral.
+- Motivo: proteger recompensas sem antecipar a decisão futura sobre o destino definitivo de resultados produzidos dentro da vila.
+- Regra atual: liberar espaço e interagir novamente entrega o resultado pronto do caldeirão; cancelar um lote pausado devolve as reservas ainda não confirmadas às origens registradas.
+- Risco: o estado pronto do caldeirão ainda é operacional e não possui persistência própria. Isso não afeta o gameplay atual porque a capacidade permanece desligada; persistência ou outro destino deve ser decidido antes de ativar o limite em produção.
+
+
+## Decisão 85 - Fundação compatível da Mochila antes do limite
+
+- Problema: `GlobalInventory.adicionar_item` aceitava tudo e 29 entradas de itens presumiam sucesso. Ativar slots imediatamente poderia apagar recompensas ou consumir a origem antes de descobrir que o destino estava cheio.
+- Decisão: preservar temporariamente o dicionário e o save v4, acrescentando uma API de ocupação, aceitação, inserção estruturada, remoção validada e substituição controlada. O piloto usa referência de 12 slots e stack padrão 99, mas a capacidade permanece desligada até as entradas ativas tratarem recusa e quantidade restante.
+- Água continua fora dos slots. Ferramentas, moeda, receitas, coleção, lore e habilidades continuam em seus sistemas próprios.
+- O wrapper legado `adicionar_item` permanece compatível durante a migração. Cada produtor será migrado antes de o limite ser ligado; a retirada do Village Storage será o primeiro fluxo atômico.
+- Primeiro incremento da Fase C: retirada seletiva e retirada global legada consultam a aceitação antes de remover do Village Storage. Quantidades que não cabem são recusadas integralmente, a interface explica falta de espaço e uma defesa de rollback restaura a origem se a inserção mudar inesperadamente.
+- Segundo incremento da Fase C: a colheita manual agrupa produto e drops em uma única inserção atômica. Sem espaço, o lote continua pronto e as recompensas sorteadas permanecem pendentes na sessão; liberar espaço permite recolher exatamente o mesmo lote. A capacidade ainda não está ativa no gameplay.
+- Terceiro incremento da Fase C: o forrageamento externo só esgota o ponto após a recompensa inteira entrar na Mochila. Recusa por capacidade mantém o ponto disponível, não aceita quantidade parcial e não redireciona o recurso ao Village Storage.
+- Quarto incremento da Fase C: a pesca valida os resultados possíveis antes da sincronia e entrega Peixe Comum mais o bônus da Maré Cintilante de forma atômica. A coleção só é atualizada depois da entrega; uma captura inesperadamente recusada permanece pendente na UI até existir espaço.
+- Quinto incremento da Fase C: o Fragmento Celestial permanece no mundo quando a Mochila recusa sua recompensa. A tentativa renova a duração do marcador, permitindo liberar espaço; somente uma inserção completa remove o evento e emite sua coleta.
+- Save: nenhuma mudança de versão nesta fundação. Posições físicas de slots e capacidade expansível só justificam novo schema quando houver requisito concreto.
+- Validação: `PersonalInventoryContractSmokeTest` cobre stacks, ocupação, zero, água, entradas inválidas, compatibilidade ilimitada, aceitação parcial, recusa total e limpeza da última semente. `FarmHarvestCapacitySmokeTest` cobre recusa sem consumir o cultivo, recompensa pendente e nova tentativa após liberar espaço. Os 29 smoke tests ativos passaram.
+
+
+## Decisão 84 - Direção futura de economia, inventário e aquisição
+
+- Problema: os sistemas atuais usam `GlobalInventory` como inventário amplo, enquanto o Baú da Vila, a venda e as moedas ainda refletem soluções de protótipo. Sem uma direção registrada, futuras melhorias poderiam misturar mochila, logística da vila e progressão econômica ou transformar itens importantes em dependência exclusiva de RNG.
+- Decisão: separar conceitualmente o **Inventário Pessoal/Mochila**, voltado a exploração e limitado por slots/stacks generosos, do **Village Storage**, armazenamento lógico compartilhado da vila. O `VillageChest` atual é a primeira representação física desse Village Storage; golems continuam buscando, carregando e depositando fisicamente nele.
+- Consumo futuro: sistemas fixos na vila — caldeirão, purificação, construções, requests e comércio/envio — poderão consumir diretamente do Village Storage, sem exigir retirar e recolocar ingredientes. Pontos físicos múltiplos poderão acessar o mesmo armazenamento lógico, sem teleportar visualmente a logística dos golems.
+- Exploração: recursos coletados fora da vila devem entrar primeiro na Mochila; o retorno e depósito na vila continuam sendo parte do loop. Moeda, ferramentas, receitas, itens narrativos e coleções podem ganhar representações próprias no futuro, mas não serão separados antes de existir necessidade concreta.
+- Economia: haverá uma moeda universal, ainda sem nome/lore definitivo. A implementação e os textos atuais de `Moedas` são provisórios. Todo recurso comum deve possuir uma saída universal de baixo atrito para moeda, mas requests, receitas, restaurações, eventos, coleções e especializações podem oferecer usos mais valiosos.
+- Aquisição e RNG: conteúdo não narrativo importante deve ter, quando apropriado, mais de um caminho de aquisição. RNG é permitido como descoberta, atalho ou alternativa, mas nunca como única rota severamente aleatória para progresso obrigatório. A futura Acquisition Matrix será apenas uma ferramenta de controle de conteúdo, não infraestrutura a ser criada agora.
+- Conhecimento: especialização recompensa profundidade com informação, receitas, eficiência, qualidade ou possibilidades; ela não deve ser um requisito para a atividade base nem apenas multiplicador infinito de preço de venda. Diversidade recompensa flexibilidade.
+- Escopo: não implementar agora capacidade, stacks, rede de baús, moeda final, envio, venda, matriz de aquisição ou novos caminhos de obtenção. Registrar primeiro e retomar somente em sprint autorizado.
+- Estado de transição atual: o golem já deposita fisicamente no `VillageChest`, o que está alinhado. Caldeirão, purificação e restauração usam `VillageResourceAccess`: consomem primeiro do Village Storage e completam pela Mochila, com recibo transacional para rollback. O Baú e a Mochila continuam separados e a interface oferece transferência manual seletiva nos dois sentidos; não há mais retirada global visível. O save v4 preserva os dois estoques sem mesclar itens obtidos depois do snapshot. Isto não antecipa capacidade, stacks, rede de baús ou economia final.
+
+
+## Decisão 83 - Coleção de pesca pequena, visível e opcional
+
+- Problema: a pesca já entregava recompensas, mas não possuía um objetivo de longo prazo que valorizasse repetir e aperfeiçoar a atividade existente.
+- Decisão: criar somente a Coleção do Lago, formada por `Peixe Comum` e `Escama Brilhante`; cada ID é contado uma vez e o progresso aparece dentro do popup da pesca.
+- Bônus: ao completar os dois registros, `Memória das Marés` amplia em 8 pixels a tolerância de “boa sincronia”. A janela perfeita e a recompensa do lago especial não são alteradas.
+- Filosofia: a coleção é casual para completar e oferece conforto de precisão a quem se especializa, sem se tornar requisito para uma pescaria funcional.
+- Persistência: os dois campos novos pertencem ao bloco `inventory` do save v4. Ausência dos campos preserva o estado padrão, evitando migração e mantendo saves anteriores carregáveis.
+- Validação: `FishingCollectionSmokeTest` valida unicidade, conclusão, efeito do bônus, round-trip de save e payload legado sem os campos.
+
 
 ## Decisão 82 - Vida mínima do Golem separada do trabalho
 
@@ -113,19 +202,19 @@
 - Problema: a primeira migração do catálogo precisava começar pequena, mas sem criar um novo sistema ou mexer em save/schema.
 - Decisão: promover apenas receitas resource-first que pudessem usar IDs já existentes no catálogo atual, adiando `Fritura de Riafin` até o peixe definitivo `Riafin` existir no catálogo de itens.
 - Motivo: reduzir risco técnico e validar o fluxo resource-first com o menor número possível de mudanças adjacentes.
-- Risco: a leva inicial fica pequena e algumas receitas planejadas continuam no backlog até o catálogo de itens se alinhar.
+- Risco: a leva inicial fica pequena e algumas receitas previstas continuam no backlog até o catálogo de itens se alinhar.
 
 ## Decisão 62 - Área inicial cenográfica com caldeirão central e plantio livre
 
 - Problema: a fazenda inicial estava ficando amontoada demais e ainda carregava a ideia de uma casa do jogador que não combina com a proposta idle.
 - Decisão: tratar a área inicial como um núcleo cenográfico com o caldeirão no centro visual, praça aberta ao redor, ponto de chegada/abrigo da vila como marco de ambientação e sem zona rígida de plantio.
-- Motivo: melhorar a leitura espacial sem criar novo gameplay, permitir que o chão continue plantável em qualquer ponto útil e reservar espaço para expansão futura.
+- Motivo: melhorar a leitura espacial sem criar novo gameplay, permitir que o chão continue plantável em qualquer ponto útil e reservar espaço para expansão adicional.
 - Risco: como a decisão é cenográfica e de layout, ela pode pedir refinamento visual posterior sem afetar o loop principal.
 
-## Decisão 60 - RecipeDatabase como fonte principal planejada
+## Decisão 60 - RecipeDatabase como fonte principal
 
 - Problema: caldeirão e Livro de Receitas ainda dependiam de caminhos paralelos para resolver receitas, o que aumentava o risco de drift.
-- Decisão: tratar `RecipeDatabase`/`Data/recipes` como a fonte principal planejada para receitas, mantendo `Database.receitas_alquimia` apenas como fallback legado temporário durante a transição.
+- Decisão: tratar `RecipeDatabase`/`Data/recipes` como a fonte principal para receitas, mantendo `Database.receitas_alquimia` apenas como fallback legado temporário durante a transição.
 - Motivo: centralizar nomes, ingredientes, resultados e validade em um schema de recurso mais claro e reduzir divergências entre UI e produção.
 - Risco: enquanto o fallback existir, qualquer receita nova precisa ser mantida em ambas as fontes ou migrada em lote com compatibilidade.
 
@@ -137,7 +226,7 @@
 
 - Motivo: preservar o comportamento de colheita atual, manter o escopo pequeno e evitar inventário próprio, pathfinding novo ou múltiplos golems.
 
-- Risco: como a decisão depende de leitura runtime de `skills_desbloqueadas`, qualquer futuro efeito persistente adicional deve continuar sendo revalidado junto com o save.
+- Risco: como a decisão depende de leitura runtime de `skills_desbloqueadas`, qualquer efeito persistente adicional deve continuar sendo revalidado junto com o save.
 
 
 
@@ -173,7 +262,7 @@
 
 - Motivo: deixar explícito que a entrega só preenche os requisitos e que a purificação continua sendo uma ação final separada.
 
-- Risco: a UI ficou um pouco mais verbal, então pode precisar de ajuste fino de texto se o painel ganhar mais requisitos no futuro.
+- Risco: a UI ficou um pouco mais verbal, então pode precisar de ajuste fino de texto se o painel ganhar mais requisitos mais adiante.
 
 
 
@@ -185,17 +274,17 @@
 
 - Motivo: preparar a chegada de uma segunda área sem alterar o comportamento visível da V0, sem mexer no schema do save e sem reorganizar os `FarmPlot` existentes.
 
-- Risco: a ordem dos `FarmPlot` continua dependente da criação append-only; qualquer expansão futura precisa preservar isso.
+- Risco: a ordem dos `FarmPlot` continua dependente da criação append-only; qualquer expansão seguinte precisa preservar isso.
 
 
 
-## Decisão 50 - Planejar o mapa macro antes do solo livre
+## Decisão 50 - Layout macro antes do solo livre
 
 - Problema: a fazenda já funciona, mas o núcleo inicial está concentrado demais e pode ficar amontoado se o mapa crescer sem direção.
 
 - Decisão: não implementar solo livre na Fase 1; primeiro planejar o mapa macro e usar blockout visual como preparação, sem conectar `FarmGrid` ao gameplay.
 
-- Motivo: preservar a Fase 1, evitar retrabalho de layout e dar espaço para zonas futuras antes da migração sistêmica.
+- Motivo: preservar a Fase 1, evitar retrabalho de layout e dar espaço para zonas reservadas antes da migração sistêmica.
 
 - Risco: o blockout visual precisa continuar sem entrar no grupo `lotes_terra` nem se transformar em uma rota paralela de jogo.
 
@@ -207,9 +296,9 @@
 
 - Decisão: implementar o Blockout Visual V0 como nós visuais runtime-only criados por `Main.gd`, sem `FarmPlot` novos, sem save e sem conexão com `FarmGridPreview`.
 
-- Motivo: reduzir a sensação de núcleo amontoado e preparar a leitura de zonas futuras sem tocar no loop validado.
+- Motivo: reduzir a sensação de núcleo amontoado e preparar a leitura de zonas reservadas sem tocar no loop validado.
 
-- Risco: qualquer marker visual futuro precisa continuar fora de grupos de gameplay e fora do schema de save.
+- Risco: qualquer marker visual posterior precisa continuar fora de grupos de gameplay e fora do schema de save.
 
 
 
@@ -267,7 +356,7 @@
 
 ## Decisão 2 - Não criar sistema de receitas escalável ainda
 
-- Problema: receitas futuras serão muitas.
+- Problema: haverá muitas receitas adicionais.
 
 - Decisão: adiar a migração para dados externos até o loop mínimo estar validado.
 
@@ -295,7 +384,7 @@
 
 - Motivo: evitar falhas visuais e permitir que o protótipo continue funcionando mesmo com estrutura simples.
 
-- Risco: quando os ícones finais forem organizados em outra pasta, será preciso revisar esse fallback.
+- Risco: quando os ícones finais forem organizados em outra pasta, vai ser preciso revisar esse fallback.
 
 
 
@@ -311,7 +400,7 @@
 
 - Dados adiados: estado de lotes/plantações, golems e qualquer migração de dados para formatos externos.
 
-- Risco: o save atual não preserva o campo inteiro nem a automação completa; isso será tratado depois.
+- Risco: o save atual não preserva o campo inteiro nem a automação completa; isso vai ser tratado depois.
 
 
 
@@ -321,7 +410,7 @@
 
 - Decisão: criar uma primeira versão do Livro de Receitas apenas para consulta.
 
-- Motivo: manter o fluxo atual simples e preparar a base para produção em lote futura.
+- Motivo: manter o fluxo atual simples e preparar a base para produção em lote seguinte.
 
 - Limitação atual: o livro lê o formato existente de `Database.receitas_alquimia` com uma camada adaptadora simples.
 
@@ -385,7 +474,7 @@
 
 - Motivo: garantir preenchimento estável do painel sem afetar os controles acima.
 
-- Risco: a arte final ainda será substituida depois, mantendo a UI provisoria por enquanto.
+- Risco: a arte final ainda vai ser substituída depois, mantendo a UI provisória por enquanto.
 
 
 
@@ -409,13 +498,13 @@
 
 - Problema: o formato atual de receitas funciona, mas não escala bem para um catálogo maior.
 
-- Decisão: documentar o esquema atual e a migração futura antes de alterar o código.
+- Decisão: documentar o esquema atual e a migração seguinte antes de alterar o código.
 
 - Motivo: evitar mudanças prematuras enquanto o loop principal já está estável.
 
-- Recomendação futura: migrar para `Resource .tres` como formato principal, mantendo JSON/CSV apenas como apoio se necessário.
+- Recomendação seguinte: migrar para `Resource .tres` como formato principal, mantendo JSON/CSV apenas como apoio se necessário.
 
-- Risco: a documentação não resolve a limitação estrutural sozinha; ela só prepara a migração futura.
+- Risco: a documentação não resolve a limitação estrutural sozinha; ela só prepara a migração seguinte.
 
 
 
@@ -437,9 +526,9 @@
 
 - Decisão: criar `RecipeData` e receitas `.tres` de teste como camada estrutural paralela.
 
-- Motivo: preparar a migração futura enquanto o caldeirao continua lendo `Database.receitas_alquimia`.
+- Motivo: preparar a migração seguinte enquanto o caldeirao continuava lendo `Database.receitas_alquimia`.
 
-- Risco: dois formatos vivem ao mesmo tempo por enquanto, entao o acoplamento futuro precisara ser feito com cuidado.
+- Risco: dois formatos vivem ao mesmo tempo por enquanto, entao o acoplamento seguinte precisara ser feito com cuidado.
 
 
 
@@ -449,7 +538,7 @@
 
 - Decisão: criar `RecipeDatabase.gd` somente para carregar, validar e comparar receitas.
 
-- Motivo: permitir a migração futura de forma segura, sem acoplar o caldeirao nesta etapa.
+- Motivo: permitir a migração seguinte de forma segura, sem acoplar o caldeirao nesta etapa.
 
 - Risco: a manutenção temporaria de dois sistemas de receita continua exigindo disciplina na migracao.
 
@@ -463,7 +552,7 @@
 
 - Motivo: validar o novo formato sem mexer no caldeirao nem na producao em lote.
 
-- Risco: o jogo continua com dois caminhos de dados ativos até a migracao completa ser validada.
+- Risco: o jogo continuou com dois caminhos de dados ativos até a migracao completa ser validada.
 
 
 
@@ -475,7 +564,7 @@
 
 - Motivo: permitir cobertura completa do `RecipeDatabase` sem mexer no fluxo funcional do jogo.
 
-- Risco: a cobertura dos dados está completa, mas a fonte funcional principal ainda é o sistema legado até a migração final.
+- Risco: a cobertura dos dados estava completa, mas a fonte funcional principal ainda era o sistema legado até a migração final.
 
 
 
@@ -547,7 +636,7 @@
 
 - Motivo: manter o baú separado do inventário do jogador e tornar o fluxo claro antes do salvamento.
 
-- Risco: retirada individual e persistência do baú ainda ficam para etapas futuras.
+- Risco: retirada individual e persistência do baú ainda ficam para etapas seguintes.
 
 
 
@@ -559,7 +648,7 @@
 
 - Motivo: permitir checagem em memória da fundação do grid sem acoplar a cena ou os lotes atuais.
 
-- Risco: a ferramenta é só de desenvolvimento e deve ser removida ou reorganizada quando o grid entrar de verdade no jogo.
+- Risco: a ferramenta é só de desenvolvimento e precisa ser removida ou reorganizada quando o grid entrar de verdade no jogo.
 
 
 
@@ -567,7 +656,7 @@
 
 - Problema: a fundação do grid precisava de uma visualização manual simples sem tocar no `FarmPlot` ativo.
 
-- Decisão: criar `Scenes/dev/FarmGridPreview.tscn` como cena isolada de preview visual para o grid futuro.
+- Decisão: criar `Scenes/dev/FarmGridPreview.tscn` como cena isolada de preview visual para o grid seguinte.
 
 - Motivo: permitir experimentar desenho e interação de tiles sem conectar ao gameplay principal.
 
@@ -583,13 +672,13 @@
 
 - Motivo: facilitar leitura visual do Solo Vivo Alquimico sem assets adicionais.
 
-- Risco: a visualizacao continua provisoria e deve ser substituida quando a arte final chegar.
+- Risco: a visualização continua provisória e precisa ser substituída quando a arte final chegar.
 
 
 
 ## Decisão 28 - Preview testa Enxada e decay diario
 
-- Problema: o preview precisava validar a futura regra de arar com ferramenta ativa e o retorno de terra arada sem crop na virada do dia.
+- Problema: o preview precisava validar a seguinte regra de arar com ferramenta ativa e o retorno de terra arada sem crop na virada do dia.
 
 - Decisão: usar `Enxada` como ferramenta ativa padrão e simular o `Decay Diario` apenas em memória no preview.
 
@@ -607,7 +696,7 @@
 
 - Motivo: permitir testar plantio e proteção contra decay sem inventário real, sem Database e sem gameplay principal.
 
-- Risco: o crop fake existe só para validação e deve ser substituido por dados reais quando a fazenda em grid entrar de verdade.
+- Risco: o crop fake existe só para validação e precisa ser substituído por dados reais quando a fazenda em grid entrar de verdade.
 
 
 
@@ -655,7 +744,7 @@
 
 - Motivo: manter o FarmGrid isolado enquanto o `FarmPlot` segue como sistema ativo e confiavel do prototipo.
 
-- Risco: o checkpoint nao resolve os logs globais; ele apenas registra a pendencia para investigacao futura.
+- Risco: o checkpoint nao resolve os logs globais; ele apenas registra a pendencia para investigacao seguinte.
 
 
 
@@ -667,7 +756,7 @@
 
 - Motivo: melhorar a leitura espacial sem implementar pathfinding.
 
-- Risco: o movimento continua em linha reta e pode atravessar obstaculos; isso fica para uma etapa futura.
+- Risco: o movimento continua em linha reta e pode atravessar obstaculos; isso fica para uma etapa seguinte.
 
 
 
@@ -679,7 +768,7 @@
 
 - Motivo: manter paridade de jogo entre o que o jogador colhe na mão e o que o golem entrega ao Baú da Vila.
 
-- Risco: o golem agora pode depositar mais de um tipo de item por viagem, então o balanceamento futuro precisa considerar esse volume extra.
+- Risco: o golem agora pode depositar mais de um tipo de item por viagem, então o balanceamento seguinte precisa considerar esse volume extra.
 
 
 
@@ -799,7 +888,7 @@
 
 - Motivo: validar o ciclo pesca -> agricultura -> purificação -> persistência antes de abrir áreas maiores.
 
-- Risco: os requisitos ainda são provisórios/debug e a implementação futura do caldeirão ainda precisará substituir o método de obtenção dos itens.
+- Risco: os requisitos ainda são provisórios/debug e a implementação seguinte do caldeirão ainda precisará substituir o método de obtenção dos itens.
 
 
 
@@ -823,7 +912,7 @@
 
 - Motivo: validar a progressão pesca -> caldeirão -> purificação com um loop mais legível, sem criar nova área, novo obstáculo ou mexer no `FarmGridPreview`.
 
-- Risco: o sistema ainda é V0 e depende de uma única área bloqueada; futuras áreas precisarão repetir o mesmo contrato de save e UI.
+- Risco: o sistema ainda é V0 e depende de uma única área bloqueada; seguintes áreas precisarão repetir o mesmo contrato de save e UI.
 
 
 
@@ -887,13 +976,13 @@
 
 
 
-## Decisão 37 - Tempo real futuro com modo debug
+## Decisão 37 - Tempo real seguinte com modo debug
 
 - Problema: o jogo final precisa de um modelo de tempo coerente com sessões reais, mas o protótipo ainda depende de testes rápidos.
 
 - Decisão: documentar tempo real como direção final, porém manter o desenvolvimento em modo debug/controlável por enquanto.
 
-- Motivo: permitir um `TimeManager` futuro sem travar o fluxo de testes do protótipo.
+- Motivo: permitir um `TimeManager` seguinte sem travar o fluxo de testes do protótipo.
 
 - Risco: o sistema de tempo real pode afetar crops, estações, quests, economia e salvamento se for ativado cedo demais.
 
@@ -901,7 +990,7 @@
 
 ## Decisão 38 - TimeManager base sem Autoload
 
-- Problema: o projeto precisava de uma fundação técnica para o tempo futuro sem acoplar gameplay cedo demais.
+- Problema: o projeto precisava de uma fundação técnica para o tempo seguinte sem acoplar gameplay cedo demais.
 
 - Decisão: criar `Scripts/TimeManager.gd` como script solto, com modo real desligado por padrão e funções de debug internas.
 
@@ -911,25 +1000,25 @@
 
 
 
-## Decisão 39 - Farm System V2 como planejamento
+## Decisão 39 - Farm System V2 como evolução documentada
 
 - Problema: o sistema atual de lotes é funcional, mas limitado para a visão final de fazenda viva e alquímica.
 
-- Decisão: documentar o Farm System V2 como evolução futura baseada em tiles/grid, sem substituir `FarmPlot` agora.
+- Decisão: documentar o Farm System V2 como evolução seguinte baseada em tiles/grid, sem substituir `FarmPlot` agora.
 
 - Motivo: preservar o protótipo estável enquanto se prepara a transição para Solo Vivo Alquímico, caldeirão expandido e integrações com pesca, fazendinhas e golems.
 
-- Risco: a migração futura vai exigir planejamento cuidadoso para não quebrar save, UI e fluxos já validados.
+- Risco: a migração seguinte vai exigir preparo cuidadoso para não quebrar save, UI e fluxos já validados.
 
 
 
 ## Decisão 40 - FarmTileData como Resource isolado
 
-- Problema: a futura fazenda em grid precisa de uma base de dados serializável sem mexer no sistema atual.
+- Problema: a seguinte fazenda em grid precisa de uma base de dados serializável sem mexer no sistema atual.
 
 - Decisão: criar `Scripts/data/FarmTileData.gd` como `Resource` isolado, sem conectar ao gameplay ainda.
 
-- Motivo: preparar a futura serialização do grid e manter o `FarmPlot` como sistema ativo enquanto isso.
+- Motivo: preparar a seguinte serialização do grid e manter o `FarmPlot` como sistema ativo enquanto isso.
 
 - Risco: enquanto o grid não existir, o recurso serve apenas como fundação técnica e documentação executável.
 
@@ -937,7 +1026,7 @@
 
 ## Decisão 41 - FarmGridManager base sem cena
 
-- Problema: o grid futuro precisava de um coordenador de dados sem virar parte da cena ou do gameplay cedo demais.
+- Problema: o grid seguinte precisava de um coordenador de dados sem virar parte da cena ou do gameplay cedo demais.
 
 - Decisão: criar `Scripts/data/FarmGridManager.gd` como `RefCounted`, isolado e sem `Autoload`.
 
@@ -955,7 +1044,7 @@
 
 - Motivo: facilitar checagem de criação, alteração e serialização do grid sem mexer no gameplay.
 
-- Risco: o teste depende de execução manual e não substitui testes automatizados futuros.
+- Risco: o teste depende de execução manual e não substitui testes automatizados seguintes.
 
 
 
@@ -977,7 +1066,7 @@
 
 - Decisão: criar `Scripts/ToolManager.gd` como `Autoload`, com a `Enxada` como primeira ferramenta real apenas para selecao visual/global.
 
-- Motivo: preparar a futura ponte entre UI, atalhos e sistemas de fazenda sem alterar o `FarmPlot` agora.
+- Motivo: preparar a seguinte ponte entre UI, atalhos e sistemas de fazenda sem alterar o `FarmPlot` agora.
 
 - Risco: se essa base for ligada cedo demais ao clique no mundo, pode quebrar o prototipo atual ou confundir a selecao de ferramenta com gameplay real.
 
@@ -1071,11 +1160,11 @@
 
 - Problema: o jogo principal ainda precisava de uma primeira ação real da Enxada sem abrir aragem livre nem migrar para o FarmGrid.
 
-- Decisão: adicionar um flag simples de preparo no `FarmPlot`, permitir arar lote vazio com Enxada e exigir lote arado para plantio futuro, preservando o estado no save.
+- Decisão: adicionar um flag simples de preparo no `FarmPlot`, permitir arar lote vazio com Enxada e exigir lote arado para plantio seguinte, preservando o estado no save.
 
 - Motivo: introduzir a Enxada como ação real de forma controlada, mantendo `FarmPlot` ativo e o `FarmGrid` isolado.
 
-- Risco: a regra de plantio passa a depender do preparo do lote, então qualquer futura mudança no fluxo de sementes precisa respeitar esse estado.
+- Risco: a regra de plantio passa a depender do preparo do lote, então qualquer seguinte mudança no fluxo de sementes precisa respeitar esse estado.
 
 
 
@@ -1087,7 +1176,7 @@
 
 - Motivo: ampliar a area jogavel de forma segura, preservando saves antigos por ordem e evitando criar uma rota livre de instanciacao.
 
-- Risco: a area continua baseada em `FarmPlot` fixo e visual provisório, então futuras mudanças na grade precisam preservar a ordem append-only.
+- Risco: a area continua baseada em `FarmPlot` fixo e visual provisório, então seguintes mudanças na grade precisam preservar a ordem append-only.
 
 
 
@@ -1111,7 +1200,7 @@
 
 - Motivo: testar a regra de volta ao estado natural de forma controlada, sem mexer no `TimeManager`, no `SaveManager` ou no comportamento automático do jogo principal.
 
-- Risco: como ainda é manual/debug, a futura transição para tempo real vai precisar reaproveitar a mesma regra sem duplicar lógica.
+- Risco: como ainda é manual/debug, a seguinte transição para tempo real vai precisar reaproveitar a mesma regra sem duplicar lógica.
 
 
 
@@ -1123,7 +1212,7 @@
 
 - Motivo: deixar a ferramenta ativa coerente com o fluxo já existente, reaproveitando o caminho manual que já calcula recompensas, bônus e reset do lote.
 
-- Risco: como a Colheita ainda não cobre ações adicionais fora do estado pronto, qualquer expansão futura precisa manter o mesmo helper compartilhado.
+- Risco: como a Colheita ainda não cobre ações adicionais fora do estado pronto, qualquer expansão seguinte precisa manter o mesmo helper compartilhado.
 
 
 
@@ -1135,7 +1224,7 @@
 
 - Motivo: deixar claro o contrato arquitetural antes de novas expansões, evitando misturar ferramenta, item e recurso de novo.
 
-- Risco: futuras mudanças em UI, plantio ou tempo real precisam respeitar esse checkpoint para não reabrir o acoplamento entre sistemas.
+- Risco: seguintes mudanças em UI, plantio ou tempo real precisam respeitar esse checkpoint para não reabrir o acoplamento entre sistemas.
 
 
 
@@ -1177,11 +1266,11 @@
 
 ## Decisão 61 - Vara de Pesca como ferramenta visual global
 
-- Problema: a direção de pesca já estava definida, mas faltava uma base visual na toolbar principal para a ferramenta futura.
+- Problema: a direção de pesca já estava definida, mas faltava uma base visual na toolbar principal para a ferramenta seguinte.
 
 - Decisão: incluir a `Vara de Pesca` como ferramenta visual/global no `ToolManager` e na toolbar do jogo principal, sem acionar pesca real ainda.
 
-- Motivo: preparar a navegação da interface e deixar claro para o jogador onde a pesca futura vai entrar, sem mexer no loop agrícola.
+- Motivo: preparar a navegação da interface e deixar claro para o jogador onde a pesca seguinte vai entrar, sem mexer no loop agrícola.
 
 - Risco: a presença da ferramenta pode sugerir funcionalidade ainda inexistente, então o feedback visual e a documentação precisam continuar deixando claro que a pesca real ainda não foi implementada.
 
@@ -1195,7 +1284,7 @@
 
 - Motivo: validar o ponto físico da pesca com feedback mínimo antes de abrir boia, sincronia, recompensas e áreas especiais.
 
-- Risco: o lago existe apenas como base mínima por enquanto; a pescaria real e os efeitos mais ricos ficam para fases futuras.
+- Risco: o lago existe apenas como base mínima por enquanto; a pescaria real e os efeitos mais ricos ficam para fases seguintes.
 
 
 
@@ -1207,7 +1296,7 @@
 
 - Motivo: manter o protótipo simples, legível e fácil de expandir para puxada, timing e recompensa depois.
 
-- Risco: a boia ainda não tem comportamento de jogo além de posição visual, então o sistema real de pesca continua para etapas futuras.
+- Risco: a boia ainda não tem comportamento de jogo além de posição visual, então o sistema real de pesca continua para etapas seguintes.
 
 
 
@@ -1219,7 +1308,7 @@
 
 - Motivo: validar a leitura da pesca em pequenos passos, mantendo a implementação controlada e sem recompensa.
 
-- Risco: o timer ainda não representa a mecânica final de pesca; ele é apenas a ponte visual para a etapa de sincronia futura.
+- Risco: o timer ainda não representa a mecânica final de pesca; ele é apenas a ponte visual para a etapa de sincronia seguinte.
 
 
 
@@ -1317,7 +1406,7 @@
 - Decisão: criar uma Área Bloqueada V0 visível com um pocket 2x2 de `FarmPlot` já reservado, escondendo e revelando esses lotes conforme a purificação.
 - Motivo: tornar a expansão legível no mapa, preservar saves por ordem e manter a transição append-only sem criar sistema completo de áreas.
 - Regra atual: o estado `first_obstacle_purified` controla tanto o obstáculo quanto a liberação do pocket.
-- Risco: o pocket ainda é uma primeira leitura da expansão, então qualquer expansão futura precisa respeitar a ordem dos lotes e o save mínimo já adotado.
+- Risco: o pocket ainda é uma primeira leitura da expansão, então qualquer expansão seguinte precisa respeitar a ordem dos lotes e o save mínimo já adotado.
 
 ## Decisão 73 - UI base mínima com padrões godot-ui
 
@@ -1331,4 +1420,4 @@
 - Problema: uma arquitetura de save mais robusta parece útil, mas não é necessária agora para validar o protótipo.
 - Decisão: adiar o sistema de persistência avançado para depois da estabilização do loop; no máximo, manter uma persistência mínima se testes longos exigirem guardar inventário ou estado básico de sessão.
 - Motivo: evitar retrabalho em migração/serialização enquanto catálogo, UI e sistemas principais ainda estão amadurecendo.
-- Risco: quando a persistência maior entrar, será preciso revalidar compatibilidade e migração com cuidado.
+- Risco: quando a persistência maior entrar, vai ser preciso revalidar compatibilidade e migração com cuidado.

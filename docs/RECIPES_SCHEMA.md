@@ -1,20 +1,20 @@
 # Recipes Schema
 
 ## Estado Atual
-O sistema de receitas do projeto ainda é baseado em `Dictionary` dentro de `Scripts/Database.gd`.
+O sistema de receitas do projeto está em transição híbrida: o catálogo rico vive em `Resource .tres` dentro de `Data/recipes/`, e o gameplay ainda mantém fallback legado em `Scripts/Database.gd` para compatibilidade.
 
 ### Como as receitas estão estruturadas hoje
-- `Database.receitas_alquimia` é um `Dictionary`.
-- A chave é uma string no formato `ingrediente1_ingrediente2`.
-- O valor é a `String` do resultado.
-- Exemplo:
-  - `agua_trigo -> pocao_crescimento`
-  - `palha_rara_rama_encantada -> golem_coletor`
+- `Data/recipes/*.tres` usa `RecipeData` como formato principal para exibição e validação rica.
+- `Database.receitas_alquimia` continua existindo como catálogo legado/provisório.
+- O `RecipeResolver` centraliza a leitura dos dois formatos.
+- Exemplos de IDs de Resource:
+  - `agua_tomate_sol` -> `Data/recipes/agua_tomate_sol.tres`
+  - `golem_coletor` -> `Data/recipes/golem_coletor.tres`
 
 ### Como o caldeirão lê receitas hoje
-- `Scripts/Cauldron.gd` consulta `Database.receitas_alquimia` diretamente.
-- O caldeirão monta a chave combinando os dois ingredientes em ordem direta e invertida.
-- A produção em lote usa `Database.obter_ingredientes_receita(recipe_id)` para reconstruir a lista de ingredientes a partir da chave.
+- `Scripts/Cauldron.gd` usa `RecipeResolver` para validar e resolver receitas.
+- O resolver consulta primeiro `RecipeDatabase`/`Data/recipes/` e cai no legado apenas se não houver `RecipeData`.
+- A produção em lote reconstrói ingredientes com o resolver central.
 - O caldeirão valida:
   - se a receita existe;
   - se os ingredientes podem ser reconstruídos;
@@ -23,21 +23,20 @@ O sistema de receitas do projeto ainda é baseado em `Dictionary` dentro de `Scr
 
 ### Como o Livro de Receitas lê receitas hoje
 - `Scripts/RecipeBookUI.gd` usa `GlobalInventory.receitas_descobertas`.
-- Para exibir os detalhes, o livro verifica se a receita existe em `Database.receitas_alquimia`.
-- Em seguida, chama `Database.obter_ingredientes_receita(recipe_id)` para reconstruir os ingredientes.
+- Para exibir os detalhes, o livro consulta o `RecipeResolver`.
+- Quando existe `RecipeData`, o livro exibe os campos ricos do resource.
+- Quando não existe, cai no formato legado compatível.
 - O livro calcula a quantidade máxima fabricável a partir do inventário atual.
 
 ## Limitações do Formato Atual
-- As receitas não têm estrutura rica.
-- A lista de ingredientes não fica salva de forma explícita.
-- Não há nome de exibição separado da chave.
-- Não há categoria, raridade, custo de fabricação, tempo, descrição, estação ou tags.
-- Não há versão de esquema.
-- Não há metadados para ordenar, filtrar ou localizar receitas com facilidade.
-- O formato fica difícil de manter quando a quantidade de receitas cresce.
+- Parte do conteúdo ainda vive em `Database.receitas_alquimia`.
+- `receitas_descobertas` continua salvando IDs crus.
+- O fluxo ainda precisa manter compatibilidade com saves antigos.
+- O formato legado não carrega metadados ricos como descrição, categoria e tempo.
+- Mesmo com a camada nova, o legado ainda existe como fallback temporário.
 
-## Campos Que Faltam Para o Futuro
-Para um sistema escalável, o formato futuro deveria ter pelo menos:
+## Campos Que Faltam Para Escala
+Para um sistema escalável, o formato deveria ter pelo menos:
 - `id`
 - `nome`
 - `ingredientes`
@@ -99,28 +98,29 @@ Desvantagens:
 - Exige parsing mais cuidadoso para campos compostos.
 
 ## Recomendação Para Este Projeto
-Recomendação principal: **Resource `.tres` para receitas, depois que o loop mínimo estiver estável.**
+Recomendação principal: **Resource `.tres` para receitas, com fallback legado apenas durante a transição**.
 
 Motivos:
 - O jogo é fortemente Godot-native.
 - As receitas vão precisar de campos ricos, como ingredientes, resultado, tempo e descrição.
 - O Editor da Godot facilita criar e revisar conteúdo sem código.
-- O caldeirão e o Livro de Receitas vão ganhar mais clareza com dados tipados.
+- O caldeirão e o Livro de Receitas ficam mais claros com dados tipados.
 
 Recomendação prática:
-- Manter o formato atual apenas enquanto o protótipo está sendo estabilizado.
-- Quando for migrar, começar por um tipo de `Resource` para receita.
+- Manter o fallback legado só enquanto existirem saves ou IDs antigos em circulação.
+- Migrar conteúdo em lotes pequenos quando fizer sentido.
 - Se o time quiser edição em massa depois, exportar ferramentas auxiliares para JSON/CSV sem abandonar o Resource como formato principal.
 
-## Preparacao Estrutural Criada
-Para adiantar a migracao sem tocar no fluxo atual, o projeto ganhou:
+## Preparação Estrutural Criada
+Para adiantar a migração sem romper o fluxo atual, o projeto ganhou:
 - `Scripts/data/RecipeData.gd`
-- `Data/recipes/pocao_crescimento_basica.tres`
-- `Data/recipes/golem_coletor.tres`
+- `Scripts/data/RecipeDatabase.gd`
+- `Scripts/data/RecipeResolver.gd`
+- `Data/recipes/*.tres`
 
-Esses arquivos existem apenas como base estrutural. O caldeirao continua lendo `Database.receitas_alquimia`, e o novo `Resource` ainda nao esta ligado ao jogo nesta etapa.
+Hoje esses arquivos já estão ligados ao jogo pela camada `RecipeResolver`, mas o legado continua disponível como fallback para saves e conteúdos antigos.
 
-### Campos da primeira versao
+### Campos da primeira versão
 O `RecipeData` inicial inclui:
 - `id`
 - `nome`
@@ -136,47 +136,64 @@ O `RecipeData` inicial inclui:
 - `tags`
 - `versao_do_schema`
 
-### Proxima etapa sugerida
-Criar um `RecipeDatabase.gd` separado para:
-- carregar `Resource .tres`;
-- comparar o novo formato com o esquema antigo de `Database.gd`;
-- validar compatibilidade antes de trocar a fonte real do caldeirao.
+### Próxima etapa sugerida
+Reduzir a dependência do legado apenas onde houver compatibilidade suficiente, mantendo:
+- `RecipeResolver` como caminho principal;
+- `RecipeDatabase` como base de leitura dos resources;
+- suporte a saves antigos em `receitas_descobertas`;
+- fallback temporário para `Database.receitas_alquimia` enquanto existirem IDs antigos em circulação.
 
 ## Leitor Estrutural Criado
-Foi criada uma camada de leitura apenas para preparacao:
+Foi criada uma camada de leitura central:
 - `Scripts/data/RecipeDatabase.gd`
 
 Esse leitor:
 - carrega `.tres` de `res://Data/recipes/`;
-- valida campos basicos de `RecipeData`;
+- valida campos básicos de `RecipeData`;
 - compara ids novos com `Database.receitas_alquimia`;
-- nao substitui o sistema antigo e nao se conecta ao caldeirao ainda.
+- alimenta o `RecipeResolver`, que atende caldeirão e Livro de Receitas.
 
-### Resultado esperado da comparacao
-O relatorio deve mostrar:
+### Resultado esperado da comparação
+O relatório deve mostrar:
 - ids que existem apenas nos Resources;
 - ids que existem apenas no sistema legado;
-- uma base clara para planejar a migracao futura sem desligar nada ainda.
+- uma base clara para planejar a migração sem desligar nada ainda.
 
 ## Uso Paralelo No Livro de Receitas
-O Livro de Receitas agora usa o `RecipeDatabase` apenas para exibir dados ricos quando o `RecipeData` correspondente existe e esta completo.
+O Livro de Receitas usa o `RecipeResolver` para exibir dados ricos quando o `RecipeData` correspondente existe e está completo.
 
 Pontos importantes:
-- `Database.receitas_alquimia` continua sendo a fonte funcional do gameplay e da producao em lote.
-- `RecipeDatabase` entra apenas como camada de leitura e apresentacao.
-- Se um `RecipeData` faltar, estiver invalido ou incompleto, o livro cai automaticamente para a leitura antiga.
-- Isso permite validar o novo formato sem arriscar o fluxo principal do caldeirao.
+- `RecipeResolver` escolhe o resource primeiro.
+- `Database.receitas_alquimia` ainda serve como fallback para compatibilidade.
+- Se um `RecipeData` faltar, estiver inválido ou incompleto, o livro cai automaticamente para a leitura antiga.
+- Isso permite validar o novo formato sem arriscar o fluxo principal do caldeirão.
 
 ## Cobertura Atual
 Todas as receitas legadas atuais já possuem um `.tres` correspondente em `Data/recipes/`.
 
 Isso significa que:
-- o `RecipeDatabase` consegue cobrir o catálogo atual completo;
+- o `RecipeResolver` cobre o catálogo atual completo usando o `RecipeDatabase` como base;
 - o Livro de Receitas pode exibir a versão rica quando houver `RecipeData`;
-- o jogo ainda continua usando `Database.receitas_alquimia` como fonte funcional da produção.
+- o jogo ainda preserva `Database.receitas_alquimia` apenas como compatibilidade temporária.
 
 ## Resumo da Decisão
 - O formato atual funciona para protótipo.
 - Ele não escala bem.
-- `Resource .tres` é a melhor base para o futuro deste projeto.
+- `Resource .tres` é a melhor base para este projeto.
 - JSON e CSV podem servir como ferramentas de apoio, mas não como formato principal inicial.
+
+## Snapshot de produção do caldeirão (save v4)
+
+O novo campo opcional `cauldrons` mapeia o caminho relativo do produtor (atualmente `CauldronUI`) ao seu estado. Ele guarda a produção capturada no início, sem recalcular o resultado a partir do catálogo ao carregar:
+
+- `IDLE`: sem produção pendente;
+- `BREWING` / `READY`: `result_item`, `result_quantity`, `time_remaining`; pronto tem tempo zero e não é entregue durante o load;
+- `BATCH`: `batch.recipe_id`, resultado/quantidade, `seconds_per_craft`, `total`, `completed`, `time_remaining`, `waiting_for_space`, `cancel_pending`, `ingredients` e `reservations`.
+
+Cada reserva guarda `success`, `refunded`, `requirements` e `entries` com `item_id`, `quantity`, `source`. Somente crafts ainda não entregues possuem reserva; a quantidade de recibos deve coincidir com `total - completed`, e suas entradas devem reconstruir exatamente os ingredientes de cada craft. JSON converte números inteiros em floats: a validação aceita valores numericamente inteiros, mas recusa frações, negativos, origens desconhecidas e recibos já devolvidos.
+
+`SaveManager` valida todos os estados antes de alterar o runtime e aplica o produtor somente após restaurar os estoques. O caldeirão para timers/animação anteriores e substitui o estado sem consumo/refund. Não concede descoberta novamente nem avança pelo tempo passado com o jogo fechado. Cancelamento parcial conserva somente as reservas não devolvidas.
+
+Saves completos antigos sem o campo inicializam `IDLE`; não é possível reconstruir produção que o arquivo antigo nunca registrou. Payloads parciais usados por contratos agrícolas não apagam produção. Contagem/limite de golems do caminho abstrato legado são campos opcionais de `economy`, acompanhando o mesmo snapshot de entrega.
+
+Teste dedicado: `Scenes/dev/CauldronPersistenceSmokeTest.tscn`. Ele usa JSON em memória e reconstrói a cena sem tocar no save pessoal. Capacidade da Mochila permanece desligada no gameplay.

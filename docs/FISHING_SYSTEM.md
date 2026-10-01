@@ -2,9 +2,9 @@
 
 ## Visão Geral
 
-A pesca será um sistema integrado ao lago da fazenda.
+A pesca é um sistema integrado ao lago da fazenda.
 
-No design final, a pesca não deve ser tratada como laboratório em cena separada. O lago será parte física da fazenda e servirá como ponto real de interação do jogador.
+No design final, a pesca não é tratada como laboratório em cena separada. O lago é parte física da fazenda e serve como ponto real de interação do jogador.
 
 O objetivo é criar uma atividade calma, mágica e acessível, que converse com o restante do ecossistema alquímico do jogo sem quebrar o loop agrícola atual.
 
@@ -14,7 +14,7 @@ A `Vara de Pesca` já existe como ferramenta visual/global na toolbar principal.
 
 A ferramenta já conversa com o V0 do lago, da boia, do popup de sincronia e das recompensas simples.
 
-A presença dela serve como base de interface para a futura pesca integrada ao lago da fazenda, e o V0 já conversa com o lago, a boia, o popup e recompensas simples.
+A presença dela serve como base de interface para a pesca integrada ao lago da fazenda, e o V0 já conversa com o lago, a boia, o popup e recompensas simples.
 
 O Lago da Fazenda V0 já possui uma `Área com Movimento` visível, usada como ponto opcional para favorecer a sincronia e melhorar o resultado da recompensa.
 
@@ -70,7 +70,7 @@ O resultado do popup já pode gerar recompensa simples no inventário real:
 
 Esses itens entram em `GlobalInventory` e aparecem no inventário visual como parte do fluxo V0.
 
-Os dois itens de pesca também passaram a ter metadados no catálogo central de itens, para suportar nomes, ícones, raridade, venda futura e receitas futuras sem espalhar hardcode.
+Os dois itens de pesca também passaram a ter metadados no catálogo central de itens, para suportar nomes, ícones, raridade, venda e receitas sem espalhar hardcode.
 
 O balanceamento, os nomes e a quantidade de recompensas continuam provisórios. Ainda não há conexão com caldeirão, receitas ou árvore de alquimia.
 
@@ -78,13 +78,13 @@ O balanceamento, os nomes e a quantidade de recompensas continuam provisórios. 
 
 O jogador poderá lançar a vara em qualquer área válida do lago.
 
-Algumas áreas do lago terão movimento, ondulação ou brilho mágico temporário. Essas áreas especiais não serão obrigatórias para pescar, mas aumentam a chance de peixes melhores ou ingredientes aquáticos raros.
+Algumas áreas do lago têm movimento, ondulação ou brilho mágico temporário. Essas áreas especiais não são obrigatórias para pescar, mas aumentam a chance de peixes melhores ou ingredientes aquáticos raros.
 
 Esse desenho evita frustração e mantém a pesca acessível mesmo para quem só quer pescar de forma simples.
 
 ## Fluxo da pesca
 
-Fluxo futuro planejado:
+Fluxo alvo:
 
 1. Jogador seleciona Vara de Pesca.
 2. Jogador clica em qualquer área pescável do lago.
@@ -93,7 +93,7 @@ Fluxo futuro planejado:
 5. Abre um popup/minigame de sincronia.
 6. Jogador clica no momento certo.
 7. Resultado gera peixe ou ingrediente aquático.
-8. Recompensas podem alimentar inventário, caldeirão, receitas e árvore de alquimia no futuro.
+8. Recompensas podem alimentar inventário, caldeirão, receitas e árvore de alquimia.
 
 Hoje, o jogo principal já tem uma versão V0 desse passo 5, com popup simples de sincronia e resultados fake que já geram recompensas simples.
 
@@ -101,7 +101,7 @@ Enquanto o popup está aberto, o Lago da Fazenda V0 bloqueia novo lançamento e 
 
 ## Pesca de Ressonância
 
-A mecânica de sincronia será leve e chamada de Pesca de Ressonância.
+A mecânica de sincronia é leve e chamada de Pesca de Ressonância.
 
 A água pulsa.
 A boia reage.
@@ -109,9 +109,9 @@ O jogador precisa clicar ou confirmar no momento certo.
 
 Acertos melhores aumentam a qualidade da recompensa.
 
-A mecânica deve ser calma, mágica e legível, não punitiva.
+A mecânica é calma, mágica e legível, não punitiva.
 
-O design deve ser mais simples e aconchegante do que um minigame rítmico complexo.
+O design é mais simples e aconchegante do que um minigame rítmico complexo.
 
 ## Áreas com Movimento V0
 
@@ -121,7 +121,7 @@ Esse ponto pode aparecer como ondulação, brilho ou bolhas e é apenas um bônu
 
 Quando a boia é lançada dentro desse ponto, a próxima sincronia é favorecida. No V0 atual, isso significa que um resultado `GOOD` pode ser promovido para `PERFECT`.
 
-Essas áreas podem variar por estação, horário ou melhorias futuras.
+Essas áreas podem variar por estação, horário ou melhorias.
 
 Exemplo de chance conceitual:
 
@@ -131,7 +131,7 @@ Exemplo de chance conceitual:
 
 Não há números definidos agora.
 
-## Recompensas futuras
+## Recompensas previstas
 
 Recompensas possíveis, provisórias:
 
@@ -147,21 +147,21 @@ Nomes e balanceamento continuam provisórios.
 
 ## Relação com caldeirão e receitas
 
-A pesca deve fornecer ingredientes para:
+A pesca fornece ingredientes para:
 
 - receitas alquímicas;
 - poções;
-- missões futuras;
+- missões;
 - melhorias de fazenda;
 - progressão na árvore de alquimia.
 
-Nesta etapa, a pesca não deve ser conectada ainda ao caldeirão.
+Nesta etapa, a pesca ainda não está conectada ao caldeirão.
 
 A longo prazo, peixes e itens aquáticos também podem alimentar a purificação de áreas da fazenda, funcionando como ingredientes para desbloqueios ligados à expansão do mapa.
 
 ## Relação com árvore de alquimia
 
-Possíveis upgrades futuros:
+Possíveis upgrades:
 
 - aumentar chance de pontos de movimento aparecerem;
 - ampliar janela de acerto;
@@ -169,11 +169,11 @@ Possíveis upgrades futuros:
 - aumentar chance de ingredientes raros;
 - detectar pontos especiais por mais tempo;
 - melhorar recompensas perfeitas;
-- permitir iscas alquímicas futuramente.
+- permitir iscas alquímicas.
 
 ## Versão mínima integrada V0
 
-A primeira implementação futura deve ser pequena e controlada:
+A primeira implementação mínima é pequena e controlada:
 
 - criar lago ou ponto de pesca na fazenda;
 - adicionar Vara de Pesca como ferramenta;
@@ -202,8 +202,8 @@ Não criar agora:
 
 ## Decisão atual
 
-- A pesca foi aprovada como direção de gameplay paralelo.
+- A pesca está aprovada como direção de gameplay paralelo.
 - A prioridade é média.
-- A implementação futura deve começar como versão mínima integrada ao lago da fazenda.
-- Não será cena de laboratório isolada no design final.
-- A primeira etapa de código deve ser pequena e controlada.
+- A implementação mínima começa integrada ao lago da fazenda.
+- Não é cena de laboratório isolada no design final.
+- A primeira etapa de código é pequena e controlada.

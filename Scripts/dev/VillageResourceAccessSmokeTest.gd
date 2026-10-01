@@ -4,6 +4,7 @@ const VILLAGE_CHEST_SCENE := preload("res://Scenes/VillageChest.tscn")
 const VillageResourceAccessScript := preload("res://Scripts/VillageResourceAccess.gd")
 
 var _original_inventory: Dictionary = {}
+var _original_capacity: bool = false
 var _chest: VillageChest = null
 
 
@@ -13,6 +14,7 @@ func _ready() -> void:
 
 func _run() -> void:
 	_original_inventory = GlobalInventory.inventario.duplicate(true)
+	_original_capacity = GlobalInventory.is_capacity_enforced()
 	GlobalInventory.inventario = {
 		"trigo": 4,
 		"carvao": 1,
@@ -81,6 +83,8 @@ func _run() -> void:
 	if not personal_only_access.refund(personal_receipt) or int(GlobalInventory.inventario.get("carvao", -1)) != 1:
 		_fail("fallback sem Village Storage nao restaurou a Mochila")
 		return
+	if not _exercise_capacity_safe_refund():
+		return
 
 	_restore_state()
 	print("VillageResourceAccessSmokeTest: PASS - consulta, prioridade, atomicidade e rollback preservam Mochila e Village Storage.")
@@ -88,9 +92,39 @@ func _run() -> void:
 
 
 func _restore_state() -> void:
-	GlobalInventory.inventario = _original_inventory.duplicate(true)
+	GlobalInventory.set_capacity_enforced(_original_capacity)
+	GlobalInventory.set_inventory_contents(_original_inventory)
 	if _chest != null and is_instance_valid(_chest):
 		_chest.queue_free()
+
+
+func _exercise_capacity_safe_refund() -> bool:
+	var constrained_inventory: Dictionary = {"carvao": 1}
+	for index in range(11):
+		constrained_inventory["item_teste_%02d" % index] = GlobalInventory.DEFAULT_STACK_LIMIT
+	GlobalInventory.set_inventory_contents(constrained_inventory)
+	GlobalInventory.set_capacity_enforced(true)
+	var access = VillageResourceAccessScript.new()
+	var receipt: Dictionary = access.consume({"carvao": 1})
+	if not bool(receipt.get("success", false)):
+		_fail("nao foi possivel criar recibo pessoal para o teste de capacidade")
+		return false
+	var intruder: Dictionary = GlobalInventory.try_add_items({"item_intruso": 1})
+	if not bool(intruder.get("success", false)):
+		_fail("nao foi possivel ocupar o slot liberado no teste de rollback")
+		return false
+	if access.refund(receipt) or bool(receipt.get("refunded", false)):
+		_fail("rollback declarou sucesso quando a origem pessoal nao comportava a devolucao")
+		return false
+	if GlobalInventory.get_item_quantity("carvao") != 0 or GlobalInventory.get_item_quantity("item_intruso") != 1:
+		_fail("rollback recusado alterou a Mochila parcialmente")
+		return false
+	GlobalInventory.remover_item("item_intruso", 1)
+	if not access.refund(receipt) or GlobalInventory.get_item_quantity("carvao") != 1:
+		_fail("rollback nao retomou depois de liberar o slot original")
+		return false
+	GlobalInventory.set_capacity_enforced(false)
+	return true
 
 
 func _fail(message: String) -> void:

@@ -48,8 +48,11 @@ func _run() -> void:
 		return
 	if not _exercise_village_storage_pilot(cauldron, chest, recipe_book):
 		return
+	if not _exercise_output_capacity_protection(cauldron, chest):
+		return
 
-	print("CauldronRecipeContractSmokeTest: PASS - RecipeData e acesso transacional governam quantidade, tempo, recompensa, origem e refund.")
+	GlobalInventory.set_capacity_enforced(false)
+	print("CauldronRecipeContractSmokeTest: PASS - RecipeData, acesso transacional e resultados pendentes protegem quantidade, origem e capacidade.")
 	await get_tree().create_timer(1.1).timeout
 	recipe_book.queue_free()
 	cauldron.queue_free()
@@ -281,6 +284,79 @@ func _exercise_village_storage_pilot(cauldron: Node, chest: VillageChest, recipe
 	return true
 
 
+func _exercise_output_capacity_protection(cauldron: Node, chest: VillageChest) -> bool:
+	var stack_limit := GlobalInventory.get_stack_limit(RESULT_ITEM_ID)
+	var manual_inventory: Dictionary = {RESULT_ITEM_ID: stack_limit}
+	for index in range(11):
+		manual_inventory["item_teste_%02d" % index] = GlobalInventory.DEFAULT_STACK_LIMIT
+	GlobalInventory.set_inventory_contents(manual_inventory)
+	GlobalInventory.set_capacity_enforced(true)
+	chest.set_contents({"semente_basica": 1, "tomate_sol": 1})
+
+	var slot_1: Node = cauldron.get_node("PopupLayer/CenterContainer/PopupUI/DropSlot1")
+	var slot_2: Node = cauldron.get_node("PopupLayer/CenterContainer/PopupUI/DropSlot2")
+	slot_1.set("item_vinculado", "semente_basica")
+	slot_2.set("item_vinculado", "tomate_sol")
+	cauldron.call("_on_misturar_button_pressed")
+	var brew_timer: Timer = cauldron.get_node("BrewTimer")
+	brew_timer.stop()
+	cauldron.call("_on_brew_timer_timeout")
+	if str(cauldron.get("estado_atual")) != "READY" or str(cauldron.get("item_em_producao")) != RESULT_ITEM_ID:
+		_fail("resultado manual nao permaneceu pronto no caldeirao com a Mochila cheia")
+		return false
+	if GlobalInventory.get_item_quantity(RESULT_ITEM_ID) != stack_limit:
+		_fail("resultado manual alterou parcialmente a Mochila cheia")
+		return false
+	if chest.get_item_quantity("semente_basica") != 0 or chest.get_item_quantity("tomate_sol") != 0:
+		_fail("ingredientes do resultado pendente nao permaneceram reservados no caldeirao")
+		return false
+
+	GlobalInventory.remover_item("item_teste_00", GlobalInventory.DEFAULT_STACK_LIMIT)
+	cauldron.call("_perform_primary_interaction")
+	if str(cauldron.get("estado_atual")) != "IDLE" or GlobalInventory.get_item_quantity(RESULT_ITEM_ID) != stack_limit + 2:
+		_fail("resultado manual pendente nao foi entregue depois de liberar espaco")
+		return false
+
+	var batch_inventory: Dictionary = {RESULT_ITEM_ID: stack_limit * 2}
+	for index in range(10):
+		batch_inventory["item_teste_%02d" % index] = GlobalInventory.DEFAULT_STACK_LIMIT
+	GlobalInventory.set_inventory_contents(batch_inventory)
+	chest.set_contents({"semente_basica": 2, "tomate_sol": 2})
+	if not bool(cauldron.call("iniciar_producao_em_lote", RESOURCE_RECIPE_ID, 2)):
+		_fail("lote de capacidade foi recusado antes da producao")
+		return false
+	var batch_timer: Timer = cauldron.get_node("BatchTimer")
+	batch_timer.stop()
+	cauldron.call("_processar_tick_lote")
+	if not bool(cauldron.get("_batch_waiting_for_space")) or int(cauldron.get("_batch_quantidade_concluida")) != 0:
+		_fail("lote nao pausou antes de confirmar a entrega do resultado")
+		return false
+	if GlobalInventory.get_item_quantity(RESULT_ITEM_ID) != stack_limit * 2:
+		_fail("tick bloqueado inseriu parte do resultado do lote")
+		return false
+	var receipts: Array = cauldron.get("_batch_reservation_receipts")
+	if receipts.size() != 2:
+		_fail("tick bloqueado descartou a reserva do craft ainda nao entregue")
+		return false
+
+	GlobalInventory.remover_item("item_teste_00", GlobalInventory.DEFAULT_STACK_LIMIT)
+	cauldron.call("_perform_primary_interaction")
+	if bool(cauldron.get("_batch_waiting_for_space")) or int(cauldron.get("_batch_quantidade_concluida")) != 1:
+		_fail("lote pendente nao retomou depois de liberar espaco")
+		return false
+	if GlobalInventory.get_item_quantity(RESULT_ITEM_ID) != stack_limit * 2 + 2:
+		_fail("lote retomado nao entregou exatamente uma unidade")
+		return false
+	batch_timer.stop()
+	cauldron.call("cancelar_producao_em_lote")
+	if chest.get_item_quantity("semente_basica") != 1 or chest.get_item_quantity("tomate_sol") != 1:
+		_fail("cancelamento nao devolveu o craft reservado depois da pausa")
+		return false
+	GlobalInventory.set_capacity_enforced(false)
+	return true
+
+
 func _fail(message: String) -> void:
+	GlobalInventory.set_capacity_enforced(false)
 	push_error("CauldronRecipeContractSmokeTest: FAIL - %s" % message)
 	get_tree().quit(1)

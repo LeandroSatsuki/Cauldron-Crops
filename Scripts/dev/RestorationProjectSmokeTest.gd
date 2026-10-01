@@ -1,6 +1,7 @@
 extends Node
 
 const MAIN_SCENE := preload("res://Scenes/Main.tscn")
+const RESTORATION_PROJECT_SCENE := preload("res://Scenes/RestorationProject.tscn")
 const RESTORATION_ID := "first_herbarium"
 
 
@@ -10,6 +11,7 @@ func _ready() -> void:
 
 func _run() -> void:
 	var original_inventory: Dictionary = GlobalInventory.inventario.duplicate(true)
+	var original_capacity := GlobalInventory.is_capacity_enforced()
 	var main: Node = MAIN_SCENE.instantiate()
 	get_tree().root.add_child(main)
 	get_tree().current_scene = main
@@ -42,6 +44,8 @@ func _run() -> void:
 	await get_tree().process_frame
 	if not project.visible or not project.input_pickable:
 		_fail("projeto nao ficou disponivel apos a purificacao")
+		return
+	if not await _exercise_reward_capacity_protection(main, chest):
 		return
 
 	GlobalInventory.inventario = {
@@ -98,12 +102,58 @@ func _run() -> void:
 		return
 
 	GlobalInventory.inventario = original_inventory
+	GlobalInventory.set_capacity_enforced(original_capacity)
 	main.queue_free()
 	await get_tree().process_frame
 	print("RestorationProjectSmokeTest: PASS - restauracao usa Village Storage primeiro, completa pela Mochila e preserva recompensa e save.")
 	get_tree().quit(0)
 
 
+func _exercise_reward_capacity_protection(main: Node, chest: VillageChest) -> bool:
+	var capacity_project: Node = RESTORATION_PROJECT_SCENE.instantiate()
+	capacity_project.set("restoration_id", "capacity_smoke_test")
+	main.add_child(capacity_project)
+	capacity_project.call("set_area_purified", true)
+	await get_tree().process_frame
+
+	var reward_item_id := str(capacity_project.get("restoration_reward_item_id"))
+	var reward_quantity := int(capacity_project.get("restoration_reward_quantity"))
+	var stack_limit := GlobalInventory.get_stack_limit(reward_item_id)
+	var constrained_inventory: Dictionary = {reward_item_id: stack_limit, "agua": 0}
+	for index in range(11):
+		constrained_inventory["item_teste_%02d" % index] = GlobalInventory.DEFAULT_STACK_LIMIT
+	GlobalInventory.set_inventory_contents(constrained_inventory)
+	GlobalInventory.set_capacity_enforced(true)
+	chest.set_contents({"trigo": 5, "agua": 1})
+
+	if bool(capacity_project.call("try_restore")):
+		_fail("restauracao foi concluida sem espaco para a recompensa")
+		return false
+	if bool(capacity_project.get("restored_state")) or GlobalInventory.get_item_quantity(reward_item_id) != stack_limit:
+		_fail("recusa por capacidade alterou o projeto ou a recompensa")
+		return false
+	if chest.get_item_quantity("trigo") != 5 or chest.get_item_quantity("agua") != 1:
+		_fail("restauracao consumiu recursos antes de validar o destino da recompensa")
+		return false
+
+	GlobalInventory.remover_item("item_teste_00", GlobalInventory.DEFAULT_STACK_LIMIT)
+	if not bool(capacity_project.call("try_restore")):
+		_fail("restauracao nao concluiu depois de liberar espaco")
+		return false
+	if not bool(capacity_project.get("restored_state")) or GlobalInventory.get_item_quantity(reward_item_id) != stack_limit + reward_quantity:
+		_fail("restauracao nao entregou a recompensa integral depois da nova tentativa")
+		return false
+	if chest.get_item_quantity("trigo") != 0 or chest.get_item_quantity("agua") != 0:
+		_fail("restauracao aprovada nao consumiu os requisitos exatamente uma vez")
+		return false
+
+	GlobalInventory.set_capacity_enforced(false)
+	capacity_project.queue_free()
+	await get_tree().process_frame
+	return true
+
+
 func _fail(message: String) -> void:
+	GlobalInventory.set_capacity_enforced(false)
 	push_error("RestorationProjectSmokeTest: FAIL - %s" % message)
 	get_tree().quit(1)

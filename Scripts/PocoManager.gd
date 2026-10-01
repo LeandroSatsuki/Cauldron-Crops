@@ -11,7 +11,8 @@ func _process(delta: float) -> void:
 		tempo_acumulado -= 1.0
 		var agua_atual = GlobalInventory.inventario.get("agua", 0)
 		if agua_atual < EconomyManager.poco_capacidade_maxima:
-			GlobalInventory.adicionar_item("agua", 1)
+			# Água é uma reserva regenerável e não ocupa slots da Mochila.
+			GlobalInventory.try_add_item("agua", 1)
 
 func _is_current_scene_dev_scene() -> bool:
 	var current_scene: Node = get_tree().current_scene

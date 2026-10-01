@@ -30,11 +30,14 @@ var _batch_ingredientes: Dictionary = {}
 var _batch_quantidade_total: int = 0
 var _batch_quantidade_concluida: int = 0
 var _batch_ativo: bool = false
+var _batch_waiting_for_space: bool = false
+var _batch_cancel_pending: bool = false
 var _batch_reservation_receipts: Array[Dictionary] = []
 var _drag_helper: UIDragHelper = null
 var recipe_resolver = null
 var _village_resource_access = null
 var _navigation_obstacle: NavigationObstacle2D = null
+var _brew_pulse_tween: Tween = null
 
 func _ready() -> void:
 	add_to_group("cauldrons")
@@ -113,6 +116,171 @@ func _find_village_storage() -> Node:
 	return null
 
 
+func get_save_data() -> Dictionary:
+	if estado_atual == "BATCH":
+		return {
+			"state": "BATCH",
+			"batch": {
+				"recipe_id": _batch_recipe_id,
+				"result_item": _batch_resultado,
+				"result_quantity": _batch_resultado_quantidade,
+				"seconds_per_craft": _batch_tempo_por_unidade,
+				"total": _batch_quantidade_total,
+				"completed": _batch_quantidade_concluida,
+				"waiting_for_space": _batch_waiting_for_space,
+				"cancel_pending": _batch_cancel_pending,
+				"time_remaining": maxf(batch_timer.time_left, 0.0),
+				"ingredients": _batch_ingredientes.duplicate(true),
+				"reservations": _batch_reservation_receipts.duplicate(true),
+			},
+		}
+	if estado_atual == "BREWING" or estado_atual == "READY":
+		return {
+			"state": estado_atual,
+			"result_item": item_em_producao,
+			"result_quantity": _item_quantidade_em_producao,
+			"time_remaining": maxf($BrewTimer.time_left, 0.0) if estado_atual == "BREWING" else 0.0,
+		}
+	return {"state": "IDLE"}
+
+
+func is_save_data_valid(data: Dictionary) -> bool:
+	var state: Variant = data.get("state")
+	if not (state is String) or state not in ["IDLE", "BREWING", "READY", "BATCH"]:
+		return false
+	if state == "IDLE":
+		return true
+	if state != "BATCH":
+		return (
+			_save_item_id_valid(data.get("result_item"))
+			and _save_integer_valid(data.get("result_quantity"), 1)
+			and _save_time_valid(data.get("time_remaining"))
+			and (state != "READY" or float(data["time_remaining"]) == 0.0)
+		)
+	var batch_variant: Variant = data.get("batch")
+	if not (batch_variant is Dictionary):
+		return false
+	var batch: Dictionary = batch_variant
+	if not _save_item_id_valid(batch.get("recipe_id")) or not _save_item_id_valid(batch.get("result_item")):
+		return false
+	for key in ["result_quantity", "total", "completed"]:
+		if not _save_integer_valid(batch.get(key), 0 if key == "completed" else 1):
+			return false
+	if int(batch["completed"]) >= int(batch["total"]):
+		return false
+	if not _save_time_valid(batch.get("seconds_per_craft")) or float(batch["seconds_per_craft"]) <= 0.0:
+		return false
+	if not _save_time_valid(batch.get("time_remaining")) or float(batch["time_remaining"]) > float(batch["seconds_per_craft"]):
+		return false
+	if not (batch.get("waiting_for_space") is bool) or not (batch.get("cancel_pending", false) is bool):
+		return false
+	if bool(batch["waiting_for_space"]) and bool(batch.get("cancel_pending", false)):
+		return false
+	if (bool(batch["waiting_for_space"]) or bool(batch.get("cancel_pending", false))) and float(batch["time_remaining"]) != 0.0:
+		return false
+	var ingredients_variant: Variant = batch.get("ingredients")
+	var receipts_variant: Variant = batch.get("reservations")
+	if not (ingredients_variant is Dictionary) or not (receipts_variant is Array):
+		return false
+	var ingredients: Dictionary = ingredients_variant
+	var receipts: Array = receipts_variant
+	if ingredients.is_empty() or receipts.size() != int(batch["total"]) - int(batch["completed"]):
+		return false
+	for item_id in ingredients:
+		if not _save_item_id_valid(item_id) or not _save_integer_valid(ingredients[item_id], 1):
+			return false
+	for receipt in receipts:
+		if not (receipt is Dictionary) or not _save_receipt_valid(receipt, ingredients):
+			return false
+	return true
+
+
+func _save_receipt_valid(receipt: Dictionary, ingredients: Dictionary) -> bool:
+	if not (receipt.get("success") is bool) or not bool(receipt["success"]) or not (receipt.get("refunded") is bool) or bool(receipt["refunded"]):
+		return false
+	if not (receipt.get("requirements") is Dictionary):
+		return false
+	var requirements: Dictionary = receipt["requirements"]
+	if requirements.size() != ingredients.size():
+		return false
+	var expected: Dictionary = {}
+	for item_id in ingredients:
+		if not _save_integer_valid(requirements.get(item_id), 1) or int(requirements[item_id]) != int(ingredients[item_id]):
+			return false
+		expected[item_id] = int(ingredients[item_id])
+	if not (receipt.get("entries") is Array):
+		return false
+	var reserved: Dictionary = {}
+	for entry in receipt["entries"]:
+		if not (entry is Dictionary) or not _save_item_id_valid(entry.get("item_id")) or not _save_integer_valid(entry.get("quantity"), 1):
+			return false
+		if str(entry.get("source", "")) not in ["village_storage", "personal_inventory"]:
+			return false
+		var item_id: String = entry["item_id"]
+		reserved[item_id] = int(reserved.get(item_id, 0)) + int(entry["quantity"])
+	return reserved == expected
+
+
+func _save_item_id_valid(value: Variant) -> bool:
+	return value is String and value != "" and value == value.strip_edges()
+
+
+func _save_integer_valid(value: Variant, minimum: int) -> bool:
+	return (typeof(value) == TYPE_INT or typeof(value) == TYPE_FLOAT) and is_finite(float(value)) and int(value) >= minimum and float(int(value)) == float(value)
+
+
+func _save_time_valid(value: Variant) -> bool:
+	return (typeof(value) == TYPE_INT or typeof(value) == TYPE_FLOAT) and is_finite(float(value)) and float(value) >= 0.0
+
+
+func load_save_data(data: Dictionary) -> bool:
+	if not is_save_data_valid(data):
+		return false
+	# Substituir um snapshot nunca cancela/reembolsa o estado anterior: os estoques
+	# do mesmo save ja contem o efeito das reservas. Nada e' consumido outra vez.
+	$BrewTimer.stop()
+	batch_timer.stop()
+	_parar_pulsar_magico()
+	_finalizar_lote()
+	_item_quantidade_em_producao = 1
+	_village_resource_access = null
+	_limpar_slots()
+	fechar_popup()
+	if resultado_label:
+		resultado_label.text = ""
+	estado_atual = data["state"]
+	$BaseAnchor/SpriteCaldeirao.play("idle")
+	$BaseAnchor/SpriteCaldeirao.scale = Vector2(0.5, 0.5)
+	if estado_atual == "BREWING" or estado_atual == "READY":
+		item_em_producao = data["result_item"]
+		_item_quantidade_em_producao = int(data["result_quantity"])
+		if estado_atual == "BREWING":
+			_iniciar_processo_de_mistura()
+			$BrewTimer.start(maxf(float(data["time_remaining"]), 0.001))
+		elif resultado_label:
+			resultado_label.text = "Resultado pronto: interaja para recolher."
+	elif estado_atual == "BATCH":
+		var batch: Dictionary = data["batch"]
+		_batch_recipe_id = batch["recipe_id"]
+		_batch_resultado = batch["result_item"]
+		item_em_producao = _batch_resultado
+		_batch_resultado_quantidade = int(batch["result_quantity"])
+		_batch_tempo_por_unidade = float(batch["seconds_per_craft"])
+		_batch_quantidade_total = int(batch["total"])
+		_batch_quantidade_concluida = int(batch["completed"])
+		_batch_ingredientes = batch["ingredients"].duplicate(true)
+		_batch_reservation_receipts.assign(batch["reservations"].duplicate(true))
+		_batch_waiting_for_space = batch["waiting_for_space"]
+		_batch_cancel_pending = batch.get("cancel_pending", false)
+		_batch_ativo = true
+		_abrir_painel_lote()
+		if not _batch_waiting_for_space and not _batch_cancel_pending:
+			batch_timer.wait_time = _batch_tempo_por_unidade
+			batch_timer.start(maxf(float(batch["time_remaining"]), 0.001))
+		_atualizar_interface_lote()
+	return true
+
+
 func get_resource_availability_snapshot() -> Dictionary:
 	var snapshot: Dictionary = GlobalInventory.inventario.duplicate(true)
 	var village_storage: Node = _find_village_storage()
@@ -167,7 +335,13 @@ func _on_area_2d_input_event(viewport, event, shape_idx):
 
 
 func _perform_primary_interaction() -> void:
+	if estado_atual == "READY":
+		_tentar_entregar_producao_pronta()
+		return
 	if _batch_ativo:
+		if _batch_waiting_for_space:
+			_processar_tick_lote()
+			return
 		cancelar_producao_em_lote()
 		return
 	abrir_popup()
@@ -252,6 +426,8 @@ func iniciar_producao_em_lote(recipe_id: String, quantidade: int) -> bool:
 	_batch_quantidade_concluida = 0
 	_batch_reservation_receipts = reservation_receipts
 	_batch_ativo = true
+	_batch_waiting_for_space = false
+	_batch_cancel_pending = false
 	estado_atual = "BATCH"
 	item_em_producao = resultado
 
@@ -265,14 +441,25 @@ func cancelar_producao_em_lote() -> void:
 	if not _batch_ativo:
 		return
 
+	if batch_timer:
+		batch_timer.stop()
 	var restante: int = int(max(_batch_quantidade_total - _batch_quantidade_concluida, 0))
 	var resource_access = _get_village_resource_access()
 	var unidades_devolvidas: int = 0
+	var pending_receipts: Array[Dictionary] = []
 	for receipt in _batch_reservation_receipts:
 		if resource_access.refund(receipt):
 			unidades_devolvidas += 1
 		else:
+			pending_receipts.append(receipt)
 			push_warning("Cauldron: nao foi possivel devolver uma reserva do lote %s." % _batch_recipe_id)
+	_batch_reservation_receipts = pending_receipts
+	if not pending_receipts.is_empty():
+		_batch_quantidade_total -= unidades_devolvidas
+		_batch_waiting_for_space = false
+		_batch_cancel_pending = true
+		_atualizar_interface_lote()
+		return
 
 	if batch_timer:
 		batch_timer.stop()
@@ -287,6 +474,8 @@ func cancelar_producao_em_lote() -> void:
 	_batch_ingredientes.clear()
 	_batch_quantidade_total = 0
 	_batch_quantidade_concluida = 0
+	_batch_waiting_for_space = false
+	_batch_cancel_pending = false
 	_batch_reservation_receipts.clear()
 
 	if batch_progress_bar:
@@ -343,7 +532,7 @@ func _atualizar_botao_cancelar_lote(ativo: bool) -> void:
 		btn_cancelar_producao.disabled = not ativo
 
 func _iniciar_proximo_tick_lote() -> void:
-	if not _batch_ativo:
+	if not _batch_ativo or _batch_waiting_for_space or _batch_cancel_pending:
 		return
 
 	if batch_timer:
@@ -364,6 +553,8 @@ func advance_inactive_time(elapsed_seconds: float) -> bool:
 	var advanced: bool = false
 
 	if _batch_ativo and batch_timer != null:
+		if _batch_waiting_for_space or _batch_cancel_pending:
+			return false
 		var current_tick_remaining: float = maxf(batch_timer.time_left, 0.0)
 		if current_tick_remaining <= 0.0:
 			current_tick_remaining = maxf(_batch_tempo_por_unidade, 0.1)
@@ -372,10 +563,12 @@ func advance_inactive_time(elapsed_seconds: float) -> bool:
 			remaining_elapsed -= current_tick_remaining
 			_processar_tick_lote()
 			advanced = true
+			if _batch_waiting_for_space:
+				break
 			if _batch_ativo:
 				batch_timer.stop()
 				current_tick_remaining = maxf(_batch_tempo_por_unidade, 0.1)
-		if _batch_ativo:
+		if _batch_ativo and not _batch_waiting_for_space:
 			batch_timer.stop()
 			batch_timer.start(maxf(current_tick_remaining - remaining_elapsed, 0.001))
 			advanced = advanced or remaining_elapsed > 0.0
@@ -395,15 +588,23 @@ func advance_inactive_time(elapsed_seconds: float) -> bool:
 	return false
 
 func _processar_tick_lote() -> void:
-	if not _batch_ativo:
+	if not _batch_ativo or _batch_cancel_pending:
 		return
 
+	if not _entregar_resultado(_batch_resultado, _batch_resultado_quantidade):
+		_batch_waiting_for_space = true
+		if batch_timer:
+			batch_timer.stop()
+		_atualizar_interface_lote()
+		_mostrar_resultado_pendente(_batch_resultado)
+		return
+
+	_batch_waiting_for_space = false
 	if not _batch_reservation_receipts.is_empty():
 		_batch_reservation_receipts.pop_front()
 	else:
 		push_warning("Cauldron: lote ativo sem recibo de reserva para a unidade atual.")
 	_batch_quantidade_concluida += 1
-	_entregar_resultado(_batch_resultado, _batch_resultado_quantidade)
 
 	var ui = get_tree().current_scene.get_node_or_null("UI")
 	if ui and ui.has_method("criar_texto_flutuante"):
@@ -428,6 +629,8 @@ func _finalizar_lote() -> void:
 	_batch_ingredientes.clear()
 	_batch_quantidade_total = 0
 	_batch_quantidade_concluida = 0
+	_batch_waiting_for_space = false
+	_batch_cancel_pending = false
 	_batch_reservation_receipts.clear()
 	if batch_timer:
 		batch_timer.stop()
@@ -445,17 +648,24 @@ func _atualizar_interface_lote() -> void:
 	var progresso := 0.0
 	if _batch_quantidade_total > 0:
 		var fase_atual := 1.0
-		if batch_timer and batch_timer.wait_time > 0.0:
-			fase_atual = 1.0 - clampf(batch_timer.time_left / batch_timer.wait_time, 0.0, 1.0)
+		if batch_timer and _batch_tempo_por_unidade > 0.0:
+			fase_atual = 1.0 - clampf(batch_timer.time_left / _batch_tempo_por_unidade, 0.0, 1.0)
 		progresso = clampf((float(_batch_quantidade_concluida) + fase_atual) / float(_batch_quantidade_total), 0.0, 1.0)
 
 	if batch_progress_bar:
 		batch_progress_bar.max_value = 1.0
 		batch_progress_bar.value = progresso
 	if batch_status_label:
-		batch_status_label.text = "Producao em lote: %s/%s" % [_batch_quantidade_concluida, _batch_quantidade_total]
+		if _batch_cancel_pending:
+			batch_status_label.text = "Cancelamento pendente: libere espaço e cancele novamente"
+		elif _batch_waiting_for_space:
+			batch_status_label.text = "Resultado pronto: libere espaço na Mochila"
+		else:
+			batch_status_label.text = "Producao em lote: %s/%s" % [_batch_quantidade_concluida, _batch_quantidade_total]
 
 func _on_misturar_button_pressed() -> void:
+	if estado_atual != "IDLE" or _batch_ativo:
+		return
 	if not drop_slot_1 or not drop_slot_2:
 		return
 		
@@ -538,21 +748,33 @@ func _iniciar_processo_de_mistura():
 	_iniciar_pulsar_magico()
 
 func _on_brew_timer_timeout() -> void:
+	if estado_atual != "BREWING":
+		return
+	_parar_pulsar_magico()
 	$BaseAnchor/SpriteCaldeirao.play("idle") # Volta para o verde
 	$BaseAnchor/SpriteCaldeirao.scale = Vector2(0.5, 0.5)
+	_tentar_entregar_producao_pronta()
+
+
+func _tentar_entregar_producao_pronta() -> bool:
+	if estado_atual != "BREWING" and estado_atual != "READY":
+		return false
+	if not _entregar_resultado(item_em_producao, _item_quantidade_em_producao):
+		estado_atual = "READY"
+		_mostrar_resultado_pendente(item_em_producao)
+		return false
+
 	estado_atual = "IDLE"
-	
-	_entregar_resultado(item_em_producao, _item_quantidade_em_producao)
-		
 	var ui = get_tree().current_scene.get_node_or_null("UI")
 	if ui and ui.has_method("criar_texto_flutuante"):
 		var nome_exibicao = "Golem" if item_em_producao == "golem_coletor" else Database.obter_nome_item(item_em_producao)
 		if nome_exibicao == "":
 			nome_exibicao = item_em_producao
 		ui.criar_texto_flutuante("Sucesso: %sx %s!" % [_item_quantidade_em_producao, nome_exibicao], $BaseAnchor/SpriteCaldeirao.global_position, Color.GREEN)
-		
+
 	item_em_producao = ""
 	_item_quantidade_em_producao = 1
+	return true
 
 func _registrar_descoberta(recipe: Dictionary) -> bool:
 	var recipe_id := str(recipe.get("id", ""))
@@ -562,18 +784,36 @@ func _registrar_descoberta(recipe: Dictionary) -> bool:
 	GlobalInventory.pontos_alquimia += max(int(recipe.get("recompensa_pontos_alquimia", 0)), 0)
 	return true
 
-func _entregar_resultado(resultado: String, quantidade: int) -> void:
+func _entregar_resultado(resultado: String, quantidade: int) -> bool:
 	if resultado == "" or quantidade <= 0:
-		return
+		return false
 	if resultado == "golem_coletor":
+		if EconomyManager.total_golems + quantidade > EconomyManager.max_golems:
+			return false
 		EconomyManager.total_golems += quantidade
+		return true
+	var insertion: Dictionary = GlobalInventory.try_add_items({resultado: quantidade})
+	return bool(insertion.get("success", false))
+
+
+func _mostrar_resultado_pendente(resultado: String) -> void:
+	var message := "Capacidade máxima de Golems atingida. O resultado permanece no caldeirão." if resultado == "golem_coletor" else "Mochila sem espaço. O resultado permanece no caldeirão."
+	var ui = get_tree().current_scene.get_node_or_null("UI")
+	if ui and ui.has_method("criar_texto_flutuante"):
+		ui.criar_texto_flutuante(message, $BaseAnchor/SpriteCaldeirao.global_position, Color(1.0, 0.76, 0.42, 1.0))
 	else:
-		GlobalInventory.adicionar_item(resultado, quantidade)
+		print(message)
 
 
 func _iniciar_pulsar_magico():
-	while estado_atual == "BREWING":
-		var tween = create_tween()
-		tween.tween_property($BaseAnchor/SpriteCaldeirao, "scale", Vector2(0.45, 0.45), 0.5)
-		tween.tween_property($BaseAnchor/SpriteCaldeirao, "scale", Vector2(0.5, 0.5), 0.5)
-		await tween.finished
+	_parar_pulsar_magico()
+	_brew_pulse_tween = create_tween().set_loops()
+	_brew_pulse_tween.tween_property($BaseAnchor/SpriteCaldeirao, "scale", Vector2(0.45, 0.45), 0.5)
+	_brew_pulse_tween.tween_property($BaseAnchor/SpriteCaldeirao, "scale", Vector2(0.5, 0.5), 0.5)
+
+
+func _parar_pulsar_magico() -> void:
+	if _brew_pulse_tween != null:
+		_brew_pulse_tween.kill()
+		_brew_pulse_tween = null
+	$BaseAnchor/SpriteCaldeirao.scale = Vector2(0.5, 0.5)

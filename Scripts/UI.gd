@@ -436,7 +436,7 @@ var fishing_minigame_ui: Control
 
 
 
-@onready var village_chest_panel: PanelContainer = $VillageChestPanel
+@onready var village_chest_panel: Control = $VillageChestPanel
 
 
 
@@ -444,7 +444,6 @@ var fishing_minigame_ui: Control
 
 
 
-@onready var village_chest_contents: RichTextLabel = $VillageChestPanel/MarginContainer/VBoxChest/ChestContents
 
 
 
@@ -452,7 +451,6 @@ var fishing_minigame_ui: Control
 
 
 
-@onready var village_chest_withdraw_button: Button = $VillageChestPanel/MarginContainer/VBoxChest/ButtonsRow/RetirarTudoButton
 
 
 
@@ -460,7 +458,6 @@ var fishing_minigame_ui: Control
 
 
 
-@onready var village_chest_close_button: Button = $VillageChestPanel/MarginContainer/VBoxChest/ButtonsRow/FecharButton
 
 
 
@@ -557,6 +554,8 @@ var purification_obstacle_ref: Node = null
 
 
 @onready var inventory_bar: HBoxContainer = $InventoryBar
+
+@onready var inventory_capacity_label: Label = $InventoryCapacityLabel
 
 
 
@@ -2210,46 +2209,6 @@ func _ready() -> void:
 
 
 
-	if village_chest_withdraw_button:
-
-
-
-
-
-
-
-		village_chest_withdraw_button.pressed.connect(_on_village_chest_withdraw_pressed)
-
-
-
-
-
-
-
-	if village_chest_close_button:
-
-
-
-
-
-
-
-		village_chest_close_button.pressed.connect(fechar_bau_vila)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	if purification_panel:
 
 
@@ -2427,6 +2386,8 @@ func _ready() -> void:
 
 
 func _input(event: InputEvent) -> void:
+	if event is InputEventKey and village_chest_panel.is_editing_quantity():
+		return
 
 
 
@@ -3597,7 +3558,7 @@ func verificar_e_atualizar_inventario() -> void:
 
 
 
-	var precisa_atualizar = false
+	var precisa_atualizar = inventory_bar != null and inventory_bar.get_child_count() == 0
 
 
 
@@ -3749,6 +3710,7 @@ func atualizar_inventario_visual() -> void:
 
 
 
+		inventory_bar.remove_child(child)
 		child.queue_free()
 
 
@@ -3773,7 +3735,9 @@ func atualizar_inventario_visual() -> void:
 
 
 
-	for item_key in GlobalInventory.inventario:
+	var slot_entries: Array[Dictionary] = GlobalInventory.get_personal_slot_entries()
+	for entry in slot_entries:
+		var item_key := str(entry.get("item_id", ""))
 
 
 
@@ -3797,7 +3761,7 @@ func atualizar_inventario_visual() -> void:
 
 
 
-		var qtd = GlobalInventory.inventario[item_key]
+		var qtd := int(entry.get("quantity", 0))
 
 
 
@@ -3853,7 +3817,12 @@ func atualizar_inventario_visual() -> void:
 
 
 
-			slot.tooltip_text = "%s\nQuantidade: %d" % [Database.obter_nome_item(item_key), qtd]
+			var stack_index := int(entry.get("stack_index", 0))
+			var stack_count := int(entry.get("stack_count", 1))
+			var stack_detail := ""
+			if stack_count > 1:
+				stack_detail = "\nPilha %d/%d" % [stack_index + 1, stack_count]
+			slot.tooltip_text = "%s%s\nQuantidade: %d" % [Database.obter_nome_item(item_key), stack_detail, qtd]
 
 
 
@@ -3908,6 +3877,17 @@ func atualizar_inventario_visual() -> void:
 
 
 
+
+	var base_capacity := GlobalInventory.get_slot_capacity()
+	while inventory_bar.get_child_count() < base_capacity:
+		var empty_slot = slot_scene.instantiate()
+		inventory_bar.add_child(empty_slot)
+		empty_slot.configurar_slot("", 0, "")
+
+	if inventory_capacity_label:
+		var used_slots := slot_entries.size()
+		inventory_capacity_label.text = "%d/%d" % [used_slots, base_capacity]
+		inventory_capacity_label.modulate = Color(1.0, 0.72, 0.48, 1.0) if used_slots > base_capacity else Color(0.86, 0.9, 0.78, 1.0)
 
 	atualizar_destaques()
 
@@ -4024,7 +4004,7 @@ func atualizar_destaques() -> void:
 func _on_slot_clicado(item_id: String, is_right_click: bool, slot_node: Control) -> void:
 	# Inventario e' consulta; somente sementes entram em modo de plantio.
 	# Venda e loja ficam fora da V0 ate a economia receber contexto narrativo.
-	if is_right_click:
+	if is_right_click or item_id == "" or GlobalInventory.get_item_quantity(item_id) <= 0:
 		return
 	if item_id.begins_with("semente_"):
 		if GlobalInventory.semente_selecionada == item_id:
@@ -10455,6 +10435,9 @@ func abrir_bau_vila(bau: VillageChest) -> void:
 
 
 	village_chest_ref = bau
+	village_chest_panel.bind_chest(bau)
+	if not village_chest_panel.items_transferred.is_connected(_on_village_chest_deposited):
+		village_chest_panel.items_transferred.connect(_on_village_chest_deposited)
 
 
 
@@ -10543,307 +10526,13 @@ func fechar_bau_vila() -> void:
 
 
 func _atualizar_painel_bau_vila() -> void:
+	village_chest_panel.refresh_items()
 
 
-
-
-
-
-
-	if not village_chest_contents:
-
-
-
-
-
-
-
-		return
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	if village_chest_ref == null or not is_instance_valid(village_chest_ref):
-
-
-
-
-
-
-
-		village_chest_contents.text = "Baú vazio."
-
-
-
-
-
-
-
-		return
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	var conteudo: Dictionary = village_chest_ref.get_contents()
-
-
-
-
-
-
-
-	if conteudo.is_empty():
-
-
-
-
-
-
-
-		village_chest_contents.text = "Baú vazio."
-
-
-
-
-
-
-
-		return
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	var linhas: PackedStringArray = PackedStringArray()
-
-
-
-
-
-
-
-	for item_id in conteudo.keys():
-
-
-
-
-
-
-
-		var quantidade: int = int(conteudo[item_id])
-
-
-
-
-
-
-
-		if quantidade > 0:
-
-
-
-
-
-
-
-			linhas.append("%s x%d" % [str(item_id), quantidade])
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	if linhas.is_empty():
-
-
-
-
-
-
-
-		village_chest_contents.text = "Baú vazio."
-
-
-
-
-
-
-
-	else:
-
-
-
-
-
-
-
-		village_chest_contents.text = "\n".join(linhas)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-func _on_village_chest_withdraw_pressed() -> void:
-
-
-
-
-
-
-
-	if village_chest_ref == null or not is_instance_valid(village_chest_ref):
-
-
-
-
-
-
-
-		fechar_bau_vila()
-
-
-
-
-
-
-
-		return
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	var retirado: Dictionary = village_chest_ref.withdraw_all_to_global_inventory()
-
-
-
-
-
-
-
-	if retirado.is_empty():
-
-
-
-
-
-
-
-		if village_chest_contents:
-
-
-
-
-
-
-
-			village_chest_contents.text = "Baú vazio."
-
-
-
-
-
-
-
-		print("Baú vazio.")
-
-
-
-
-
-
-
-	else:
-
-
-
-
-
-
-
-		verificar_e_atualizar_inventario()
-
-
-
-
-
-
-
-		_atualizar_painel_bau_vila()
-
-
-
-
-
-
-
-
-
-
-
-
-
+func _on_village_chest_deposited() -> void:
+	verificar_e_atualizar_inventario()
+	atualizar_destaques()
+	_atualizar_painel_bau_vila()
 
 
 func abrir_painel_purificacao(obstacle: Node) -> void:
@@ -11542,69 +11231,31 @@ func atualizar_painel_purificacao() -> void:
 
 
 
+		var icon_wrapper := Control.new()
+		icon_wrapper.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		icon_wrapper.custom_minimum_size = Vector2(30, 0)
+
+		var icon_texture: Texture2D = Database.obter_textura_item(item_id)
 		var icon_label := Label.new()
-
-
-
-
-
-
-
-		var icon_text: String = str(Database.obter_icone_item(item_id))
-
-
-
-
-
-
-
-		if icon_text == "":
-
-
-
-
-
-
-
-			icon_text = "?"
-
-
-
-
-
-
-
-		icon_label.text = icon_text
-
-
-
-
-
-
-
-		icon_label.custom_minimum_size = Vector2(30, 0)
-
-
-
-
-
-
-
+		icon_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		icon_label.set_anchors_preset(Control.PRESET_FULL_RECT)
 		icon_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		icon_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		icon_label.autowrap_mode = TextServer.AUTOWRAP_OFF
+		icon_label.text = Database.obter_icone_item(item_id)
+		if icon_label.text == "":
+			icon_label.text = "?"
+		icon_label.visible = icon_texture == null
 
+		var icon_texture_rect := TextureRect.new()
+		icon_texture_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		icon_texture_rect.set_anchors_preset(Control.PRESET_FULL_RECT)
+		icon_texture_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		icon_texture_rect.texture = icon_texture
+		icon_texture_rect.visible = icon_texture != null
 
-
-
-
-
-
-
-
-
-
-
-
-
+		icon_wrapper.add_child(icon_texture_rect)
+		icon_wrapper.add_child(icon_label)
 
 		var name_label := Label.new()
 
@@ -11734,7 +11385,7 @@ func atualizar_painel_purificacao() -> void:
 
 
 
-		row.add_child(icon_label)
+		row.add_child(icon_wrapper)
 
 
 
@@ -13568,7 +13219,7 @@ func _configurar_interfaces_arrastaveis() -> void:
 
 
 
-	_configurar_arraste_panel(village_chest_panel, "MarginContainer/VBoxChest/TitleLabel")
+	_configurar_arraste_panel(village_chest_panel, "Panels/Chest/Margin/Content/Title")
 
 
 

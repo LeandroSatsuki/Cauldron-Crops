@@ -63,15 +63,19 @@ func _garantir_item_label() -> void:
 
 func _atualizar_visual() -> void:
 	if icon_rect:
-		icon_rect.visible = false
 		icon_rect.texture = null
 
 	var item_ativo := _item_vinculado != ""
 	var icone: String = str(Database.obter_icone_item(_item_vinculado)) if item_ativo else ""
 	var nome: String = str(Database.obter_nome_item(_item_vinculado)) if item_ativo else ""
+	var textura_item: Texture2D = Database.obter_textura_item(_item_vinculado) if item_ativo else null
+
+	if icon_rect:
+		icon_rect.texture = textura_item
+		icon_rect.visible = textura_item != null
 
 	if item_text_label:
-		item_text_label.visible = item_ativo
+		item_text_label.visible = item_ativo and textura_item == null
 		item_text_label.text = icone
 		item_text_label.tooltip_text = nome
 	tooltip_text = nome

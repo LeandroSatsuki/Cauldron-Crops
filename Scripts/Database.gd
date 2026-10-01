@@ -411,6 +411,21 @@ func obter_icone_item(item_id: String) -> String:
 	var icone: String = str(item_data.get("icone", "?"))
 	return icone if icone != "" else "?"
 
+func obter_textura_item(item_id: String) -> Texture2D:
+	if item_id == "":
+		return null
+
+	var caminhos := [
+		"res://Assets/Items/%s.png" % item_id,
+		"res://Assets/%s.png" % item_id
+	]
+
+	for caminho in caminhos:
+		if ResourceLoader.exists(caminho):
+			return load(caminho)
+
+	return null
+
 func obter_valor_base_item(item_id: String) -> int:
 	var item_data: Dictionary = obter_item_data(item_id)
 	return int(item_data.get("valor_base", 0))

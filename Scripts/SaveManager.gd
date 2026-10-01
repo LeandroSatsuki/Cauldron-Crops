@@ -123,6 +123,7 @@ func _build_save_data() -> Dictionary:
 
 	return {
 		"version": SAVE_VERSION,
+		"cauldrons": _build_cauldron_save_data(),
 		"inventory": {
 			"inventario": inventory_copy,
 			"cargas_crescimento": GlobalInventory.cargas_crescimento,
@@ -135,7 +136,9 @@ func _build_save_data() -> Dictionary:
 			"lore_descobertas": GlobalInventory.lore_descobertas.duplicate(),
 		},
 		"economy": {
-			"moedas": EconomyManager.moedas
+			"moedas": EconomyManager.moedas,
+			"total_golems": EconomyManager.total_golems,
+			"max_golems": EconomyManager.max_golems,
 		},
 		"season": {
 			"estacao_atual": SeasonManager.estacao_atual,
@@ -174,17 +177,31 @@ func _apply_save_data(data: Dictionary) -> bool:
 	if not _is_farm_save_payload_valid(data, farm_save_source):
 		push_error("SaveManager: dados agricolas invalidos para o contrato do save.")
 		return false
+	# Validar o novo payload antes de substituir estoques ou qualquer produtor.
+	if not _is_cauldron_save_payload_valid(data):
+		push_warning("SaveManager: dados de producao do caldeirao invalidos; save nao aplicado.")
+		return false
 
 	var inventory_data: Dictionary = _safe_dictionary(data.get("inventory", {}))
 	var saved_inventory: Dictionary = _safe_dictionary(inventory_data.get("inventario", {}))
-	var current_inventory: Dictionary = GlobalInventory.inventario.duplicate(true)
+	# Um inventario salvo completo substitui o estado atual; mesclar preservaria
+	# itens retirados do bau depois do save, duplicando-os ao carregar.
+	# Payloads legados/parciais sem o campo ainda mantem o inventario atual.
+	var current_inventory: Dictionary = {} if inventory_data.get("inventario") is Dictionary else GlobalInventory.inventario.duplicate(true)
 
 	for key in saved_inventory.keys():
 		current_inventory[key] = int(saved_inventory.get(key, 0))
 
-	GlobalInventory.inventario = current_inventory
+	if not GlobalInventory.set_inventory_contents(current_inventory):
+		push_error("SaveManager: inventario pessoal invalido no save.")
+		return false
 	GlobalInventory.cargas_crescimento = int(inventory_data.get("cargas_crescimento", GlobalInventory.cargas_crescimento))
 	GlobalInventory.semente_selecionada = str(inventory_data.get("semente_selecionada", GlobalInventory.semente_selecionada))
+	if not GlobalInventory.semente_selecionada.begins_with("semente_") or GlobalInventory.get_item_quantity(GlobalInventory.semente_selecionada) == 0:
+		GlobalInventory.semente_selecionada = ""
+	else:
+		# Restaurar o plantio deve manter a mesma exclusividade do clique na UI.
+		ToolManager.clear_tool()
 	GlobalInventory.receitas_descobertas = _safe_array(inventory_data.get("receitas_descobertas", GlobalInventory.receitas_descobertas)).duplicate(true)
 	GlobalInventory.pontos_alquimia = int(inventory_data.get("pontos_alquimia", GlobalInventory.pontos_alquimia))
 	GlobalInventory.skills_desbloqueadas = _safe_array(inventory_data.get("skills_desbloqueadas", GlobalInventory.skills_desbloqueadas)).duplicate(true)
@@ -198,6 +215,10 @@ func _apply_save_data(data: Dictionary) -> bool:
 
 	var economy_data: Dictionary = _safe_dictionary(data.get("economy", {}))
 	EconomyManager.moedas = int(economy_data.get("moedas", EconomyManager.moedas))
+	# Resultado legado de golem usa contagem, nao slots. Restaurar o mesmo
+	# snapshot tambem precisa desfazer entregas feitas depois dele.
+	EconomyManager.total_golems = maxi(int(economy_data.get("total_golems", EconomyManager.total_golems)), 0)
+	EconomyManager.max_golems = maxi(int(economy_data.get("max_golems", EconomyManager.max_golems)), 0)
 
 	var season_data: Dictionary = _safe_dictionary(data.get("season", {}))
 	SeasonManager.estacao_atual = _safe_estacao(int(season_data.get("estacao_atual", SeasonManager.estacao_atual)))
@@ -255,7 +276,49 @@ func _apply_save_data(data: Dictionary) -> bool:
 		var farm_expansion_data: Dictionary = _safe_dictionary(data.get("farm_expansion", {}))
 		_aplicar_estado_projetos_restauracao(_safe_dictionary(farm_expansion_data.get("restoration_projects", {})))
 
+	if data.has("cauldrons") or inventory_data.get("inventario") is Dictionary:
+		# Save antigo completo nao contem producao: limpar o runtime sem refund.
+		# Payload parcial de contratos agricolas continua sem tocar no caldeirao.
+		var cauldron_states: Dictionary = data.get("cauldrons", {})
+		var cauldron_nodes: Dictionary = _get_cauldron_nodes()
+		for cauldron_id in cauldron_nodes:
+			cauldron_nodes[cauldron_id].call("load_save_data", cauldron_states.get(cauldron_id, {"state": "IDLE"}))
 	return true
+
+
+func _get_cauldron_nodes() -> Dictionary:
+	var nodes: Dictionary = {}
+	var scene: Node = get_tree().current_scene
+	if scene == null:
+		return nodes
+	for cauldron in get_tree().get_nodes_in_group("cauldrons"):
+		if scene.is_ancestor_of(cauldron) and cauldron.has_method("get_save_data") and cauldron.has_method("load_save_data"):
+			nodes[str(scene.get_path_to(cauldron))] = cauldron
+	return nodes
+
+
+func _build_cauldron_save_data() -> Dictionary:
+	var states: Dictionary = {}
+	var nodes: Dictionary = _get_cauldron_nodes()
+	for cauldron_id in nodes:
+		states[cauldron_id] = nodes[cauldron_id].call("get_save_data")
+	return states
+
+
+func _is_cauldron_save_payload_valid(data: Dictionary) -> bool:
+	if not data.has("cauldrons"):
+		return true
+	if not (data["cauldrons"] is Dictionary):
+		return false
+	var nodes: Dictionary = _get_cauldron_nodes()
+	for cauldron_id in data["cauldrons"]:
+		var state: Variant = data["cauldrons"][cauldron_id]
+		if not nodes.has(cauldron_id) or not (state is Dictionary):
+			return false
+		if not bool(nodes[cauldron_id].call("is_save_data_valid", state)):
+			return false
+	return true
+
 
 func _read_save_version(data: Dictionary) -> int:
 	if not data.has("version"):

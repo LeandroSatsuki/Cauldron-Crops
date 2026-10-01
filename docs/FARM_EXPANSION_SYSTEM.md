@@ -2,9 +2,9 @@
 
 ## Visão geral
 
-A fazenda final será grande, fixa e artesanal, dividida em áreas bloqueadas ou corrompidas.
+A fazenda final é grande, fixa e artesanal, dividida em áreas bloqueadas ou corrompidas.
 
-A expansão não deve ser infinita, procedural ou livre neste momento. A ideia é ter áreas planejadas, com identidade própria e desbloqueios progressivos que façam a fazenda parecer viva, antiga e em restauração.
+A expansão não é infinita, procedural ou livre neste momento. A ideia é ter áreas reservadas, com identidade própria e desbloqueios progressivos que façam a fazenda parecer viva, antiga e em restauração.
 
 ## Decisão de tamanho da fazenda
 
@@ -38,7 +38,7 @@ Pode liberar novos lotes, raízes raras e plantas sombrias.
 
 ### 4. Área das Criaturas Mágicas
 
-Espaço futuro para fazendinhas e animais mágicos.
+Espaço reservado para fazendinhas e animais mágicos.
 
 Pode liberar criaturas, produção passiva e ingredientes.
 
@@ -60,7 +60,7 @@ A expansão não é só aumento de espaço. Ela representa avanço narrativo, me
 
 ## Como o desbloqueio funciona
 
-Conceito planejado:
+Conceito de fluxo:
 
 1. A área está bloqueada por obstáculo, névoa, raiz, cristal ou corrupção.
 2. O jogador produz um item de purificação no caldeirão.
@@ -71,9 +71,9 @@ Conceito planejado:
 
 ## Relação com o caldeirão
 
-O caldeirão deve ser o centro da progressão de purificação.
+O caldeirão é o centro da progressão de purificação.
 
-Exemplos futuros:
+Exemplos previstos:
 
 - Poção Purificadora Fraca
 - Essência de Clareira
@@ -99,7 +99,7 @@ O Catálogo de Itens V0 prepara esse sistema porque os desbloqueios poderão con
 - `origem`
 - `descricao`
 
-Exemplo futuro:
+Exemplo previsto:
 
 Uma área bloqueada pode exigir item com tag `purificacao`, `aquatico`, `magico` ou `sazonal`.
 
@@ -122,15 +122,15 @@ A pesca pode alimentar a purificação com ingredientes aquáticos.
 
 Exemplos:
 
-- `escama_brilhante` futuro
-- `lodo_de_lago` futuro
+- `escama_brilhante`
+- `lodo_de_lago`
 - `peixe_comum` como ponte direta para a Poção Purificadora Fraca V0
 
 A Área do Lago pode ter upgrades e pontos de movimento melhores conforme a fazenda é purificada.
 
 ## Relação com criaturas mágicas
 
-Fazendinhas e animais mágicos devem entrar como área futura desbloqueável.
+Fazendinhas e animais mágicos podem entrar como área reservada desbloqueável.
 
 Exemplos:
 
@@ -143,7 +143,7 @@ Não implementar criaturas agora.
 
 ## Versão mínima recomendada
 
-A V0 futura deve ser pequena:
+A V0 inicial é pequena:
 
 - um único obstáculo mágico estático bloqueia uma pequena área com alguns `FarmPlot` potenciais;
 - obstáculo visual;
@@ -183,9 +183,9 @@ A Área Bloqueada V0 é a primeira leitura visual de expansão da fazenda.
 
 Na implementação atual, ela é um pocket fixo 2x2 de `FarmPlot` pré-instanciados em `Scripts/Main.gd`, criados depois dos lotes já existentes e mantidos ocultos/bloqueados até a purificação.
 
-O controlador do mundo agora organiza a expansão por `obstacle_id` internamente, mesmo mantendo apenas a V0 cadastrada por enquanto. Isso prepara a chegada de futuras áreas sem alterar a V0 visível, o esquema de save ou a ordem append-only dos `FarmPlot`.
+O controlador do mundo agora organiza a expansão por `obstacle_id` internamente, mesmo mantendo apenas a V0 cadastrada por enquanto. Isso prepara a chegada de outras áreas sem alterar a V0 visível, o esquema de save ou a ordem append-only dos `FarmPlot`.
 
-Ela serve para mostrar que existe um pocket corrompido atrás do obstáculo e que esse espaço será liberado mais tarde.
+Ela serve para mostrar que existe um pocket corrompido atrás do obstáculo e que esse espaço é liberado na purificação.
 
 Regras desta versão:
 

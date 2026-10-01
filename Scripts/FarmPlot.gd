@@ -42,6 +42,7 @@ var regado: bool = false
 @onready var golem_harvest_point: Marker2D = $GolemHarvestPoint
 @onready var collision_shape: CollisionShape2D = $CollisionShape2D
 var expansion_blocked: bool = false
+var _pending_manual_harvest_rewards: Array = []
 
 func _ready() -> void:
 	add_to_group("lotes_terra")
@@ -317,7 +318,7 @@ func harvest_by_golem() -> Array:
 	if timer:
 		timer.stop()
 
-	var recompensas: Array = _gerar_recompensas_colheita(produto)
+	var recompensas: Array = _obter_ou_gerar_recompensas_colheita(produto)
 	if recompensas.is_empty():
 		return []
 
@@ -334,7 +335,7 @@ func _colher_manualmente(mostrar_textos: bool = true) -> bool:
 		return false
 
 	var produto: String = str(semente_atual.get("produto_colheita", "trigo"))
-	var recompensas: Array = _gerar_recompensas_colheita(produto)
+	var recompensas: Array = _obter_ou_gerar_recompensas_colheita(produto)
 	if recompensas.is_empty():
 		push_warning("FarmPlot: colheita manual sem recompensas geradas.")
 		return false
@@ -344,7 +345,9 @@ func _colher_manualmente(mostrar_textos: bool = true) -> bool:
 	if tree != null and tree.current_scene != null:
 		ui = tree.current_scene.get_node_or_null("UI")
 
-	_aplicar_recompensas_colheita(recompensas, ui, global_position, mostrar_textos)
+	if not _aplicar_recompensas_colheita(recompensas, ui, global_position, mostrar_textos):
+		_mostrar_feedback("Mochila sem espaço para a colheita.")
+		return false
 	EventDirector.notify_harvest(global_position)
 	_concluir_colheita()
 	_mostrar_feedback("Colhido!")
@@ -430,6 +433,7 @@ func get_save_data() -> Dictionary:
 func load_save_data(data: Dictionary) -> void:
 	if timer:
 		timer.stop()
+	_pending_manual_harvest_rewards.clear()
 
 	if data.is_empty():
 		_concluir_colheita(false)
@@ -605,6 +609,11 @@ func _gerar_recompensas_colheita(produto: String) -> Array:
 
 	return recompensas
 
+func _obter_ou_gerar_recompensas_colheita(produto: String) -> Array:
+	if _pending_manual_harvest_rewards.is_empty():
+		_pending_manual_harvest_rewards = _gerar_recompensas_colheita(produto).duplicate(true)
+	return _pending_manual_harvest_rewards.duplicate(true)
+
 func _adicionar_recompensa_colheita(
 	recompensas: Array,
 	item_id: String,
@@ -626,10 +635,23 @@ func _adicionar_recompensa_colheita(
 		"offset": offset
 	})
 
-func _aplicar_recompensas_colheita(recompensas: Array, ui: Node, origem_global: Vector2, mostrar_textos: bool = false) -> void:
-	if not GlobalInventory.has_method("adicionar_item"):
-		push_error("Autoload GlobalInventory não possui o método adicionar_item()!")
-		return
+func _aplicar_recompensas_colheita(recompensas: Array, ui: Node, origem_global: Vector2, mostrar_textos: bool = false) -> bool:
+	if not GlobalInventory.has_method("try_add_items"):
+		push_error("Autoload GlobalInventory não possui o método try_add_items()!")
+		return false
+
+	var itens_agrupados: Dictionary = {}
+	for recompensa_variant in recompensas:
+		if typeof(recompensa_variant) != TYPE_DICTIONARY:
+			continue
+		var recompensa: Dictionary = recompensa_variant
+		var item_id: String = str(recompensa.get("item_id", ""))
+		var quantidade: int = int(recompensa.get("quantidade", 0))
+		if item_id != "" and quantidade > 0:
+			itens_agrupados[item_id] = int(itens_agrupados.get(item_id, 0)) + quantidade
+	var insertion: Dictionary = GlobalInventory.try_add_items(itens_agrupados)
+	if not bool(insertion.get("success", false)):
+		return false
 
 	for recompensa_variant in recompensas:
 		if typeof(recompensa_variant) != TYPE_DICTIONARY:
@@ -640,8 +662,6 @@ func _aplicar_recompensas_colheita(recompensas: Array, ui: Node, origem_global: 
 		var quantidade: int = int(recompensa.get("quantidade", 0))
 		if item_id == "" or quantidade <= 0:
 			continue
-
-		GlobalInventory.adicionar_item(item_id, quantidade)
 
 		if not mostrar_textos:
 			continue
@@ -662,6 +682,7 @@ func _aplicar_recompensas_colheita(recompensas: Array, ui: Node, origem_global: 
 			var drop_vfx = get_node_or_null("DropRaroVFX")
 			if drop_vfx:
 				drop_vfx.emitting = true
+	return true
 
 func _obter_nome_exibicao_item(item_id: String) -> String:
 	match item_id:
@@ -685,6 +706,7 @@ func _obter_nome_exibicao_item(item_id: String) -> String:
 			return item_id.replace("_", " ").capitalize()
 
 func _concluir_colheita(preservar_arado: bool = true) -> void:
+	_pending_manual_harvest_rewards.clear()
 	estado_atual = State.VAZIO
 	regado = false
 	pronto_para_colher = false

@@ -28,7 +28,7 @@
 - Venda de itens.
 - Golems.
 
-## Sistemas Planejados
+## Sistemas Reservados
 - Mais crops.
 - Mais receitas.
 - Salvamento.

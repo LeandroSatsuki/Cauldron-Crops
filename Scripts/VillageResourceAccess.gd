@@ -73,14 +73,16 @@ func consume(requirements: Dictionary) -> Dictionary:
 		var storage_quantity: int = mini(_get_storage_quantity(item_id), remaining)
 		if storage_quantity > 0:
 			if not _withdraw_from_storage(item_id, storage_quantity):
-				_restore_entries(entries)
+				if not _restore_entries(entries):
+					push_error("VillageResourceAccess: falha ao restaurar retirada parcial do Village Storage.")
 				return _failure_receipt("storage_withdrawal_failed")
 			entries.append(_entry(item_id, storage_quantity, SOURCE_VILLAGE_STORAGE))
 			remaining -= storage_quantity
 
 		if remaining > 0:
 			if not GlobalInventory.remover_item(item_id, remaining):
-				_restore_entries(entries)
+				if not _restore_entries(entries):
+					push_error("VillageResourceAccess: falha ao restaurar retirada parcial da Mochila.")
 				return _failure_receipt("personal_withdrawal_failed")
 			entries.append(_entry(item_id, remaining, SOURCE_PERSONAL_INVENTORY))
 
@@ -102,7 +104,8 @@ func refund(receipt: Dictionary) -> bool:
 	var entries: Array = entries_variant
 	if _receipt_requires_storage(entries) and not _has_valid_storage():
 		return false
-	_restore_entries(entries)
+	if not _restore_entries(entries):
+		return false
 	receipt["refunded"] = true
 	return true
 
@@ -139,7 +142,24 @@ func _entry(item_id: String, quantity: int, source: StringName) -> Dictionary:
 	}
 
 
-func _restore_entries(entries: Array) -> void:
+func _restore_entries(entries: Array) -> bool:
+	var personal_restore: Dictionary = {}
+	for entry_variant in entries:
+		if not (entry_variant is Dictionary):
+			continue
+		var entry: Dictionary = entry_variant
+		var item_id: String = str(entry.get("item_id", ""))
+		var quantity: int = int(entry.get("quantity", 0))
+		var source: StringName = StringName(str(entry.get("source", "")))
+		if item_id != "" and quantity > 0 and source == SOURCE_PERSONAL_INVENTORY:
+			personal_restore[item_id] = int(personal_restore.get(item_id, 0)) + quantity
+	if not personal_restore.is_empty() and not GlobalInventory.can_accept_items(personal_restore):
+		return false
+	if not personal_restore.is_empty():
+		var insertion: Dictionary = GlobalInventory.try_add_items(personal_restore)
+		if not bool(insertion.get("success", false)):
+			return false
+
 	for index in range(entries.size() - 1, -1, -1):
 		var entry_variant: Variant = entries[index]
 		if not (entry_variant is Dictionary):
@@ -152,8 +172,7 @@ func _restore_entries(entries: Array) -> void:
 			continue
 		if source == SOURCE_VILLAGE_STORAGE:
 			_deposit_to_storage(item_id, quantity)
-		elif source == SOURCE_PERSONAL_INVENTORY:
-			GlobalInventory.adicionar_item(item_id, quantity)
+	return true
 
 
 func _receipt_requires_storage(entries: Array) -> bool:

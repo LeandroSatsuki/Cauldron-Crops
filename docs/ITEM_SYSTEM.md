@@ -4,7 +4,7 @@
 
 O projeto agora tem um catálogo central mínimo de itens em `Scripts/Database.gd`.
 
-Esse catálogo serve como base para nomes, ícones, raridade, valor, tags e origem dos itens já existentes no jogo. Os valores são provisórios e existem para preparar futura venda, receitas, filtros e progressão.
+Esse catálogo serve como base para nomes, ícones, raridade, valor, tags e origem dos itens já existentes no jogo. Os valores são provisórios e existem para preparar venda, receitas, filtros e progressão.
 
 ## Campos principais
 
@@ -79,18 +79,18 @@ Nesse estágio, a poção purificadora fraca funciona como catalisador provisór
 
 ## Uso esperado
 
-O catálogo deve ser a referência principal para:
+O catálogo é a referência principal para:
 
 - visual da UI;
-- venda futura;
+- venda;
 - filtros por categoria e tags;
-- receitas futuras;
+- receitas;
 - expansão da pesca;
 - expansão das crops.
 
 ## Relação com expansão e purificação
 
-O catálogo também prepara futuras áreas bloqueadas da fazenda, porque a purificação poderá consultar:
+O catálogo também prepara áreas bloqueadas da fazenda, porque a purificação consulta:
 
 - `valor_base`
 - `categoria`

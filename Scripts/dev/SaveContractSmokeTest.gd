@@ -111,13 +111,87 @@ func _run() -> void:
 	if get_tree().get_nodes_in_group("lotes_terra").size() != 34:
 		_fail("testes de contrato alteraram a quantidade de plots")
 		return
+	if not _test_backpack_round_trips(main.get_node("UI")):
+		return
 
 	print(
-		"SaveContractSmokeTest: PASS - versao explicita, grid v4 vazio/ausente e fallback legado estao coerentes."
+		"SaveContractSmokeTest: PASS - grid v4, legado e Mochila vazia/parcial/cheia preservam o contrato."
 	)
 	main.queue_free()
 	await get_tree().process_frame
 	get_tree().quit(0)
+
+
+func _test_backpack_round_trips(ui: Node) -> bool:
+	var original_save: Dictionary = SaveManager.call("_build_save_data")
+	var original_tool: int = ToolManager.get_active_tool()
+	var original_capacity: bool = GlobalInventory.is_capacity_enforced()
+	var full: Dictionary = {"semente_basica": 100, "agua": 7}
+	for index in range(10):
+		full["item_teste_%02d" % index] = 99
+	var cases: Array[Dictionary] = [
+		{"name": "vazia", "contents": {}, "slots": 0, "seed": ""},
+		{"name": "parcial", "contents": {"semente_basica": 100, "trigo": 1, "agua": 7}, "slots": 3, "seed": "semente_basica"},
+		{"name": "cheia", "contents": full, "slots": 12, "seed": "semente_basica"},
+	]
+	for test_case in cases:
+		ToolManager.clear_tool()
+		GlobalInventory.set_inventory_contents(test_case["contents"])
+		GlobalInventory.semente_selecionada = test_case["seed"]
+		var entries_before: Array[Dictionary] = GlobalInventory.get_personal_slot_entries()
+		# JSON pode ordenar as chaves; posicoes fisicas nao fazem parte do save v4.
+		entries_before.sort_custom(_slot_entry_less)
+		var save_data: Dictionary = SaveManager.call("_build_save_data")
+		if int(save_data["version"]) != 4 or not (save_data["inventory"]["inventario"] is Dictionary):
+			_fail("pilhas visuais alteraram o formato do save v4")
+			return false
+		# Serializacao real em memoria, sem tocar no save pessoal do jogador.
+		var parsed: Dictionary = JSON.parse_string(JSON.stringify(save_data))
+		GlobalInventory.set_inventory_contents({"item_adicionado_apos_save": 42, "agua": 99})
+		ToolManager.force_select_fishing_rod()
+		if not bool(SaveManager.call("_apply_save_data", parsed)):
+			_fail("round-trip de Mochila %s foi recusado" % test_case["name"])
+			return false
+		var expected: Dictionary = test_case["contents"].duplicate(true)
+		# O contrato legado restaura a reserva do poco, inclusive quando zero.
+		expected["agua"] = int(expected.get("agua", 0))
+		var entries_after: Array[Dictionary] = GlobalInventory.get_personal_slot_entries()
+		entries_after.sort_custom(_slot_entry_less)
+		if GlobalInventory.inventario != expected or entries_after != entries_before:
+			_fail("round-trip %s perdeu, duplicou ou redistribuiu quantidades" % test_case["name"])
+			return false
+		if GlobalInventory.semente_selecionada != test_case["seed"]:
+			_fail("round-trip %s nao preservou selecao valida" % test_case["name"])
+			return false
+		if test_case["seed"] != "" and ToolManager.get_active_tool() != ToolManager.ToolType.NONE:
+			_fail("load deixou semente e ferramenta simultaneamente selecionadas")
+			return false
+		ui.call("atualizar_inventario_visual")
+		var bar: HBoxContainer = ui.get("inventory_bar")
+		var label: Label = ui.get("inventory_capacity_label")
+		if bar.get_child_count() != 12 or label.text != "%d/12" % int(test_case["slots"]):
+			_fail("round-trip %s deixou a ocupacao visual incorreta" % test_case["name"])
+			return false
+		if GlobalInventory.is_capacity_enforced() != original_capacity:
+			_fail("load ativou a capacidade da Mochila")
+			return false
+	for invalid_seed in ["semente_ausente", "semente_basica", "trigo"]:
+		if not bool(SaveManager.call("_apply_save_data", {
+			"version": 4,
+			"inventory": {"inventario": {"semente_basica": 0, "trigo": 1}, "semente_selecionada": invalid_seed},
+		})) or GlobalInventory.semente_selecionada != "":
+			_fail("load manteve selecao ausente, esgotada ou nao-semente")
+			return false
+	SaveManager.call("_apply_save_data", original_save)
+	ToolManager.force_select_tool(original_tool)
+	ui.call("atualizar_inventario_visual")
+	return true
+
+
+func _slot_entry_less(first: Dictionary, second: Dictionary) -> bool:
+	if first["item_id"] != second["item_id"]:
+		return str(first["item_id"]) < str(second["item_id"])
+	return int(first["stack_index"]) < int(second["stack_index"])
 
 
 func _build_legacy_plots(target: Node2D, tilled: bool) -> Array:

@@ -6,6 +6,7 @@ const EXPECTED_NODE_COUNT := 4
 
 
 var _inventory_before: Dictionary = {}
+var _capacity_enforcement_before: bool = false
 
 
 func _ready() -> void:
@@ -14,6 +15,7 @@ func _ready() -> void:
 
 func _run() -> void:
 	_inventory_before = GlobalInventory.inventario.duplicate(true)
+	_capacity_enforcement_before = GlobalInventory.is_capacity_enforced()
 	ToolManager.clear_tool()
 	GlobalInventory.semente_selecionada = ""
 	var initial_charcoal: int = int(GlobalInventory.inventario.get("carvao", 0))
@@ -44,6 +46,25 @@ func _run() -> void:
 	if forage_node == null:
 		_fail("primeiro ponto nao implementa o contrato ForageNode")
 		return
+	var constrained_inventory: Dictionary = {"carvao": 98, "agua": 4}
+	for index in range(11):
+		constrained_inventory["item_teste_%02d" % index] = GlobalInventory.DEFAULT_STACK_LIMIT
+	GlobalInventory.set_inventory_contents(constrained_inventory)
+	GlobalInventory.set_capacity_enforced(true)
+	forage_node.quantity = 2
+	if forage_node.collect():
+		_fail("ponto foi consumido sem espaco para a recompensa inteira")
+		return
+	if forage_node.is_collected() or GlobalInventory.get_item_quantity("carvao") != 98:
+		_fail("coleta recusada alterou o ponto ou aceitou recompensa parcial")
+		return
+	var blocked_feedback: Label = forage_node.get_node_or_null("FeedbackLabel") as Label
+	if blocked_feedback == null or not blocked_feedback.visible or "Mochila" not in blocked_feedback.text:
+		_fail("recusa por capacidade nao informou o jogador")
+		return
+	forage_node.quantity = 1
+	GlobalInventory.set_capacity_enforced(false)
+	GlobalInventory.set_inventory_contents(_inventory_before)
 	if not bool(grove.call(
 		"request_player_interaction",
 		forage_node,
@@ -97,8 +118,10 @@ func _run() -> void:
 
 
 func _restore_inventory() -> void:
+	GlobalInventory.set_capacity_enforced(false)
 	if not _inventory_before.is_empty():
-		GlobalInventory.inventario = _inventory_before.duplicate(true)
+		GlobalInventory.set_inventory_contents(_inventory_before)
+	GlobalInventory.set_capacity_enforced(_capacity_enforcement_before)
 
 
 func _fail(message: String) -> void:

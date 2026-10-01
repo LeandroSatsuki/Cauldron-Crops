@@ -2,7 +2,7 @@
 
 ## Visão Geral
 
-O sistema final de tempo do Cauldron Crops será baseado em tempo real, mas durante o protótipo ele deve permanecer em modo debug e controlável.
+O sistema final de tempo do Cauldron Crops é baseado em tempo real, mas durante o protótipo ele permanece em modo debug e controlável.
 
 A ideia é que o jogo acompanhe o horário local do jogador, sem forçar essa regra no desenvolvimento enquanto o loop principal ainda está em validação.
 
@@ -22,7 +22,7 @@ A ideia é que o jogo acompanhe o horário local do jogador, sem forçar essa re
 
 Durante o desenvolvimento, o tempo real deve ficar desligado por padrão.
 
-O futuro `TimeManager` deve expor algo como:
+O `TimeManager` expõe algo como:
 
 ```text
 real_time_enabled = false
@@ -54,9 +54,9 @@ Ao mesmo tempo, ativar isso cedo demais atrapalharia os testes. O desenvolvedor 
 
 ## Regra de Tempo Real Suave
 
-A recomendação para o futuro é evitar punição agressiva.
+A recomendação é evitar punição agressiva.
 
-Exemplos de proteção futura:
+Exemplos de proteção:
 
 * limitar penalidade offline;
 * permitir que golems protejam parte da fazenda;
@@ -78,11 +78,11 @@ Exemplos de proteção futura:
 * Salvamento.
 * Economia.
 
-## Futuro TimeManager
+## TimeManager previsto
 
-Estrutura futura prevista, sem implementação nesta etapa:
+Estrutura prevista, sem implementação nesta etapa:
 
-* `TimeManager.gd` como base futura do sistema.
+* `TimeManager.gd` como base do sistema.
 * Guardar data real do último login.
 * Guardar dia atual do jogo.
 * Guardar estação atual.
@@ -102,9 +102,9 @@ Nesta etapa:
 * O script existe como unidade isolada, sem `Autoload`.
 * O `SeasonManager` continua sendo a fonte funcional das estações do protótipo.
 * O `TimeManager` ainda não chama `SeasonManager`, `SaveManager`, plantações, golems ou UI.
-* Os métodos de debug existem apenas como base para fases futuras.
+* Os métodos de debug existem apenas como base para fases seguintes.
 
-## Plano de Implementação Futuro
+## Etapas de implementação
 
 ### Fase 1
 

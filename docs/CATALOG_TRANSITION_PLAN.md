@@ -1,4 +1,4 @@
-# Catálogo de Transição — plano de migração do catálogo legado para o catálogo definitivo
+# Catálogo de Transição — migração do catálogo legado para o catálogo definitivo
 
 ## 1. Estado atual do catálogo no código
 
@@ -6,9 +6,10 @@ Hoje o projeto está em um estado híbrido de catálogo:
 
 - `Scripts/Database.gd` ainda contém o catálogo legado/provisório de itens, receitas e alguns helpers de alquimia.
 - `Data/recipes/*.tres` contém as receitas em formato `RecipeData` resource, usadas pela interface do livro e pela navegação do catálogo moderno.
-- `Scripts/data/RecipeDatabase.gd` é a fonte de leitura dos resources de receita.
-- `Scripts/RecipeBookUI.gd` usa `RecipeDatabase` para montar a exibição do Livro de Receitas.
-- `Scripts/Cauldron.gd` ainda usa `Database.receitas_alquimia` como fonte funcional de produção.
+- `Scripts/data/RecipeDatabase.gd` carrega e valida os resources de receita.
+- `Scripts/data/RecipeResolver.gd` centraliza a resolução usada pelo Livro de Receitas e pelo caldeirão.
+- `Scripts/RecipeBookUI.gd` usa `RecipeResolver` para montar a exibição do Livro de Receitas.
+- `Scripts/Cauldron.gd` usa `RecipeResolver` para validar e produzir, com fallback legado temporário quando necessário.
 
 Esse desenho é funcional, mas cria risco de drift entre:
 
@@ -28,7 +29,7 @@ Os documentos novos de design definem uma direção mais completa para o jogo:
 - 16 peixes sazonais;
 - 7 peixes mágicos.
 
-Esses documentos não são só listas de itens: eles definem a forma do catálogo futuro, a progressão e a leitura do mundo.
+Esses documentos não são só listas de itens: eles definem a forma do catálogo definitivo, a progressão e a leitura do mundo.
 
 ## 3. Tabela de equivalência legado -> definitivo
 
@@ -40,7 +41,7 @@ Esses documentos não são só listas de itens: eles definem a forma do catálog
 | `peixe_comum` | `Riafin` | peixe base de água doce |
 | `pocao_purificadora_fraca` | `Infusão Purificadora` ou `Água de Broto Claro` | pode virar o nome definitivo do efeito de purificação inicial |
 | `tomate_sol` | sem equivalente direto ainda | pode virar ingrediente legado de ponte até o catálogo novo consolidar |
-| `escama_brilhante` | item legado; futuro item derivado de pesca mágica ou purificação | não há equivalente direto no catálogo definitivo atual |
+| `escama_brilhante` | item legado; item derivado de pesca mágica ou purificação | não há equivalente direto no catálogo definitivo atual |
 | `palha_rara` / `rama_encantada` | ingredientes legados de ponte para golem | podem existir enquanto a linha de ajudantes não é migrada |
 | `golem_coletor` | ponte provisória do sistema de ajudantes | ainda não há um equivalente definitivo fechado nos docs novos |
 
@@ -55,9 +56,9 @@ Estas receitas ainda ajudam como ponte enquanto a migração não acontece em lo
 
 Elas cobrem, respectivamente, purificação, crescimento, golem/ajudantes e sazonalidade intermediária.
 
-## 5. Receitas legadas candidatas a substituição futura
+## 5. Receitas legadas candidatas a substituição posterior
 
-Estas receitas tendem a desalinhamento maior com o catálogo definitivo e devem ser tratadas como substituição futura:
+Estas receitas tendem a desalinhamento maior com o catálogo definitivo e devem ser tratadas como substituição posterior:
 
 - `carvao_trigo`
 - `peixe_comum_trigo`
@@ -76,7 +77,7 @@ As receitas abaixo são candidatas para a primeira onda de migração definitiva
 - `Água de Broto Claro`
 - `Kit de Plantio Ritual`
 - `Fritura de Riafin`
-- opcional futura: `Bálsamo de Raiz e Flor`
+- opcional prevista: `Bálsamo de Raiz e Flor`
 
 ## 6.1. Primeira leva já implementada em P02C2
 
@@ -91,7 +92,7 @@ Motivo da escolha:
 - nenhuma depende de novos sistemas, NPCs, clima, buff ou horário;
 - a segunda já conecta o caldeirão com progressão agrícola sem exigir um novo item catalogado.
 
-`Fritura de Riafin` ficou para um lote futuro porque ainda depende de alinhar o peixe definitivo `Riafin` com o catálogo de itens e a sua via de aquisição.
+`Fritura de Riafin` ficou para um lote posterior porque ainda depende de alinhar o peixe definitivo `Riafin` com o catálogo de itens e a sua via de aquisição.
 
 Essas receitas têm uma boa relação com o loop atual e ajudam a converter o catálogo novo em gameplay legível sem depender de sistemas ainda imaturos.
 
@@ -130,9 +131,9 @@ Principais riscos identificados:
 - quests pedirem IDs removidos;
 - `PurificationObstacle` depender de item legado;
 - `SaveManager` preservar `receitas_descobertas` antigas;
-- backlog de textura aumentar conforme o catálogo se reorganiza.
+- a fila de textura aumentar conforme o catálogo se reorganiza.
 
-## 10. Próximo passo sugerido
+## Ponto de continuidade
 
 O próximo passo seguro não é implementar receitas novas direto.
 
@@ -145,6 +146,6 @@ Essa etapa deve acontecer antes do P02C de implementação de receitas, para evi
 
 ## 11. Status do P02C1
 
-- O P02C1 alinhou o acesso de caldeirão e Livro de Receitas para uma resolução central baseada em `RecipeDatabase`/`Data/recipes`, com fallback legado temporário via `Database.receitas_alquimia`.
+- O P02C1 alinhou o acesso de caldeirão e Livro de Receitas para uma resolução central baseada em `RecipeResolver`, com leitura de `RecipeDatabase`/`Data/recipes` e fallback legado temporário quando necessário.
 - A transição ainda preserva `GlobalInventory.receitas_descobertas` e não altera schema de save.
 - O próximo passo segue sendo reduzir a dependência do legado apenas onde houver alias/compatibilidade suficiente.

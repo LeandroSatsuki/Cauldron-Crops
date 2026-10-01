@@ -42,19 +42,31 @@ func try_restore() -> bool:
 	if not missing.is_empty():
 		_show_feedback(_format_missing_requirements(missing))
 		return false
+	var reward: Dictionary = {}
+	if restoration_reward_item_id != "" and restoration_reward_quantity > 0:
+		reward[restoration_reward_item_id] = restoration_reward_quantity
+		if not GlobalInventory.can_accept_items(reward):
+			_show_feedback("Mochila sem espaço para a recompensa da restauração.")
+			return false
 	var requirements := _build_requirement_totals()
+	var receipt: Dictionary = {}
 	if not requirements.is_empty():
-		var receipt: Dictionary = _get_village_resource_access().consume(requirements)
+		receipt = _get_village_resource_access().consume(requirements)
 		if not bool(receipt.get("success", false)):
 			var failed_missing: Dictionary = receipt.get("missing", {})
 			if failed_missing.is_empty():
 				failed_missing = get_missing_requirements()
 			_show_feedback(_format_missing_requirements(failed_missing) if not failed_missing.is_empty() else "Recursos indisponiveis para restauracao.")
 			return false
+	if not reward.is_empty():
+		var insertion: Dictionary = GlobalInventory.try_add_items(reward)
+		if not bool(insertion.get("success", false)):
+			if not receipt.is_empty() and not _get_village_resource_access().refund(receipt):
+				push_warning("RestorationProject: nao foi possivel devolver recursos apos falha inesperada da recompensa.")
+			_show_feedback("Não foi possível guardar a recompensa. A restauração não foi concluída.")
+			return false
 	restored_state = true
 	_refresh_state()
-	if restoration_reward_item_id != "" and restoration_reward_quantity > 0:
-		GlobalInventory.adicionar_item(restoration_reward_item_id, restoration_reward_quantity)
 	_show_feedback("Herbario restaurado! Uma Rama Encantada floresceu.")
 	restored.emit(restoration_id)
 	return true

@@ -7,7 +7,7 @@
 
 ## 2. Arquitetura de Grid (Grid Snap)
 Para garantir uma organização estilo tabuleiro de xadrez (similar a jogos como *Stardew Valley*), os lotes de plantação possuem um alinhamento matemático rígido ao grid do mundo.
-- **Tamanho do Grid**: `64x64` pixels, definido pela constante `GRID_SIZE = 64` no topo de [FarmPlot.gd](file:///e:/Cauldron%20Crops/cauldron-crops/Scripts/FarmPlot.gd).
+- **Tamanho do Grid**: `80x80` pixels, definido pela constante `GRID_SIZE = 80` no topo de [FarmPlot.gd](file:///e:/Cauldron%20Crops/cauldron-crops/Scripts/FarmPlot.gd).
 - **Snap Matemático**: Na inicialização do objeto (`_ready()`), a posição global do lote é travada para o múltiplo mais próximo do tamanho do grid:
   ```gdscript
   var snap_x = round(global_position.x / GRID_SIZE) * GRID_SIZE
@@ -43,7 +43,7 @@ As imagens das plantas são carregadas de forma dinâmica. Para evitar que os sp
   ```gdscript
   $SpritePlanta.offset = Vector2(0, -textura.get_height() / 2.0)
   ```
-- **Escala de Renderização**: A propriedade de escala do sprite da planta é configurada para `Vector2(0.25, 0.5)` para gerar um crescimento retangular (alto e fino) ou `Vector2(0.18, 0.18)` dependendo do ajuste visual desejado pelo jogador no Godot Editor.
+- **Escala de Renderização**: O `SpriteTerra` usa `Vector2(0.16985133, 0.16161616)` para cobrir visualmente a célula de `80x80` sem sobrar faixa de grama nas bordas.
 - **Grupos do Nó**:
   - `lotes_terra`: Utilizado por gerenciadores globais para disparar ações automáticas e atualizações de UI.
   - `lote_plantacao`: Utilizado pela IA dos Golems para localizar plantas prontas para coleta.
@@ -58,7 +58,7 @@ A automação do trabalho agrícola é realizada de duas formas que atualmente c
 Cada Golem físico no cenário possui um script de comportamento baseado em máquina de estados rígida (`IDLE`, `MOVING`, `HARVESTING`, `RETURNING`).
 - **Ciclo de Pensamento**: A cada 1.0 segundo, o Golem no estado `IDLE` vasculha os lotes do grupo `"lote_plantacao"`.
 - **Comunicação por Variável**: Ele identifica lotes onde a variável `pronto_para_colher` é `true`. Ao selecionar um lote como `alvo_atual`, o Golem muda seu estado para `MOVING` e inicia sua trajetória.
-- **Movimentação baseada em Grid**: A viagem é calculada para manter uma velocidade rigorosamente constante de **2 blocos do grid por segundo** (tempo de viagem = `0.5` segundos por bloco de `64` pixels):
+- **Movimentação baseada em Grid**: A viagem é calculada para manter uma velocidade rigorosamente constante de **2 blocos do grid por segundo** (tempo de viagem = `0.5` segundos por bloco de `80` pixels):
   ```gdscript
   var distancia_pixels = global_position.distance_to(destino)
   var distancia_em_blocos = distancia_pixels / GRID_SIZE
@@ -91,7 +91,7 @@ Um script complementar desenvolvido em Python que analisa todos os arquivos PNG 
 
 ---
 
-## 7. Problemas Conhecidos e Próximos Passos
+## 7. Problemas Conhecidos e Estado Atual
 
 ### Conflito: Auto-colheita em 4 segundos vs. Coleta do Golem
 - **Descrição do Problema**: Atualmente, a colheita automática realizada pelo [GolemManager.gd](file:///e:/Cauldron%20Crops/cauldron-crops/Scripts/GolemManager.gd) e a locomoção física do Golem em [Golem.gd](file:///e:/Cauldron%20Crops/cauldron-crops/Scripts/Golem.gd) entram em conflito direto. A cada 4 segundos, o `GolemManager` coleta instantaneamente e de forma invisível as plantas maduras remotas. Quando o Golem físico calcula sua rota e caminha até o lote maduro selecionado, a planta frequentemente já foi colhida e resetada à distância pelo loop do `GolemManager`, tornando a movimentação e animação física do Golem redundantes e ineficientes.

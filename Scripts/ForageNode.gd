@@ -6,6 +6,7 @@ signal resource_collected(item_id: String, quantity: int)
 
 
 const FEEDBACK_COLOR := Color(0.82, 0.94, 0.66, 1.0)
+const BLOCKED_FEEDBACK_COLOR := Color(1.0, 0.76, 0.42, 1.0)
 
 
 @export var resource_id: String = "carvao"
@@ -56,8 +57,11 @@ func _process(delta: float) -> void:
 func collect() -> bool:
 	if _collected or resource_id == "" or quantity <= 0:
 		return false
+	var insertion: Dictionary = GlobalInventory.try_add_items({resource_id: quantity})
+	if not bool(insertion.get("success", false)):
+		_show_feedback("Mochila sem espaço.", BLOCKED_FEEDBACK_COLOR)
+		return false
 	_collected = true
-	GlobalInventory.adicionar_item(resource_id, quantity)
 	_refresh_state()
 	_show_feedback("+%d %s" % [quantity, Database.obter_nome_item(resource_id)])
 	resource_collected.emit(resource_id, quantity)
@@ -125,7 +129,7 @@ func _refresh_prompt() -> void:
 		prompt_label.visible = _hovered and not _collected
 
 
-func _show_feedback(text: String) -> void:
+func _show_feedback(text: String, color: Color = FEEDBACK_COLOR) -> void:
 	if feedback_label == null:
 		print(text)
 		return
@@ -133,7 +137,7 @@ func _show_feedback(text: String) -> void:
 		_feedback_tween.kill()
 	feedback_label.text = text
 	feedback_label.position = _feedback_origin
-	feedback_label.modulate = FEEDBACK_COLOR
+	feedback_label.modulate = color
 	feedback_label.visible = true
 	_feedback_tween = create_tween()
 	_feedback_tween.set_trans(Tween.TRANS_QUAD)

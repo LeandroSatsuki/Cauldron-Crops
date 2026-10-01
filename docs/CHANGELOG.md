@@ -1,5 +1,72 @@
 # Changelog
 
+## 2026-10-01 - Persistência mínima do caldeirão
+
+- O save v4 ganhou `cauldrons` opcional: mistura em andamento, resultado pronto e lote preservam resultado/quantidade capturados e tempo restante.
+- Lotes persistem contadores e recibos somente dos crafts ainda não entregues, com a origem exata de cada ingrediente.
+- Load substitui a produção sem consumir ingredientes novamente nem reembolsar o runtime anterior. Payload inválido é recusado antes de alterar estoques.
+- Cancelamento com refund bloqueado mantém reservas pendentes e pode ser tentado novamente após liberar espaço, mesmo depois de reabrir o jogo.
+- Timers e animação de mistura são reiniciados de forma controlada; callbacks obsoletos não entregam produção já concluída. Misturar não pode sobrescrever produção em andamento.
+- Contagem/limite abstratos de golems acompanham o snapshot econômico para impedir acúmulo de um resultado legado ao carregar repetidamente; nenhum novo spawn físico foi implementado.
+- Saves completos v3/v4 antigos sem produção carregam o caldeirão em `IDLE`; payloads parciais continuam preservando seu runtime. Produção ausente no arquivo antigo não pode ser recuperada.
+- Novo `CauldronPersistenceSmokeTest` cobre JSON em memória, cena reconstruída, timers reais, resultados prontos/pausados, cancelamento, origens, compatibilidade e payload malformado, sem escrever no save pessoal.
+- Suíte completa: 31/31 smoke tests passaram. Capacidade da Mochila permanece desligada; validação manual pendente.
+
+## 2026-10-01 - Seleção de sementes e save da Mochila
+
+- Pilhas visuais do mesmo tipo mantêm uma seleção única de plantio; consumir ou depositar parte não desmarca sementes restantes.
+- Slots vazios deixaram de receber destaque; callbacks de slots obsoletos não podem selecionar sementes sem estoque nem desativar a ferramenta atual.
+- O load descarta seleções ausentes, esgotadas ou de itens que não são sementes. Restaurar uma semente válida limpa a ferramenta ativa.
+- `InterfaceInteractionSmokeTest` cobre seleção nas duas pilhas, consumo que elimina uma delas, depósitos parcial/final e slots vazios.
+- `SaveContractSmokeTest` cobre round-trip JSON da Mochila vazia, parcial e cheia, substituição exata e exclusividade de seleção, sem escrever no save do jogador.
+- Sete smoke tests relacionados passaram: interface, save, inventário pessoal, transferências do baú, cultivo livre, interação do jogador e interações centrais do mundo.
+- Capacidade segue desligada e save permanece v4, sem posições físicas persistentes. Próximo gate: persistência mínima da produção/resultado pendente do caldeirão.
+
+## 2026-09-20 - Fundação compatível da Mochila
+
+- `GlobalInventory` ganhou consultas de quantidade, stack, ocupação e espaço, além de aceitação e inserção com resultado estruturado.
+- Quantidades inválidas deixaram de alterar o inventário; remover a última semente agora limpa sua seleção.
+- O load passou a substituir o conteúdo por uma API validada e descarta seleção de semente sem unidades disponíveis.
+- O piloto está preparado para 12 slots e stacks padrão de 99, mas o limite permanece desligado até os produtores tratarem recusa sem perda de recompensa.
+- `PersonalInventoryContractSmokeTest` valida o contrato isoladamente; os 28 smoke tests ativos passaram.
+- A retirada Baú → Mochila passou a validar o destino antes de alterar a origem. Falta de espaço preserva os dois estoques, a interface informa o motivo e a retirada global legada deixa no baú as pilhas recusadas.
+- `VillageChestTransferSmokeTest` passou a simular uma Mochila cheia, incluindo conclusão de pilha existente, recusa atômica e proteção do caminho legado.
+- A colheita manual agora insere produto e drops como um único lote atômico. Mochila sem espaço mantém o cultivo pronto e preserva as recompensas sorteadas para uma nova tentativa na mesma sessão.
+- `FarmHarvestCapacitySmokeTest` valida recusa, estado do lote, recompensas pendentes e conclusão depois de liberar espaço; os 29 smoke tests ativos passaram.
+- Pontos de forrageamento externos agora só são esgotados após inserção atômica da recompensa. Mochila sem espaço mantém o ponto ativo e mostra um aviso no mundo, sem depósito automático na vila.
+- `ForagingCollectionSmokeTest` passou a cobrir uma recompensa que caberia apenas parcialmente, confirmando que nem o ponto nem a Mochila são alterados.
+- A pesca agora verifica a capacidade antes da sincronia e entrega o resultado, inclusive o bônus da Maré Cintilante, como um lote atômico. Capturas recusadas permanecem pendentes e a coleção só avança após a entrega real.
+- `FishingCollectionSmokeTest` cobre recusa integral de peixe + escama, recompensa pendente, entrega após liberar espaço e atualização posterior da coleção.
+- O Fragmento Celestial agora permanece coletável quando a Mochila está cheia e renova sua janela após a tentativa, desaparecendo somente depois da inserção completa.
+- `EventDirectorSmokeTest` cobre recusa sem perda, preservação do marcador, renovação da duração e coleta depois de liberar um slot.
+- O caldeirão agora mantém um resultado pronto quando a Mochila está cheia. A produção manual aguarda nova interação e o lote pausa sem avançar nem descartar a reserva do craft atual.
+- A restauração valida espaço para sua recompensa antes de consumir recursos; uma defesa adicional devolve o recibo transacional se a inserção falhar inesperadamente.
+- `CauldronRecipeContractSmokeTest` e `RestorationProjectSmokeTest` cobrem recusa integral, preservação de recursos e conclusão após liberar espaço, sem enviar o resultado ao Village Storage.
+- O `QuestBoard` legado agora restaura o pedido e mantém a demanda se uma recompensa em item não couber; moedas e pontos continuam fora dos slots.
+- O rollback de `VillageResourceAccess` passou a validar a capacidade antes da devolução e só marca o recibo como reembolsado depois de restaurar integralmente as origens.
+- A água regenerada pelo poço usa a API explícita de inserção e continua fora dos slots. Loja e F10 permanecem desativados, sem serem promovidos a fluxos ativos.
+- `QuestRewardCapacitySmokeTest` protege o contrato de demandas para uma reativação futura; a suíte passa a ter 30 smoke tests.
+- A barra da Mochila agora exibe 12 slots como base, incluindo posições vazias não interativas, e divide visualmente pilhas conforme o `stack_maximo` do catálogo.
+- O indicador discreto `usados/12` mostra a ocupação sem ativar o limite. Conteúdo transitório acima da referência continua visível em slots extras, com cor de atenção.
+- `PersonalInventoryContractSmokeTest` valida a decomposição `100 → 99 + 1`; `InterfaceInteractionSmokeTest` valida 12 slots, vazios, água excluída, indicador `3/12` e capacidade ainda desligada.
+
+## 2026-09-20 - Fechamento do acesso a recursos da vila
+
+- O Baú da Vila e a Mochila agora são apresentados lado a lado, em grades opacas, com transferência seletiva nos dois sentidos.
+- Clicar em uma pilha abre uma confirmação com ícone, quantidade disponível, campo numérico, `Mover`, `Mover tudo` e `Cancelar`; `Mover tudo` afeta somente a pilha selecionada.
+- Caldeirão, purificação e restauração já consultam Village Storage primeiro e completam pela Mochila, preservando a origem de cada recurso para cancelamento e rollback.
+- O load de um inventário completo passou a substituir seu estado atual em vez de mesclá-lo, impedindo duplicação de itens retirados do Baú depois do save.
+- `VillageChestTransferSmokeTest` cobre a interface, quantidades parciais, estoque obsoleto, sementes, teclado e round-trip de save; os 27 smoke tests ativos passaram. A interface foi aprovada manualmente pelo autor.
+
+
+## 2026-09-05 - Primeira coleção de pesca V0
+
+- A Coleção do Lago registra, uma única vez, o `Peixe Comum` e a `Escama Brilhante` já obtidos pela pesca.
+- O popup de pesca agora informa o progresso `0/2`, e anuncia sua conclusão no próprio fluxo em que o item é obtido.
+- Completar a coleção concede `Memória das Marés`: a janela de resultado “boa sincronia” recebe mais 8 pixels, sem alterar a janela perfeita ou ser necessária para pescar.
+- O progresso e a conclusão integram o bloco `inventory` do save v4; saves anteriores sem esses campos iniciam a coleção normalmente.
+- `FishingCollectionSmokeTest` cobre progresso único, bônus, restauração de save e compatibilidade sem os novos campos.
+
 
 ## 2026-09-05 - Primeira camada de vida do Golem V0
 
@@ -71,6 +138,14 @@
 - Foi adicionada uma cena dev de regressão que preserva 34 plots em loads v4 bloqueado/purificado e no fallback v3, além de validar criação, reutilização, desregistro e recriação dinâmica.
 
 
+## 2026-06-11 - Fase 1.5 fechada com envelope macro e blockout final
+
+- O layout macro da fazenda recebeu um envelope fixo runtime-only para dar moldura ao mapa e separar melhor o núcleo inicial das zonas seguintes.
+- A área inicial passou a ficar mais claramente centrada no caldeirão, com baú/logística e chegada/abrigo lidos como lados distintos do núcleo.
+- A segunda área corrompida continua reservada apenas como blockout visual, sem gameplay novo.
+- A UI base segue runtime-only e sem acoplar persistência nova ao save.
+
+
 ## 2026-06-08 - P02C2 primeira leva definitiva de receitas
 
 - Foram promovidas duas receitas resource-first iniciais para o catálogo definitivo sem mexer em `SaveManager` ou em `Database.gd`.
@@ -80,21 +155,21 @@
 
 ## 2026-06-07 - P02C1 alinhamento da fonte de receitas
 
-- `RecipeBookUI.gd` e `Cauldron.gd` passaram a resolver receitas por uma camada central baseada em `RecipeDatabase`/`Data/recipes`, com fallback legado temporário para `Database.receitas_alquimia`.
+- `RecipeBookUI.gd` e `Cauldron.gd` passaram a resolver receitas por uma camada central baseada em `RecipeResolver`, com leitura de `RecipeDatabase`/`Data/recipes` e fallback legado temporário quando necessário.
 - O `SaveManager` não foi alterado e `receitas_descobertas` continua sendo salvo como ids crus.
-- A mudança reduz o drift entre Livro e Caldeirão sem migrar o catálogo ainda.
+- A mudança reduziu o drift entre Livro e Caldeirão sem migrar o catálogo ainda.
 
 ## 2026-06-07 - Documentação do catálogo de transição
 
 - Foi criado `docs/CATALOG_TRANSITION_PLAN.md` para registrar o estado atual do catálogo legado/provisório e a direção do catálogo definitivo.
 - A documentação consolida a equivalência entre o catálogo atual do código e os nomes/linhas do design novo, sem alterar gameplay, cenas ou recursos de receita.
-- Também foi registrado o risco de drift entre `Database.gd`, `Data/recipes/*.tres`, o Livro de Receitas e o caldeirão durante a migração futura.
+- Também foi registrado o risco de drift entre `Database.gd`, `Data/recipes/*.tres`, o Livro de Receitas e o caldeirão durante a migração seguinte.
 
 ## 2026-06-07 - Layout Pass V1 da fazenda e UI arrastável
 
 - O núcleo inicial da fazenda recebeu um ajuste de layout para ganhar respiro visual, reduzindo a sensação de área amontoada.
 
-- O blockout visual ficou mais leve e periférico, com opacidade menor e mais separação entre zonas futuras.
+- O blockout visual ficou mais leve e periférico, com opacidade menor e mais separação entre zonas seguintes.
 
 - O painel de objetivos iniciais foi reposicionado para não cobrir tanto o miolo da fazenda.
 
@@ -152,9 +227,9 @@
 
 ## 2026-06-06 - Blockout Visual V0 da fazenda implementado
 
-- `Scripts/Main.gd` passou a criar marcadores visuais runtime-only para zonas futuras da fazenda, sem gameplay e sem persistência.
+- `Scripts/Main.gd` passou a criar marcadores visuais runtime-only para zonas seguintes da fazenda, sem gameplay e sem persistência.
 
-- O blockout marca visualmente áreas para criaturas/animais mágicos, golems/ajudantes, recursos/forrageamento, segunda área corrompida futura e ruína/mistério futura.
+- O blockout marca visualmente áreas para criaturas/animais mágicos, golems/ajudantes, recursos/forrageamento, segunda área corrompida seguinte e ruína/mistério seguinte.
 
 - Nenhum `FarmPlot` novo foi criado, `SaveManager` permaneceu intacto e `FarmGridPreview` não foi conectado ao jogo principal.
 
@@ -162,11 +237,11 @@
 
 
 
-## 2026-06-06 - Plano macro da fazenda documentado
+## 2026-06-06 - Mapa macro da fazenda documentado
 
 - Foi criado `docs/FARM_LAYOUT_PLAN.md` para registrar o estado atual da fazenda, o problema de concentração do núcleo inicial e as zonas macro recomendadas.
 
-- A documentação separa Fase 1, Fase 1.5 e Fase 2, mantendo solo livre e `FarmGrid` real para a fase futura.
+- A documentação separa Fase 1, Fase 1.5 e Fase 2, mantendo solo livre e `FarmGrid` real para a fase seguinte.
 
 - Também foi registrado que blockout visual pode existir na Fase 1.5, mas sem gameplay, sem novos `FarmPlot` reais e sem acoplar `FarmGridPreview` ao jogo principal.
 
@@ -318,7 +393,7 @@
 
 - Foi documentada a direção central da fazenda final como um mapa fixo, artesanal e dividido em áreas desbloqueáveis por purificação alquimica.
 
-- A documentação agora liga caldeirao, pesca e Catálogo de Itens a esse futuro eixo de progressao sem implementar o sistema ainda.
+- A documentação agora liga caldeirao, pesca e Catálogo de Itens a esse seguinte eixo de progressao sem implementar o sistema ainda.
 
 - Nenhum script, cena, asset ou `project.godot` foi alterado nesta etapa.
 
@@ -438,7 +513,7 @@
 
 - A toolbar principal recebeu a `Vara de Pesca` como ferramenta visual/global, com ícone provisório e tecla `4`.
 
-- A ferramenta ainda nao aciona pesca real; ela serve como base de selecao para o sistema futuro no lago da fazenda.
+- A ferramenta ainda nao aciona pesca real; ela serve como base de selecao para o sistema seguinte no lago da fazenda.
 
 - O estado visual e o StatusPanel continuam funcionando sem alterar o loop agricola.
 
@@ -712,7 +787,7 @@
 
 ## 2026-06-02 - Preview visual do FarmGrid
 
-- Criação de `Scenes/dev/FarmGridPreview.tscn` e `Scripts/dev/FarmGridPreview.gd` como preview visual isolado do grid futuro.
+- Criação de `Scenes/dev/FarmGridPreview.tscn` e `Scripts/dev/FarmGridPreview.gd` como preview visual isolado do grid seguinte.
 
 - A cena desenha um grid 5x5 em memória, alterna estados de tile ao clique e não conecta nada ao gameplay principal.
 
@@ -746,23 +821,23 @@
 
 - O gerenciador funciona como `RefCounted`, sem cena, sem Autoload e sem conexão com o gameplay atual.
 
-- A estrutura já prepara criação, leitura e serialização futura de grids com `FarmTileData`.
+- A estrutura já prepara criação, leitura e serialização seguinte de grids com `FarmTileData`.
 
 
 
 ## 2026-06-02 - FarmTileData base
 
-- Criação de `Scripts/data/FarmTileData.gd` como `Resource` isolado para representar tiles futuros do Farm System V2.
+- Criação de `Scripts/data/FarmTileData.gd` como `Resource` isolado para representar tiles seguintes do Farm System V2.
 
 - O recurso ainda não é usado no gameplay atual; `FarmPlot` continua sendo o sistema ativo.
 
-- A base já inclui campos de solo, crop, umidade, modificadores e dados de save para a futura fazenda em grid.
+- A base já inclui campos de solo, crop, umidade, modificadores e dados de save para a seguinte fazenda em grid.
 
 
 
 ## 2026-06-02 - Farm System V2 documentado
 
-- Criação de `docs/FARM_SYSTEM_V2.md` para registrar a visão futura de fazenda baseada em tiles/grid.
+- Criação de `docs/FARM_SYSTEM_V2.md` para registrar a visão seguinte de fazenda baseada em tiles/grid.
 
 - A documentação define o conceito de Solo Vivo Alquímico, integração com caldeirão, pesca, fazendinhas e golems.
 
@@ -772,17 +847,17 @@
 
 ## 2026-06-02 - Base do TimeManager
 
-- Criação de `Scripts/TimeManager.gd` como fundação técnica para o sistema futuro de tempo real e debug.
+- Criação de `Scripts/TimeManager.gd` como fundação técnica para o sistema seguinte de tempo real e debug.
 
 - O script ainda não está conectado ao gameplay, não é Autoload e mantém o modo real desligado por padrão.
 
-- A integração com `SeasonManager`, `SaveManager`, plantações, golems e UI continua para fases futuras.
+- A integração com `SeasonManager`, `SaveManager`, plantações, golems e UI continua para fases seguintes.
 
 
 
 ## 2026-06-01 - Documento de tempo real
 
-- Criação do documento `docs/TIME_SYSTEM.md` para registrar a direção futura do tempo real do jogo.
+- Criação do documento `docs/TIME_SYSTEM.md` para registrar a direção seguinte do tempo real do jogo.
 
 - O sistema final de tempo ficou documentado como tempo real, mas o protótipo continua em modo debug/controlável por enquanto.
 
@@ -860,7 +935,7 @@
 
 - Exibição de ingredientes, resultado e quantidade maxima fabricavel com base no inventário atual.
 
-- Consulta separada da produção em lote, que fica para uma etapa futura.
+- Consulta separada da produção em lote, que fica para uma etapa seguinte.
 
 
 
@@ -948,7 +1023,7 @@
 
 - Registro do formato atual das receitas em `Database.gd`.
 
-- Comparação entre `Resource .tres`, JSON e CSV para a migração futura.
+- Comparação entre `Resource .tres`, JSON e CSV para a migração seguinte.
 
 - Recomendação documentada: manter o protótipo no formato atual por enquanto e migrar depois para `Resource .tres`.
 
@@ -962,7 +1037,7 @@
 
 - Manutenção do fluxo atual do caldeirao e do Livro de Receitas sem alteracoes.
 
-- Preparacao para um futuro `RecipeDatabase.gd` que consiga ler `Resource` e comparar com o sistema antigo.
+- Preparacao para um seguinte `RecipeDatabase.gd` que consiga ler `Resource` e comparar com o sistema antigo.
 
 
 
@@ -974,31 +1049,24 @@
 
 - Validação basica de campos obrigatorios de `RecipeData`.
 
-- Comparacao dos ids de Resources com `Database.receitas_alquimia` para orientar a migracao futura.
+- Comparacao dos ids de Resources com `Database.receitas_alquimia` para orientar a migracao seguinte.
 
 
 
 ## 2026-05-31 - Livro de Receitas em paralelo
 
-- O Livro de Receitas passou a usar `RecipeDatabase` para exibir dados ricos quando o `RecipeData` existe e esta completo.
-
-- O fallback antigo com `Database.receitas_alquimia` continua obrigatório e ativo.
-
-- A produção em lote segue usando somente o sistema legado por enquanto.
-
-- A exibição rica melhora nome, descricao, categoria, ingredientes, resultado e tempo sem trocar o fluxo principal.
-
+- O Livro de Receitas passou a usar `RecipeResolver` para exibir dados ricos quando o `RecipeData` existia e estava completo.
+- O fallback legado continuou disponível dentro do `RecipeResolver` para compatibilidade temporária.
+- A produção em lote já usava a mesma resolução central, sem duplicar a lógica principal no caldeirão.
+- A exibição rica melhorou nome, descricao, categoria, ingredientes, resultado e tempo sem trocar o fluxo principal.
 
 
 ## 2026-05-31 - Cobertura total das receitas legadas
 
 - Criação dos `.tres` faltantes em `Data/recipes/` para cobrir todas as receitas atuais do sistema legado.
-
-- O `RecipeDatabase` agora possui cobertura completa do catálogo legado atual.
-
-- `Database.gd` continua sendo a fonte funcional da produção e do caldeirão.
-
-- A camada `RecipeDatabase` segue sendo apenas leitura e apresentacao por enquanto.
+- O `RecipeDatabase` passou a possuir cobertura completa do catálogo legado atual.
+- O `RecipeResolver` centralizou a produção e o caldeirão, com fallback legado temporário.
+- A camada `RecipeDatabase` seguiu sendo apenas leitura e apresentacao por enquanto.
 
 
 
@@ -1080,7 +1148,7 @@
 
 - Se o travamento se repetir demais, a tentativa atual pode ser abortada com aviso.
 
-- O comportamento segue provisório e ainda depende de refinamento futuro da região de navegação.
+- O comportamento segue provisório e ainda depende de refinamento seguinte da região de navegação.
 
 
 

@@ -57,7 +57,9 @@ func get_rare_fish_window_label() -> String:
 func reward_rare_fish_window() -> bool:
 	if not is_rare_fish_window_active():
 		return false
-	GlobalInventory.adicionar_item("escama_brilhante", 1)
+	var insertion: Dictionary = GlobalInventory.try_add_items({"escama_brilhante": 1})
+	if not bool(insertion.get("success", false)):
+		return false
 	GlobalInventory.registrar_item_colecao_pesca("escama_brilhante")
 	return true
 
@@ -96,7 +98,13 @@ func has_active_world_event() -> bool:
 func collect_world_event() -> bool:
 	if not has_active_world_event():
 		return false
-	GlobalInventory.adicionar_item(WORLD_EVENT_ID, 1)
+	var insertion: Dictionary = GlobalInventory.try_add_items({WORLD_EVENT_ID: 1})
+	if not bool(insertion.get("success", false)):
+		# Uma tentativa valida nao deve perder o evento enquanto o jogador abre
+		# espaco: reinicia somente a janela deste marcador ja existente.
+		_world_event_marker.set_meta("spawned_at", _session_elapsed)
+		_announce("Mochila sem espaço. O Fragmento Celestial permanece aqui.", _world_event_marker.global_position, Color(1.0, 0.76, 0.42, 1.0))
+		return false
 	_announce("Fragmento Celestial coletado", _world_event_marker.global_position, Color(0.7, 0.88, 1.0, 1.0))
 	_despawn_world_event()
 	world_event_collected.emit(WORLD_EVENT_ID)

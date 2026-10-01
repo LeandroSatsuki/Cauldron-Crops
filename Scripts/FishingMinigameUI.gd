@@ -42,6 +42,8 @@ var pesca_favorecida: bool = false
 var _marker_position_x: float = 0.0
 var _marker_direction: float = 1.0
 var _mare_cintilante_rewarded: bool = false
+var _pending_rewards: Dictionary = {}
+var _pending_mare_cintilante: bool = false
 
 func _ready() -> void:
 	set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -135,6 +137,8 @@ func fechar_popup() -> void:
 	minigame_closed.emit()
 
 func _process(delta: float) -> void:
+	if not _pending_rewards.is_empty() and not _ativo:
+		_tentar_entregar_recompensa_pendente()
 	if not _ativo or _resultado_travado or marker == null:
 		return
 
@@ -186,7 +190,16 @@ func _confirmar_tentativa() -> void:
 	if pesca_favorecida and resultado_base == FishingResult.GOOD:
 		resultado_final = FishingResult.PERFECT
 	_resultado_atual = resultado_final
-	_aplicar_recompensa(resultado_final)
+	var recompensa_entregue := _aplicar_recompensa(resultado_final)
+	if not recompensa_entregue:
+		if result_label:
+			result_label.text = "Captura preservada: libere espaço na Mochila."
+			result_label.modulate = Color(1.0, 0.76, 0.42, 1.0)
+		if instruction_label:
+			instruction_label.text = "Feche o popup; a captura será guardada quando houver espaço."
+		if auto_close_timer:
+			auto_close_timer.stop()
+		return
 	if result_label:
 		match resultado_final:
 			FishingResult.PERFECT:
@@ -226,24 +239,42 @@ func _avaliar_resultado() -> FishingResult:
 		return FishingResult.GOOD
 	return FishingResult.MISS
 
-func _aplicar_recompensa(resultado: FishingResult) -> void:
+func _aplicar_recompensa(resultado: FishingResult) -> bool:
 	if _recompensa_aplicada:
-		return
-	_recompensa_aplicada = true
+		return true
 
 	match resultado:
 		FishingResult.GOOD:
-			GlobalInventory.adicionar_item("peixe_comum", 1)
-			GlobalInventory.registrar_item_colecao_pesca("peixe_comum")
-			_mare_cintilante_rewarded = EventDirector.reward_rare_fish_window()
-			_atualizar_ui_pos_recompensa()
+			_pending_rewards = {"peixe_comum": 1}
+			_pending_mare_cintilante = EventDirector.is_rare_fish_window_active()
+			if _pending_mare_cintilante:
+				_pending_rewards["escama_brilhante"] = 1
 		FishingResult.PERFECT:
-			GlobalInventory.adicionar_item("escama_brilhante", 1)
-			GlobalInventory.registrar_item_colecao_pesca("escama_brilhante")
-			_atualizar_ui_pos_recompensa()
+			_pending_rewards = {"escama_brilhante": 1}
+			_pending_mare_cintilante = false
 		FishingResult.MISS:
-			pass
+			_recompensa_aplicada = true
+			_atualizar_label_colecao()
+			return true
+	var entregue := _tentar_entregar_recompensa_pendente()
 	_atualizar_label_colecao()
+	return entregue
+
+func _tentar_entregar_recompensa_pendente() -> bool:
+	if _pending_rewards.is_empty():
+		return _recompensa_aplicada
+	var insertion: Dictionary = GlobalInventory.try_add_items(_pending_rewards)
+	if not bool(insertion.get("success", false)):
+		return false
+	for item_variant in _pending_rewards.keys():
+		GlobalInventory.registrar_item_colecao_pesca(str(item_variant))
+	_mare_cintilante_rewarded = _pending_mare_cintilante
+	_pending_rewards.clear()
+	_pending_mare_cintilante = false
+	_recompensa_aplicada = true
+	_atualizar_label_colecao()
+	_atualizar_ui_pos_recompensa()
+	return true
 
 func _obter_good_tolerance() -> float:
 	if GlobalInventory.possui_bonus_colecao_pesca():

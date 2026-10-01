@@ -98,6 +98,9 @@ func _on_lake_clicked_at(click_global_position: Vector2) -> void:
 
 	if bool(tool_manager.call("is_fishing_rod_selected")):
 		if fishing_state == FishingState.FISH_BITING:
+			if not _can_receive_possible_fishing_reward():
+				_mostrar_feedback("Mochila sem espaço para a captura.", click_global_position)
+				return
 			if _abrir_pesca_sincronia(click_global_position):
 				_definir_estado(FishingState.MINIGAME_ACTIVE)
 			else:
@@ -107,6 +110,14 @@ func _on_lake_clicked_at(click_global_position: Vector2) -> void:
 		_posicionar_boia(click_global_position)
 	else:
 		_mostrar_feedback("Selecione a Vara de Pesca.", click_global_position)
+
+func _can_receive_possible_fishing_reward() -> bool:
+	if EventDirector.is_rare_fish_window_active():
+		return GlobalInventory.can_accept_items({"peixe_comum": 1, "escama_brilhante": 1})
+	return (
+		GlobalInventory.can_accept_items({"peixe_comum": 1})
+		and GlobalInventory.can_accept_items({"escama_brilhante": 1})
+	)
 
 func _posicionar_boia(click_global_position: Vector2) -> void:
 	if bobber == null:
