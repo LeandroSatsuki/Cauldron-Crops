@@ -257,7 +257,7 @@ func _fill_grid(grid: GridContainer, items: Dictionary, from_chest: bool) -> voi
 		slot.set_meta("item_id", item_id)
 		slot.tooltip_text = "%s × %d" % [Database.obter_nome_item(item_id), quantity]
 		slot.custom_minimum_size = Vector2(66, 66)
-		var texture := Database.obter_textura_item(item_id)
+		var texture: Texture2D = Database.obter_textura_item(item_id)
 		if texture != null:
 			var icon := TextureRect.new()
 			icon.texture = texture

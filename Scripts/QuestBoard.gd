@@ -75,7 +75,7 @@ func _on_aceitar_pressed(quest: Dictionary) -> void:
 func _on_entregar_pressed(quest: Dictionary) -> void:
 	var item_id := str(quest.get("pedido_item", ""))
 	var qtd_necessaria := int(quest.get("pedido_qtd", 0))
-	var qtd_atual := GlobalInventory.get_item_quantity(item_id)
+	var qtd_atual: int = GlobalInventory.get_item_quantity(item_id)
 	var recompensa_tipo := str(quest.get("recompensa_tipo", ""))
 	var recompensa_qtd := int(quest.get("recompensa_qtd", 0))
 	

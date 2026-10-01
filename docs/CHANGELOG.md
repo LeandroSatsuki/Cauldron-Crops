@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-10-01 - Sincronização do GitHub e importação limpa
+
+- Fechamento de cada etapa passa a incluir commit e push, conforme autorização do autor registrada em `AGENTS.md` e Decisão 91.
+- Histórico remoto do README foi integrado sem push forçado, preservando sua apresentação e atualizando funcionalidades/pendências atuais.
+- O teste em clone limpo identificou dependência do cache de UID nos autoloads `Database` e `GlobalInventory`; suas entradas agora usam caminhos `res://` estáveis, como os demais autoloads.
+- Quantidade, capacidade e textura receberam tipos explícitos nos três pontos que falharam na primeira importação sem cache. Nenhuma regra de gameplay mudou.
+- Artes necessárias às cenas acompanham o checkpoint; artes locais não utilizadas, arquivos pessoais de agentes, saves, builds e `.godot/` ficam fora do envio.
+- Validação manual da persistência do caldeirão permanece pendente; publicar o checkpoint não equivale a aprová-la.
+
 ## 2026-10-01 - Persistência mínima do caldeirão
 
 - O save v4 ganhou `cauldrons` opcional: mistura em andamento, resultado pronto e lote preservam resultado/quantidade capturados e tempo restante.

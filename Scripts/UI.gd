@@ -3878,7 +3878,7 @@ func atualizar_inventario_visual() -> void:
 
 
 
-	var base_capacity := GlobalInventory.get_slot_capacity()
+	var base_capacity: int = GlobalInventory.get_slot_capacity()
 	while inventory_bar.get_child_count() < base_capacity:
 		var empty_slot = slot_scene.instantiate()
 		inventory_bar.add_child(empty_slot)
