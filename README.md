@@ -1,106 +1,122 @@
 # Cauldron Crops
 
-## 1. Visão Geral do Projeto
-**Cauldron Crops** é um jogo de simulação e automação de fazenda em 2D desenvolvido no motor **Godot 4**. O loop principal do jogo envolve o plantio de sementes, regadura, colheita de insumos, cozimento de poções em um caldeirão alquímico e a compra/gerenciamento de Golems de metal/madeira para automatizar as tarefas agrícolas.
+<p align="center">
+  Jogo 2D de fazenda e alquimia em que plantações, receitas e golems formam um ciclo de descoberta e automação.
+</p>
 
----
+<p align="center">
+  <img alt="Godot" src="https://img.shields.io/badge/Godot_4-478CBF?style=flat-square&logo=godotengine&logoColor=white">
+  <img alt="GDScript" src="https://img.shields.io/badge/GDScript-478CBF?style=flat-square&logo=godotengine&logoColor=white">
+  <img alt="Status" src="https://img.shields.io/badge/status-protótipo_jogável-D9A441?style=flat-square">
+</p>
 
-## 2. Arquitetura de Grid (Grid Snap)
-Para garantir uma organização estilo tabuleiro de xadrez (similar a jogos como *Stardew Valley*), os lotes de plantação possuem um alinhamento matemático rígido ao grid do mundo.
-- **Tamanho do Grid**: `80x80` pixels, definido pela constante `GRID_SIZE = 80` no topo de [FarmPlot.gd](file:///e:/Cauldron%20Crops/cauldron-crops/Scripts/FarmPlot.gd).
-- **Snap Matemático**: Na inicialização do objeto (`_ready()`), a posição global do lote é travada para o múltiplo mais próximo do tamanho do grid:
-  ```gdscript
-  var snap_x = round(global_position.x / GRID_SIZE) * GRID_SIZE
-  var snap_y = round(global_position.y / GRID_SIZE) * GRID_SIZE
-  global_position = Vector2(snap_x, snap_y)
-  ```
-Isso garante que, mesmo que o jogador posicione ou instancie um lote de forma imprecisa, ele será alinhado automaticamente à célula do grid correspondente.
+## Sobre o jogo
 
----
+Cauldron Crops é um cozy farming game desenvolvido em Godot 4. O jogador cultiva ingredientes, experimenta combinações no caldeirão, descobre receitas e usa os resultados para evoluir e expandir a fazenda.
 
-## 3. Mecânicas de Plantação ([FarmPlot.gd](file:///e:/Cauldron%20Crops/cauldron-crops/Scripts/FarmPlot.gd))
+O diferencial do projeto é colocar a alquimia no centro da progressão. O caldeirão conecta agricultura, exploração, economia e automação, transformando cada descoberta em uma nova possibilidade de jogo.
 
-### 3.1. Crescimento Baseado em Tempo
-Cada lote funciona com uma máquina de estados simples (`VAZIO`, `CRESCENDO`, `PRONTO_PARA_COLHER`). O ciclo de crescimento é controlado por um nó `Timer` interno (configurado como *one-shot*). O tempo padrão de crescimento é definido na base de dados de sementes (`Database`), sendo acelerado sob certas condições (ex: solo regado reduz o tempo em 20%; estação do Verão concede outros 20% de aceleração).
+## Loop principal
 
-### 3.2. Hidratação e Sobrevivência
-O lote pode ser regado utilizando água do inventário. Se um lote não estiver regado ao final do temporizador de crescimento, há **20% de chance** de a planta morrer de sede (retornando ao estado `VAZIO` com o log `"A planta morreu de sede!"`), a menos que a estação atual seja o Inverno.
+```text
+plantar → regar → colher → combinar ingredientes → descobrir receitas → evoluir a fazenda
+```
 
-### 3.3. Animação de Feedback ("Game Juice")
-As plantas reagem ao toque físico de corpos em movimento (como o jogador ou os Golems).
-- **Sensor de Colisão**: Um nó `Area2D` chamado `SwayArea` com um `CollisionShape2D` (retangular) detecta a entrada de corpos.
-- **Balanço via Tween**: Quando o sinal `body_entered` é disparado, a função `_on_sway_area_body_entered` executa um balanço dinâmico usando `Tween` para inclinar o sprite `10` graus para a direita, `-10` graus para a esquerda e suavemente retornar ao centro (`0` graus):
-  ```gdscript
-  var tween = create_tween()
-  tween.tween_property($SpritePlanta, "rotation_degrees", 10.0, 0.1)
-  tween.tween_property($SpritePlanta, "rotation_degrees", -10.0, 0.1)
-  tween.tween_property($SpritePlanta, "rotation_degrees", 0.0, 0.15)
-  ```
+## Funcionalidades implementadas
 
-### 3.4. Renderização de Texturas Individuais e Offsets
-As imagens das plantas são carregadas de forma dinâmica. Para evitar que os sprites flutuem ou fiquem desalinhados por conta de áreas transparentes variáveis nos arquivos de pixel art, todas as imagens de colheita no diretório `res://Assets/` são recortadas rente às suas bordas ativas (usando bounding boxes).
-- **Alinhamento Universal de Altura**: A base/raiz da planta é matematicamente posicionada na coordenada `y = 0` do lote através de um cálculo baseado na altura real da textura:
-  ```gdscript
-  $SpritePlanta.offset = Vector2(0, -textura.get_height() / 2.0)
-  ```
-- **Escala de Renderização**: O `SpriteTerra` usa `Vector2(0.16985133, 0.16161616)` para cobrir visualmente a célula de `80x80` sem sobrar faixa de grama nas bordas.
-- **Grupos do Nó**:
-  - `lotes_terra`: Utilizado por gerenciadores globais para disparar ações automáticas e atualizações de UI.
-  - `lote_plantacao`: Utilizado pela IA dos Golems para localizar plantas prontas para coleta.
+- plantio, rega, crescimento e colheita;
+- piloto de agricultura livre com política de solo válido;
+- Mochila e Village Storage separados, com transferência seletiva em painéis opacos;
+- catálogo de itens e pilhas visuais, com base de 12 slots e stacks padrão de 99;
+- caldeirão com receitas, produção em lote e persistência de produção/reservas;
+- livro de receitas descobertas;
+- pesca com minigame de sincronia;
+- coleção de pesca, eventos e descobertas opcionais;
+- personagem físico com navegação por clique e exploração do bosque;
+- estações e gerenciamento de água;
+- save/load v4 do progresso principal, com compatibilidade legada;
+- purificação de áreas e expansão da fazenda;
+- golem coletor com prioridades de trabalho e talento de irrigação.
 
----
+Loja, venda, requests legados e F10 permanecem desativados na experiência atual. A capacidade da Mochila ainda não recusa itens no gameplay normal; a ativação é um próximo incremento, não uma funcionalidade já liberada.
 
-## 4. Sistema de Automação e IA do Golem
+## Arquitetura
 
-A automação do trabalho agrícola é realizada de duas formas que atualmente coexistem (veja a seção *Problemas Conhecidos*).
+O projeto separa cenas, regras de gameplay e dados para permitir que os sistemas evoluam de forma independente.
 
-### 4.1. Cérebro Físico do Golem ([Golem.gd](file:///e:/Cauldron%20Crops/cauldron-crops/Scripts/Golem.gd))
-Cada Golem físico no cenário possui um script de comportamento baseado em máquina de estados rígida (`IDLE`, `MOVING`, `HARVESTING`, `RETURNING`).
-- **Ciclo de Pensamento**: A cada 1.0 segundo, o Golem no estado `IDLE` vasculha os lotes do grupo `"lote_plantacao"`.
-- **Comunicação por Variável**: Ele identifica lotes onde a variável `pronto_para_colher` é `true`. Ao selecionar um lote como `alvo_atual`, o Golem muda seu estado para `MOVING` e inicia sua trajetória.
-- **Movimentação baseada em Grid**: A viagem é calculada para manter uma velocidade rigorosamente constante de **2 blocos do grid por segundo** (tempo de viagem = `0.5` segundos por bloco de `80` pixels):
-  ```gdscript
-  var distancia_pixels = global_position.distance_to(destino)
-  var distancia_em_blocos = distancia_pixels / GRID_SIZE
-  var tempo_viagem = distancia_em_blocos * TEMPO_POR_BLOCO
-  ```
-- **Coleta**: Ao atingir o lote, o Golem entra no estado `HARVESTING` por 1.0 segundo (tempo de colheita simulado) e reseta o lote (`pronto_para_colher = false`). Em seguida, entra em `RETURNING` para voltar para a sua base de origem e redefinir o ciclo para `IDLE`.
+| Área | Responsabilidade |
+| --- | --- |
+| `Scenes/` | Cenas do jogo, interfaces e elementos interativos |
+| `Scripts/` | Regras de gameplay e gerenciadores globais |
+| `Scripts/data/` | Modelos e resolução de receitas e do grid agrícola |
+| `Data/recipes/` | Receitas declaradas como recursos do Godot |
+| `Assets/` | Sprites, fontes e recursos visuais |
+| `docs/` | Design, decisões técnicas, sistemas e roadmap |
 
-### 4.2. Gerenciador Global de Golems ([GolemManager.gd](file:///e:/Cauldron%20Crops/cauldron-crops/Scripts/GolemManager.gd))
-Um script Autoload global que atua como um sistema de colheita passiva automática em segundo plano.
-- A cada 4.0 segundos, se a contagem global de golems ativa for maior que zero, ele coleta instantaneamente e à distância até `total_golems * 2` plantas maduras no grupo `"lotes_terra"`, simulando a colheita direta chamando a função `_on_plot_clicked()` de cada lote de terra maduro.
+Entre os componentes centrais estão `SaveManager`, `GlobalInventory`, `RecipeResolver`, `FarmGridManager`, `QuestManager` e a máquina de estados do golem.
 
----
+`FarmPlot` continua sendo a autoridade do cultivo, alinhado a células de `80 × 80` pixels. `FarmGridManager` é índice/bridge/snapshot, não uma segunda autoridade de gameplay. A renderização de `SpriteTerra` cobre a célula sem bordas de grama; as plantas ficam ancoradas pela base. O golem físico preserva a logística visível colher → carregar → depositar; o `GolemManager` legado permanece desligado.
 
-## 5. Economia e Inventário ([EconomyManager.gd](file:///e:/Cauldron%20Crops/cauldron-crops/Scripts/EconomyManager.gd))
-Centraliza o controle financeiro e limites de automação da fazenda.
-- **Moedas (`moedas`)**: Moeda corrente adicionada através da venda de produtos colhidos e usada para transações.
-- **Controle de Golems**:
-  - `total_golems`: Define o número de golems ativos que o jogador possui. Inicializado em `1` para contar o golem que já inicia fisicamente inserido no mapa.
-  - `max_golems`: Limite máximo de golems que podem ser adquiridos (padrão = `5`).
+## Executar o projeto
 
----
+### Requisitos
 
-## 6. Ferramentas Auxiliares
+- Godot 4.6.2 ou versão compatível;
+- renderizador com suporte ao modo Forward Plus.
 
-### 6.1. Fatiador de Sprite Sheets ([fatiador_plantas.py](file:///e:/Cauldron%20Crops/cauldron-crops/fatiador_plantas.py))
-Um script em Python na raiz do projeto que lê as duas planilhas de sprites matriciais das plantas (`crops_1.png` e `crops_2.png` com dimensões `1024x768` pixels contendo 4 colunas e 3 linhas cada) e as divide em 24 imagens individuais de `256x256` pixels. As imagens fatiadas são salvas no formato `[nome_da_planta]_[estagio].png` na pasta de Assets do Godot.
+### Desenvolvimento
 
-### 6.2. Script de Corte de Bordas ([scratch/process_crop_images.py](file:///C:/Users/lpsan/.gemini/antigravity-ide/brain/dd3d33fc-cb00-4f97-8dcd-71cb720c1f3d/scratch/process_crop_images.py))
-Um script complementar desenvolvido em Python que analisa todos os arquivos PNG individuais de plantação gerados na pasta `res://Assets/` (incluindo as novas sprites personalizadas enviadas pelo usuário para o trigo), calcula a `getbbox()` de pixels visíveis e descarta todo o excesso de fundo transparente. Isso permite que a lógica de renderização dinâmica de offsets no Godot alinhe as bases dos sprites perfeitamente ao chão sem ajustes manuais.
+1. Clone o repositório:
 
----
+   ```bash
+   git clone https://github.com/LeandroSatsuki/Cauldron-Crops.git
+   ```
 
-## 7. Problemas Conhecidos e Estado Atual
+2. Importe `project.godot` no Godot.
+3. Execute a cena principal com **F6/F5** no editor.
 
-### Conflito: Auto-colheita em 4 segundos vs. Coleta do Golem
-- **Descrição do Problema**: Atualmente, a colheita automática realizada pelo [GolemManager.gd](file:///e:/Cauldron%20Crops/cauldron-crops/Scripts/GolemManager.gd) e a locomoção física do Golem em [Golem.gd](file:///e:/Cauldron%20Crops/cauldron-crops/Scripts/Golem.gd) entram em conflito direto. A cada 4 segundos, o `GolemManager` coleta instantaneamente e de forma invisível as plantas maduras remotas. Quando o Golem físico calcula sua rota e caminha até o lote maduro selecionado, a planta frequentemente já foi colhida e resetada à distância pelo loop do `GolemManager`, tornando a movimentação e animação física do Golem redundantes e ineficientes.
-- **Resolução Recomendada**: Para que o comportamento visual de IA do Golem faça sentido, a rotina de colheita remota instantânea do [GolemManager.gd](file:///e:/Cauldron%20Crops/cauldron-crops/Scripts/GolemManager.gd) deve ser desativada ou integrada diretamente à colheita física dos Golems, permitindo que apenas golems físicos realizem as colheitas ou que o `GolemManager` sirva apenas para gerenciar o spawn físico dos robôs.
+### Demo para Windows
 
-## 8. Execução e exportação da demo da Fase 1
-- Versão usada: Godot 4.6.2.
-- Para abrir o projeto, abra a pasta `E:/Cauldron Crops/cauldron-crops` na Godot ou carregue diretamente `project.godot`.
-- Para rodar localmente, execute a cena principal definida em `project.godot` (`Scenes/Main.tscn`) com Play/F5 no editor.
-- Para exportar a demo Windows, use o preset `Windows Desktop - Fase 1 Demo` e exporte para `Builds/Fase1/CauldronCrops_Fase1.exe`.
-- Se o editor solicitar export templates, instale os templates da mesma versão da Godot (4.6.2) antes de exportar.
-- A demo exportada da Fase 1 foi gerada com sucesso e validada manualmente; os artefatos locais ficam em `Builds/Fase1/` e não devem ser versionados.
+O projeto possui o preset `Windows Desktop - Fase 1 Demo` em `export_presets.cfg`.
+
+Para gerar uma build, instale os templates de exportação compatíveis com sua versão do Godot e exporte para a pasta `Builds/Fase1/`. Os binários são ignorados pelo Git e não fazem parte do repositório.
+
+## Estado do desenvolvimento
+
+O fechamento da V0 foi aprovado, e o projeto está na evolução pós-V0 de exploração, armazenamento e Mochila. Conteúdo, arte, balanceamento e sistemas de progressão continuam em evolução.
+
+Checkpoint de 2026-10-01: 31 smoke tests passaram. A persistência do caldeirão foi implementada e ainda aguarda validação manual do autor; a capacidade da Mochila permanece desligada. Cada fechamento de etapa inclui commit e push, conforme [AGENTS.md](./AGENTS.md).
+
+### Verificação técnica
+
+Com `godot` disponível no terminal, um teste pode ser executado sem janela:
+
+```bash
+godot --headless --path . res://Scenes/dev/CauldronPersistenceSmokeTest.tscn
+```
+
+As cenas de smoke test ficam em `Scenes/dev/`; testes automáticos não substituem a validação visual/manual.
+
+## Documentação
+
+- [Contexto mestre e continuidade](./docs/CAULDRON_CROPS_CONTEXT_MASTER.md)
+- [Plano da Mochila](./docs/PERSONAL_INVENTORY_ARCHITECTURE_PLAN.md)
+- [Contrato de recursos da vila](./docs/VILLAGE_RESOURCE_ACCESS_CONTRACT.md)
+- [Game Design Document](./docs/GDD.md)
+- [Roadmap](./docs/ROADMAP.md)
+- [Sistema agrícola](./docs/FARM_SYSTEM_V2.md)
+- [Sistema de pesca](./docs/FISHING_SYSTEM.md)
+- [Modelo de receitas](./docs/RECIPES_SCHEMA.md)
+- [Sistema de tempo](./docs/TIME_SYSTEM.md)
+- [Decisões técnicas](./docs/DECISIONS.md)
+- [Changelog](./docs/CHANGELOG.md)
+
+## Próximos passos
+
+- validar manualmente save/load e cancelamento da produção do caldeirão;
+- após aprovação, ativar de forma controlada o piloto de capacidade 12 × 99;
+- balanceamento, expansão e conteúdo adicional permanecem para incrementos próprios, sem antecipar economia ou NPCs.
+
+## Autor
+
+Desenvolvido por [Leandro Santos](https://github.com/LeandroSatsuki).
