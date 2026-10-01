@@ -2729,7 +2729,7 @@ func abrir_pesca_sincronia(origem_global: Vector2, pesca_favorecida: bool = fals
 
 
 
-	fishing_minigame_ui.call("abrir_popup", origem_global)
+	var opened_popup: Control = fishing_minigame_ui.call("abrir_popup", origem_global)
 
 
 
@@ -2737,7 +2737,7 @@ func abrir_pesca_sincronia(origem_global: Vector2, pesca_favorecida: bool = fals
 
 
 
-	return fishing_minigame_ui
+	return opened_popup
 
 
 
@@ -3887,6 +3887,7 @@ func atualizar_inventario_visual() -> void:
 	if inventory_capacity_label:
 		var used_slots := slot_entries.size()
 		inventory_capacity_label.text = "%d/%d" % [used_slots, base_capacity]
+		inventory_capacity_label.tooltip_text = "Conteúdo legado acima do limite. Deposite itens no Baú da Vila; nenhuma quantidade foi cortada." if used_slots > base_capacity else "Mochila: 12 slots, pilhas padrão de 99. Água fica no poço."
 		inventory_capacity_label.modulate = Color(1.0, 0.72, 0.48, 1.0) if used_slots > base_capacity else Color(0.86, 0.9, 0.78, 1.0)
 
 	atualizar_destaques()

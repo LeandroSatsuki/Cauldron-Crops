@@ -1,5 +1,13 @@
 # Decisions
 
+## Decisão 92 - Piloto ativo preserva excesso legado e captura pendente
+
+- Continuidade autorizada pelo autor em 2026-10-01: ativar 12 slots com stack padrão 99. Água, ferramentas e estados separados continuam fora da capacidade; nenhuma expansão, economia ou destino novo foi implementado.
+- Compatibilidade: o load v3/v4 substitui quantidades integralmente mesmo acima de 12 slots. Não cortar itens, transferir automaticamente nem desativar o limite. Completar uma pilha ocupada é permitido; criar um slot excedente novo não é. O painel rolável do baú permite reduzir o excesso por depósito manual.
+- Segurança da pesca: a defesa contra inventário cheio não podia desaparecer ao fechar o jogo nem ser sobrescrita pela próxima tentativa. `fishing_pending_capture` opcional no v4 guarda a recompensa exata existente, sem criar infraestrutura de fila. A UI propaga a recusa de abertura; o lago informa a pendência. Coleção avança somente após entrega integral.
+- Load valida captura antes de alterar estoques e reinicia o lago sem emitir o fechamento que forçaria a Vara sobre uma semente restaurada. Save antigo completo sem campo limpa pendência do runtime; parcial sem estoque nem campo preserva o estado atual.
+- Validação: teste dedicado cobre limite por padrão, estoques, overflow, JSON/recriação, tentativa bloqueada, retry único e carga inválida/legada/parcial. Publicar checkpoint não aprova o piloto manualmente; teste anterior de persistência do caldeirão também permanece pendente.
+
 ## Decisão 91 - Cada fechamento de etapa inclui atualização no GitHub
 
 - Direção explícita do autor em 2026-10-01: ao finalizar uma etapa, criar commit e enviar ao GitHub, sem acumular o desenvolvimento somente na máquina local.

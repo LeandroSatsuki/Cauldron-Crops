@@ -1,5 +1,15 @@
 # Changelog
 
+## 2026-10-01 - Piloto ativo da Mochila e proteção da captura pendente
+
+- Capacidade de 12 slots com stacks padrão de 99 ativa por padrão; água e estados separados continuam fora do limite. Entradas ativas tratam recusa sem concluir a origem.
+- Saves v3/v4 com excesso legado carregam quantidades integralmente. A barra representa slots extras temporários e explica o excesso; o painel rolável do baú permite depósito completo. Não há corte, transferência automática nem criação de novo slot excedente.
+- A auditoria encontrou uma defesa incompleta da pesca: captura pendente podia ser sobrescrita ou perdida ao fechar o jogo. Nova tentativa não substitui a captura; `fishing_pending_capture` opcional guarda a recompensa exata e o bônus da Maré Cintilante.
+- Load valida captura antes dos estoques e reinicia o lago sem forçar a Vara sobre a seleção restaurada. Coleção só avança após entrega integral. Save antigo completo limpa runtime; payload parcial sem estoques preserva a captura.
+- Novo `PersonalInventoryPilotSmokeTest` cobre limite por padrão, baú atômico, conclusão de pilha, excesso legado v3, JSON/recriação, tentativa bloqueada, retry único, payload inválido e carga parcial/legada, sem escrever no save pessoal.
+- Suíte completa passou em 32/32 smoke tests. O processamento real de retry foi adicionalmente exercitado pelo teste dedicado.
+- Checkpoint publicado com validação manual pendente do piloto e da persistência do caldeirão; autorização de continuidade não foi tratada como aprovação desses testes. Nenhuma economia, expansão, F10 ou novo destino foi implementado.
+
 ## 2026-10-01 - Sincronização do GitHub e importação limpa
 
 - Fechamento de cada etapa passa a incluir commit e push, conforme autorização do autor registrada em `AGENTS.md` e Decisão 91.

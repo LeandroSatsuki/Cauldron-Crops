@@ -27,7 +27,7 @@ plantar → regar → colher → combinar ingredientes → descobrir receitas �
 - plantio, rega, crescimento e colheita;
 - piloto de agricultura livre com política de solo válido;
 - Mochila e Village Storage separados, com transferência seletiva em painéis opacos;
-- catálogo de itens e pilhas visuais, com base de 12 slots e stacks padrão de 99;
+- catálogo de itens e Mochila limitada a 12 slots, com stacks padrão de 99;
 - caldeirão com receitas, produção em lote e persistência de produção/reservas;
 - livro de receitas descobertas;
 - pesca com minigame de sincronia;
@@ -38,7 +38,7 @@ plantar → regar → colher → combinar ingredientes → descobrir receitas �
 - purificação de áreas e expansão da fazenda;
 - golem coletor com prioridades de trabalho e talento de irrigação.
 
-Loja, venda, requests legados e F10 permanecem desativados na experiência atual. A capacidade da Mochila ainda não recusa itens no gameplay normal; a ativação é um próximo incremento, não uma funcionalidade já liberada.
+Loja, venda, requests legados e F10 permanecem desativados. O piloto de capacidade está ativo: recusas preservam a origem/recompensa, e saves acima de 12 slots carregam todas as quantidades para depósito manual no baú, sem truncamento. Capturas pendentes também integram o save v4. Validação manual do piloto ainda pendente.
 
 ## Arquitetura
 
@@ -85,7 +85,7 @@ Para gerar uma build, instale os templates de exportação compatíveis com sua 
 
 O fechamento da V0 foi aprovado, e o projeto está na evolução pós-V0 de exploração, armazenamento e Mochila. Conteúdo, arte, balanceamento e sistemas de progressão continuam em evolução.
 
-Checkpoint de 2026-10-01: 31 smoke tests passaram. A persistência do caldeirão foi implementada e ainda aguarda validação manual do autor; a capacidade da Mochila permanece desligada. Cada fechamento de etapa inclui commit e push, conforme [AGENTS.md](./AGENTS.md).
+Checkpoint de 2026-10-01: 32/32 smoke tests passaram com o piloto 12 × 99 ativo, incluindo compatibilidade com excesso legado e persistência da captura pendente. A persistência do caldeirão e o piloto ainda aguardam validação manual do autor. Cada fechamento de etapa inclui commit e push, conforme [AGENTS.md](./AGENTS.md).
 
 ### Verificação técnica
 
@@ -114,7 +114,7 @@ As cenas de smoke test ficam em `Scenes/dev/`; testes automáticos não substitu
 ## Próximos passos
 
 - validar manualmente save/load e cancelamento da produção do caldeirão;
-- após aprovação, ativar de forma controlada o piloto de capacidade 12 × 99;
+- validar o piloto ativo: recusa, depósito/liberação de espaço e retomada, incluindo saves antigos e captura pendente;
 - balanceamento, expansão e conteúdo adicional permanecem para incrementos próprios, sem antecipar economia ou NPCs.
 
 ## Autor

@@ -19,7 +19,7 @@ Fundação técnica da transição entre Mochila e Village Storage. Caldeirão, 
 - Nenhum item é transferido automaticamente.
 - Baú e Mochila abrem lado a lado, em grades opacas, com transferência seletiva nos dois sentidos.
 - Requests e comércio ainda não usam o contrato porque seus fluxos permanecem fora da V0 atual.
-- A fundação de capacidade/stacks existe, mas permanece desligada no gameplay normal; filtros, múltiplos baús e mudança de schema do save continuam fora deste contrato.
+- O piloto de capacidade está ativo: 12 slots × stacks padrão de 99. Retirada recusada preserva os estoques; excesso legado pode ser depositado sem perda. Filtros, múltiplos baús e posições persistentes continuam fora deste contrato; validação manual do piloto pendente.
 - O contrato não define o destino dos resultados produzidos pelos sistemas da vila.
 
 ## Piloto do caldeirão
@@ -32,7 +32,7 @@ Fundação técnica da transição entre Mochila e Village Storage. Caldeirão, 
 - Load restaura os estoques e substitui os recibos sem consumo/refund adicional. A referência operacional ao baú é reconstruída no primeiro uso.
 - Se um refund não couber na Mochila, somente os recibos ainda não devolvidos permanecem em cancelamento pendente, com timer parado; liberar espaço e cancelar novamente tenta a devolução sem repetir as já concluídas. Esse estado também é persistido.
 - Misturas inválidas continuam consumindo os ingredientes, conforme a regra vigente.
-- O resultado continua destinado à Mochila. Se a capacidade simulada impedir a inserção, ele permanece pronto no caldeirão; lotes pausam sem confirmar o craft nem descartar sua reserva.
+- O resultado continua destinado à Mochila. Se a capacidade impedir a inserção, ele permanece pronto no caldeirão; lotes pausam sem confirmar o craft nem descartar sua reserva.
 - A mistura experimental por slots ainda exige que o tipo de item esteja visível na Mochila; receitas conhecidas pelo Livro podem usar somente o Village Storage.
 
 ## Piloto da purificação

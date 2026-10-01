@@ -2,7 +2,7 @@
 
 ## Status
 
-Fases A e B concluídas em 2026-09-20: baseline, plano e API compatível implementados. Nenhum limite de capacidade está ativo ainda.
+Fases A–C concluídas. Fase D: piloto de 12 slots × stacks padrão de 99 ativo em 2026-10-01, por autorização de continuidade do autor. Implementação automatizada; validação manual do piloto e da persistência do caldeirão ainda pendentes. Os relatos históricos abaixo descrevem cada checkpoint, não o estado atual do limite.
 
 Este marco sucede o fechamento do acesso a recursos da vila. Ele não inclui economia, venda, NPCs, múltiplos baús, filtros avançados, peso, toolbelt separado nem mudança de lore.
 
@@ -146,7 +146,7 @@ Sétimo incremento concluído: o `QuestBoard` legado devolve integralmente o ped
 
 ### Fase D — Ativar o piloto de 12 × 99
 
-1. ligar a capacidade somente após todas as entradas ativas tratarem recusa e o resultado pendente do caldeirão possuir destino persistente;
+1. ligar a capacidade somente após todas as entradas ativas tratarem recusa e o resultado pendente do caldeirão possuir destino persistente — implementado, aguardando validação manual;
 2. renderizar 12 slots fixos e dividir visualmente quantidades maiores que 99 — concluído;
 3. mostrar ocupação de forma discreta — concluído;
 4. impedir retirada excessiva do baú antes de remover da origem — concluído na Fase C;
@@ -160,6 +160,12 @@ Segundo incremento concluído em 2026-10-01, após aprovação manual do visual:
 `InterfaceInteractionSmokeTest` cobre cliques reais nos slots divididos, desaparecimento de uma pilha após consumo, depósitos parcial/final e callbacks obsoletos. `SaveContractSmokeTest` serializa JSON em memória e restaura Mochilas vazia, parcial e cheia, verificando substituição exata, quantidades das pilhas, ocupação e seleção. O save pessoal não é escrito; o formato continua v4. A ordem das chaves pode mudar na serialização JSON: posições físicas dos slots continuam fora do contrato persistido. Sete smoke tests relacionados passaram; a capacidade segue desligada.
 
 Terceiro incremento concluído em 2026-10-01: a produção/resultado pronto do caldeirão passa a integrar o save v4 por campo opcional. Misturas guardam resultado, quantidade e tempo restante; lotes guardam também contadores e recibos por origem dos crafts não entregues. Load substitui estado sem repetir consumo/refund. Cancelamento bloqueado preserva as reservas e pode ser retomado após liberar espaço. `CauldronPersistenceSmokeTest` reconstrói a cena, valida timers reais e simula estados de capacidade sem ativá-la no gameplay. A suíte completa de 31 smoke tests passou; o gate de persistência está implementado e aguarda validação manual.
+
+Quarto incremento implementado em 2026-10-01: limite ativo por padrão, sem alterar o schema agregado v4 nem persistir o flag de testes. Saves acima de 12 slots são carregados integralmente; slots excedentes permanecem representados, e o painel rolável do Baú permite depositar todo o conteúdo. Não há truncamento, depósito automático nem criação de slots novos enquanto a ocupação exceder 12; completar espaço na pilha já ocupada continua permitido. Depositar reduz naturalmente o excesso.
+
+A auditoria de ativação identificou um risco na defesa da pesca: a captura pendente podia ser sobrescrita por outra tentativa ou perdida ao reabrir o jogo. O campo opcional `fishing_pending_capture` guarda a recompensa capturada e o bônus da Maré Cintilante; uma nova tentativa não pode substituí-la. Load valida antes de alterar estoques, substitui pendência sem entrega imediata e reinicia o lago sem forçar a Vara sobre a seleção restaurada. A coleção só avança após a entrega integral. Saves completos antigos sem o campo limpam o runtime; payloads parciais sem estoques preservam a captura. Isso é proteção de uma recompensa existente, não uma fila genérica ou novo destino.
+
+`PersonalInventoryPilotSmokeTest` verifica o limite de produção sem ligar um flag no teste, retirada atômica, conclusão de pilha, save v3 excedente com 15 slots, depósito sem perda, pesca recusada, captura dupla persistida/recriada, nova tentativa bloqueada, entrega única, payload inválido e carga parcial/legada. Nenhum teste escreve no save pessoal. A validação visual/manual continua pendente.
 
 ### Fase E — Balanceamento e expansão futura
 
@@ -187,6 +193,12 @@ Somente após teste manual:
 
 ## Próximo passo recomendado
 
-Validar manualmente produção em andamento, lote parcialmente concluído e cancelamento após save/load, inclusive reabrindo o jogo. Os estados de Mochila cheia e resultado pronto/pausado já estão cobertos automaticamente; não reativar F10 nem ligar capacidade apenas para o checklist.
+Validar manualmente o piloto antes de encerrar a Fase D. Não reativar F10 nem alterar o save pessoal para montar cenários; os cenários extremos têm smoke tests próprios.
 
-Após aprovação, o próximo incremento poderá ativar de forma controlada o piloto 12 × 99 e validar o loop completo de recusa/liberação de espaço, incluindo o cancelamento pendente. Neste incremento, o limite continua desligado e nenhum novo destino de recompensa foi decidido.
+1. Abrir o save habitual: quantidades e seleção devem ser preservadas; água não ocupa slot. Se houver excesso legado, depositar pelo Baú da Vila, sem perda de itens.
+2. Colher, coletar no bosque, pescar e transferir itens nos dois sentidos; a interação usual deve permanecer funcional.
+3. Quando a Mochila atingir 12/12, tentar receber um item sem espaço na pilha: a fonte deve permanecer disponível e mostrar aviso. Depositar no baú e tentar novamente deve retomar a ação sem duplicação.
+4. Produzir no caldeirão, salvar durante a mistura ou lote, fechar/reabrir e carregar. Conferir resultado único e cancelamento devolvendo ingredientes às origens. Este teste anterior continua pendente, não foi marcado como aprovado pela autorização de continuidade.
+5. Se uma captura ficar pendente por mudança de espaço durante a sincronia, fechar o popup, salvar/reabrir e liberar espaço pelo baú: entrega integral uma única vez e coleção atualizada só depois.
+
+Somente após aprovação manual, revisar o balanceamento com base na experiência real. Não antecipar expansão, economia, NPCs ou novo destino de recompensa.

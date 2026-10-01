@@ -87,6 +87,11 @@ func _on_lake_clicked() -> void:
 
 
 func _on_lake_clicked_at(click_global_position: Vector2) -> void:
+	var ui: Node = _obter_ui_principal()
+	var popup: Node = ui.get("fishing_minigame_ui") if ui != null else null
+	if is_instance_valid(popup) and popup.has_method("has_pending_capture") and bool(popup.call("has_pending_capture")):
+		_mostrar_feedback("Libere espaço para guardar a captura anterior.", click_global_position)
+		return
 	if fishing_state == FishingState.MINIGAME_ACTIVE:
 		_mostrar_feedback("Finalize a pesca atual.", click_global_position)
 		return
@@ -229,6 +234,9 @@ func _reset_fishing_state() -> void:
 		bobber.modulate = BOBBER_READY_MODULATE
 	if fishing_bite_timer != null:
 		fishing_bite_timer.stop()
+
+func reset_after_load() -> void:
+	_reset_fishing_state()
 
 func _force_fishing_rod_active() -> void:
 	var tool_manager: Node = _obter_tool_manager()

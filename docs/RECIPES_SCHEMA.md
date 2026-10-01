@@ -196,4 +196,4 @@ Cada reserva guarda `success`, `refunded`, `requirements` e `entries` com `item_
 
 Saves completos antigos sem o campo inicializam `IDLE`; não é possível reconstruir produção que o arquivo antigo nunca registrou. Payloads parciais usados por contratos agrícolas não apagam produção. Contagem/limite de golems do caminho abstrato legado são campos opcionais de `economy`, acompanhando o mesmo snapshot de entrega.
 
-Teste dedicado: `Scenes/dev/CauldronPersistenceSmokeTest.tscn`. Ele usa JSON em memória e reconstrói a cena sem tocar no save pessoal. Capacidade da Mochila permanece desligada no gameplay.
+Teste dedicado: `Scenes/dev/CauldronPersistenceSmokeTest.tscn`. Ele usa JSON em memória e reconstrói a cena sem tocar no save pessoal. O piloto de capacidade da Mochila está ativo; validação manual da persistência e do piloto ainda pendente. `PersonalInventoryPilotSmokeTest` complementa o contrato com limite por padrão e compatibilidade de excesso legado.

@@ -98,6 +98,9 @@ func _ready() -> void:
 	_aplicar_estado_visivel(false)
 
 func abrir_popup(origem_global: Vector2) -> Control:
+	# Uma segunda tentativa nunca pode sobrescrever uma captura ainda sem espaco.
+	if has_pending_capture() and not _tentar_entregar_recompensa_pendente():
+		return null
 	_ativo = true
 	_resultado_travado = false
 	_resultado_atual = FishingResult.MISS
@@ -242,6 +245,8 @@ func _avaliar_resultado() -> FishingResult:
 func _aplicar_recompensa(resultado: FishingResult) -> bool:
 	if _recompensa_aplicada:
 		return true
+	if has_pending_capture():
+		return _tentar_entregar_recompensa_pendente()
 
 	match resultado:
 		FishingResult.GOOD:
@@ -259,6 +264,51 @@ func _aplicar_recompensa(resultado: FishingResult) -> bool:
 	var entregue := _tentar_entregar_recompensa_pendente()
 	_atualizar_label_colecao()
 	return entregue
+
+func has_pending_capture() -> bool:
+	return not _pending_rewards.is_empty()
+
+func get_save_data() -> Dictionary:
+	if not has_pending_capture():
+		return {}
+	return {"rewards": _pending_rewards.duplicate(true), "mare_cintilante": _pending_mare_cintilante}
+
+func is_save_data_valid(data: Dictionary) -> bool:
+	if data.is_empty():
+		return true
+	if not (data.get("rewards") is Dictionary) or not (data.get("mare_cintilante") is bool):
+		return false
+	var rewards: Dictionary = data["rewards"]
+	if rewards.is_empty() or rewards.size() > 2:
+		return false
+	for item_id in rewards:
+		if item_id not in ["peixe_comum", "escama_brilhante"]:
+			return false
+		var quantity: Variant = rewards[item_id]
+		if typeof(quantity) not in [TYPE_INT, TYPE_FLOAT] or float(quantity) != 1.0:
+			return false
+	# A captura dupla so existe na Mare Cintilante; as simples nao tem esse bonus.
+	return bool(data["mare_cintilante"]) == (rewards.size() == 2)
+
+func load_save_data(data: Dictionary) -> void:
+	if not is_save_data_valid(data):
+		return
+	# Sem emitir minigame_closed: um load nao deve forcar a vara e apagar a
+	# selecao de sementes restaurada. A tentativa sem resultado e descartada.
+	_ativo = false
+	_resultado_travado = false
+	_recompensa_aplicada = false
+	_mare_cintilante_rewarded = false
+	_pending_rewards.clear()
+	_pending_mare_cintilante = false
+	_aplicar_estado_visivel(false)
+	if auto_close_timer:
+		auto_close_timer.stop()
+	if not data.is_empty():
+		for item_id in data["rewards"]:
+			_pending_rewards[item_id] = int(data["rewards"][item_id])
+		_pending_mare_cintilante = bool(data["mare_cintilante"])
+	_atualizar_label_colecao()
 
 func _tentar_entregar_recompensa_pendente() -> bool:
 	if _pending_rewards.is_empty():

@@ -18,11 +18,11 @@ var skills_desbloqueadas: Array = []
 var colecao_pesca_descobertas: Array[String] = []
 var colecao_pesca_concluida: bool = false
 var lore_descobertas: Array[String] = []
-var _personal_capacity_enforced: bool = false
+var _personal_capacity_enforced: bool = true
 
 func adicionar_item(produto: String, quantidade: int = 1) -> void:
-	# Wrapper legado: a capacidade permanece desligada nesta fase, portanto todos
-	# os produtores atuais continuam recebendo a quantidade inteira.
+	# Wrapper legado restrito a debug/testes. Produtores ativos usam insercao
+	# estruturada e tratam recusa antes de concluir ou consumir a origem.
 	try_add_item(produto, quantidade)
 
 func get_item_quantity(item_id: String) -> int:
@@ -80,8 +80,7 @@ func is_capacity_enforced() -> bool:
 	return _personal_capacity_enforced
 
 func set_capacity_enforced(enabled: bool) -> void:
-	# A Fase B mantém este valor falso no gameplay. O setter permite validar o
-	# contrato antes de migrar todos os produtores de recompensas.
+	# Gancho de teste; o gameplay inicia com o piloto ativo e o load nao o altera.
 	_personal_capacity_enforced = enabled
 
 func get_acceptance(item_id: String, quantity: int) -> Dictionary:

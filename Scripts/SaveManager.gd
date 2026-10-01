@@ -124,6 +124,7 @@ func _build_save_data() -> Dictionary:
 	return {
 		"version": SAVE_VERSION,
 		"cauldrons": _build_cauldron_save_data(),
+		"fishing_pending_capture": _build_fishing_save_data(),
 		"inventory": {
 			"inventario": inventory_copy,
 			"cargas_crescimento": GlobalInventory.cargas_crescimento,
@@ -180,6 +181,9 @@ func _apply_save_data(data: Dictionary) -> bool:
 	# Validar o novo payload antes de substituir estoques ou qualquer produtor.
 	if not _is_cauldron_save_payload_valid(data):
 		push_warning("SaveManager: dados de producao do caldeirao invalidos; save nao aplicado.")
+		return false
+	if not _is_fishing_save_payload_valid(data):
+		push_warning("SaveManager: captura pendente invalida; save nao aplicado.")
 		return false
 
 	var inventory_data: Dictionary = _safe_dictionary(data.get("inventory", {}))
@@ -283,7 +287,38 @@ func _apply_save_data(data: Dictionary) -> bool:
 		var cauldron_nodes: Dictionary = _get_cauldron_nodes()
 		for cauldron_id in cauldron_nodes:
 			cauldron_nodes[cauldron_id].call("load_save_data", cauldron_states.get(cauldron_id, {"state": "IDLE"}))
+	if data.has("fishing_pending_capture") or inventory_data.get("inventario") is Dictionary:
+		var fishing: Node = _get_fishing_minigame()
+		if fishing != null:
+			fishing.call("load_save_data", data.get("fishing_pending_capture", {}))
+		for spot in get_tree().get_nodes_in_group("fishing_spot"):
+			if current_scene != null and current_scene.is_ancestor_of(spot) and spot.has_method("reset_after_load"):
+				spot.call("reset_after_load")
 	return true
+
+
+func _get_fishing_minigame() -> Node:
+	var scene: Node = get_tree().current_scene
+	var ui: Node = scene.get_node_or_null("UI") if scene != null else null
+	if ui == null:
+		return null
+	var fishing: Variant = ui.get("fishing_minigame_ui")
+	return fishing if is_instance_valid(fishing) and fishing is Node else null
+
+
+func _build_fishing_save_data() -> Dictionary:
+	var fishing: Node = _get_fishing_minigame()
+	return fishing.call("get_save_data") if fishing != null else {}
+
+
+func _is_fishing_save_payload_valid(data: Dictionary) -> bool:
+	if not data.has("fishing_pending_capture"):
+		return true
+	var pending: Variant = data["fishing_pending_capture"]
+	if not (pending is Dictionary):
+		return false
+	var fishing: Node = _get_fishing_minigame()
+	return bool(fishing.call("is_save_data_valid", pending)) if fishing != null else pending.is_empty()
 
 
 func _get_cauldron_nodes() -> Dictionary:

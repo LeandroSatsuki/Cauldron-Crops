@@ -202,6 +202,9 @@ Não criar agora:
 
 ## Decisão atual
 
+- Piloto pós-V0 de capacidade ativo em 2026-10-01: espaço validado antes da sincronia e recompensa entregue atomicamente. Falta de espaço preserva a captura, bloqueia nova tentativa e só registra coleção após entrega integral na Mochila.
+- `fishing_pending_capture` opcional no save v4 guarda `rewards` (Peixe Comum e/ou Escama Brilhante, uma unidade cada) e `mare_cintilante` (verdadeiro somente na captura dupla). Payload inválido é recusado antes de alterar estoques. Load não entrega imediatamente; processamento retoma a entrega quando há espaço, sem duplicação.
+- Save completo antigo sem o campo limpa a captura runtime; payload parcial sem inventário nem campo a preserva. Load reinicia o lago e fecha sincronia sem forçar a Vara sobre uma semente restaurada. Não persiste timing de tentativa sem resultado nem cria fila genérica. Validação manual do piloto ainda pendente.
 - A pesca está aprovada como direção de gameplay paralelo.
 - A prioridade é média.
 - A implementação mínima começa integrada ao lago da fazenda.
