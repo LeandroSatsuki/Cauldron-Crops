@@ -6,6 +6,7 @@
 - Histórico remoto do README foi integrado sem push forçado, preservando sua apresentação e atualizando funcionalidades/pendências atuais.
 - O teste em clone limpo identificou dependência do cache de UID nos autoloads `Database` e `GlobalInventory`; suas entradas agora usam caminhos `res://` estáveis, como os demais autoloads.
 - Quantidade, capacidade e textura receberam tipos explícitos nos três pontos que falharam na primeira importação sem cache. Nenhuma regra de gameplay mudou.
+- Após a correção, uma nova cópia limpa importou sem erros e passou nos cinco smoke tests de release V0, persistência do caldeirão, recompensa/capacidade, interface e transferências do baú. A suíte completa anterior também havia passado em 31/31 testes.
 - Artes necessárias às cenas acompanham o checkpoint; artes locais não utilizadas, arquivos pessoais de agentes, saves, builds e `.godot/` ficam fora do envio.
 - Validação manual da persistência do caldeirão permanece pendente; publicar o checkpoint não equivale a aprová-la.
 
