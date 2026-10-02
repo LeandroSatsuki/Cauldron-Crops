@@ -6,6 +6,7 @@ const MAIN_SCENE := preload("res://Scenes/Main.tscn")
 
 var _inventory_before: Dictionary = {}
 var _chest_before: Dictionary = {}
+var _milestones_before: Array[String] = []
 
 
 func _ready() -> void:
@@ -23,6 +24,7 @@ func _run() -> void:
 	await get_tree().process_frame
 	await get_tree().physics_frame
 	_inventory_before = GlobalInventory.inventario.duplicate(true)
+	_milestones_before = GlobalInventory.get_backpack_milestones()
 	ToolManager.clear_tool()
 	GlobalInventory.semente_selecionada = ""
 	var chest: VillageChest = farm.get_node_or_null("VillageChest") as VillageChest
@@ -141,13 +143,41 @@ func _run() -> void:
 	if chest.get_contents() != _chest_before:
 		_fail("Village Storage mudou durante todo o loop externo")
 		return
+	if not await _exercise_backpack_return(returned_farm, chest, initial_charcoal):
+		return
 
 	_restore_state(chest)
 	returned_farm.queue_free()
 	await get_tree().process_frame
-	print("ForagingGroveVerticalSliceSmokeTest: PASS - viajar, explorar, coletar, observar e retornar preserva os contratos do vertical slice.")
+	print("ForagingGroveVerticalSliceSmokeTest: PASS - viagem, coleta, retorno, Mochila ampliada, deposito seletivo e JSON preservam o loop.")
 	get_tree().quit(0)
 
+
+func _exercise_backpack_return(farm: Node, chest: VillageChest, initial_charcoal: int) -> bool:
+	# O HUD ficou fora da arvore durante a coleta; atualizar pelo processo real.
+	await get_tree().create_timer(0.3).timeout
+	var ui: Node = farm.get_node("UI")
+	if GlobalInventory.get_slot_capacity() != 16 or ui.get("inventory_bar").get_child_count() != 16 or "16" not in ui.get("inventory_capacity_label").text:
+		_fail("HUD nao acompanhou a ampliacao obtida durante a viagem")
+		return false
+	ui.call("abrir_bau_vila", chest)
+	var panel: Control = ui.get_node("VillageChestPanel")
+	var grid: GridContainer = panel.get("inventory_grid")
+	for slot in grid.get_children():
+		if slot.get_meta("item_id", "") == "carvao":
+			slot.pressed.emit()
+			break
+	panel.get("move_button").pressed.emit()
+	if GlobalInventory.get_item_quantity("carvao") != initial_charcoal or chest.get_item_quantity("carvao") != int(_chest_before.get("carvao", 0)) + 1:
+		_fail("deposito seletivo apos retorno perdeu/duplicou carvao")
+		return false
+	ui.call("fechar_bau_vila")
+	var saved: Dictionary = JSON.parse_string(JSON.stringify(SaveManager.call("_build_save_data")))
+	for replay in range(2):
+		if not SaveManager.call("_apply_save_data", saved) or GlobalInventory.get_slot_capacity() != 16 or chest.get_item_quantity("carvao") != int(_chest_before.get("carvao", 0)) + 1:
+			_fail("load apos viagem/deposito acumulou estoque ou perdeu marco")
+			return false
+	return true
 
 func _wait_for_transition(coordinator: Node) -> void:
 	for _frame in range(120):
@@ -158,6 +188,7 @@ func _wait_for_transition(coordinator: Node) -> void:
 
 func _restore_state(chest: VillageChest = null) -> void:
 	GlobalInventory.inventario = _inventory_before.duplicate(true)
+	GlobalInventory.apply_backpack_progress(_milestones_before)
 	if chest != null and is_instance_valid(chest):
 		chest.set_contents(_chest_before)
 

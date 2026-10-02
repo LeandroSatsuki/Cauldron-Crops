@@ -31,6 +31,20 @@ enum SoilType {
 @export var occupant_id: String = ""
 @export var remaining_growth_time: float = 0.0
 @export var total_growth_time: float = 0.0
+@export var pending_harvest_rewards: Dictionary = {}
+
+static func is_pending_harvest_valid(value: Variant) -> bool:
+	if not value is Dictionary:
+		return false
+	for item_id in value:
+		if not item_id is String or not Database.itens.has(item_id):
+			return false
+		var quantity: Variant = value[item_id]
+		if typeof(quantity) not in [TYPE_INT, TYPE_FLOAT] or not is_finite(float(quantity)):
+			return false
+		if float(quantity) <= 0.0 or float(quantity) != float(int(quantity)):
+			return false
+	return true
 
 func is_empty() -> bool:
 	return crop_id == "" and occupant_id == ""
@@ -43,6 +57,7 @@ func can_plant() -> bool:
 
 func clear_crop() -> void:
 	crop_id = ""
+	pending_harvest_rewards.clear()
 	remaining_growth_time = 0.0
 	total_growth_time = 0.0
 	is_watered = false
@@ -69,11 +84,15 @@ func to_save_data() -> Dictionary:
 		"favored_season": favored_season,
 		"occupant_id": occupant_id,
 		"remaining_growth_time": remaining_growth_time,
-		"total_growth_time": total_growth_time
+		"total_growth_time": total_growth_time,
+		"pending_harvest_rewards": pending_harvest_rewards.duplicate(true)
 	}
 
 func load_save_data(data: Dictionary) -> void:
 	if data.is_empty():
+		return
+	if not is_pending_harvest_valid(data.get("pending_harvest_rewards", {})):
+		push_warning("FarmTileData: recompensa pendente invalida; tile nao alterado.")
 		return
 
 	grid_position = _ler_vector2i_de_grid_position(data.get("grid_position", grid_position))
@@ -88,8 +107,10 @@ func load_save_data(data: Dictionary) -> void:
 	occupant_id = str(data.get("occupant_id", occupant_id))
 	remaining_growth_time = maxf(float(data.get("remaining_growth_time", remaining_growth_time)), 0.0)
 	total_growth_time = maxf(float(data.get("total_growth_time", total_growth_time)), 0.0)
+	pending_harvest_rewards = data.get("pending_harvest_rewards", {}).duplicate(true)
 
 	if crop_id == "":
+		pending_harvest_rewards.clear()
 		remaining_growth_time = 0.0
 		total_growth_time = 0.0
 

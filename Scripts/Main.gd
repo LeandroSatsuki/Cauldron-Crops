@@ -348,6 +348,7 @@ func _converter_farm_plot_para_tile_data(grid_position: Vector2i, plot: Node2D) 
 	tile.crop_id = semente_id
 	tile.remaining_growth_time = maxf(float(save_data.get("tempo_restante", 0.0)), 0.0)
 	tile.total_growth_time = maxf(float(save_data.get("tempo_total_crescimento", 0.0)), 0.0)
+	tile.pending_harvest_rewards = save_data.get("pending_harvest_rewards", {}).duplicate(true)
 
 	if semente_id != "":
 		tile.tile_state = FarmTileData.TileState.MOLHADO if regado else FarmTileData.TileState.PLANTADO

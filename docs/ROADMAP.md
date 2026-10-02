@@ -1,5 +1,13 @@
 # Evolução do Projeto
 
+## Estado operacional — 2026-10-01
+
+As fases numeradas abaixo registram o planejamento histórico; não representam uma fila ainda não implementada. O fechamento da V0 foi aprovado. A evolução pós-V0 já entregou exploração do Bosque, acesso a recursos da vila e Fases A–E da Mochila.
+
+O fechamento integrado posterior corrigiu a persistência de colheitas recusadas e validou viagem → marco de expansão → HUD no retorno → depósito seletivo → save/load. Suíte de 34 testes aprovada; roteiro manual de capacidade, marcos e persistência do caldeirão permanece pendente em `PERSONAL_INVENTORY_ARCHITECTURE_PLAN.md`.
+
+Próxima evolução recomendada após esse roteiro: polimento visual da Fazenda e das interfaces, começando por auditoria de layout, placeholders, hierarquia visual e contraste, para definir um pacote concreto. Conteúdo/economia/NPCs e expansão da rede de armazenamento precisam de escopo próprio. A recomendação não declara arte atual aprovada nem autoriza substituir assets locais sem revisão.
+
 ## Fase 0 - Estado atual
 
 - O projeto já possui o loop principal validado em sua base atual.

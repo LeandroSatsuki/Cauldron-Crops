@@ -16,6 +16,14 @@ Nesta documentação, as seções de design descrevem o alvo do sistema; as seç
 - O `SaveManager` já persiste e restaura `farm_grid`.
 - `FarmPlot` segue como fonte de verdade runtime enquanto a migração definitiva não é aprovada.
 
+### Colheita recusada por capacidade — fechamento integrado, 2026-10-01
+
+Quando uma colheita não cabe na Mochila, seus itens e bônus já sorteados permanecem no lote. O campo opcional `pending_harvest_rewards` guarda apenas totais por ID no plot e no tile espelhado. O sorteio notifica o bridge imediatamente, e o save v4 persiste a pendência dentro de `farm_grid`; a representação legada também pode transportá-la.
+
+Load restaura os mesmos itens, sem executar RNG novamente. Colheita manual ou golem conclui uma única vez e limpa a pendência. Somente cultura pronta pode carregar recompensas pendentes; formato/quantidades inválidos são recusados antes de alterar o estado global. Feedback é reconstruído, sem persistir cores, offsets ou objetos de UI. Saves antigos sem o campo preservam a cultura, mas não permitem recuperar um sorteio que não foi salvo.
+
+`HarvestPersistenceSmokeTest` valida JSON em memória com cena recriada, retomada manual/golem, raridades, duplicação, compatibilidade e rejeição sem mutação. Suíte de 34 testes aprovada; teste manual integrado ainda pendente. Consultar Decisão 95.
+
 ## Objetivo de Design
 
 O jogador deve poder escolher onde arar, organizar sua própria fazenda e moldar o terreno aos poucos.

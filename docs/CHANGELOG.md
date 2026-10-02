@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-01 - Fechamento integrado: colheita recusada e viagem com Mochila ampliada
+
+- Corrigido o sorteio perdido no load de uma colheita recusada por Mochila cheia: totais pendentes agora acompanham `FarmPlot` → bridge → `farm_grid` no save v4.
+- Mesmos itens/quantidades são reutilizados na retomada manual ou pelo golem; a conclusão limpa a pendência. Dados inválidos são recusados antes de mutações. Arquivos antigos mantêm a cultura e não recebem recompensas inventadas.
+- `HarvestPersistenceSmokeTest` cobre persistência com cena recriada, bônus raros, replay, conclusão única, compatibilidade e invalidez. Teste existente da viagem passa a conferir HUD/capacidade no retorno, depósito seletivo e save/load.
+- Suíte completa: 34/34 testes passaram. Nenhum save pessoal foi escrito. Aceite manual do piloto, expansão e caldeirão permanece pendente.
+
 ## 2026-10-01 - Fase E: expansão da Mochila por restauração/exploração
 
 - Escolha do autor implementada: 12 slots iniciais; +4 por restaurar o Herbário e +4 pela primeira coleta bem-sucedida no Bosque, uma vez por marco e em qualquer ordem, até 20. Nenhum custo, loja, moeda ou RNG novo.

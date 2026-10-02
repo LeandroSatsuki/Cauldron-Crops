@@ -179,6 +179,9 @@ func _apply_save_data(data: Dictionary) -> bool:
 	if not _is_farm_save_payload_valid(data, farm_save_source):
 		push_error("SaveManager: dados agricolas invalidos para o contrato do save.")
 		return false
+	if not _is_pending_harvest_save_valid(data, farm_save_source):
+		push_warning("SaveManager: colheita pendente invalida; save nao aplicado.")
+		return false
 	# Validar o novo payload antes de substituir estoques ou qualquer produtor.
 	if not _is_cauldron_save_payload_valid(data):
 		push_warning("SaveManager: dados de producao do caldeirao invalidos; save nao aplicado.")
@@ -406,6 +409,30 @@ func _is_farm_save_payload_valid(data: Dictionary, farm_save_source: FarmSaveSou
 		return typeof(data.get("farm_plots")) == TYPE_ARRAY
 	return true
 
+func _is_pending_harvest_save_valid(data: Dictionary, source: FarmSaveSource) -> bool:
+	var entries: Array = []
+	if source == FarmSaveSource.GRID_V4:
+		entries = _safe_array(_safe_dictionary(data.get("farm_grid", {})).get("tiles", []))
+	elif source == FarmSaveSource.LEGACY_PLOTS:
+		entries = _safe_array(data.get("farm_plots", []))
+	for entry in entries:
+		if not entry is Dictionary or not entry.has("pending_harvest_rewards"):
+			continue
+		var rewards: Variant = entry["pending_harvest_rewards"]
+		if not FarmTileData.is_pending_harvest_valid(rewards):
+			return false
+		if rewards.is_empty():
+			continue
+		if source == FarmSaveSource.GRID_V4:
+			if str(entry.get("crop_id", "")) == "" or float(entry.get("remaining_growth_time", 0.0)) > 0.0 or int(entry.get("tile_state", 0)) == FarmTileData.TileState.BLOQUEADO:
+				return false
+		else:
+			var state: int = int(entry.get("estado_atual", 0))
+			var ready: bool = state == 2 or (state == 1 and float(entry.get("tempo_restante", 0.0)) <= 0.0) or (state == 0 and bool(entry.get("pronto_para_colher", false)))
+			if str(entry.get("semente_id_plantada", "")) == "" or not ready:
+				return false
+	return true
+
 func _refresh_ui_after_load() -> void:
 	var scene := get_tree().current_scene
 	if scene == null:
@@ -544,7 +571,8 @@ func _converter_farm_tile_para_plot_save_data(tile: FarmTileData) -> Dictionary:
 		"arado": true,
 		"tempo_restante": tempo_restante,
 		"tempo_total_crescimento": maxf(tile.total_growth_time, tempo_restante),
-		"pronto_para_colher": tempo_restante <= 0.0
+		"pronto_para_colher": tempo_restante <= 0.0,
+		"pending_harvest_rewards": tile.pending_harvest_rewards.duplicate(true)
 	}
 
 func _safe_dictionary(value: Variant) -> Dictionary:

@@ -1,5 +1,13 @@
 # Decisions
 
+## Decisão 95 - Colheita recusada preserva o sorteio no save
+
+- No fechamento integrado posterior à Fase E, a auditoria encontrou que a recusa por capacidade mantinha recompensas apenas na sessão. Load limpava a pendência e podia sortear outros bônus para a mesma cultura.
+- `pending_harvest_rewards` opcional registra totais por ID no `FarmPlot` e em cada `FarmTileData`. O primeiro sorteio notifica o bridge; `farm_grid` continua sendo o contrato v4 e `FarmPlot` a autoridade runtime. Não criar fila global nem alterar probabilidades.
+- Load valida tipos, IDs conhecidos, quantidades inteiras positivas e cultura pronta antes de alterar estoques/progresso. Restaura o mesmo lote de itens; textos/cor de feedback são reconstruídos e não persistidos. Colheita manual e golem reutilizam a pendência; conclusão a limpa.
+- Campos ausentes em arquivos antigos significam nenhuma recompensa pré-sorteada. Não há informação suficiente para recuperar sorteios de saves anteriores; a cultura permanece pronta e a próxima tentativa segue a regra existente. Fonte agrícola v4/v3 mantém sua prioridade atual.
+- Validação: 34/34 testes. `HarvestPersistenceSmokeTest` cobre recusa, raridades, JSON/cena recriada, manual/golem, replay, v3 aditivo/v4 antigo e payload inválido sem mutação. Teste do vertical slice também cobre marco, HUD no retorno, depósito seletivo e replay do save. Validação manual do piloto/caldeirão continua pendente.
+
 ## Decisão 94 - Mochila expansível por marcos determinísticos, sem economia
 
 - Autorização explícita para concluir a Fase E e escolha do autor: recompensas por restauração/exploração. O gate anterior de execução foi superado por essa autorização, sem registrar testes manuais pendentes como aprovados.

@@ -244,6 +244,8 @@ Fechamento: implementação da Fase E concluída; aceite manual e ajustes finos 
 
 ## Próximo passo — aceite manual integrado
 
+Fechamento integrado posterior à Fase E, em 2026-10-01: 34/34 testes passaram. O teste da viagem verifica a expansão obtida no Bosque, atualização real do HUD ao retornar, depósito seletivo e dois loads. A auditoria corrigiu a perda do sorteio da colheita recusada no load: `pending_harvest_rewards` acompanha o grid v4, mantém itens/quantidades para retomada manual ou pelo golem e é validado antes de mutações. Essa pendência era restrita à sessão no checkpoint da Fase C. Consultar Decisão 95 e `FARM_SYSTEM_V2.md`. Trata-se de consistência dos fluxos existentes; a aprovação manual abaixo continua pendente.
+
 Regressão completa posterior ao ajuste do painel, em 2026-10-01: 32/32 smoke tests passaram, sem erros de script ou falhas reportadas. Nenhuma alteração de gameplay foi necessária. A aprovação manual abaixo permanece pendente; este resultado não encerra a Fase D.
 
 Validar manualmente o piloto e a expansão antes do aceite de experiência das Fases D/E. Não reativar F10 nem editar o save pessoal para montar cenários; os cenários extremos têm smoke tests próprios.
@@ -256,5 +258,6 @@ Validar manualmente o piloto e a expansão antes do aceite de experiência das F
 
 6. Coletar no Bosque e restaurar o Herbário: cada marco concede +4 apenas uma vez, até 20. Se o Herbário já estava restaurado no save antigo, seu bônus deve aparecer ao carregar. Conferir os dois marcos no baú.
 7. Usar as setas da barra, selecionar/desselecionar uma semente na segunda página e transferir recursos no baú. Salvar/reabrir: capacidade e estoques devem ser preservados; revisitar/coletar novamente não aumenta além de 20.
+8. Se uma colheita for recusada por falta de espaço, salvar/reabrir, depositar recursos e tentar novamente: cultura e recompensa devem permanecer disponíveis e ser entregues uma única vez.
 
 Depois do aceite, revisar somente pontos concretos de conforto encontrados na sessão. Economia, NPCs e novos destinos continuam exigindo escopo próprio; não são consequência automática do fechamento técnico da Mochila.

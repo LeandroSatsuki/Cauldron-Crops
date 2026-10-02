@@ -87,6 +87,8 @@ O fechamento da V0 foi aprovado, e o projeto está na evolução pós-V0 de expl
 
 Checkpoint de 2026-10-01: Fase E implementada, 33/33 smoke tests passaram com expansão 12 → 16 → 20, compatibilidade com excesso legado e persistência de marcos/produções/capturas. Interface ampliada conferida por renderização OpenGL. Conforto da expansão, piloto e persistência do caldeirão ainda aguardam validação manual do autor. Cada fechamento de etapa inclui commit e push, conforme [AGENTS.md](./AGENTS.md).
 
+Fechamento integrado posterior: 34/34 testes passaram. Colheita recusada agora preserva itens e bônus sorteados no save, para retomada manual ou pelo golem. A viagem real também valida expansão/HUD no retorno, depósito seletivo e save/load sem duplicação. Testes manuais permanecem pendentes.
+
 ### Verificação técnica
 
 Com `godot` disponível no terminal, um teste pode ser executado sem janela:

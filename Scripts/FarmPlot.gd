@@ -427,10 +427,14 @@ func get_save_data() -> Dictionary:
 		"expansion_blocked": expansion_blocked,
 		"tempo_restante": tempo_restante,
 		"tempo_total_crescimento": tempo_total,
-		"pronto_para_colher": pronto_para_colher
+		"pronto_para_colher": pronto_para_colher,
+		"pending_harvest_rewards": _get_pending_harvest_totals()
 	}
 
 func load_save_data(data: Dictionary) -> void:
+	if not FarmTileData.is_pending_harvest_valid(data.get("pending_harvest_rewards", {})):
+		push_warning("FarmPlot: recompensa pendente invalida; lote nao alterado.")
+		return
 	if timer:
 		timer.stop()
 	_pending_manual_harvest_rewards.clear()
@@ -514,6 +518,11 @@ func load_save_data(data: Dictionary) -> void:
 				atualizar_visual_planta(semente_id_plantada, estagio)
 		_:
 			_concluir_colheita()
+	if estado_atual == State.PRONTO_PARA_COLHER:
+		for item_id in data.get("pending_harvest_rewards", {}):
+			var quantity: int = int(data["pending_harvest_rewards"][item_id])
+			_adicionar_recompensa_colheita(_pending_manual_harvest_rewards, item_id, quantity, true, "+%d %s" % [quantity, _obter_nome_exibicao_item(item_id)], Color.YELLOW)
+		_notificar_estado_alterado()
 
 
 func advance_inactive_time(elapsed_seconds: float) -> bool:
@@ -612,7 +621,15 @@ func _gerar_recompensas_colheita(produto: String) -> Array:
 func _obter_ou_gerar_recompensas_colheita(produto: String) -> Array:
 	if _pending_manual_harvest_rewards.is_empty():
 		_pending_manual_harvest_rewards = _gerar_recompensas_colheita(produto).duplicate(true)
+		_notificar_estado_alterado()
 	return _pending_manual_harvest_rewards.duplicate(true)
+
+func _get_pending_harvest_totals() -> Dictionary:
+	var totals: Dictionary = {}
+	for reward in _pending_manual_harvest_rewards:
+		var item_id: String = str(reward.get("item_id", ""))
+		totals[item_id] = int(totals.get(item_id, 0)) + int(reward.get("quantidade", 0))
+	return totals
 
 func _adicionar_recompensa_colheita(
 	recompensas: Array,
