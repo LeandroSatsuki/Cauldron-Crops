@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-10-01 - Coerência visual da Mochila no painel do baú
+
+- Mochila passa a mostrar as mesmas pilhas lógicas da barra, 12 posições mínimas em quatro colunas e ocupação real. Água/zero não aparecem; excesso legado permanece rolável com aviso.
+- Baú continua agrupado por tipo. Popup informa o total do item; `Mover tudo` continua transferindo todas as unidades do tipo selecionado, incluindo outras pilhas, sem afetar outros itens.
+- Callbacks de botões removidos em reconstrução da grade são ignorados, inclusive quando o item ainda existe em outra pilha.
+- Teste do baú ampliado com vazio, 99/100, stack do catálogo, cheio, excesso, depósito parcial/integral e callbacks obsoletos. Cinco testes relacionados passaram: baú, piloto da Mochila, interface, save e persistência do caldeirão.
+- Nenhuma mudança em capacidade, estoque, schema, destino ou economia. Ajuste visual e testes manuais anteriores permanecem pendentes; checkpoint não encerra a Fase D.
+
 ## 2026-10-01 - Preparação técnica do próximo incremento da Mochila
 
 - Revisão do catálogo, ocupação, barra e painel de transferência, sem alterar código, limite, economia, destinos ou save.

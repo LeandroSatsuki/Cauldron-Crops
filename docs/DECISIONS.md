@@ -1,5 +1,12 @@
 # Decisions
 
+## Decisão 93 - Painel da Mochila representa pilhas, transferência continua por tipo
+
+- Problema: o painel de transferência agrupava tipos e completava 20 células; a barra contava pilhas com limite 12. Quantidades acima de 99 comunicavam ocupações diferentes.
+- Decisão: usar a mesma API de pilhas da barra para a Mochila, com 12 posições mínimas, quatro colunas e contador; água/zero ficam fora e excesso legado continua acessível na grade rolável. Baú mantém agrupamento por tipo e nenhum limite lógico novo.
+- Transferência: clicar numa pilha abre o total disponível daquele tipo. `Mover tudo` continua movendo todas as unidades desse tipo, incluindo outras pilhas; texto/tooltip explicam o alcance. Quantidade seletiva e recusa atômica não mudam. Botões removidos pela atualização não podem abrir popup obsoleto.
+- Validação: cinco testes relacionados passaram, com cobertura de 99/100, stack personalizado, cheia/excedente, depósitos e callbacks antigos. Teste visual manual deste ajuste e testes anteriores continuam pendentes. Não altera capacidade, destinos, save ou balanceamento.
+
 ## Decisão 92 - Piloto ativo preserva excesso legado e captura pendente
 
 - Continuidade autorizada pelo autor em 2026-10-01: ativar 12 slots com stack padrão 99. Água, ferramentas e estados separados continuam fora da capacidade; nenhuma expansão, economia ou destino novo foi implementado.

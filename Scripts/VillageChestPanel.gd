@@ -13,6 +13,7 @@ var transfer_popup: PanelContainer
 var inventory_grid: GridContainer
 var chest_grid: GridContainer
 var feedback: Label
+var inventory_capacity_label: Label
 var _shield: Control
 var _item_icon: TextureRect
 var _item_fallback: Label
@@ -52,7 +53,7 @@ func refresh_items(force: bool = false) -> void:
 		_fill_grid(chest_grid, storage, true)
 	if transfer_popup.visible:
 		var available := _get_available()
-		_available_label.text = "Disponível: %d" % available
+		_available_label.text = "Total do item: %d" % available
 		quantity_picker.max_value = maxi(1, available)
 		if available <= 0:
 			_close_transfer()
@@ -87,7 +88,7 @@ func _open_transfer(item_id: String, from_chest: bool) -> void:
 	_item_fallback.text = Database.obter_icone_item(item_id)
 	_item_fallback.visible = _item_icon.texture == null
 	_direction_label.text = "Baú → Mochila" if from_chest else "Mochila → Baú"
-	_available_label.text = "Disponível: %d" % available
+	_available_label.text = "Total do item: %d" % available
 	quantity_picker.max_value = available
 	quantity_picker.value = 1
 	quantity_picker.get_line_edit().text = "1"
@@ -104,6 +105,15 @@ func _get_available() -> int:
 	if _from_chest:
 		return _chest.get_item_quantity(_selected_item)
 	return int(_chest.get_depositable_personal_items().get(_selected_item, 0))
+
+
+func _open_transfer_from_slot(item_id: String, from_chest: bool, slot: Button) -> void:
+	var grid: GridContainer = chest_grid if from_chest else inventory_grid
+	# Uma grade reconstruida invalida seus botoes antigos, mesmo se o item
+	# ainda existir em outra pilha. Nenhum callback destacado pode abrir modal.
+	if not is_instance_valid(slot) or slot.get_parent() != grid:
+		return
+	_open_transfer(item_id, from_chest)
 
 
 func _move_selected(move_all: bool) -> void:
@@ -199,6 +209,7 @@ func _build_interface() -> void:
 	body.add_child(buttons)
 	move_button = _button(buttons, "Mover", func(): _move_selected(false))
 	move_all_button = _button(buttons, "Mover tudo", func(): _move_selected(true))
+	move_all_button.tooltip_text = "Move todas as unidades deste tipo de item, incluindo suas outras pilhas."
 	_button(body, "Cancelar", _close_transfer)
 	transfer_popup.hide()
 
@@ -214,16 +225,20 @@ func _build_inventory(parent: HBoxContainer, node_name: String, title: String, s
 	var heading := _label(content, title, 25)
 	heading.name = "Title"
 	_label(content, subtitle, 16)
+	if node_name == "Backpack":
+		inventory_capacity_label = _label(content, "", 16)
+		inventory_capacity_label.name = "Capacity"
+		inventory_capacity_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	var scroll := ScrollContainer.new()
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	content.add_child(scroll)
 	var grid := GridContainer.new()
-	grid.columns = 5
+	grid.columns = 4 if node_name == "Backpack" else 5
 	grid.add_theme_constant_override("h_separation", 6)
 	grid.add_theme_constant_override("v_separation", 6)
 	scroll.add_child(grid)
-	_label(content, "Clique em um item para mover", 16)
+	_label(content, "Clique em um item para mover" if node_name == "Chest" else "Clique numa pilha para mover", 16)
 	_button(content, "Fechar", func(): close_requested.emit())
 	return grid
 
@@ -245,17 +260,36 @@ func _fill_grid(grid: GridContainer, items: Dictionary, from_chest: bool) -> voi
 	for child in grid.get_children():
 		grid.remove_child(child)
 		child.queue_free()
-	var ids: Array = items.keys()
-	ids.sort()
-	var count := 0
-	for id_variant in ids:
-		var item_id := str(id_variant)
-		var quantity := int(items[id_variant])
-		if quantity <= 0:
-			continue
-		var slot := _button(grid, "", _open_transfer.bind(item_id, from_chest))
+	var entries: Array[Dictionary] = []
+	if from_chest:
+		var ids: Array = items.keys()
+		ids.sort()
+		for id_variant in ids:
+			var quantity := int(items[id_variant])
+			if quantity > 0:
+				entries.append({"item_id": str(id_variant), "quantity": quantity})
+	else:
+		# Mesma ordem, divisao e stack_maximo da barra; nao recontar por tipo.
+		for entry in GlobalInventory.get_personal_slot_entries():
+			if items.has(entry["item_id"]):
+				entries.append(entry)
+		var capacity: int = GlobalInventory.get_slot_capacity()
+		var overflow := entries.size() > capacity
+		inventory_capacity_label.text = "%d/%d slots" % [entries.size(), capacity]
+		if overflow:
+			inventory_capacity_label.text += " · excesso legado"
+		inventory_capacity_label.modulate = Color("ffc078") if overflow else Color("e8dfc7")
+		inventory_capacity_label.tooltip_text = "Deposite no baú para reduzir o excesso. Todos os itens foram preservados." if overflow else "Água fica no poço. Pilhas padrão de 99 unidades."
+	for entry in entries:
+		var item_id := str(entry["item_id"])
+		var quantity := int(entry["quantity"])
+		var slot := _button(grid, "", Callable())
+		slot.pressed.connect(_open_transfer_from_slot.bind(item_id, from_chest, slot))
 		slot.set_meta("item_id", item_id)
+		slot.set_meta("quantity", quantity)
 		slot.tooltip_text = "%s × %d" % [Database.obter_nome_item(item_id), quantity]
+		if not from_chest:
+			slot.tooltip_text += "\nPilha %d/%d · total do item: %d" % [int(entry["stack_index"]) + 1, int(entry["stack_count"]), int(items[item_id])]
 		slot.custom_minimum_size = Vector2(66, 66)
 		var texture: Texture2D = Database.obter_textura_item(item_id)
 		if texture != null:
@@ -278,8 +312,8 @@ func _fill_grid(grid: GridContainer, items: Dictionary, from_chest: bool) -> voi
 		amount.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 		amount.offset_right = -5
 		amount.offset_bottom = -3
-		count += 1
-	for index in range(maxi(0, 20 - count)):
+	var minimum_slots: int = 20 if from_chest else GlobalInventory.get_slot_capacity()
+	for index in range(maxi(0, minimum_slots - entries.size())):
 		var empty := Panel.new()
 		empty.custom_minimum_size = Vector2(66, 66)
 		empty.add_theme_stylebox_override("panel", _style(Color("202922"), Color("475044")))
@@ -293,7 +327,8 @@ func _button(parent: Node, text: String, action: Callable) -> Button:
 	button.add_theme_stylebox_override("normal", _style(Color("344137"), Color("686b4e")))
 	button.add_theme_stylebox_override("hover", _style(Color("475640"), BORDER_COLOR))
 	button.add_theme_stylebox_override("pressed", _style(Color("20291f"), BORDER_COLOR))
-	button.pressed.connect(action)
+	if action.is_valid():
+		button.pressed.connect(action)
 	parent.add_child(button)
 	return button
 

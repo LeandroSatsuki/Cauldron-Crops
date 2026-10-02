@@ -24,6 +24,8 @@ func _run() -> void:
 	var popup: Control = panel.get("transfer_popup")
 	var backpack: GridContainer = panel.get("inventory_grid")
 	var storage: GridContainer = panel.get("chest_grid")
+	if not _test_personal_stack_view(ui, panel, chest):
+		return
 	GlobalInventory.inventario = {"trigo": 6, "carvao": 2, "agua": 4, "semente_basica": 3}
 	chest.set_contents({"trigo": 2})
 	ToolManager.force_select_fishing_rod()
@@ -104,7 +106,7 @@ func _run() -> void:
 	all.pressed.emit()
 	if chest.get_item_quantity("carvao") != 1 or int(GlobalInventory.inventario["carvao"]) != 0:
 		return _fail("mover tudo nao usou estoque atual")
-	# Mover tudo transfere apenas a pilha selecionada.
+	# Mover tudo transfere apenas o tipo selecionado, nao o inventario inteiro.
 	if int(GlobalInventory.inventario["trigo"]) != 8 or int(GlobalInventory.inventario["semente_basica"]) != 3:
 		return _fail("mover tudo afetou outros itens")
 	_slot(storage, "carvao").pressed.emit()
@@ -156,7 +158,7 @@ func _run() -> void:
 		return _fail("fechamento deixou bloqueio")
 	_main.queue_free()
 	await get_tree().process_frame
-	print("VillageChestTransferSmokeTest: PASS - grades opacas, transferencia bidirecional, pilha, quantidade, estoque obsoleto, teclado e save.")
+	print("VillageChestTransferSmokeTest: PASS - grades opacas, 12 slots/pilhas reais, overflow, transferencia por tipo, callbacks obsoletos, teclado e save.")
 	get_tree().quit(0)
 
 
@@ -175,6 +177,96 @@ func _slot(grid: GridContainer, item_id: String) -> Button:
 		if child is Button and str(child.get_meta("item_id", "")) == item_id:
 			return child as Button
 	return null
+
+
+func _item_slots(grid: GridContainer, item_id: String) -> Array[Button]:
+	var slots: Array[Button] = []
+	for child in grid.get_children():
+		if child is Button and str(child.get_meta("item_id", "")) == item_id:
+			slots.append(child)
+	return slots
+
+
+func _test_personal_stack_view(ui: Node, panel: Control, chest: VillageChest) -> bool:
+	var backpack: GridContainer = panel.get("inventory_grid")
+	var storage: GridContainer = panel.get("chest_grid")
+	var capacity: Label = panel.get("inventory_capacity_label")
+	var popup: Control = panel.get("transfer_popup")
+	var quantity: SpinBox = panel.get("quantity_picker")
+	GlobalInventory.set_inventory_contents({"agua": 4, "semente_basica": 0})
+	chest.set_contents({"trigo": 100})
+	ui.call("abrir_bau_vila", chest)
+	if backpack.get_child_count() != 12 or capacity.text != "0/12 slots" or _slot(backpack, "agua") != null or _slot(backpack, "semente_basica") != null:
+		return _fail_stack_view("Mochila vazia nao mostrou 12 slots reais, ou contou agua/zero")
+	if _item_slots(storage, "trigo").size() != 1 or int(_slot(storage, "trigo").get_meta("quantity")) != 100 or storage.get_child_count() != 20:
+		return _fail_stack_view("pilhas pessoais alteraram agrupamento do bau")
+	GlobalInventory.set_inventory_contents({"trigo": 99, "agua": 4})
+	panel.call("refresh_items", true)
+	if _item_slots(backpack, "trigo").size() != 1 or int(_slot(backpack, "trigo").get_meta("quantity")) != 99 or capacity.text != "1/12 slots":
+		return _fail_stack_view("99 unidades nao ocuparam uma pilha")
+	GlobalInventory.set_inventory_contents({"trigo": 100, "agua": 4})
+	panel.call("refresh_items", true)
+	var wheat_slots := _item_slots(backpack, "trigo")
+	if wheat_slots.size() != 2 or int(wheat_slots[0].get_meta("quantity")) != 99 or int(wheat_slots[1].get_meta("quantity")) != 1 or capacity.text != "2/12 slots" or backpack.get_child_count() != 12:
+		return _fail_stack_view("100 unidades nao dividiram 99+1 em dois slots")
+	wheat_slots[1].pressed.emit()
+	if not popup.visible or quantity.max_value != 100 or str(panel.get("_available_label").text) != "Total do item: 100":
+		return _fail_stack_view("clique na segunda pilha nao consultou total atual do item")
+	panel.call("_close_transfer")
+	# O item ainda existe, mas o botao antigo pertence a outra versao da grade.
+	GlobalInventory.set_inventory_contents({"trigo": 99, "agua": 4})
+	panel.call("refresh_items", true)
+	wheat_slots[1].pressed.emit()
+	if popup.visible:
+		return _fail_stack_view("callback de pilha removida abriu transferencia")
+	var stale_storage := _slot(storage, "trigo")
+	panel.call("refresh_items", true)
+	stale_storage.pressed.emit()
+	if popup.visible:
+		return _fail_stack_view("callback obsoleto do bau abriu transferencia")
+	GlobalInventory.set_inventory_contents({"trigo": 100, "carvao": 3, "agua": 4})
+	chest.set_contents({})
+	panel.call("refresh_items", true)
+	_item_slots(backpack, "trigo")[1].pressed.emit()
+	quantity.get_line_edit().text = "1"
+	panel.get("move_button").pressed.emit()
+	if GlobalInventory.get_item_quantity("trigo") != 99 or chest.get_item_quantity("trigo") != 1 or _item_slots(backpack, "trigo").size() != 1 or capacity.text != "2/12 slots":
+		return _fail_stack_view("deposito parcial nao atualizou pilhas/ocupacao")
+	GlobalInventory.set_inventory_contents({"trigo": 100, "carvao": 3, "agua": 4})
+	chest.set_contents({})
+	panel.call("refresh_items", true)
+	_item_slots(backpack, "trigo")[1].pressed.emit()
+	panel.get("move_all_button").pressed.emit()
+	if GlobalInventory.get_item_quantity("trigo") != 0 or chest.get_item_quantity("trigo") != 100 or GlobalInventory.get_item_quantity("carvao") != 3 or capacity.text != "1/12 slots":
+		return _fail_stack_view("mover tudo nao preservou transferencia por tipo")
+	GlobalInventory.set_inventory_contents({"trigo": 1188, "agua": 4})
+	panel.call("refresh_items", true)
+	if _item_slots(backpack, "trigo").size() != 12 or backpack.get_child_count() != 12 or capacity.text != "12/12 slots":
+		return _fail_stack_view("Mochila cheia nao mostrou 12 pilhas")
+	GlobalInventory.set_inventory_contents({"semente_basica": 1300, "trigo": 99, "agua": 4})
+	panel.call("refresh_items", true)
+	if backpack.get_child_count() != 15 or capacity.text != "15/12 slots · excesso legado" or not (backpack.get_parent() is ScrollContainer):
+		return _fail_stack_view("overflow legado ocultou pilhas ou nao explicou excesso")
+	_item_slots(backpack, "semente_basica")[13].pressed.emit()
+	panel.get("move_all_button").pressed.emit()
+	if GlobalInventory.get_item_quantity("semente_basica") != 0 or chest.get_item_quantity("semente_basica") != 1300 or GlobalInventory.get_item_quantity("trigo") != 99 or capacity.text != "1/12 slots":
+		return _fail_stack_view("deposito do overflow perdeu recursos ou nao liberou slots")
+	# Limites do catalogo, nao um 99 duplicado na UI.
+	Database.itens["trigo"]["stack_maximo"] = 25
+	GlobalInventory.set_inventory_contents({"trigo": 26, "agua": 4})
+	panel.call("refresh_items", true)
+	var custom_slots := _item_slots(backpack, "trigo")
+	var respects_custom_limit: bool = custom_slots.size() == 2 and int(custom_slots[0].get_meta("quantity")) == 25 and int(custom_slots[1].get_meta("quantity")) == 1
+	Database.itens["trigo"].erase("stack_maximo")
+	if not respects_custom_limit:
+		return _fail_stack_view("painel ignorou stack_maximo do catalogo")
+	ui.call("fechar_bau_vila")
+	return true
+
+
+func _fail_stack_view(message: String) -> bool:
+	_fail(message)
+	return false
 
 
 func _fail(message: String) -> void:

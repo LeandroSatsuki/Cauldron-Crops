@@ -18,6 +18,7 @@ Fundação técnica da transição entre Mochila e Village Storage. Caldeirão, 
 
 - Nenhum item é transferido automaticamente.
 - Baú e Mochila abrem lado a lado, em grades opacas, com transferência seletiva nos dois sentidos.
+- Mochila representa pilhas e ocupação reais (12 posições mínimas, excesso legado rolável); baú permanece agrupado por tipo. Clicar numa pilha pessoal consulta o total do tipo, e `Mover tudo` move todas as suas unidades, não todos os itens da Mochila.
 - Requests e comércio ainda não usam o contrato porque seus fluxos permanecem fora da V0 atual.
 - O piloto de capacidade está ativo: 12 slots × stacks padrão de 99. Retirada recusada preserva os estoques; excesso legado pode ser depositado sem perda. Filtros, múltiplos baús e posições persistentes continuam fora deste contrato; validação manual do piloto pendente.
 - O contrato não define o destino dos resultados produzidos pelos sistemas da vila.

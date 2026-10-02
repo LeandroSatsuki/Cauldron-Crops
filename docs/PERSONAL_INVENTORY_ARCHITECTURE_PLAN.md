@@ -195,6 +195,16 @@ Validação prevista para o ajuste: Mochila vazia, 99/100 unidades do mesmo tipo
 
 Depois da validação manual, escolher com o autor o primeiro foco de balanceamento: conforto do limite inicial ou forma de expansão. Custo, progressão e lore da expansão continuam abertos; não inventar loja/NPC nem consumir moeda provisória para resolvê-los.
 
+#### Incremento visual implementado — 2026-10-01
+
+Após autorização de continuidade, o painel da Mochila ao lado do baú usa `get_personal_slot_entries()`: mesma ordem e divisão por `stack_maximo` da barra, 12 posições mínimas em quatro colunas e contador de ocupação. Água e chaves zeradas não aparecem. Acima de 12 slots, o painel mantém todas as pilhas em sua grade rolável e indica excesso legado. O baú continua agrupado por tipo, sem receber limite de 12 slots.
+
+Clicar em qualquer pilha abre a transferência do tipo de item, como antes. O popup informa `Total do item`; `Mover tudo` transfere todas as unidades desse tipo, incluindo suas outras pilhas, e não a Mochila inteira. Quantidade individual e recusa atômica permanecem iguais. Botões removidos durante reconstrução da grade não podem reabrir a transferência por callback obsoleto.
+
+Cinco testes relacionados passaram: `VillageChestTransferSmokeTest`, `PersonalInventoryPilotSmokeTest`, `InterfaceInteractionSmokeTest`, `SaveContractSmokeTest` e `CauldronPersistenceSmokeTest`. O teste do baú cobre 0/12, água/zero, 99/100, limite personalizado do catálogo, 12/12, excesso de 15 slots, depósito parcial/integral, agrupamento do baú e callbacks antigos. Não houve mudança de limite, estoque, schema, destino, economia ou expansão.
+
+Validação manual deste ajuste: abrir o baú e conferir 12 posições na Mochila e contador coerente com a barra; se houver mais de 99 unidades de um tipo, conferir pilhas divididas, total no popup e transferência parcial/`Mover tudo`; fechar e reabrir os painéis sem bloqueio. Testes manuais do piloto e da persistência do caldeirão também continuam pendentes. Este incremento não encerra a Fase D nem aprova a Fase E.
+
 ## Critérios de aceite do piloto
 
 - itens iguais completam a pilha antes de ocupar outro slot;
