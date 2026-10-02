@@ -6,7 +6,7 @@
 >
 > Este documento **não é uma especificação imutável**. O jogo ainda está sendo descoberto durante o desenvolvimento. Quando houver conflito entre este documento e uma decisão humana mais recente, a decisão humana prevalece.
 
-Estado operacional mais recente (2026-10-01): Fase E da Mochila implementada e validada automaticamente; expansão por marcos escolhida pelo autor. Consultar §42 e `PERSONAL_INVENTORY_ARCHITECTURE_PLAN.md`. Relatos anteriores são históricos; testes manuais pendentes não foram presumidos aprovados.
+Estado operacional mais recente (2026-10-02): Fase E da Mochila concluída tecnicamente e dois pacotes de polimento visual implementados. Consultar §42–43, `ROADMAP.md` e `PERSONAL_INVENTORY_ARCHITECTURE_PLAN.md`. Relatos anteriores são históricos; testes manuais pendentes não foram presumidos aprovados.
 
 ---
 
@@ -1401,3 +1401,13 @@ Próximo passo: aceite manual integrado do roteiro no plano da Mochila, seguido 
 Fechamento integrado seguinte (2026-10-01): 34/34 testes passaram. A auditoria encontrou que a colheita recusada por Mochila cheia guardava o sorteio apenas em runtime e o perdia ao carregar. Corrigido com `pending_harvest_rewards` opcional nos plots/tiles do save v4; primeiro sorteio sincroniza o bridge, load valida antes de mutações e manual/golem reutilizam os mesmos itens/quantidades. Conclusão limpa a pendência; dados de UI não são persistidos. Arquivos antigos preservam a cultura, mas não recuperam um sorteio ausente. O vertical slice agora verifica expansão/HUD no retorno do Bosque, depósito seletivo e replay do save. Testes pessoais/manuais não foram presumidos aprovados; Decisão 95 registra este incremento.
 
 Polimento visual iniciado por autorização seguinte (2026-10-01): primeiro pacote remove blocos de lotes vazios, mantém terreno abaixo do solo e solo abaixo dos objetos, reutiliza folha limpa verde do caldeirão sem quadriculado, suaviza a grama e harmoniza fundos opacos da Mochila/objetivos com transferência. Baú ganha detalhes geométricos sem colisores novos. Inspeção renderizada inclui solo arado e popup de quantidade; teste existente verifica camadas após frames. Save, limites, layout funcional e economia não mudam. Arte local não relacionada permanece fora do commit. Decisão 96 delimita o checkpoint; aprovação estética manual e roteiro integrado anterior permanecem pendentes. Próximo pacote visual pode tratar composição, bordas e placeholders do golem/lago/portais, sem declarar arte finalizada.
+
+# 43. ESTADO ATUAL — PAISAGISMO E PLACEHOLDERS
+
+Autorização de continuidade em 2026-10-02 executou o segundo pacote visual. `FarmLandscape` usa grama existente como fundo contínuo, com trilhas/clareiras e vegetação baixa abaixo do solo. Nenhuma interação, collider, limite agrícola ou expansão de território. Consulta pontos físicos existentes e usa RNG local determinístico somente para cenografia.
+
+Golem de pedra/musgo substitui o quadrado ciano sem mudar trabalho/vida/sensores; imagem ignora mouse e conserva o nome legado `ColorRect` esperado pela animação. SVGs de lago, arco e raízes distinguem pesca, viagem e corrupção. Estados/áreas clicáveis permanecem; polígonos antigos substituídos foram retirados. Não altera save v4, economia, lore, NPCs ou depósito. Arquivos locais não relacionados continuam preservados.
+
+Capturas OpenGL e D3D12/Forward+ inspecionadas; teste de limpeza confere ausência de interação na cenografia e mouse do golem. Autor ainda precisa validar estética e pesca/cultivo/viagem/purificação/entrega. O aceite anterior não foi presumido.
+
+Risco técnico pré-existente: `Main._ready` deriva `farm_origin` do viewport, enquanto objetos têm posições fixas. Próximo passo técnico recomendado é diagnóstico de coordenadas estáveis/resoluções e compatibilidade dos saves antes de migrar. A auditoria é direção futura, não migração autorizada por este polimento. Consultar Decisão 97 e `ROADMAP.md`.

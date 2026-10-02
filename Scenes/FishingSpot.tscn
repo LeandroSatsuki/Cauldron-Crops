@@ -1,6 +1,7 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://Scripts/FishingSpot.gd" id="1_fishingspotgd"]
+[ext_resource type="Texture2D" path="res://Assets/scenery/farm_pond.svg" id="2_pondvisual"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_fishing_spot"]
 size = Vector2(340, 220)
@@ -9,15 +10,9 @@ size = Vector2(340, 220)
 z_index = 4
 script = ExtResource("1_fishingspotgd")
 
-[node name="LakeGlow" type="Polygon2D" parent="."]
-z_index = 3
-color = Color(0.0862745, 0.509804, 0.784314, 0.45)
-polygon = PackedVector2Array(-170, -45, -125, -105, 80, -110, 165, -35, 150, 55, 60, 110, -70, 110, -170, 45)
-
-[node name="LakeVisual" type="Polygon2D" parent="."]
+[node name="LakeVisual" type="Sprite2D" parent="."]
 z_index = 4
-color = Color(0.12549, 0.705882, 0.921569, 0.96)
-polygon = PackedVector2Array(-150, -35, -110, -95, 60, -100, 145, -30, 130, 50, 50, 100, -60, 100, -150, 35)
+texture = ExtResource("2_pondvisual")
 
 [node name="MovingFishingArea" type="Node2D" parent="."]
 visible = true
@@ -26,17 +21,17 @@ z_index = 5
 
 [node name="AreaGlow" type="Polygon2D" parent="MovingFishingArea"]
 z_index = 5
-color = Color(0.121569, 0.92549, 1, 0.48)
+color = Color(0.42, 0.86, 0.83, 0.2)
 polygon = PackedVector2Array(-42, -18, -26, -34, 18, -32, 40, -16, 38, 12, 12, 28, -16, 30, -42, 10)
 
 [node name="AreaCore" type="Polygon2D" parent="MovingFishingArea"]
 z_index = 6
-color = Color(0.337255, 0.976471, 0.960784, 0.72)
+color = Color(0.52, 0.88, 0.84, 0.15)
 polygon = PackedVector2Array(-28, -10, -16, -22, 12, -22, 28, -8, 26, 10, 8, 20, -12, 22, -28, 8)
 
 [node name="MovingFishingAreaRing" type="Line2D" parent="MovingFishingArea"]
 z_index = 8
-width = 8.0
+width = 3.0
 default_color = Color(0.760784, 0.996078, 1, 0.92)
 antialiased = true
 closed = true

@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-10-02 - Paisagismo e placeholders do mundo
+
+- Fundo de grama contínuo elimina bordas cinzas do enquadramento; trilhas e vegetação baixa conectam/organizam a vila sem novos obstáculos ou restrições agrícolas.
+- Novos SVGs editáveis: golem de pedra/musgo, lago com margem e juncos, arco de entrada e raízes corrompidas. Arte de corrupção deixa de parecer outro portal; construções geométricas antigas substituídas foram removidas.
+- Mantidos contratos funcionais, áreas clicáveis, navegação, produção, sensores, estados de purificação e save v4. Golem preserva animações existentes e sua imagem ignora mouse.
+- Teste de limpeza ampliado para garantir cenografia não interativa; capturas de visão geral/lago/golem conferidas em OpenGL e D3D12. Aceite manual pendente.
+- Registrado risco anterior ao incremento: origem agrícola varia com o viewport enquanto objetos usam coordenadas fixas. A correção/migração não faz parte deste polimento; próximo diagnóstico deve definir compatibilidade.
+- Importação sem erros e suíte 34/34 aprovada; testes relacionados reexecutados na revisão final. Saves pessoais e arte local não relacionados preservados.
+
 ## 2026-10-01 - Polimento visual: terreno, caldeirão, baú e HUD
 
 - Removidos blocos verdes opacos em lotes intocados. Solo mantém camadas absolutas após frames, acima da grama e abaixo de objetos; plantas/partículas conservam profundidade.

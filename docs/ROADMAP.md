@@ -1,6 +1,6 @@
 # Evolução do Projeto
 
-## Estado operacional — 2026-10-01
+## Estado operacional — 2026-10-02
 
 As fases numeradas abaixo registram o planejamento histórico; não representam uma fila ainda não implementada. O fechamento da V0 foi aprovado. A evolução pós-V0 já entregou exploração do Bosque, acesso a recursos da vila e Fases A–E da Mochila.
 
@@ -8,7 +8,9 @@ O fechamento integrado posterior corrigiu a persistência de colheitas recusadas
 
 Primeiro pacote de polimento visual executado após autorização de continuidade: remoção dos blocos opacos dos lotes intocados, camadas estáveis terreno → solo → objetos, caldeirão verde limpo reaproveitado, grama suavizada, detalhes no baú e HUD/objetivos opacos. Renderização da Fazenda, solo arado e transferência conferida; aceite manual pendente. Decisão 96 delimita o incremento, sem mudança de save ou gameplay.
 
-Próximo passo: validar visual/interações deste pacote; depois tratar composição paisagística, bordas e placeholders restantes (golem, lago/portais), preservando política de solo e navegação. Não considerar o polimento completo. Conteúdo/economia/NPCs e rede de armazenamento precisam de escopo próprio; arquivos locais de arte permanecem preservados.
+Segundo pacote visual implementado após autorização: fundo contínuo sem bordas cinzas, trilhas e vegetação baixa não interativas, golem de pedra/musgo, lago com margem e arco de entrada distinto das raízes corrompidas. Posicionamento funcional, sensores, navegação, cultivo e save não mudam. Inspeção OpenGL/D3D12 conferida; aceite visual/manual dos dois pacotes permanece pendente. Decisão 97 registra contratos e limites.
+
+Próximo passo: validar pesca, viagem, purificação, cultivo e entrega física do golem neste visual. Em seguida, auditar a origem agrícola dependente do viewport e planejar coordenadas de mundo estáveis entre resoluções, com compatibilidade do save antes de implementação. A composição artística ainda não é final. Conteúdo/economia/NPCs e rede de armazenamento precisam de escopo próprio; arquivos locais de arte permanecem preservados.
 
 ## Fase 0 - Estado atual
 

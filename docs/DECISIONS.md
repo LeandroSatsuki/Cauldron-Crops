@@ -1,5 +1,17 @@
 # Decisions
 
+## Decisão 97 - Paisagismo não interativo e diferenciação dos pontos do mundo
+
+- Pacote visual seguinte autorizado em 2026-10-02. Reutilizar a grama existente e criar SVGs editáveis compatíveis com a representação vetorial atual; não substituir os bitmaps/arquivos locais do autor nem declarar direção artística final aprovada.
+- `FarmLandscape` completa o fundo além do enquadramento e desenha trilhas, clareiras e vegetação baixa. Fundo -220, terreno -200, detalhes -160 e solo -90: cultivo cobre a cenografia. Sem colisores, Controls, regiões de navegação, novas restrições de plantio, recursos ou saves. RNG local determinístico não usa o sorteio de recompensas.
+- Trilhas ligam baú, caldeirão, chegada, entrada do Bosque e margem do lago, consultando as posições reais desses nós. São pistas visuais, não caminhos obrigatórios ou corredores de navegação. O fundo não expande o território jogável.
+- Golem substitui quadrado ciano por pedra/musgo. O nome legado `ColorRect` permanece para o contrato de animação existente, mas o nó é `TextureRect` sem captura de mouse. Sensor, movimento, trabalho, descanso e transporte não mudam.
+- Lago recebe margem orgânica, pedras/juncos e água em paleta suave. Área clicável 340×220, obstáculo de navegação e bônus móveis conservam posições/tamanhos/regras; apenas a arte e a espessura do anel mudam.
+- Entrada recebe arco de pedra e legenda abaixo. Corrupção usa raízes/pedra/cristal, em vez de anéis semelhantes a portais; polígonos antigos substituídos são removidos. Estados de purificação, colliders, lotes 2×2 e descoberta/restauração não mudam.
+- Inspeção visual OpenGL e D3D12/Forward+; teste existente verifica paisagismo sem interação e golem sem bloqueio de mouse. `--capture-landscape` produz vistas geral/lago/golem somente em `user://`. Aceite manual permanece pendente, inclusive do pacote anterior.
+- Risco pré-existente registrado: origem agrícola usa `get_viewport_rect().size` em `Main._ready`, mas lago/baú/caldeirão/entradas usam coordenadas fixas. Diferentes resoluções de inicialização deslocam o conjunto agrícola em relação a esses elementos. Estabilizar coordenadas exige etapa própria com análise de compatibilidade/save; este pacote não faz essa migração.
+- Validação automatizada: 34/34 smoke tests passaram. Regressões relacionadas reexecutadas após a remoção dos visuais antigos; importação e renderização sem erros. Nenhum save pessoal escrito.
+
 ## Decisão 96 - Primeiro pacote de polimento visual pós-Mochila
 
 - Continuidade autorizada para executar o polimento recomendado, sem antecipar economia, NPCs ou novo conteúdo. Esta entrega é uma base de legibilidade, não o aceite da direção artística final.

@@ -13,6 +13,14 @@ func _run() -> void:
 	get_tree().current_scene = main
 	await get_tree().process_frame
 	await get_tree().process_frame
+	var landscape: Node = main.get_node_or_null("FarmLandscape")
+	if landscape == null or _has_interaction_node(landscape):
+		_fail("paisagismo ausente ou introduziu bloqueio/interacao no mapa")
+		return
+	var golem_visual := main.get_node("Golem/ColorRect") as TextureRect
+	if golem_visual == null or golem_visual.texture == null or golem_visual.mouse_filter != Control.MOUSE_FILTER_IGNORE:
+		_fail("golem manteve placeholder ou sua arte captura cliques")
+		return
 	if "--capture-world" in OS.get_cmdline_user_args():
 		await get_tree().create_timer(0.2).timeout
 		await RenderingServer.frame_post_draw
@@ -61,6 +69,17 @@ func _run() -> void:
 	if lore == null or lore.visible:
 		_fail("descoberta de lore nao respeitou o bloqueio inicial")
 		return
+	if "--capture-landscape" in OS.get_cmdline_user_args():
+		main.call("set_camera_follow_enabled", false)
+		var camera: Camera2D = main.get_node("MainCamera")
+		camera.position = Vector2(1100, 580)
+		camera.zoom = Vector2(0.85, 0.85)
+		await _capture("landscape_overview")
+		camera.position = main.get_node("FishingSpot").global_position
+		camera.zoom = Vector2(1.8, 1.8)
+		await _capture("landscape_pond")
+		camera.position = main.get_node("VillageChest").global_position
+		await _capture("landscape_golem")
 
 	print("WorldLayoutCleanupSmokeTest: PASS - terreno/solo/plantas ordenados, lotes vazios transparentes e mapa funcional preservado.")
 	main.queue_free()
@@ -71,3 +90,18 @@ func _run() -> void:
 func _fail(message: String) -> void:
 	push_error("WorldLayoutCleanupSmokeTest: FAIL - %s" % message)
 	get_tree().quit(1)
+
+func _has_interaction_node(node: Node) -> bool:
+	if node is CollisionObject2D or node is CollisionShape2D or node is Control or node is NavigationRegion2D:
+		return true
+	for child in node.get_children():
+		if _has_interaction_node(child):
+			return true
+	return false
+
+func _capture(suffix: String) -> void:
+	await get_tree().process_frame
+	await RenderingServer.frame_post_draw
+	var path := "user://%s.png" % suffix
+	get_viewport().get_texture().get_image().save_png(path)
+	print("Landscape screenshot: ", ProjectSettings.globalize_path(path))

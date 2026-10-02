@@ -14,6 +14,7 @@
 [ext_resource type="Script" path="res://Scripts/RegionEntryPoint.gd" id="11_regionentry"]
 [ext_resource type="PackedScene" path="res://Scenes/RegionGateway.tscn" id="12_regiongateway"]
 [ext_resource type="Shader" path="res://Shaders/farm_grass.gdshader" id="13_grassshader"]
+[ext_resource type="Script" path="res://Scripts/FarmLandscape.gd" id="14_landscape"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_grass"]
 shader = ExtResource("13_grassshader")
@@ -72,6 +73,9 @@ tile_map_data = PackedByteArray("AAAXAA8AAQACAAAAAAAXABAAAQACAAEAAAAXABEAAQACAAI
 tile_set = SubResource("TileSet_bmxlf")
 
 [node name="NavigationRegion2D" type="NavigationRegion2D" parent="." unique_id=2147483643]
+
+[node name="FarmLandscape" type="Node2D" parent="."]
+script = ExtResource("14_landscape")
 
 [node name="MainCamera" type="Camera2D" parent="." unique_id=1815986586]
 position = Vector2(984, 508)

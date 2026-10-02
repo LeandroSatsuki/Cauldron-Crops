@@ -12,7 +12,7 @@
 
 ## Sobre o jogo
 
-Checkpoint visual atual: terreno/solo em camadas estáveis, caldeirão com folha limpa, grama suavizada, baú mais legível e Mochila/objetivos opacos. Primeira entrega de polimento; direção artística final e aceite manual ainda pendentes. Escopo e próximos passos em `docs/ROADMAP.md` e Decisão 96.
+Checkpoint visual atual: camadas de solo estáveis, caldeirão limpo, grama suavizada, HUD opaco, trilhas/vegetação não interativas, golem de pedra, lago com margem e entrada distinta da corrupção. Dois pacotes de polimento; direção artística final e aceite manual ainda pendentes. Escopo e próximos passos em `docs/ROADMAP.md` e Decisões 96–97.
 
 Cauldron Crops é um cozy farming game desenvolvido em Godot 4. O jogador cultiva ingredientes, experimenta combinações no caldeirão, descobre receitas e usa os resultados para evoluir e expandir a fazenda.
 
