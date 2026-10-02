@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-01 - Preparação técnica do próximo incremento da Mochila
+
+- Revisão do catálogo, ocupação, barra e painel de transferência, sem alterar código, limite, economia, destinos ou save.
+- Identificada diferença de representação: barra conta pilhas; painel da Mochila agrupa tipos e completa a grade até 20 células, que não correspondem à capacidade real de 12 slots.
+- Plano atualizado com recomendação de alinhamento visual, escopo mínimo e testes de aceite, antes de decidir expansão. Nenhuma correção visual foi implementada neste checkpoint.
+- `PersonalInventoryPilotSmokeTest` e `VillageChestTransferSmokeTest` reexecutados: 2/2 passaram. Validação manual do piloto e da persistência do caldeirão continua pendente; autorização de continuidade não foi registrada como aprovação.
+
 ## 2026-10-01 - Piloto ativo da Mochila e proteção da captura pendente
 
 - Capacidade de 12 slots com stacks padrão de 99 ativa por padrão; água e estados separados continuam fora do limite. Entradas ativas tratam recusa sem concluir a origem.

@@ -177,6 +177,24 @@ Somente após teste manual:
 - avaliar se posições físicas de slots precisam persistir;
 - avaliar mudança de save apenas se houver benefício concreto.
 
+#### Preparação técnica — somente análise, 2026-10-01
+
+Autorização de continuidade recebida, sem confirmação inequívoca dos testes manuais. Esta preparação não encerra a Fase D nem inicia sistemas de expansão da Fase E. Limite 12 × 99, destinos e save v4 permanecem inalterados.
+
+Baseline confirmado no código:
+
+- `Database.itens` possui 22 IDs. Isso inclui água e resultados especiais/legados; não significa que todos estejam acessíveis ou devam ser carregados simultaneamente. Nenhum item declara `stack_maximo` atualmente: todos usam o padrão 99 quando entram na Mochila.
+- As dez sementes iniciais ocupam um slot. Capacidade depende tanto de variedade quanto de quantidade; 12 × 99 não significa poder levar 12 tipos em quantidades ilimitadas. Não há evidência de sessão manual suficiente para aumentar o limite ou ajustar stacks.
+- `Scenes/UI.tscn` reserva 850 pixels para a barra, com separação de 10. Aumentar capacidade sem revisar layout pode expandir a barra além da região reservada; upgrades não devem ser apenas uma troca de constante.
+- `VillageChestPanel._fill_grid` agrupa por tipo e preenche ambos os painéis até 20 células. Já a barra principal conta pilhas. Assim, 100 unidades de um tipo aparecem como uma célula no painel de transferência, mas ocupam dois slots na barra. As 20 posições visuais não representam capacidade real: há um risco de comunicação, não de alteração do estoque.
+- O baú permanece sem limite lógico implementado. Sua grade não deve sugerir que ele compartilha os 12 slots da Mochila.
+
+Menor próximo incremento recomendado: alinhar a representação da Mochila no painel de transferência ao contador/pilhas da barra e mostrar sua ocupação real, sem mudar o painel lógico do baú nem a operação seletiva existente. Deve usar a API atual, preservar acesso ao excesso legado e manter os painéis opacos lado a lado. Não implementar upgrades, filtros, rede de baús, moeda ou posições persistentes nesse ajuste. Esta é uma recomendação registrada, ainda não uma implementação ou decisão de balanceamento.
+
+Validação prevista para o ajuste: Mochila vazia, 99/100 unidades do mesmo tipo, 12/12, excesso legado, depósito/retirada e callbacks obsoletos. Os testes `PersonalInventoryPilotSmokeTest` e `VillageChestTransferSmokeTest` foram reexecutados nesta preparação e passaram; não substituem teste manual nem comprovam uma correção visual ainda não implementada.
+
+Depois da validação manual, escolher com o autor o primeiro foco de balanceamento: conforto do limite inicial ou forma de expansão. Custo, progressão e lore da expansão continuam abertos; não inventar loja/NPC nem consumir moeda provisória para resolvê-los.
+
 ## Critérios de aceite do piloto
 
 - itens iguais completam a pilha antes de ocupar outro slot;
