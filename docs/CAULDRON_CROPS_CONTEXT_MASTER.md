@@ -6,7 +6,7 @@
 >
 > Este documento **não é uma especificação imutável**. O jogo ainda está sendo descoberto durante o desenvolvimento. Quando houver conflito entre este documento e uma decisão humana mais recente, a decisão humana prevalece.
 
-Estado operacional mais recente (2026-10-02): Fase E da Mochila concluída tecnicamente e dois pacotes de polimento visual implementados. Consultar §42–43, `ROADMAP.md` e `PERSONAL_INVENTORY_ARCHITECTURE_PLAN.md`. Relatos anteriores são históricos; testes manuais pendentes não foram presumidos aprovados.
+Estado operacional mais recente (2026-10-02): Fase E da Mochila, dois pacotes de polimento visual e origem agrícola estável entre resoluções implementados. Consultar §42–44, `ROADMAP.md`, `FARM_LAYOUT_PLAN.md` e `PERSONAL_INVENTORY_ARCHITECTURE_PLAN.md`. Relatos anteriores são históricos; testes manuais pendentes não foram presumidos aprovados.
 
 ---
 
@@ -1411,3 +1411,17 @@ Golem de pedra/musgo substitui o quadrado ciano sem mudar trabalho/vida/sensores
 Capturas OpenGL e D3D12/Forward+ inspecionadas; teste de limpeza confere ausência de interação na cenografia e mouse do golem. Autor ainda precisa validar estética e pesca/cultivo/viagem/purificação/entrega. O aceite anterior não foi presumido.
 
 Risco técnico pré-existente: `Main._ready` deriva `farm_origin` do viewport, enquanto objetos têm posições fixas. Próximo passo técnico recomendado é diagnóstico de coordenadas estáveis/resoluções e compatibilidade dos saves antes de migrar. A auditoria é direção futura, não migração autorizada por este polimento. Consultar Decisão 97 e `ROADMAP.md`.
+
+# 44. ESTADO ATUAL — ORIGEM AGRÍCOLA ESTÁVEL
+
+Após diagnóstico reproduzido em quatro tamanhos de janela, o autor autorizou a correção em 2026-10-02. `FarmOrigin`, marcador explícito de `Main.tscn` em `(680,760)`, substitui o cálculo pelo viewport. Os lotes ficam abaixo do núcleo da vila, sem cruzar caldeirão/entrada do Bosque; o piloto 6×2 não toca a corrupção. Câmera e janela não determinam coordenadas do mundo. Os objetos fixos, limites e regras de interação não foram movidos/expandidos.
+
+Grade inicial/pocket/piloto/descoberta/Herbário usam a mesma origem; conversões de clique/grid respeitam local/global. A pedra sai do interior do pocket para sua borda superior, sem alterar descoberta/lore/save; o Herbário continua lateral. IDs, ordem dos 34 plots, espaçamento, registro, estados, colheitas pendentes, save v4 e fallback v3 permanecem. Nenhum lote antigo é apagado por esta mudança.
+
+Saves antigos não guardam origem ou tamanho de janela: preservam a identidade lógica/cultura, mas são exibidos no layout canônico. Não é possível recuperar exatamente sua posição visual anterior. A exceção transitória para plots existentes permanece; esta etapa não migra o cultivo para autoridade nova nem implementa economia/NPCs/rede de baús.
+
+Novo teste `FarmWorldCoordinatesSmokeTest` verifica resoluções, posição/ordem, bloqueadores com física ativa antes/depois de purificar, culturas prontas/crescendo, terra arada/lote dinâmico, JSON v4/v3/replay, resize/câmera e conversões. Viagem real também verifica resize fora da vila sem deslocar a grade no retorno. Roteiro manual específico em `FARM_LAYOUT_PLAN.md`; os aceites visuais e de Mochila/caldeirão anteriores continuam pendentes. Decisão 98 registra o contrato.
+
+Validação automatizada: 35/35 smoke tests passaram. Importação sem erros e captura de solo/layout inspecionada em OpenGL e D3D12. Hash, tamanho e data do save pessoal inalterados; arquivos locais não relacionados preservados e fora da publicação.
+
+Próximo passo: validar manualmente o layout canônico e save/load em janelas diferentes, seguido apenas dos ajustes concretos encontrados. Não abrir novos sistemas automaticamente.

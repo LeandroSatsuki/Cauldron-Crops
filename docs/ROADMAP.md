@@ -10,7 +10,9 @@ Primeiro pacote de polimento visual executado após autorização de continuidad
 
 Segundo pacote visual implementado após autorização: fundo contínuo sem bordas cinzas, trilhas e vegetação baixa não interativas, golem de pedra/musgo, lago com margem e arco de entrada distinto das raízes corrompidas. Posicionamento funcional, sensores, navegação, cultivo e save não mudam. Inspeção OpenGL/D3D12 conferida; aceite visual/manual dos dois pacotes permanece pendente. Decisão 97 registra contratos e limites.
 
-Próximo passo: validar pesca, viagem, purificação, cultivo e entrega física do golem neste visual. Em seguida, auditar a origem agrícola dependente do viewport e planejar coordenadas de mundo estáveis entre resoluções, com compatibilidade do save antes de implementação. A composição artística ainda não é final. Conteúdo/economia/NPCs e rede de armazenamento precisam de escopo próprio; arquivos locais de arte permanecem preservados.
+Após auditoria somente leitura e autorização de implementação, origem agrícola estabilizada em `FarmOrigin=(680,760)`. Lotes/pocket/piloto e pontos derivados não dependem mais do viewport; pedra de investigação fica fora do pocket. IDs/ordem/estados e contratos v4/v3 preservados; saves antigos assumem o layout canônico, pois não registravam a origem anterior. Objetos fixos, limites e gameplay mantidos. Suíte 35/35 e renderização OpenGL/D3D12 conferidas; save pessoal intacto. Decisão 98 e estado atual de `FARM_LAYOUT_PLAN.md` registram contratos e roteiro.
+
+Próximo passo: validar manualmente cultivo/save/load e reabertura em janelas diferentes, pesca, viagem, purificação/investigação/restauração e entrega física do golem neste layout. Ajustar apenas problemas concretos do playtest. A composição artística ainda não é final; os roteiros da Mochila/caldeirão permanecem pendentes. Conteúdo/economia/NPCs e rede de armazenamento precisam de escopo próprio; arquivos locais de arte permanecem preservados.
 
 ## Fase 0 - Estado atual
 

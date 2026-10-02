@@ -1,5 +1,28 @@
 # Mapa Macro da Fazenda — Fase 1.5
 
+## Estado operacional — 2026-10-02
+
+As seções 1–8 abaixo são planejamento histórico de blockout, não instruções de implementação atual. O layout em execução usa coordenadas de mundo fixas; não recalcular pelo viewport nem reativar os guias macro. A estabilização técnica está na Decisão 98, sem declaração de composição artística final.
+
+- `Main.tscn/FarmOrigin`: `Marker2D` em `(680,760)`, sem collider ou interação. Não mover objetos fixos para acompanhar a tela.
+- Centro do lote: `origem + grid_position × 80`, convertido de local para global pelo `Main`. Inverso usa `to_local` e arredondamento. Manter IDs e ordem dos 34 plots para o fallback legado.
+- Grade inicial 6×5: centros de `(680,760)` a `(1080,1080)`. Pocket 2×2: colunas 6–7, linhas 0–1, centros de `(1160,760)` a `(1240,840)`.
+- Piloto livre: colunas 4–9, linhas 5–6, centros de `(1000,1160)` a `(1400,1240)`; limites lógicos e marcador oculto por padrão preservados.
+- Pedra: `(1254,686)`, fora dos quatro lotes; Herbário: `(1380,926)`, ao lado. Visibilidade/requisitos continuam associados ao mesmo obstáculo `first_obstacle`.
+- Baú `(286,716)`, caldeirão físico `(990,521)`, lago `(1288,172)`, chegada `(1180,700)`, entrada do Bosque `(1530,475)` e obstáculo `(1728,802)` permanecem. O lago atual não é bloqueado pelo pocket; aquela direção nas zonas históricas abaixo não descreve o runtime vigente.
+- Save v4/v3 não registra origem histórica. Culturas/progresso/colheitas e coordenadas lógicas são preservados, mas ao abrir a versão nova passam a ocupar este layout canônico. Não apagar lotes ou alterar a ordem para resolver sobreposição.
+
+### Validação manual pendente
+
+1. Abrir a Fazenda, arar/plantar/regar um lote e salvar. Redimensionar a janela e carregar: mesmo estado, mesma posição relativa aos objetos.
+2. Fechar e reabrir em outro tamanho de janela; carregar o mesmo save. Um save anterior pode reposicionar a grade uma vez para o layout canônico, sem perder cultura, terra arada, progresso ou itens.
+3. Purificar o pocket; investigar a pedra e usar cada um dos quatro lotes sem disputa de clique. Confirmar o Herbário lateral e a área livre abaixo da grade.
+4. Viajar ao Bosque, mudar o tamanho da janela e retornar. Confirmar posição/estado da grade e acesso à pesca, baú e caldeirão; observar a entrega física do golem.
+
+Teste técnico: `godot --headless --path . res://Scenes/dev/FarmWorldCoordinatesSmokeTest.tscn`. Para inspeção renderizada, executar sem `--headless` e acrescentar `-- --capture-stable-world`; a captura sintética mostra solo arado e fica em `user://farm_world_coordinates.png`, sem escrever `savegame.json`.
+
+---
+
 **Objetivo:** documentar o layout macro da fazenda antes da implementação de solo livre, mantendo intactos o loop da Fase 1, os `FarmPlot` atuais e a base de salvamento, e já reservar um envelope fixo para a vila/área inicial. A Fase 2 técnica já fechou a ponte runtime-only; este documento continua servindo como base visual para a evolução seguinte.
 
 **Escopo:** blockout visual leve e documentação de layout. Nada aqui altera gameplay, cena, `FarmPlot`, `SaveManager` ou o laboratório do `FarmGridPreview`.

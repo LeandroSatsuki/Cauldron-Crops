@@ -44,6 +44,9 @@ sources/1 = SubResource("TileSetAtlasSource_vy5pj")
 [node name="World" type="Node2D" unique_id=1433733631]
 script = ExtResource("1_maingd")
 
+[node name="FarmOrigin" type="Marker2D" parent="."]
+position = Vector2(680, 760)
+
 [node name="RegionContext" type="Node2D" parent="."]
 script = ExtResource("10_worldregion")
 region_id = &"farm_village"

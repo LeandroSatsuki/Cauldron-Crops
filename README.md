@@ -14,6 +14,8 @@
 
 Checkpoint visual atual: camadas de solo estáveis, caldeirão limpo, grama suavizada, HUD opaco, trilhas/vegetação não interativas, golem de pedra, lago com margem e entrada distinta da corrupção. Dois pacotes de polimento; direção artística final e aceite manual ainda pendentes. Escopo e próximos passos em `docs/ROADMAP.md` e Decisões 96–97.
 
+Checkpoint técnico seguinte: origem agrícola fixa no mundo, independente de resolução/câmera; grade abaixo do núcleo e pedra fora do pocket. Save v4/v3 preserva culturas e progresso, mas saves antigos passam ao layout canônico porque não registravam a posição física da origem. Contrato e teste manual em [Mapa da Fazenda](./docs/FARM_LAYOUT_PLAN.md) e Decisão 98.
+
 Cauldron Crops é um cozy farming game desenvolvido em Godot 4. O jogador cultiva ingredientes, experimenta combinações no caldeirão, descobre receitas e usa os resultados para evoluir e expandir a fazenda.
 
 O diferencial do projeto é colocar a alquimia no centro da progressão. O caldeirão conecta agricultura, exploração, economia e automação, transformando cada descoberta em uma nova possibilidade de jogo.
@@ -91,6 +93,8 @@ Checkpoint de 2026-10-01: Fase E implementada, 33/33 smoke tests passaram com ex
 
 Fechamento integrado posterior: 34/34 testes passaram. Colheita recusada agora preserva itens e bônus sorteados no save, para retomada manual ou pelo golem. A viagem real também valida expansão/HUD no retorno, depósito seletivo e save/load sem duplicação. Testes manuais permanecem pendentes.
 
+Estabilização de coordenadas em 2026-10-02: 35/35 testes passaram, com quatro resoluções, resize/câmera, carga v4/v3 e retorno do Bosque. Layout renderizado conferido em OpenGL/D3D12; save pessoal intacto. Aceite manual do novo layout permanece pendente.
+
 ### Verificação técnica
 
 Com `godot` disponível no terminal, um teste pode ser executado sem janela:
@@ -118,6 +122,7 @@ As cenas de smoke test ficam em `Scenes/dev/`; testes automáticos não substitu
 ## Próximos passos
 
 - validar manualmente save/load e cancelamento da produção do caldeirão;
+- validar cultivo/save/load após resize e reabertura em outra janela, pocket/pedra e retorno do Bosque no layout canônico; roteiro no plano de layout;
 - validar o piloto ativo: recusa, depósito/liberação de espaço e retomada, incluindo saves antigos e captura pendente;
 - validar os dois marcos, páginas da barra, seleção na segunda página e save/load da capacidade; roteiro no plano da Mochila;
 - ajustar balanceamento a partir do playtest, sem antecipar economia, NPCs ou conteúdo adicional.

@@ -33,6 +33,8 @@ func _run() -> void:
 	if growing_plot == null or not growing_plot.has_method("load_save_data"):
 		_fail("lote de controle nao foi encontrado para validar tempo inativo")
 		return
+	var plot_world_position_before: Vector2 = (growing_plot as Node2D).global_position
+	var origin_before: Vector2 = farm.get("farm_origin")
 	growing_plot.call("load_save_data", {
 		"estado_atual": 1,
 		"semente_id_plantada": "semente_basica",
@@ -84,6 +86,8 @@ func _run() -> void:
 		_fail("Fazenda/Vila continuou processando enquanto estava fora da arvore")
 		return
 	var inactive_time_before: float = float(growing_plot.call("get_save_data").get("tempo_restante", 0.0))
+	# Mudar a janela fora da vila não deve mover a grade no retorno ao cache.
+	get_tree().root.size = Vector2i(1280, 720)
 	await get_tree().create_timer(0.7).timeout
 
 	var return_gateway: RegionGateway = external_region.get_node_or_null("ReturnGateway") as RegionGateway
@@ -121,6 +125,9 @@ func _run() -> void:
 		return
 	if returned_farm.call("obter_farm_plot_por_grid_position", Vector2i(0, 0)) != growing_plot:
 		_fail("cache da regiao removeu a identidade canonica do lote")
+		return
+	if returned_farm.get("farm_origin") != origin_before or (growing_plot as Node2D).global_position != plot_world_position_before:
+		_fail("resize fora da vila deslocou a grade agricola no retorno")
 		return
 	var return_entry: Dictionary = returned_farm.call("resolve_region_entry", &"from_foraging_grove")
 	var returned_player: CharacterBody2D = returned_farm.get_node_or_null("PlayerAvatar") as CharacterBody2D
@@ -161,7 +168,7 @@ func _run() -> void:
 		_fail("falha de transicao deixou pedido pendente na regiao")
 		return
 
-	print("RegionTravelSmokeTest: PASS - ida, retorno, fade, bloqueio e recuperacao de falha estao coerentes.")
+	print("RegionTravelSmokeTest: PASS - ida, retorno com resize/grade preservada, fade, bloqueio e recuperacao de falha estao coerentes.")
 	get_tree().quit(0)
 
 

@@ -1,5 +1,17 @@
 # Decisions
 
+## Decisão 98 - Origem agrícola explícita e estável entre resoluções
+
+- Após a auditoria somente leitura, o autor autorizou a implementação em 2026-10-02. O diagnóstico reproduziu deslocamento da grade com viewport 1280×720, 1920×1080, 2560×1440 e 2560×1009; em 1920×1080 havia interseção com o caldeirão e nas janelas maiores com a entrada do Bosque. O piloto também podia tocar a corrupção. Resize na mesma instância não movia a grade; recriar a cena recalculava a origem.
+- `Scenes/Main.tscn/FarmOrigin` é um `Marker2D` não interativo em `(680,760)`, abaixo do núcleo da vila. `Main._ready` usa sua posição local, não tamanho de tela. Grade inicial, pocket, Herbário, pedra e piloto seguem a mesma origem. Câmera/resolução só mudam o enquadramento; baú, caldeirão, lago, entradas e obstáculo de purificação permanecem nas posições anteriores. Não ampliar navegação, limites lógicos ou conteúdo.
+- Preservar espaçamento 80, os 34 IDs/ordem iniciais, registro canônico, pocket 2×2 e piloto 6×2. Conversões grid/world usam `to_local`/`to_global`, sem confundir a posição local do marcador com posição global do clique. Marcador técnico do piloto continua desligado por padrão.
+- A pedra de investigação passa de `visual_position + (54,-36)` para `+(54,-130)`, acima da borda do pocket, sem cruzar a área clicável dos quatro lotes após purificar. Não muda ID, texto, requisitos ou persistência da descoberta. Herbário mantém seu offset `(180,110)`.
+- Save v4 e fallback v3 não mudam. Cultura pronta/em crescimento, terra arada, rega, progresso, pocket e recompensas pendentes continuam associados às mesmas coordenadas lógicas. Não cortar, apagar ou reordenar lotes antigos; preservar a exceção transitória da política de solo para plots existentes.
+- Limite de compatibilidade: arquivos anteriores não registram origem física nem viewport. Ao abrir com esta versão, os lotes ocupam o layout canônico, que pode diferir da posição visual anterior. Não prometer reconstrução exata nem inferir coordenadas ausentes. Nenhum novo schema/campo de origem ou migração destrutiva.
+- `FarmWorldCoordinatesSmokeTest` valida quatro tamanhos reais de viewport em headless, layout/ordem, colliders ativos nos 34 lotes e 12 células piloto antes/depois da purificação, JSON v4/v3, colheita pendente, crescimento, replay sem duplicação, resize/pan/zoom e conversões locais/globais. Não desativar o pai para consultas físicas: isso remove os CollisionObjects. `RegionTravelSmokeTest` muda a janela fora da vila e confere origem/posição do lote no retorno ao cache.
+- Validação: importação sem erros, suíte 35/35 aprovada e renderização/captura inspecionada em OpenGL e D3D12/Forward+. Comparação de hash/tamanho/data confirma `savegame.json` pessoal intacto. Arte local e UID não relacionados permanecem fora do incremento.
+- Aceite manual permanece pendente: salvar/carregar cultivo, redimensionar/reabrir a Fazenda, purificar/investigar/restaurar e validar conforto das interações. Os roteiros anteriores da Mochila/caldeirão e o aceite artístico não foram presumidos concluídos. Não iniciar economia, NPCs, nova rede de armazenamento ou direção artística final.
+
 ## Decisão 97 - Paisagismo não interativo e diferenciação dos pontos do mundo
 
 - Pacote visual seguinte autorizado em 2026-10-02. Reutilizar a grama existente e criar SVGs editáveis compatíveis com a representação vetorial atual; não substituir os bitmaps/arquivos locais do autor nem declarar direção artística final aprovada.

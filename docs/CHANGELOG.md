@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-10-02 - Coordenadas agrícolas estáveis entre resoluções
+
+- Após auditoria/autorização, `FarmOrigin` explícito em `(680,760)` substitui o cálculo pelo tamanho da janela. Grade/pocket/piloto e pontos derivados ficam estáveis; objetos fixos, limites, espaçamento e IDs/ordem não mudam.
+- Pedra de investigação movida para a borda superior, fora dos quatro lotes liberados. Conversões de clique/grid distinguem posição local e global; marcador técnico continua oculto por padrão.
+- Save v4 e fallback v3 preservados, inclusive culturas, rega, terra arada, crescimento, colheitas pendentes e lotes dinâmicos. Saves antigos passam a usar o layout canônico; não possuem informação para reconstruir sua origem física anterior. Nenhum schema ou limpeza destrutiva.
+- Novo teste de regressão cobre quatro viewports, física real nos lotes/piloto antes/depois de purificar, JSON/replay/legado, resize/pan/zoom e conversões. Viagem também verifica resize fora da vila com origem/lote preservados no retorno. Roteiro manual pendente registrado no plano de layout.
+- Validação: importação, 35/35 smoke tests e inspeção renderizada OpenGL/D3D12 aprovadas. Hash/tamanho/data do save pessoal inalterados; arte e arquivos locais não relacionados preservados.
+
 ## 2026-10-02 - Paisagismo e placeholders do mundo
 
 - Fundo de grama contínuo elimina bordas cinzas do enquadramento; trilhas e vegetação baixa conectam/organizam a vila sem novos obstáculos ou restrições agrícolas.

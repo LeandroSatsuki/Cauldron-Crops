@@ -13,6 +13,7 @@ const FISHING_SPOT_SCRIPT_PATH: String = "res://Scripts/FishingSpot.gd"
 const RESTORATION_PROJECT_SCENE_PATH: String = "res://Scenes/RestorationProject.tscn"
 
 @onready var navigation_region: NavigationRegion2D = $NavigationRegion2D
+@onready var farm_origin_marker: Marker2D = $FarmOrigin
 @onready var main_camera: Camera2D = get_node_or_null("MainCamera") as Camera2D
 @onready var player_avatar: CharacterBody2D = get_node_or_null("PlayerAvatar") as CharacterBody2D
 @onready var player_destination_marker: Node2D = get_node_or_null("PlayerDestinationMarker") as Node2D
@@ -29,8 +30,6 @@ const EXTRA_FARM_COLUMNS_RIGHT: int = 2
 const EXTRA_FARM_ROWS_BOTTOM: int = 1
 
 const FARM_SPACING: int = 80
-
-const BASE_FARM_PIXEL_SIZE: int = 320
 
 const FISHING_SPOT_POSITION: Vector2 = Vector2(1288, 172)
 
@@ -94,13 +93,11 @@ func _ready() -> void:
 
 
 
-	var screen_size = get_viewport_rect().size
-
-	var start_x: float = (screen_size.x - BASE_FARM_PIXEL_SIZE) / 2.0 - 40.0
-
-	var start_y: float = (screen_size.y - BASE_FARM_PIXEL_SIZE) / 2.0
-
-	farm_origin = Vector2(start_x, start_y)
+	# Origem local explícita da cena: câmera/resolução não reposicionam o mundo.
+	# IDs, espaçamento e ordem dos plots continuam iguais para saves v4/v3.
+	farm_origin = farm_origin_marker.position
+	var start_x: float = farm_origin.x
+	var start_y: float = farm_origin.y
 
 
 
@@ -774,14 +771,14 @@ func _converter_posicao_global_em_grid(global_position: Vector2) -> Vector2i:
 	if farm_origin == Vector2.ZERO:
 		return Vector2i(-1, -1)
 
-	var relative_position: Vector2 = global_position - farm_origin
+	var relative_position: Vector2 = to_local(global_position) - farm_origin
 	var grid_x: int = int(round(relative_position.x / float(FARM_SPACING)))
 	var grid_y: int = int(round(relative_position.y / float(FARM_SPACING)))
 	return Vector2i(grid_x, grid_y)
 
 
 func _converter_grid_em_posicao_global(grid_position: Vector2i) -> Vector2:
-	return farm_origin + Vector2(grid_position) * float(FARM_SPACING)
+	return to_global(farm_origin + Vector2(grid_position) * float(FARM_SPACING))
 
 
 func avaliar_solo_para_arar(global_position: Vector2) -> Dictionary:
@@ -1180,7 +1177,7 @@ func _criar_marcador_agricultura_livre() -> void:
 
 	var area_size: Vector2 = Vector2(free_farming_pilot_bounds.size) * float(FARM_SPACING)
 	var first_cell_center: Vector2 = _converter_grid_em_posicao_global(free_farming_pilot_bounds.position)
-	marker.position = first_cell_center + (area_size - Vector2.ONE * float(FARM_SPACING)) * 0.5
+	marker.position = to_local(first_cell_center) + (area_size - Vector2.ONE * float(FARM_SPACING)) * 0.5
 
 	var fill := Polygon2D.new()
 	fill.name = "Fill"
@@ -1712,7 +1709,8 @@ func _garantir_primeira_descoberta_lore() -> void:
 		return
 	var area_config := _obter_config_area_expansao(EXPANSION_V0_OBSTACLE_ID)
 	discovery.name = "LoreDiscovery_FirstPurifiedArea"
-	discovery.position = Vector2(area_config.get("visual_position", Vector2.ZERO)) + Vector2(54.0, -36.0)
+	# Fora dos quatro lotes: a investigação não disputa cliques com o cultivo.
+	discovery.position = Vector2(area_config.get("visual_position", Vector2.ZERO)) + Vector2(54.0, -130.0)
 	add_child(discovery)
 	lore_discoveries[EXPANSION_V0_OBSTACLE_ID] = discovery
 	discovery.call("set_area_purified", _obter_estado_purificacao_obstaculo(EXPANSION_V0_OBSTACLE_ID))
