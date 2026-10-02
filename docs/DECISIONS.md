@@ -1,5 +1,14 @@
 # Decisions
 
+## Decisão 94 - Mochila expansível por marcos determinísticos, sem economia
+
+- Autorização explícita para concluir a Fase E e escolha do autor: recompensas por restauração/exploração. O gate anterior de execução foi superado por essa autorização, sem registrar testes manuais pendentes como aprovados.
+- Piloto: 12 slots iniciais, +4 por restaurar o primeiro Herbário e +4 pela primeira coleta bem-sucedida no Bosque. Até 20, em qualquer ordem, sem moedas, custo extra, NPC, lore ou RNG. Só ações concluídas concedem o marco; repetição não concede novamente.
+- Mantidos stack 99, água fora dos slots, resultados do caldeirão/restauração na Mochila com recusa protegida e golems depositando fisicamente no Village Storage. Nenhum limite especial de categoria adicional nem posições de slots persistidas: não existe necessidade funcional atual.
+- Barra paginada em grupos de até 12; todos os slots extras/legados continuam acessíveis. Painel de transferência mostra capacidade real e marcos, preservando estoque por tipo e seleção exclusiva com ferramentas.
+- Save v4: campo opcional `inventory.backpack_milestones` guarda IDs conhecidos/únicos, validado antes de mutações. Load substitui, não acumula. Save completo antigo recupera somente o marco do Herbário explicitamente restaurado; o Bosque precisa da próxima coleta porque esse histórico não existia. Payload parcial sem campo preserva runtime. Excesso de itens nunca é truncado.
+- Validação: 33/33 smoke tests; novo teste cobre marcos reais/recusas, limites e ordens, UI, transferências, JSON com reconstrução, compatibilidade, replay e payload inválido. Renderização OpenGL conferida. Conforto dos valores 12/16/20, teste manual integrado e persistência manual do caldeirão continuam pendentes. Implementação concluída não significa balanceamento final aprovado.
+
 ## Decisão 93 - Painel da Mochila representa pilhas, transferência continua por tipo
 
 - Problema: o painel de transferência agrupava tipos e completava 20 células; a barra contava pilhas com limite 12. Quantidades acima de 99 comunicavam ocupações diferentes.

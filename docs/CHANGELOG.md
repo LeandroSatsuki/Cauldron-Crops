@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-10-01 - Fase E: expansão da Mochila por restauração/exploração
+
+- Escolha do autor implementada: 12 slots iniciais; +4 por restaurar o Herbário e +4 pela primeira coleta bem-sucedida no Bosque, uma vez por marco e em qualquer ordem, até 20. Nenhum custo, loja, moeda ou RNG novo.
+- Capacidade dinâmica aplicada às consultas, inserções individuais/atômicas e transferências. Marcos só avançam após ações concluídas; recusa preserva origem e progresso.
+- Barra com páginas de até 12 e ferramentas abaixo, sem sobreposição. Painel opaco do baú acompanha capacidade e mostra os marcos. Seleção por tipo permanece exclusiva com ferramentas e excesso legado fica acessível.
+- Campo opcional de marcos no save v4, com substituição exata, validação prévia e recuperação do Herbário em saves antigos. Sem v5, posições físicas de slots ou novo destino de recompensas.
+- Suíte completa: 33/33, incluindo teste novo de expansão com limites, marcos reais, recusas, páginas, transferências e save/load em memória. UI conferida por renderização OpenGL. Save pessoal intacto.
+- Implementação da Fase E concluída; conforto/balanceamento e testes manuais integrados anteriores continuam pendentes. F10/economia/NPCs permanecem desativados.
+
 ## 2026-10-01 - Regressão completa após alinhamento do painel
 
 - Reexecutados os 32 smoke tests após a correção visual da Mochila no painel do baú: 32/32 passaram, sem erros de script ou falhas reportadas.

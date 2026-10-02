@@ -67,7 +67,10 @@ func try_restore() -> bool:
 			return false
 	restored_state = true
 	_refresh_state()
-	_show_feedback("Herbario restaurado! Uma Rama Encantada floresceu.")
+	var message := "Herbario restaurado! Uma Rama Encantada floresceu."
+	if restoration_id == "first_herbarium" and GlobalInventory.award_backpack_milestone(restoration_id):
+		message += "\nMochila ampliada: +%d slots (%d no total)." % [GlobalInventory.BACKPACK_MILESTONE_SLOTS, GlobalInventory.get_slot_capacity()]
+	_show_feedback(message)
 	restored.emit(restoration_id)
 	return true
 

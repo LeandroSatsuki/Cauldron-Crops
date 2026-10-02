@@ -13,6 +13,7 @@ const BLOCKED_FEEDBACK_COLOR := Color(1.0, 0.76, 0.42, 1.0)
 @export_range(1, 99, 1) var quantity: int = 1
 @export_range(24.0, 160.0, 1.0) var interaction_distance: float = 62.0
 @export var prompt_verb: String = "Coletar"
+@export var backpack_milestone_id: String = ""
 
 
 @onready var available_visual: Node2D = get_node_or_null("AvailableVisual") as Node2D
@@ -63,7 +64,10 @@ func collect() -> bool:
 		return false
 	_collected = true
 	_refresh_state()
-	_show_feedback("+%d %s" % [quantity, Database.obter_nome_item(resource_id)])
+	var message := "+%d %s" % [quantity, Database.obter_nome_item(resource_id)]
+	if GlobalInventory.award_backpack_milestone(backpack_milestone_id):
+		message += "\nMochila ampliada: +%d slots (%d no total)." % [GlobalInventory.BACKPACK_MILESTONE_SLOTS, GlobalInventory.get_slot_capacity()]
+	_show_feedback(message)
 	resource_collected.emit(resource_id, quantity)
 	return true
 

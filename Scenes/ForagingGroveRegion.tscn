@@ -114,15 +114,19 @@ label_text = "Retornar à Fazenda/Vila"
 
 [node name="CharcoalNearEntry" parent="ForageNodes" instance=ExtResource("7_forage")]
 position = Vector2(690, 720)
+backpack_milestone_id = "foraging_grove_collection"
 
 [node name="CharcoalOptionalBranch" parent="ForageNodes" instance=ExtResource("7_forage")]
 position = Vector2(1260, 410)
+backpack_milestone_id = "foraging_grove_collection"
 
 [node name="CharcoalMainClearing" parent="ForageNodes" instance=ExtResource("7_forage")]
 position = Vector2(1530, 720)
+backpack_milestone_id = "foraging_grove_collection"
 
 [node name="CharcoalDeepClearing" parent="ForageNodes" instance=ExtResource("7_forage")]
 position = Vector2(2180, 740)
+backpack_milestone_id = "foraging_grove_collection"
 
 [node name="EntryLandmark" type="Node2D" parent="." groups=["region_landmark"]]
 position = Vector2(440, 720)

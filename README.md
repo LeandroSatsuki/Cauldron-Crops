@@ -27,7 +27,7 @@ plantar → regar → colher → combinar ingredientes → descobrir receitas �
 - plantio, rega, crescimento e colheita;
 - piloto de agricultura livre com política de solo válido;
 - Mochila e Village Storage separados, com transferência seletiva em painéis opacos;
-- catálogo de itens e Mochila limitada a 12 slots, com stacks padrão de 99;
+- catálogo de itens e Mochila com 12 slots iniciais, expansível até 20 por marcos, com stacks padrão de 99;
 - caldeirão com receitas, produção em lote e persistência de produção/reservas;
 - livro de receitas descobertas;
 - pesca com minigame de sincronia;
@@ -38,7 +38,7 @@ plantar → regar → colher → combinar ingredientes → descobrir receitas �
 - purificação de áreas e expansão da fazenda;
 - golem coletor com prioridades de trabalho e talento de irrigação.
 
-Loja, venda, requests legados e F10 permanecem desativados. O piloto de capacidade está ativo: recusas preservam a origem/recompensa, e saves acima de 12 slots carregam todas as quantidades para depósito manual no baú, sem truncamento. Capturas pendentes também integram o save v4. Validação manual do piloto ainda pendente.
+Loja, venda, requests legados e F10 permanecem desativados. A Mochila ganha +4 slots ao restaurar o Herbário e +4 na primeira coleta do Bosque, uma vez por marco, em qualquer ordem. A barra usa páginas de até 12 e o painel do baú mostra o progresso. Recusas preservam a origem/recompensa, e saves acima da capacidade atual carregam todas as quantidades sem truncamento. Marcos, capturas pendentes e produção do caldeirão integram o save v4. Validação manual integrada ainda pendente.
 
 ## Arquitetura
 
@@ -85,14 +85,14 @@ Para gerar uma build, instale os templates de exportação compatíveis com sua 
 
 O fechamento da V0 foi aprovado, e o projeto está na evolução pós-V0 de exploração, armazenamento e Mochila. Conteúdo, arte, balanceamento e sistemas de progressão continuam em evolução.
 
-Checkpoint de 2026-10-01: 32/32 smoke tests passaram com o piloto 12 × 99 ativo, incluindo compatibilidade com excesso legado e persistência da captura pendente. A persistência do caldeirão e o piloto ainda aguardam validação manual do autor. Cada fechamento de etapa inclui commit e push, conforme [AGENTS.md](./AGENTS.md).
+Checkpoint de 2026-10-01: Fase E implementada, 33/33 smoke tests passaram com expansão 12 → 16 → 20, compatibilidade com excesso legado e persistência de marcos/produções/capturas. Interface ampliada conferida por renderização OpenGL. Conforto da expansão, piloto e persistência do caldeirão ainda aguardam validação manual do autor. Cada fechamento de etapa inclui commit e push, conforme [AGENTS.md](./AGENTS.md).
 
 ### Verificação técnica
 
 Com `godot` disponível no terminal, um teste pode ser executado sem janela:
 
 ```bash
-godot --headless --path . res://Scenes/dev/CauldronPersistenceSmokeTest.tscn
+godot --headless --path . res://Scenes/dev/BackpackExpansionSmokeTest.tscn
 ```
 
 As cenas de smoke test ficam em `Scenes/dev/`; testes automáticos não substituem a validação visual/manual.
@@ -115,7 +115,8 @@ As cenas de smoke test ficam em `Scenes/dev/`; testes automáticos não substitu
 
 - validar manualmente save/load e cancelamento da produção do caldeirão;
 - validar o piloto ativo: recusa, depósito/liberação de espaço e retomada, incluindo saves antigos e captura pendente;
-- balanceamento, expansão e conteúdo adicional permanecem para incrementos próprios, sem antecipar economia ou NPCs.
+- validar os dois marcos, páginas da barra, seleção na segunda página e save/load da capacidade; roteiro no plano da Mochila;
+- ajustar balanceamento a partir do playtest, sem antecipar economia, NPCs ou conteúdo adicional.
 
 ## Autor
 

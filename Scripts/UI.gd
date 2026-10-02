@@ -556,6 +556,13 @@ var purification_obstacle_ref: Node = null
 @onready var inventory_bar: HBoxContainer = $InventoryBar
 
 @onready var inventory_capacity_label: Label = $InventoryCapacityLabel
+@onready var inventory_page_label: Label = $InventoryPageLabel
+@onready var inventory_previous_button: Button = $InventoryPreviousButton
+@onready var inventory_next_button: Button = $InventoryNextButton
+
+const INVENTORY_PAGE_SIZE: int = 12
+var _inventory_page: int = 0
+var _last_backpack_milestones: Array[String] = []
 
 
 
@@ -3559,6 +3566,8 @@ func verificar_e_atualizar_inventario() -> void:
 
 
 	var precisa_atualizar = inventory_bar != null and inventory_bar.get_child_count() == 0
+	if _last_backpack_milestones != GlobalInventory.get_backpack_milestones():
+		precisa_atualizar = true
 
 
 
@@ -3639,6 +3648,7 @@ func verificar_e_atualizar_inventario() -> void:
 
 
 		ultimo_estado_inventario = GlobalInventory.inventario.duplicate()
+		_last_backpack_milestones = GlobalInventory.get_backpack_milestones()
 
 
 
@@ -3887,8 +3897,9 @@ func atualizar_inventario_visual() -> void:
 	if inventory_capacity_label:
 		var used_slots := slot_entries.size()
 		inventory_capacity_label.text = "%d/%d" % [used_slots, base_capacity]
-		inventory_capacity_label.tooltip_text = "Conteúdo legado acima do limite. Deposite itens no Baú da Vila; nenhuma quantidade foi cortada." if used_slots > base_capacity else "Mochila: 12 slots, pilhas padrão de 99. Água fica no poço."
+		inventory_capacity_label.tooltip_text = ("Conteúdo legado acima do limite. Deposite itens no Baú da Vila; nenhuma quantidade foi cortada." if used_slots > base_capacity else "Mochila: %d slots, pilhas padrão de 99. Água fica no poço." % base_capacity) + "\n" + GlobalInventory.get_backpack_progress_text()
 		inventory_capacity_label.modulate = Color(1.0, 0.72, 0.48, 1.0) if used_slots > base_capacity else Color(0.86, 0.9, 0.78, 1.0)
+	_refresh_inventory_page()
 
 	atualizar_destaques()
 
@@ -3905,6 +3916,26 @@ func atualizar_inventario_visual() -> void:
 
 
 
+
+func _on_inventory_previous_pressed() -> void:
+	_inventory_page -= 1
+	_refresh_inventory_page()
+
+func _on_inventory_next_pressed() -> void:
+	_inventory_page += 1
+	_refresh_inventory_page()
+
+func _refresh_inventory_page() -> void:
+	var page_count := maxi(1, ceili(float(inventory_bar.get_child_count()) / INVENTORY_PAGE_SIZE))
+	_inventory_page = clampi(_inventory_page, 0, page_count - 1)
+	for index in range(inventory_bar.get_child_count()):
+		inventory_bar.get_child(index).visible = index >= _inventory_page * INVENTORY_PAGE_SIZE and index < (_inventory_page + 1) * INVENTORY_PAGE_SIZE
+	inventory_page_label.text = "%d/%d" % [_inventory_page + 1, page_count]
+	inventory_page_label.visible = page_count > 1
+	inventory_previous_button.visible = page_count > 1
+	inventory_next_button.visible = page_count > 1
+	inventory_previous_button.disabled = _inventory_page == 0
+	inventory_next_button.disabled = _inventory_page == page_count - 1
 
 func atualizar_destaques() -> void:
 

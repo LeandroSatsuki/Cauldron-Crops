@@ -127,6 +127,7 @@ func _build_save_data() -> Dictionary:
 		"fishing_pending_capture": _build_fishing_save_data(),
 		"inventory": {
 			"inventario": inventory_copy,
+			"backpack_milestones": GlobalInventory.get_backpack_milestones(),
 			"cargas_crescimento": GlobalInventory.cargas_crescimento,
 			"semente_selecionada": GlobalInventory.semente_selecionada,
 			"receitas_descobertas": GlobalInventory.receitas_descobertas.duplicate(true),
@@ -187,6 +188,10 @@ func _apply_save_data(data: Dictionary) -> bool:
 		return false
 
 	var inventory_data: Dictionary = _safe_dictionary(data.get("inventory", {}))
+	var backpack_progress: Variant = _resolve_backpack_progress(data, inventory_data)
+	if not GlobalInventory.is_backpack_progress_valid(backpack_progress):
+		push_warning("SaveManager: marcos da Mochila invalidos; save nao aplicado.")
+		return false
 	var saved_inventory: Dictionary = _safe_dictionary(inventory_data.get("inventario", {}))
 	# Um inventario salvo completo substitui o estado atual; mesclar preservaria
 	# itens retirados do bau depois do save, duplicando-os ao carregar.
@@ -199,6 +204,7 @@ func _apply_save_data(data: Dictionary) -> bool:
 	if not GlobalInventory.set_inventory_contents(current_inventory):
 		push_error("SaveManager: inventario pessoal invalido no save.")
 		return false
+	GlobalInventory.apply_backpack_progress(backpack_progress)
 	GlobalInventory.cargas_crescimento = int(inventory_data.get("cargas_crescimento", GlobalInventory.cargas_crescimento))
 	GlobalInventory.semente_selecionada = str(inventory_data.get("semente_selecionada", GlobalInventory.semente_selecionada))
 	if not GlobalInventory.semente_selecionada.begins_with("semente_") or GlobalInventory.get_item_quantity(GlobalInventory.semente_selecionada) == 0:
@@ -295,6 +301,19 @@ func _apply_save_data(data: Dictionary) -> bool:
 			if current_scene != null and current_scene.is_ancestor_of(spot) and spot.has_method("reset_after_load"):
 				spot.call("reset_after_load")
 	return true
+
+
+func _resolve_backpack_progress(data: Dictionary, inventory_data: Dictionary) -> Variant:
+	if inventory_data.has("backpack_milestones"):
+		return inventory_data["backpack_milestones"]
+	# Save antigo completo substitui progresso; payload parcial preserva runtime.
+	# O Herbário já era persistido, portanto seu marco pode ser recuperado.
+	var milestones: Array = [] if inventory_data.get("inventario") is Dictionary else GlobalInventory.get_backpack_milestones()
+	var expansion: Dictionary = _safe_dictionary(data.get("farm_expansion", {}))
+	var restorations: Dictionary = _safe_dictionary(expansion.get("restoration_projects", {}))
+	if restorations.get("first_herbarium", false) == true and "first_herbarium" not in milestones:
+		milestones.append("first_herbarium")
+	return milestones
 
 
 func _get_fishing_minigame() -> Node:

@@ -58,9 +58,9 @@ text = "Ferramenta: Nenhuma"
 
 [node name="ToolBarPanel" type="HBoxContainer" parent="." unique_id=1730001000]
 offset_left = 300.0
-offset_top = 92.0
+offset_top = 108.0
 offset_right = 720.0
-offset_bottom = 144.0
+offset_bottom = 160.0
 theme = ExtResource("3_pixeltheme")
 theme_override_constants/separation = 8
 
@@ -234,8 +234,8 @@ text = "Comprar Tema Verde (50 Moedas)"
 [node name="InventoryBackdrop" type="PanelContainer" parent="." unique_id=1906000001]
 offset_left = 255.0
 offset_top = 3.0
-offset_right = 1123.0
-offset_bottom = 93.0
+offset_right = 1137.0
+offset_bottom = 104.0
 mouse_filter = 2
 theme = ExtResource("3_pixeltheme")
 
@@ -245,14 +245,14 @@ offset_top = 16.0
 offset_right = 450.0
 offset_bottom = 36.0
 mouse_filter = 2
-text = "Inventário"
+text = "Mochila"
 
 [node name="InventoryCapacityLabel" type="Label" parent="."]
 offset_left = 1010.0
 offset_top = 16.0
 offset_right = 1115.0
 offset_bottom = 36.0
-mouse_filter = 2
+mouse_filter = 0
 text = "0/12"
 horizontal_alignment = 2
 
@@ -260,9 +260,37 @@ horizontal_alignment = 2
 offset_left = 287.0
 offset_top = 40.0
 offset_right = 1137.0
-offset_bottom = 96.0
+offset_bottom = 100.0
 theme = ExtResource("3_pixeltheme")
 theme_override_constants/separation = 10
+
+[node name="InventoryPreviousButton" type="Button" parent="."]
+offset_left = 862.0
+offset_top = 8.0
+offset_right = 898.0
+offset_bottom = 36.0
+focus_mode = 0
+tooltip_text = "Página anterior da Mochila"
+text = "‹"
+
+[node name="InventoryPageLabel" type="Label" parent="."]
+offset_left = 898.0
+offset_top = 8.0
+offset_right = 958.0
+offset_bottom = 36.0
+mouse_filter = 2
+text = "1/1"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="InventoryNextButton" type="Button" parent="."]
+offset_left = 958.0
+offset_top = 8.0
+offset_right = 994.0
+offset_bottom = 36.0
+focus_mode = 0
+tooltip_text = "Próxima página da Mochila"
+text = "›"
 
 [node name="TooltipPanel" type="Panel" parent="." unique_id=528137829]
 visible = false
@@ -614,3 +642,6 @@ text = "Testar FarmGrid"
 [node name="BtnFechar" type="Button" parent="DebugPanel/MarginContainer/ScrollContainer/VBoxDebug" unique_id=1918148298]
 layout_mode = 2
 text = "Fechar"
+
+[connection signal="pressed" from="InventoryPreviousButton" to="." method="_on_inventory_previous_pressed"]
+[connection signal="pressed" from="InventoryNextButton" to="." method="_on_inventory_next_pressed"]

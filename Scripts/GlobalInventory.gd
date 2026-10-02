@@ -3,6 +3,8 @@ extends Node
 const COLECAO_PESCA_ITENS: Array[String] = ["peixe_comum", "escama_brilhante"]
 const BONUS_COLECAO_PESCA_NOME := "Memória das Marés"
 const PERSONAL_SLOT_CAPACITY: int = 12
+const BACKPACK_MILESTONE_SLOTS: int = 4
+const BACKPACK_MILESTONES: Array[String] = ["first_herbarium", "foraging_grove_collection"]
 const DEFAULT_STACK_LIMIT: int = 99
 const NON_SLOTTED_ITEM_IDS: Array[String] = ["agua"]
 
@@ -19,6 +21,7 @@ var colecao_pesca_descobertas: Array[String] = []
 var colecao_pesca_concluida: bool = false
 var lore_descobertas: Array[String] = []
 var _personal_capacity_enforced: bool = true
+var _backpack_milestones: Array[String] = []
 
 func adicionar_item(produto: String, quantidade: int = 1) -> void:
 	# Wrapper legado restrito a debug/testes. Produtores ativos usam insercao
@@ -39,7 +42,40 @@ func get_stack_limit(item_id: String) -> int:
 	return maxi(int(item_data.get("stack_maximo", DEFAULT_STACK_LIMIT)), 1)
 
 func get_slot_capacity() -> int:
-	return PERSONAL_SLOT_CAPACITY
+	return PERSONAL_SLOT_CAPACITY + _backpack_milestones.size() * BACKPACK_MILESTONE_SLOTS
+
+func award_backpack_milestone(milestone_id: String) -> bool:
+	if milestone_id not in BACKPACK_MILESTONES or milestone_id in _backpack_milestones:
+		return false
+	_backpack_milestones.append(milestone_id)
+	return true
+
+func get_backpack_milestones() -> Array[String]:
+	return _backpack_milestones.duplicate()
+
+func is_backpack_progress_valid(value: Variant) -> bool:
+	if not value is Array:
+		return false
+	var seen: Array[String] = []
+	for milestone in value:
+		if not milestone is String or milestone not in BACKPACK_MILESTONES or milestone in seen:
+			return false
+		seen.append(milestone)
+	return true
+
+func apply_backpack_progress(value: Array) -> bool:
+	if not is_backpack_progress_valid(value):
+		return false
+	_backpack_milestones.assign(value)
+	return true
+
+func get_backpack_progress_text() -> String:
+	var labels: Array[String] = ["Restaurar o Herbário", "Coletar no Bosque"]
+	var lines: Array[String] = []
+	for index in range(BACKPACK_MILESTONES.size()):
+		var earned: bool = BACKPACK_MILESTONES[index] in _backpack_milestones
+		lines.append("%s %s · +%d slots" % ["✓" if earned else "○", labels[index], BACKPACK_MILESTONE_SLOTS])
+	return "\n".join(lines)
 
 func get_used_slot_count() -> int:
 	var used_slots := 0
@@ -53,7 +89,7 @@ func get_used_slot_count() -> int:
 	return used_slots
 
 func get_free_slot_count() -> int:
-	return maxi(PERSONAL_SLOT_CAPACITY - get_used_slot_count(), 0)
+	return maxi(get_slot_capacity() - get_used_slot_count(), 0)
 
 func get_personal_slot_entries() -> Array[Dictionary]:
 	var entries: Array[Dictionary] = []
@@ -130,7 +166,7 @@ func get_batch_acceptance(items: Dictionary) -> Dictionary:
 		var item_id := str(item_variant)
 		projected[item_id] = maxi(int(projected.get(item_id, 0)), 0) + int(normalized[item_variant])
 	var current_slots := get_used_slot_count()
-	var allowed_slots := maxi(PERSONAL_SLOT_CAPACITY, current_slots)
+	var allowed_slots := maxi(get_slot_capacity(), current_slots)
 	if _calculate_used_slots(projected) > allowed_slots:
 		return _batch_acceptance_result(normalized, {}, "inventory_full")
 	return _batch_acceptance_result(normalized, normalized, "")

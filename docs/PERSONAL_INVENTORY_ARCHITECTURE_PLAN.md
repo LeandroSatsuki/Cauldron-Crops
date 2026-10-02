@@ -2,7 +2,7 @@
 
 ## Status
 
-Fases A–C concluídas. Fase D: piloto de 12 slots × stacks padrão de 99 ativo em 2026-10-01, por autorização de continuidade do autor. Implementação automatizada; validação manual do piloto e da persistência do caldeirão ainda pendentes. Os relatos históricos abaixo descrevem cada checkpoint, não o estado atual do limite.
+Fases A–C concluídas. Fase D implementada, com validação manual do piloto e da persistência do caldeirão ainda pendentes. Fase E implementada e validada automaticamente em 2026-10-01, após autorização explícita para iniciar e finalizar a fase no mesmo ciclo. O autor escolheu expansão por marcos de restauração/exploração: capacidade inicial 12, +4 pelo Herbário e +4 pela primeira coleta no Bosque, até 20 slots; stacks padrão 99. Isso substitui o gate anterior para executar a Fase E, sem presumir aprovação manual. Os relatos históricos abaixo descrevem checkpoints, não o estado atual do limite.
 
 Este marco sucede o fechamento do acesso a recursos da vila. Ele não inclui economia, venda, NPCs, múltiplos baús, filtros avançados, peso, toolbelt separado nem mudança de lore.
 
@@ -167,9 +167,9 @@ A auditoria de ativação identificou um risco na defesa da pesca: a captura pen
 
 `PersonalInventoryPilotSmokeTest` verifica o limite de produção sem ligar um flag no teste, retirada atômica, conclusão de pilha, save v3 excedente com 15 slots, depósito sem perda, pesca recusada, captura dupla persistida/recriada, nova tentativa bloqueada, entrega única, payload inválido e carga parcial/legada. Nenhum teste escreve no save pessoal. A validação visual/manual continua pendente.
 
-### Fase E — Balanceamento e expansão futura
+### Fase E — Balanceamento e expansão por marcos — implementada
 
-Somente após teste manual:
+Escopo original (resolvido no fechamento abaixo):
 
 - decidir como o jogador expande a capacidade;
 - decidir limites especiais por categoria, se necessários;
@@ -219,16 +219,42 @@ Validação manual deste ajuste: abrir o baú e conferir 12 posições na Mochil
 - caldeirão, purificação e restauração continuam consumindo Village Storage primeiro;
 - nenhum fluxo de venda ou economia é reativado.
 
-## Próximo passo recomendado
+#### Fechamento técnico da Fase E — 2026-10-01
+
+Escolha expressa do autor: **recompensa por marcos de restauração/exploração**. Implementação do piloto, sem lore adicional:
+
+- Restaurar o primeiro Herbário concede +4 slots uma única vez, depois da entrega da recompensa existente. Primeira coleta bem-sucedida em qualquer um dos quatro pontos do Bosque concede outros +4. São independentes e podem ocorrer em qualquer ordem: 12 → 16 → 20.
+- Bônus não consome moedas/itens, não exige material raro nem RNG. Coleta recusada, projeto bloqueado, falta de ingredientes ou falta de espaço para a recompensa não concedem progresso. O jogador pode depositar recursos e tentar novamente.
+- Não há aumento por coletar mais vezes, revisitar a região ou repetir load. A exploração continua entrando na Mochila, sem depósito automático na vila.
+- A barra tem páginas de até 12 slots com setas sem foco de teclado. Mantém a página ao atualizar estoques, limita-a quando o conteúdo diminui e permite alcançar todo excesso legado. O painel do baú acompanha a capacidade e apresenta os dois marcos. Seleção de sementes permanece por tipo e exclusiva com ferramentas.
+- Save v4 recebe apenas o campo opcional `inventory.backpack_milestones`, contendo IDs conhecidos e únicos. Ele é validado antes de mutações. Presente, substitui exatamente o progresso; ausente em save completo antigo, começa na base e recupera apenas o Herbário cuja restauração consta no próprio arquivo. Uma coleta antiga não era persistida: o bônus do Bosque é obtido na próxima coleta bem-sucedida, não inferido. Payload parcial sem campo preserva progresso. Redução por load nunca corta conteúdo excedente.
+
+Demais decisões da fase:
+
+1. **Stacks/categorias:** manter 99 e água fora da capacidade; nenhum limite especial adicional. Catálogo já permite override por item, mas não há evidência de playtest para aplicar restrições novas.
+2. **Resultados da vila:** manter Mochila como destino do caldeirão e da recompensa de restauração; caldeirão cheio espera no produtor, restauração valida antes do consumo. Village Storage permanece prioridade de ingredientes e destino físico dos golems. Nenhum fallback silencioso.
+3. **Posições dos slots:** não persistir. Não há reordenação manual/identidade física de pilha a preservar; contagem e seleção por tipo atendem o comportamento atual.
+4. **Versão do save:** manter v4 com campo aditivo validado; não implementar v5/lista física de slots sem necessidade.
+
+Balanceamento verificável: quatro sementes + quatro culturas + carvão + peixe ocupam dez slots, deixando dois para descobertas. Isso é um cenário de variedade, não um kit obrigatório. Com 99 por pilha, o limite teórico homogêneo é 1.188/1.584/1.980 unidades em 12/16/20 slots; não equivale a essa quantidade por tipo. Os +4 mantêm a grade em linhas completas e criam expansão perceptível sem inflar o limite inicial. A duração real e o conforto dessa progressão continuam sujeitos a playtest; não foram declarados balanceamento final.
+
+Validação: suíte completa 33/33, incluindo `BackpackExpansionSmokeTest`. Cobertura nova: duas ordens de marcos, deduplicação/ID inválido, limites 12/16/20, aceitação parcial/atômica, ações reais recusadas/concluídas, retorno de estoque sem teleporte, páginas/seleção, transferência nos slots extras, refresh sem mudar quantidades, 25 pilhas legadas, JSON em memória com cena recriada, replay, v3/v4 antigos, payload parcial e progresso inválido sem mutação. Interface conferida por renderização OpenGL. Nenhum save pessoal foi alterado.
+
+Fechamento: implementação da Fase E concluída; aceite manual e ajustes finos de conforto pendentes. Economia, NPCs, rede de baús, filtros avançados e nova lore não foram implementados.
+
+## Próximo passo — aceite manual integrado
 
 Regressão completa posterior ao ajuste do painel, em 2026-10-01: 32/32 smoke tests passaram, sem erros de script ou falhas reportadas. Nenhuma alteração de gameplay foi necessária. A aprovação manual abaixo permanece pendente; este resultado não encerra a Fase D.
 
-Validar manualmente o piloto antes de encerrar a Fase D. Não reativar F10 nem alterar o save pessoal para montar cenários; os cenários extremos têm smoke tests próprios.
+Validar manualmente o piloto e a expansão antes do aceite de experiência das Fases D/E. Não reativar F10 nem editar o save pessoal para montar cenários; os cenários extremos têm smoke tests próprios.
 
 1. Abrir o save habitual: quantidades e seleção devem ser preservadas; água não ocupa slot. Se houver excesso legado, depositar pelo Baú da Vila, sem perda de itens.
 2. Colher, coletar no bosque, pescar e transferir itens nos dois sentidos; a interação usual deve permanecer funcional.
-3. Quando a Mochila atingir 12/12, tentar receber um item sem espaço na pilha: a fonte deve permanecer disponível e mostrar aviso. Depositar no baú e tentar novamente deve retomar a ação sem duplicação.
+3. Quando a Mochila atingir a capacidade atual (12/16/20), tentar receber um item sem espaço na pilha: a fonte deve permanecer disponível e mostrar aviso. Depositar no baú e tentar novamente deve retomar a ação sem duplicação.
 4. Produzir no caldeirão, salvar durante a mistura ou lote, fechar/reabrir e carregar. Conferir resultado único e cancelamento devolvendo ingredientes às origens. Este teste anterior continua pendente, não foi marcado como aprovado pela autorização de continuidade.
 5. Se uma captura ficar pendente por mudança de espaço durante a sincronia, fechar o popup, salvar/reabrir e liberar espaço pelo baú: entrega integral uma única vez e coleção atualizada só depois.
 
-Somente após aprovação manual, revisar o balanceamento com base na experiência real. Não antecipar expansão, economia, NPCs ou novo destino de recompensa.
+6. Coletar no Bosque e restaurar o Herbário: cada marco concede +4 apenas uma vez, até 20. Se o Herbário já estava restaurado no save antigo, seu bônus deve aparecer ao carregar. Conferir os dois marcos no baú.
+7. Usar as setas da barra, selecionar/desselecionar uma semente na segunda página e transferir recursos no baú. Salvar/reabrir: capacidade e estoques devem ser preservados; revisitar/coletar novamente não aumenta além de 20.
+
+Depois do aceite, revisar somente pontos concretos de conforto encontrados na sessão. Economia, NPCs e novos destinos continuam exigindo escopo próprio; não são consequência automática do fechamento técnico da Mochila.

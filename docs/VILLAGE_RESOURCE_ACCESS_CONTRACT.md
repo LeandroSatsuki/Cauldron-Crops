@@ -72,7 +72,7 @@ Fundação técnica da transição entre Mochila e Village Storage. Caldeirão, 
 - Status: implementada e aprovada manualmente pelo autor em 2026-09-20; 27 smoke tests aprovados e interface conferida com renderização OpenGL.
 - Abrir o baú mostra dois painéis opacos lado a lado: Baú da Vila e Mochila, com ícones e quantidades em grades.
 - Clicar em um item de qualquer lado abre um terceiro painel opaco: ícone, nome, origem/destino, quantidade disponível, campo numérico, `Mover`, `Mover tudo` e `Cancelar`.
-- `Mover tudo` transfere apenas a pilha selecionada, no sentido indicado; não esvazia todo o inventário.
+- `Mover tudo` transfere todas as unidades do tipo selecionado, incluindo outras pilhas visuais, no sentido indicado; não esvazia todo o inventário.
 - Após uma transferência o popup fecha. Duplo clique não repete a operação; a escolha no baú não altera a ferramenta nem seleciona sementes para plantio.
 - Escape cancela primeiro a transferência; pressioná-lo novamente fecha os dois painéis. Fechar os painéis também cancela a seleção.
 - A interface revalida o estoque no clique, acompanha depósitos do golem e atualiza ambas as grades após transferências e load.
@@ -89,10 +89,16 @@ Fundação técnica da transição entre Mochila e Village Storage. Caldeirão, 
 1. Abrir o baú e conferir os dois painéis opacos lado a lado.
 2. Clicar em um item da Mochila, inserir parte da quantidade e usar `Mover`.
 3. Clicar no mesmo item no Baú e retirar parte; conferir ícone, direção e quantidades.
-4. Usar `Mover tudo` e confirmar que somente aquela pilha foi transferida.
+4. Usar `Mover tudo` e confirmar que somente aquele tipo de item foi transferido (todas as suas pilhas).
 5. Cancelar ou pressionar Escape: nada deve ser transferido. Fechar os painéis deve liberar as interações do mundo.
 6. Salvar, transferir um item do baú para a mochila e carregar: os dois estoques devem retornar exatamente às quantidades salvas.
 
 ## Fechamento deste sub-sprint
 
-O loop explorar → retornar → guardar → usar recursos da vila está validado no escopo atual. Requests, comércio, capacidade, stacks, filtros e rede de baús permanecem para sprints próprios e não devem ser antecipados.
+O loop explorar → retornar → guardar → usar recursos da vila foi validado no escopo deste sub-sprint. Capacidade/stacks foram implementados posteriormente no plano da Mochila; requests, comércio, filtros e rede de baús continuam fora deste contrato.
+
+## Integração posterior — Fase E da Mochila (2026-10-01)
+
+Capacidade 12 → 16 → 20 por marcos escolhida pelo autor e implementada. Herbário e primeira coleta do Bosque concedem +4 uma vez cada, sem custos ou consumidor novo de `VillageResourceAccess`. Esse bônus não ocupa item/slot nem muda os destinos das recompensas; só é concedido após sucesso da ação. Concluir restauração/coleta com recusa continua sem premiar ou consumir a origem.
+
+O painel representa a capacidade dinâmica e os dois marcos; a barra usa páginas de até 12. Transferências continuam por tipo e atômicas, com Village Storage sem limite lógico. Save v4 mantém quantidades agregadas e adiciona apenas o campo opcional de marcos. Testes automatizados aprovados; teste manual da expansão/conforto pendente. Consultar Decisão 94 e o plano da Mochila.

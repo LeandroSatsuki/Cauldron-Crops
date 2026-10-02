@@ -6,6 +6,8 @@
 >
 > Este documento **não é uma especificação imutável**. O jogo ainda está sendo descoberto durante o desenvolvimento. Quando houver conflito entre este documento e uma decisão humana mais recente, a decisão humana prevalece.
 
+Estado operacional mais recente (2026-10-01): Fase E da Mochila implementada e validada automaticamente; expansão por marcos escolhida pelo autor. Consultar §42 e `PERSONAL_INVENTORY_ARCHITECTURE_PLAN.md`. Relatos anteriores são históricos; testes manuais pendentes não foram presumidos aprovados.
+
 ---
 
 # 1. REGRA PRINCIPAL PARA QUALQUER AGENTE
@@ -1382,3 +1384,16 @@ A auditoria de ativação também protegeu a captura pendente da pesca contra so
 Preparação técnica adicional em 2026-10-01, sem mudar gameplay nem marcar teste manual como aprovado: a barra conta pilhas, mas o painel de transferência da Mochila agrupa tipos e preenche até 20 células. Isso pode comunicar capacidade diferente dos 12 slots reais. Próximo ajuste recomendado: coerência visual entre os dois, preservando baú separado, transferência seletiva e excesso legado; ainda não implementado. O plano da Mochila registra baseline e critérios. Dois testes relacionados foram reexecutados e passaram. A Fase E de expansão/balanceamento permanece condicionada à validação manual e às decisões do autor.
 
 Incremento seguinte implementado em 2026-10-01: a recomendação visual acima foi executada. O painel da Mochila usa as mesmas pilhas da barra, 12 posições mínimas em quatro colunas, contador de ocupação e grade rolável para excesso legado. Baú continua agrupado por tipo, sem novo limite. Clicar numa pilha consulta o total do tipo; `Mover tudo` move esse tipo inteiro, não somente a pilha nem a Mochila toda. Callbacks de botões removidos são ignorados. Cinco testes relacionados passaram, incluindo novos cenários no teste do baú. Ajuste visual, piloto e persistência do caldeirão aguardam validação manual; nenhuma expansão, economia ou schema novo foi antecipado. Consultar Decisão 93 e o plano da Mochila.
+
+# 42. ESTADO ATUAL — FASE E DA MOCHILA
+
+Em 2026-10-01, o autor autorizou iniciar e finalizar a Fase E no mesmo ciclo e escolheu **recompensa por marcos de restauração/exploração**. Essa autorização substitui a antiga restrição de executar somente após teste manual; não significa que os testes pendentes foram realizados.
+
+- Capacidade inicial 12; restaurar o primeiro Herbário concede +4, e a primeira coleta bem-sucedida em qualquer ponto do Bosque concede +4. Independentes, uma vez cada, até 20. Nenhuma moeda, material extra, loja, NPC, RNG ou lore nova.
+- Ações recusadas não concedem marco. A restauração ainda precisa caber na Mochila antes de consumir ingredientes; liberar espaço e repetir preserva o progresso. Exploração continua na Mochila, sem teleporte ao baú.
+- Barra com páginas de até 12 slots e ferramentas abaixo; painel do baú mostra capacidade dinâmica e marcos. Seleção por tipo, transferência seletiva, opacidade e acesso ao excesso legado preservados.
+- Pilhas padrão 99 e exceção da água mantidas. Sem limites especiais novos, reordenação/posições persistentes ou versão v5. Resultados da vila continuam na Mochila com proteção no produtor; Village Storage permanece prioridade dos ingredientes e destino físico do golem.
+- Campo opcional `inventory.backpack_milestones` no v4 valida IDs conhecidos/únicos antes de mutações, substitui o progresso e não acumula no load. Save completo antigo recupera somente o Herbário explicitamente restaurado no arquivo; coleta antiga do Bosque não era persistida, então requer a próxima coleta. Parcial sem campo preserva runtime. Quantidades excedentes nunca são cortadas.
+- Validação: 33/33 smoke tests, incluindo `BackpackExpansionSmokeTest`, mais inspeção de renderização OpenGL dos painéis ampliados e da segunda página. Save pessoal não alterado. Implementação técnica da Fase E concluída; conforto/balanceamento e checklist manual integrado D/E/caldeirão continuam pendentes.
+
+Próximo passo: aceite manual integrado do roteiro no plano da Mochila, seguido apenas dos ajustes concretos encontrados. Não iniciar economia, NPCs, rede de baús ou conteúdo novo automaticamente. Decisão 94 registra os limites deste fechamento.

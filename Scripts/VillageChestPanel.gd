@@ -14,6 +14,8 @@ var inventory_grid: GridContainer
 var chest_grid: GridContainer
 var feedback: Label
 var inventory_capacity_label: Label
+var inventory_progress_label: Label
+var _milestones_snapshot: Array[String] = []
 var _shield: Control
 var _item_icon: TextureRect
 var _item_fallback: Label
@@ -45,9 +47,11 @@ func bind_chest(chest: VillageChest) -> void:
 func refresh_items(force: bool = false) -> void:
 	var personal: Dictionary = _chest.get_depositable_personal_items() if is_instance_valid(_chest) else {}
 	var storage: Dictionary = _chest.get_contents() if is_instance_valid(_chest) else {}
-	if force or personal != _personal_snapshot:
+	if force or personal != _personal_snapshot or _milestones_snapshot != GlobalInventory.get_backpack_milestones():
 		_personal_snapshot = personal.duplicate()
+		_milestones_snapshot = GlobalInventory.get_backpack_milestones()
 		_fill_grid(inventory_grid, personal, false)
+		inventory_progress_label.text = GlobalInventory.get_backpack_progress_text()
 	if force or storage != _storage_snapshot:
 		_storage_snapshot = storage.duplicate()
 		_fill_grid(chest_grid, storage, true)
@@ -161,9 +165,8 @@ func _build_interface() -> void:
 	feedback.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	feedback.custom_minimum_size = Vector2(0, 44)
 	get_node("Panels/Chest/Margin/Content").add_child(feedback)
-	var footer_space := Control.new()
-	footer_space.custom_minimum_size.y = 44
-	get_node("Panels/Backpack/Margin/Content").add_child(footer_space)
+	inventory_progress_label = _label(get_node("Panels/Backpack/Margin/Content"), "", 14)
+	inventory_progress_label.custom_minimum_size.y = 44
 	_shield = Control.new()
 	_shield.mouse_filter = Control.MOUSE_FILTER_STOP
 	add_child(_shield)
