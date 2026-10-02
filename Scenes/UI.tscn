@@ -9,6 +9,18 @@
 [ext_resource type="Texture2D" uid="uid://dfvs2aaetedbq" path="res://Assets/Tools/tool_harvest.png" id="6_toolharvest"]
 [ext_resource type="Texture2D" uid="uid://dljrxifdhp81i" path="res://Assets/Tools/tool_fishing_rod.png" id="7_toolfishingrod"]
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hud"]
+bg_color = Color(0.145, 0.176, 0.153, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.624, 0.569, 0.388, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_left = 5
+corner_radius_bottom_right = 5
+
 [node name="UI" type="CanvasLayer" unique_id=570246364]
 script = ExtResource("1_uigd")
 
@@ -93,6 +105,7 @@ text = "4 Vara"
 icon = ExtResource("7_toolfishingrod")
 
 [node name="InitialObjectivesPanel" type="PanelContainer" parent="." unique_id=1905000001]
+theme_override_styles/panel = SubResource("StyleBoxFlat_hud")
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
@@ -131,7 +144,7 @@ theme_override_constants/separation = 3
 
 [node name="FooterLabel" type="Label" parent="InitialObjectivesPanel/MarginContainer/VBoxObjectives" unique_id=1905000007]
 layout_mode = 2
-text = "Checklist runtime-only"
+text = "Cultive, descubra e restaure"
 autowrap_mode = 3
 
 [node name="LeftPanel" type="VBoxContainer" parent="." unique_id=1703485619]
@@ -232,6 +245,7 @@ layout_mode = 2
 text = "Comprar Tema Verde (50 Moedas)"
 
 [node name="InventoryBackdrop" type="PanelContainer" parent="." unique_id=1906000001]
+theme_override_styles/panel = SubResource("StyleBoxFlat_hud")
 offset_left = 255.0
 offset_top = 3.0
 offset_right = 1137.0

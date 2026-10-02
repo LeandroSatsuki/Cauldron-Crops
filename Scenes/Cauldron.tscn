@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://dwgbqdovofqlp" path="res://Scripts/Cauldron.gd" id="1_cauldrongd"]
 [ext_resource type="Script" uid="uid://jqgd6f05x6j3" path="res://Scripts/DropSlot.gd" id="2_dropslotgd"]
 [ext_resource type="Texture2D" uid="uid://rn543opndc5e" path="res://Assets/caldeirao_clean_sheet_roxo.png" id="3_roxo"]
-[ext_resource type="Texture2D" uid="uid://bptc54sg010nn" path="res://Assets/scenery/ChatGPT Image 13 de jun. de 2026, 16_36_40.png" id="3_xaxcd"]
+[ext_resource type="Texture2D" path="res://Assets/caldeirao_clean_sheet_verde.png" id="3_xaxcd"]
 [ext_resource type="Script" uid="uid://bqbyx5vb6s1b" path="res://Scripts/Area2D_Caldeirao.gd" id="5_areagd"]
 [ext_resource type="Texture2D" uid="uid://is41i8abvdnx" path="res://Assets/placeholder/placeholder_cauldron_ui_panel.png" id="6_jnwib"]
 [ext_resource type="Script" uid="uid://b6l38kew1p7lr" path="res://Scripts/PopupBackground.gd" id="6_popupbg"]
@@ -43,27 +43,27 @@ region = Rect2(768, 256, 256, 256)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_rj3rn"]
 atlas = ExtResource("3_xaxcd")
-region = Rect2(39, 0, 358, 362)
+region = Rect2(0, 0, 256, 256)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_uy0nq"]
 atlas = ExtResource("3_xaxcd")
-region = Rect2(397, 0, 358, 362)
+region = Rect2(256, 0, 256, 256)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_ixmqn"]
 atlas = ExtResource("3_xaxcd")
-region = Rect2(755, 0, 358, 362)
+region = Rect2(512, 0, 256, 256)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_ybo17"]
 atlas = ExtResource("3_xaxcd")
-region = Rect2(1113, 0, 358, 362)
+region = Rect2(768, 0, 256, 256)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_30s3q"]
 atlas = ExtResource("3_xaxcd")
-region = Rect2(1471, 0, 358, 362)
+region = Rect2(0, 256, 256, 256)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_q5enn"]
 atlas = ExtResource("3_xaxcd")
-region = Rect2(39, 362, 358, 362)
+region = Rect2(768, 256, 256, 256)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_cauldron"]
 animations = [{
@@ -136,7 +136,7 @@ position = Vector2(950, 450)
 z_index = 5
 texture_filter = 1
 position = Vector2(-23.5, 23.500006)
-scale = Vector2(0.31640622, 0.31640622)
+scale = Vector2(0.4, 0.4)
 sprite_frames = SubResource("SpriteFrames_cauldron")
 animation = &"idle"
 autoplay = "idle"

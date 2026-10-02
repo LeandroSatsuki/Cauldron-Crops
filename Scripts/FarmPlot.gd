@@ -5,7 +5,8 @@ const TEX_MOLHADA = preload("res://Assets/molhada.png")
 # Texturas futuras preparadas
 const TEX_SECA_ADUBADA = preload("res://Assets/seca_adubada.png")
 const TEX_MOLHADA_ADUBADA = preload("res://Assets/molhada_adubada.png")
-const COR_SOLO_NATURAL = Color(0.235294, 0.345098, 0.172549, 1.0)
+# Solo intocado usa o terreno da cena, sem blocos cobrindo a grama.
+const COR_SOLO_NATURAL = Color(0, 0, 0, 0)
 const GRID_SIZE = 80 # Tamanho padrao do tile
 const TOOL_NONE := 0
 const TOOL_HOE := 1
@@ -63,24 +64,7 @@ func _notificar_estado_alterado() -> void:
 func _process(_delta: float) -> void:
 	var base_z: int = int(global_position.y)
 	z_index = base_z
-	if color_rect:
-		color_rect.z_as_relative = true
-		color_rect.z_index = -1
-	if has_node("SpriteTerra"):
-		$SpriteTerra.z_as_relative = true
-		$SpriteTerra.z_index = 0
-	if visual_regado:
-		visual_regado.z_as_relative = true
-		visual_regado.z_index = 1
-	if has_node("SpritePlanta"):
-		$SpritePlanta.z_as_relative = true
-		$SpritePlanta.z_index = 2
-	if has_node("DropRaroVFX"):
-		$DropRaroVFX.z_as_relative = true
-		$DropRaroVFX.z_index = 3
-	if tooltip_area:
-		tooltip_area.z_as_relative = true
-		tooltip_area.z_index = 10
+	# Não reverter as camadas absolutas de solo configuradas no _ready.
 	if not tooltip_area:
 		return
 		
@@ -850,8 +834,8 @@ func _configurar_camadas_visuais() -> void:
 		$SpritePlanta.z_as_relative = true
 		$SpritePlanta.z_index = 1
 	if has_node("DropRaroVFX"):
-		$DropRaroVFX.z_as_relative = false
-		$DropRaroVFX.z_index = 2
+		$DropRaroVFX.z_as_relative = true
+		$DropRaroVFX.z_index = 3
 	if tooltip_area:
 		tooltip_area.z_as_relative = false
 		tooltip_area.z_index = 10

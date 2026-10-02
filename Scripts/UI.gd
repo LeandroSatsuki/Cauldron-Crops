@@ -7669,7 +7669,7 @@ func _renderizar_objetivos_iniciais(estado: Dictionary) -> void:
 
 
 
-		initial_objectives_footer_label.text = "Checklist runtime-only"
+		initial_objectives_footer_label.text = "Cultive, descubra e restaure"
 
 
 

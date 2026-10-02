@@ -1,5 +1,15 @@
 # Decisions
 
+## Decisão 96 - Primeiro pacote de polimento visual pós-Mochila
+
+- Continuidade autorizada para executar o polimento recomendado, sem antecipar economia, NPCs ou novo conteúdo. Esta entrega é uma base de legibilidade, não o aceite da direção artística final.
+- Lotes intocados deixam a grama aparecer. O `_process` não sobrescreve mais as camadas absolutas configuradas no início: terreno -200, base -100, terra -90 e rega -80; plantas e partículas preservam profundidade. Corrige tanto solo sobre objetos quanto terra escondida sob o terreno.
+- Caldeirão idle reutiliza a folha verde limpa já versionada, com células de 256 px e pé estável; produção continua usando a folha roxa. Não editar/remover bitmaps antigos nem publicar arte local não relacionada.
+- Shader exclusivo da grama suaviza contraste/saturação sem modificar textura, navegação ou política de solo. Baú recebe detalhes geométricos não interativos. Mochila/objetivos recebem fundos opacos na paleta do painel de transferência; objetivos continuam minimizáveis/arrastáveis e somem ao concluir. Rodapé técnico substituído por texto voltado ao jogador.
+- Preservados posições, colisões, 34 plots, ações, custos, save v4 e transferência lado a lado/quantidade. `WorldLayoutCleanupSmokeTest` verifica as camadas após frames reais e oferece `--capture-world` para inspeção renderizada; capturas ficam em `user://`, fora do Git.
+- Aceite visual manual pendente. Golem provisório, geometria do lago/portais, bordas e composição paisagística ainda precisam de próximo pacote próprio; não declarar a arte finalizada.
+- Checkpoint validado com importação, 34/34 smoke tests e capturas OpenGL da Fazenda, solo arado e transferência; nenhum save pessoal escrito.
+
 ## Decisão 95 - Colheita recusada preserva o sorteio no save
 
 - No fechamento integrado posterior à Fase E, a auditoria encontrou que a recusa por capacidade mantinha recompensas apenas na sessão. Load limpava a pendência e podia sortear outros bônus para a mesma cultura.

@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-10-01 - Polimento visual: terreno, caldeirão, baú e HUD
+
+- Removidos blocos verdes opacos em lotes intocados. Solo mantém camadas absolutas após frames, acima da grama e abaixo de objetos; plantas/partículas conservam profundidade.
+- Caldeirão idle troca folha com quadriculado pela versão verde limpa já existente; alinhamento estável entre animações. Grama suavizada por shader exclusivo da Fazenda, sem alterar bitmap ou colisão.
+- Baú com faixas, fecho e sombra; Mochila e objetivos com fundos opacos/bordas coerentes com transferência. Rodapé de debug retirado do texto dos objetivos.
+- Capturas OpenGL conferidas para terreno, terra arada e popup de quantidade. Teste de limpeza ampliado para prevenir regressão de camadas. Arte final e aceite manual continuam pendentes; nenhum sistema econômico ou schema novo.
+- Validação: importação sem erros, 34/34 smoke tests e reexecução do teste de camadas na revisão final; saves pessoais não escritos.
+
 ## 2026-10-01 - Fechamento integrado: colheita recusada e viagem com Mochila ampliada
 
 - Corrigido o sorteio perdido no load de uma colheita recusada por Mochila cheia: totais pendentes agora acompanham `FarmPlot` → bridge → `farm_grid` no save v4.

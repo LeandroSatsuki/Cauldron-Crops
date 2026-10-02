@@ -8,6 +8,12 @@ size = Vector2(72, 48)
 [node name="VillageChest" type="Node2D"]
 script = ExtResource("1_villagechestgd")
 
+[node name="GroundShadow" type="Polygon2D" parent="."]
+z_index = -1
+position = Vector2(0, 15)
+polygon = PackedVector2Array(-28, -4, -18, -9, 18, -9, 28, -4, 23, 5, -23, 5)
+color = Color(0.12, 0.17, 0.1, 0.35)
+
 [node name="ChestBody" type="Polygon2D" parent="."]
 polygon = PackedVector2Array(-24, -16, 24, -16, 24, 16, -24, 16)
 color = Color(0.47451, 0.282353, 0.121569, 1)
@@ -16,6 +22,18 @@ color = Color(0.47451, 0.282353, 0.121569, 1)
 position = Vector2(0, -10)
 polygon = PackedVector2Array(-26, -6, 26, -6, 26, 6, -26, 6)
 color = Color(0.321569, 0.180392, 0.0823529, 1)
+
+[node name="LeftBand" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(-18, -16, -13, -16, -13, 16, -18, 16)
+color = Color(0.67, 0.55, 0.3, 1)
+
+[node name="RightBand" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(13, -16, 18, -16, 18, 16, 13, 16)
+color = Color(0.67, 0.55, 0.3, 1)
+
+[node name="Latch" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(-4, -8, 4, -8, 4, 3, -4, 3)
+color = Color(0.88, 0.76, 0.43, 1)
 
 [node name="ClickableArea" type="Area2D" parent="."]
 input_pickable = true

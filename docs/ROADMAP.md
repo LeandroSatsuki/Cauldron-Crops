@@ -6,7 +6,9 @@ As fases numeradas abaixo registram o planejamento histórico; não representam 
 
 O fechamento integrado posterior corrigiu a persistência de colheitas recusadas e validou viagem → marco de expansão → HUD no retorno → depósito seletivo → save/load. Suíte de 34 testes aprovada; roteiro manual de capacidade, marcos e persistência do caldeirão permanece pendente em `PERSONAL_INVENTORY_ARCHITECTURE_PLAN.md`.
 
-Próxima evolução recomendada após esse roteiro: polimento visual da Fazenda e das interfaces, começando por auditoria de layout, placeholders, hierarquia visual e contraste, para definir um pacote concreto. Conteúdo/economia/NPCs e expansão da rede de armazenamento precisam de escopo próprio. A recomendação não declara arte atual aprovada nem autoriza substituir assets locais sem revisão.
+Primeiro pacote de polimento visual executado após autorização de continuidade: remoção dos blocos opacos dos lotes intocados, camadas estáveis terreno → solo → objetos, caldeirão verde limpo reaproveitado, grama suavizada, detalhes no baú e HUD/objetivos opacos. Renderização da Fazenda, solo arado e transferência conferida; aceite manual pendente. Decisão 96 delimita o incremento, sem mudança de save ou gameplay.
+
+Próximo passo: validar visual/interações deste pacote; depois tratar composição paisagística, bordas e placeholders restantes (golem, lago/portais), preservando política de solo e navegação. Não considerar o polimento completo. Conteúdo/economia/NPCs e rede de armazenamento precisam de escopo próprio; arquivos locais de arte permanecem preservados.
 
 ## Fase 0 - Estado atual
 

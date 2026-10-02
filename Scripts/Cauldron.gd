@@ -301,10 +301,8 @@ func calcular_quantidade_maxima_para_ingredientes(ingredientes: Array) -> int:
 	return _calcular_quantidade_maxima_ingredientes(ingredientes)
 
 func _process(_delta: float) -> void:
-	if $BaseAnchor/SpriteCaldeirao.frame >= 4:
-		$BaseAnchor/SpriteCaldeirao.offset.y = -70
-	else:
-		$BaseAnchor/SpriteCaldeirao.offset.y = -103
+	# Folhas limpas têm células uniformes; pé alinhado ao corpo físico.
+	$BaseAnchor/SpriteCaldeirao.offset.y = -8
 	if _batch_ativo:
 		_atualizar_interface_lote()
 
