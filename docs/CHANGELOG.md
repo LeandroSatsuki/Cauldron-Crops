@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-02 - Regressão integrada do percurso de restauração
+
+- `CoreWorldInteractionSmokeTest` ampliado: aproximação física à purificação, entrega pelos sinais dos botões reais, investigação da pedra, arar/plantar/regar os quatro lotes e restaurar o Herbário. Confere consumo, recompensa única e expansão da Mochila para 16 slots.
+- JSON em memória aplicado a uma cena recriada em outra resolução preserva culturas, posições, desbloqueio, descoberta, restauração e marco. Recursos e velocidade acelerada são fixtures isoladas; nenhum arquivo de save pessoal é escrito.
+- Sem alterações de gameplay, arte ou schema. O teste invoca os manipuladores reais com física/navegação ativas, mas não testa picking do mouse, hitboxes de Control ou conforto visual. Aceite manual continua pendente.
+- Validação: suíte 35/35 sem erros, com reexecução do percurso após acrescentar conferência do tamanho efetivo do viewport headless. Hash/tamanho/data do save pessoal inalterados; arquivos locais não relacionados preservados.
+
 ## 2026-10-02 - Coordenadas agrícolas estáveis entre resoluções
 
 - Após auditoria/autorização, `FarmOrigin` explícito em `(680,760)` substitui o cálculo pelo tamanho da janela. Grade/pocket/piloto e pontos derivados ficam estáveis; objetos fixos, limites, espaçamento e IDs/ordem não mudam.

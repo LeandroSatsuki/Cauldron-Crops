@@ -14,6 +14,8 @@ Após auditoria somente leitura e autorização de implementação, origem agrí
 
 Próximo passo: validar manualmente cultivo/save/load e reabertura em janelas diferentes, pesca, viagem, purificação/investigação/restauração e entrega física do golem neste layout. Ajustar apenas problemas concretos do playtest. A composição artística ainda não é final; os roteiros da Mochila/caldeirão permanecem pendentes. Conteúdo/economia/NPCs e rede de armazenamento precisam de escopo próprio; arquivos locais de arte permanecem preservados.
 
+Checkpoint técnico seguinte: percurso purificação → pedra → quatro culturas → Herbário coberto no teste integrado, incluindo consumo/recompensa/marco únicos e JSON em cena recriada/resolução diferente. Nenhuma mudança de gameplay. Callbacks/sinais com navegação real não validam picking do mouse/hitboxes da UI; o próximo passo manual acima não foi substituído.
+
 ## Fase 0 - Estado atual
 
 - O projeto já possui o loop principal validado em sua base atual.

@@ -1425,3 +1425,7 @@ Novo teste `FarmWorldCoordinatesSmokeTest` verifica resoluções, posição/orde
 Validação automatizada: 35/35 smoke tests passaram. Importação sem erros e captura de solo/layout inspecionada em OpenGL e D3D12. Hash, tamanho e data do save pessoal inalterados; arquivos locais não relacionados preservados e fora da publicação.
 
 Próximo passo: validar manualmente o layout canônico e save/load em janelas diferentes, seguido apenas dos ajustes concretos encontrados. Não abrir novos sistemas automaticamente.
+
+Continuidade técnica em 2026-10-02: o teste integrado das interações agora encadeia purificação → investigação → arar/plantar/regar os quatro lotes → Herbário, usando os manipuladores reais e navegação/física ativas. Confere consumo, recompensa/marco únicos e reaplicação de JSON em outra cena/resolução. Somente teste/documentação, com recursos e velocidade sintéticos e sem I/O de save pessoal. Não testa picking do mouse ou hitboxes de Control; o aceite manual acima continua pendente, sem presumir aprovação a partir de “pode seguir”.
+
+Checkpoint validado com suíte 35/35 sem erros e reexecução do percurso após conferir o tamanho efetivo dos viewports headless. Hash, tamanho e data do save pessoal permanecem inalterados. Próximo passo continua sendo o roteiro manual de layout/interações, não novos sistemas.

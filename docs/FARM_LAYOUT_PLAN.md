@@ -21,6 +21,8 @@ As seções 1–8 abaixo são planejamento histórico de blockout, não instruç
 
 Teste técnico: `godot --headless --path . res://Scenes/dev/FarmWorldCoordinatesSmokeTest.tscn`. Para inspeção renderizada, executar sem `--headless` e acrescentar `-- --capture-stable-world`; a captura sintética mostra solo arado e fica em `user://farm_world_coordinates.png`, sem escrever `savegame.json`.
 
+Percurso integrado: `godot --headless --path . res://Scenes/dev/CoreWorldInteractionSmokeTest.tscn` cobre purificação → pedra → cultivo dos quatro lotes → Herbário → JSON em cena recriada/resolução diferente, além das aproximações a baú/caldeirão/pesca e entrega do golem. Usa os manipuladores do jogo, sinais dos botões e navegação/física ativas, com recursos/velocidade sintéticos. Não cobre picking do mouse nem hitboxes da interface; os quatro passos manuais acima permanecem pendentes.
+
 ---
 
 **Objetivo:** documentar o layout macro da fazenda antes da implementação de solo livre, mantendo intactos o loop da Fase 1, os `FarmPlot` atuais e a base de salvamento, e já reservar um envelope fixo para a vila/área inicial. A Fase 2 técnica já fechou a ponte runtime-only; este documento continua servindo como base visual para a evolução seguinte.

@@ -11,6 +11,7 @@
 - `FarmWorldCoordinatesSmokeTest` valida quatro tamanhos reais de viewport em headless, layout/ordem, colliders ativos nos 34 lotes e 12 células piloto antes/depois da purificação, JSON v4/v3, colheita pendente, crescimento, replay sem duplicação, resize/pan/zoom e conversões locais/globais. Não desativar o pai para consultas físicas: isso remove os CollisionObjects. `RegionTravelSmokeTest` muda a janela fora da vila e confere origem/posição do lote no retorno ao cache.
 - Validação: importação sem erros, suíte 35/35 aprovada e renderização/captura inspecionada em OpenGL e D3D12/Forward+. Comparação de hash/tamanho/data confirma `savegame.json` pessoal intacto. Arte local e UID não relacionados permanecem fora do incremento.
 - Aceite manual permanece pendente: salvar/carregar cultivo, redimensionar/reabrir a Fazenda, purificar/investigar/restaurar e validar conforto das interações. Os roteiros anteriores da Mochila/caldeirão e o aceite artístico não foram presumidos concluídos. Não iniciar economia, NPCs, nova rede de armazenamento ou direção artística final.
+- Checkpoint de continuidade: `CoreWorldInteractionSmokeTest` agora percorre purificação, pedra, quatro culturas e Herbário com deslocamento físico, valida consumo/recompensa/marco únicos e reaplica JSON a outra cena/resolução. Apenas teste/documentação; recursos e velocidade são sintéticos, sem save pessoal. Invocar callbacks/sinais não valida picking do mouse ou hitboxes de Control e não substitui o aceite manual.
 
 ## Decisão 97 - Paisagismo não interativo e diferenciação dos pontos do mundo
 
