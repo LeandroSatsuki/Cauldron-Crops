@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-01 - Regressão completa após alinhamento do painel
+
+- Reexecutados os 32 smoke tests após a correção visual da Mochila no painel do baú: 32/32 passaram, sem erros de script ou falhas reportadas.
+- Cobertura inclui cultivo/solo, golem, navegação, viagem/coleta, pesca/eventos, acesso a recursos, transferências, caldeirão e save/load.
+- Nenhum código ou regra de gameplay mudou nesta verificação. Resultado automatizado não substitui aprovação manual: painel, piloto e persistência do caldeirão continuam pendentes. Fase D não foi declarada encerrada e sistemas da Fase E não foram iniciados.
+
 ## 2026-10-01 - Coerência visual da Mochila no painel do baú
 
 - Mochila passa a mostrar as mesmas pilhas lógicas da barra, 12 posições mínimas em quatro colunas e ocupação real. Água/zero não aparecem; excesso legado permanece rolável com aviso.

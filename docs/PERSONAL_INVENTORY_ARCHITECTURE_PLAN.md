@@ -221,6 +221,8 @@ Validação manual deste ajuste: abrir o baú e conferir 12 posições na Mochil
 
 ## Próximo passo recomendado
 
+Regressão completa posterior ao ajuste do painel, em 2026-10-01: 32/32 smoke tests passaram, sem erros de script ou falhas reportadas. Nenhuma alteração de gameplay foi necessária. A aprovação manual abaixo permanece pendente; este resultado não encerra a Fase D.
+
 Validar manualmente o piloto antes de encerrar a Fase D. Não reativar F10 nem alterar o save pessoal para montar cenários; os cenários extremos têm smoke tests próprios.
 
 1. Abrir o save habitual: quantidades e seleção devem ser preservadas; água não ocupa slot. Se houver excesso legado, depositar pelo Baú da Vila, sem perda de itens.
