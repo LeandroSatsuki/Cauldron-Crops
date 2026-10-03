@@ -1,8 +1,8 @@
 # Farm System V2
 
-## Golem Semeador — piloto aprovado, Fase B concluída (2026-10-03)
+## Golem Semeador — piloto aprovado, Fase C concluída (2026-10-03)
 
-Esta seção é o plano operacional atual do piloto, não uma migração de Farm System V2. As seções seguintes conservam o histórico/direções do sistema. Fase A documental e Fase B de domínio concluídas; semeadura automática ainda não ligada. Persistência do golem, trabalho físico e UI continuam nas fases seguintes.
+Esta seção é o plano operacional atual do piloto, não uma migração de Farm System V2. As seções seguintes conservam o histórico/direções do sistema. Fases A–C concluídas: contratos, domínio e persistência. Semeadura automática ainda não ligada; trabalho físico e UI continuam nas fases seguintes.
 
 ### Recorte fechado
 
@@ -13,7 +13,7 @@ Esta seção é o plano operacional atual do piloto, não uma migração de Farm
 - UI no painel existente do golem. Preservar prioridades atuais: semear é fallback dos modos mistos, depois da colheita/rega já elegíveis. Só colher, Só regar e Pausado não iniciam semeadura. Regar continua dependente do talento existente.
 - Fora: novas regiões/culturas, economia/NPCs/lore definitiva, mastery, aragem automática, novas regras de rega, seleção livre de territórios, múltiplos golems e rede de baús.
 
-### Baseline técnico e riscos confirmados por leitura
+### Baseline da Fase A e riscos confirmados por leitura
 
 | Evidência atual | Consequência para o piloto |
 | --- | --- |
@@ -78,7 +78,21 @@ Serialização da carga ausente é `null`; presente contém exatamente `item_id`
 
 Regressão `GolemSowerDomainSmokeTest`: 365 verificações de recusa sem mutação, quatro culturas/rega/verão, clique manual, conservação de fontes, quatro identidades do canteiro, jogador ocupando alvo, observadores consistentes, cópias/round-trip/replay e payloads inválidos/devolução única. Importação sem erros e suíte completa **47/47** em APPDATA de QA isolado; save pessoal idêntico por hash/tamanho/data. Sem alteração de Golem, SaveManager, desbloqueios, receitas ou UI; nenhuma retirada automática habilitada. Os 16 casos manuais anteriores e o playtest físico futuro continuam pendentes. Sem nova exportação nesta fase de domínio.
 
-**Fases A e B fechadas; C–F ainda não implementadas.** Próxima fase: snapshot/preflight/load do golem, incluindo carga de colheita e compatibilidade v3/v4, antes de qualquer scheduler vivo.
+### Fase C — persistência e invalidação de tarefas
+
+SaveManager registra `golem_work` na vila atual ou cacheada: versão interna 1, `seeding_enabled`, prioridade 0–4, `harvest_cargo` (totais por ID) e `seed_cargo` (contrato da B). Nenhuma rota/posição/Callable/nó ou string de tarefa é persistida. Golem reconstrói colheita em rewards mínimos, substitui carga de semente e fica IDLE para uma rota nova no próximo pensamento. Carga de semente restaurada permanece preservada sem plantar/devolver nesta fase; flag salvo não liga scheduler inexistente.
+
+GolemWorkState prevalida tipos/IDs/quantidades, ausência de carga dupla, intenção de devolução quando OFF e marco da Clareira do **snapshot recebido**, não da sessão atual. Recusa ocorre antes de trocar região/estoques/progresso/golem; bloco exige golem físico disponível na HOME. Save com carga runtime inválida ou golem indisponível preserva o arquivo anterior. Durante aplicação, gravação/reentrada é recusada para não publicar snapshots intermediários de sinais de load.
+
+Saves completos v3/v4 sem bloco limpam runtime sem refund, OFF e prioridade padrão, sem inventar carga antiga. Exceção explícita: payloads parciais de contrato sem inventário completo nem bloco não substituem o golem, preservando testes/bridges agrícolas já existentes. Construção de snapshot fora da vila física não inventa bloco; gravação normal exige HOME/golem. JSON de sementes é normalizado a inteiros após validação. Aplicação repetida substitui, sem retirar, depositar, premiar ou replantar.
+
+Geração de tarefa protege callbacks de movimento e esperas de colheita/rega/depósito. Pausa, load, aborto e saída da árvore invalidam a geração, mantendo cargas. Vila em cache congela trabalho físico; tempo ausente ainda avança somente culturas/caldeirão. Colheita instala a carga antes de publicar lote vazio; depósito limpa carga antes do feedback, e baú inválido não descarta entrega. São proteções necessárias para snapshot consistente, sem reformular prioridades/rega/navegação inteira.
+
+GolemWorkPersistenceSmokeTest: 148 verificações de preflight/recusa sem mutação, JSON, replay, v3/v4, substituição sem refund, carga de colheita, waits com mesmo estado após load, pausa/cache, save/load real em QA e nova instância da vila. Modo `--verify-sower-reopen` confirma seis verificações em outro processo sobre o arquivo QA anterior. Arquivos/saves pessoais nunca usados como fixture. Semeadura viva, proximidade real de chegada, falha de caminho, unlock e controle UI permanecem D/E; portões/manuais anteriores continuam pendentes.
+
+Fechamento técnico da C: importação sem erros e suíte completa 48/48 em APPDATA de QA isolado, mais reabertura em processo separado. Save pessoal idêntico por hash/tamanho/data; arte local e UIDs auxiliares alheios não publicados. Sem nova exportação ou aprovação manual nesta fase.
+
+**Fases A–C fechadas; D–F ainda não implementadas.** Próximo incremento: trabalho físico e custódia, reconstruindo rotas a partir da carga persistida, sem modificar recorte/culturas/fontes ou habilitar automaticamente saves elegíveis.
 
 ## Visão Geral
 

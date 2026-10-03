@@ -5,6 +5,7 @@ const SAVE_VERSION := 4
 const LEGACY_SAVE_VERSION := 3
 const ProtectedSaveFileScript := preload("res://Scripts/data/ProtectedSaveFile.gd")
 var last_file_error := ""
+var _applying_snapshot := false
 
 enum FarmSaveSource {
 	NONE,
@@ -32,6 +33,9 @@ func delete_save() -> bool:
 
 func save_game() -> bool:
 	last_file_error = ""
+	if _applying_snapshot:
+		last_file_error = "Aguarde o fim do carregamento antes de salvar."
+		return false
 	var home: Node = _get_save_scene()
 	if home == null or not home.has_method("obter_farm_grid_save_data"):
 		last_file_error = "Fazenda indisponível. O save anterior não foi alterado."
@@ -40,7 +44,14 @@ func save_game() -> bool:
 	if RegionTravelCoordinator.is_transition_in_progress():
 		last_file_error = "Aguarde o fim da viagem antes de salvar."
 		return false
+	if _get_save_golem() == null:
+		last_file_error = "Golem indisponível. O save anterior não foi alterado."
+		return false
 	var data := _build_save_data()
+	if not _is_golem_save_payload_valid(data):
+		last_file_error = "Carga do golem inválida. O save anterior não foi alterado."
+		_show_file_error("Não foi possível salvar", last_file_error)
+		return false
 	var result: Dictionary = ProtectedSaveFileScript.new().write(SAVE_PATH, data)
 	if not result.success:
 		last_file_error = result.message
@@ -151,7 +162,7 @@ func _build_save_data() -> Dictionary:
 			var restoration_id: String = str(project_data.get("restoration_id", project.name))
 			restoration_projects[restoration_id] = bool(project_data.get("restored", false))
 
-	return {
+	var save_data: Dictionary = {
 		"version": SAVE_VERSION,
 		"grove_expedition": GroveExpedition.get_save_data(),
 		"home_inactive_seconds": RegionTravelCoordinator.get_inactive_region_elapsed_seconds(&"farm_village"),
@@ -195,11 +206,20 @@ func _build_save_data() -> Dictionary:
 			"restoration_projects": restoration_projects
 		}
 	}
+	# Fixtures/contratos sem vila não inventam um golem no payload parcial.
+	if _get_save_golem() != null:
+		save_data["golem_work"] = _build_golem_save_data()
+	return save_data
 
 func _apply_save_data(data: Dictionary) -> bool:
+	if _applying_snapshot:
+		return false
 	# Pré-validar os campos opcionais antes de mudar região, recursos ou flags.
 	if data.has("grove_expedition") and not GroveExpedition.is_save_data_valid(data["grove_expedition"]):
 		push_warning("SaveManager: expedicao invalida; save nao aplicado.")
+		return false
+	if not _is_golem_save_payload_valid(data):
+		push_warning("SaveManager: trabalho/carga do golem invalidos; save nao aplicado.")
 		return false
 	var inactive_seconds: Variant = data.get("home_inactive_seconds", 0.0)
 	if not (inactive_seconds is float or inactive_seconds is int) or not is_finite(float(inactive_seconds)) or float(inactive_seconds) < 0.0:
@@ -249,11 +269,20 @@ func _apply_save_data(data: Dictionary) -> bool:
 		current_inventory[key] = int(quantity)
 
 	var home: Node = _get_save_scene()
+	_applying_snapshot = true
 	if home != null and home != get_tree().current_scene and home.has_method("obter_farm_grid_save_data"):
 		if not RegionTravelCoordinator.return_home_for_load():
+			_applying_snapshot = false
 			return false
+	# Invalidar callbacks e substituir carga antes dos sinais de progresso/lotes.
+	# Legado completo limpa runtime sem refund; contratos parciais não o substituem.
+	if data.has("golem_work") or inventory_data.get("inventario") is Dictionary:
+		var golem := _get_save_golem()
+		if golem != null:
+			golem.call("load_work_save_data", data.get("golem_work", GolemWorkState.default_data()), _saved_grove_restored(data))
 
 	if not GlobalInventory.set_inventory_contents(current_inventory):
+		_applying_snapshot = false
 		push_error("SaveManager: inventario pessoal invalido no save.")
 		return false
 	GlobalInventory.apply_backpack_progress(backpack_progress)
@@ -364,8 +393,31 @@ func _apply_save_data(data: Dictionary) -> bool:
 		current_scene.call("advance_inactive_time", float(inactive_seconds))
 	if current_scene != null and current_scene.has_method("_reconstruir_farm_grid_manager"):
 		current_scene.call("_reconstruir_farm_grid_manager")
+	_applying_snapshot = false
 	return true
 
+
+func _get_save_golem() -> Node:
+	var home := _get_save_scene()
+	var golem: Node = home.get_node_or_null("Golem") if home != null else null
+	return golem if golem != null and not golem.is_queued_for_deletion() and golem.has_method("get_work_save_data") and golem.has_method("load_work_save_data") else null
+
+func _build_golem_save_data() -> Dictionary:
+	var golem := _get_save_golem()
+	return golem.call("get_work_save_data") if golem != null else GolemWorkState.default_data()
+
+func _saved_grove_restored(data: Dictionary) -> bool:
+	# Elegibilidade do snapshot recebido, nunca do progresso atual da sessão.
+	var grove: Variant = data.get("grove_expedition")
+	return grove is Dictionary and grove.get("restored", false) == true
+
+func _is_golem_save_payload_valid(data: Dictionary) -> bool:
+	if not data.has("golem_work"):
+		return true
+	if not GolemWorkState.is_valid(data["golem_work"], _saved_grove_restored(data)):
+		return false
+	# Não carregar/descartar carga numa vila sem o seu único golem físico.
+	return _get_save_golem() != null
 
 func _resolve_backpack_progress(data: Dictionary, inventory_data: Dictionary) -> Variant:
 	if inventory_data.has("backpack_milestones"):

@@ -336,7 +336,7 @@ func regar_por_golem() -> bool:
 		timer.start(timer.time_left * 0.8)
 	return true
 
-func harvest_by_golem() -> Array:
+func harvest_by_golem(receive_rewards: Callable = Callable()) -> Array:
 	if estado_atual != State.PRONTO_PARA_COLHER:
 		return []
 
@@ -351,8 +351,12 @@ func harvest_by_golem() -> Array:
 	if recompensas.is_empty():
 		return []
 
+	# Transferência física: nenhum sinal publica lote vazio sem carga no golem.
+	_concluir_colheita(true, false)
+	if receive_rewards.is_valid():
+		receive_rewards.call(recompensas)
 	EventDirector.notify_harvest(global_position)
-	_concluir_colheita()
+	_notificar_estado_alterado()
 	return recompensas
 
 func _colher_manualmente(mostrar_textos: bool = true) -> bool:
@@ -751,7 +755,7 @@ func _obter_nome_exibicao_item(item_id: String) -> String:
 		_:
 			return item_id.replace("_", " ").capitalize()
 
-func _concluir_colheita(preservar_arado: bool = true) -> void:
+func _concluir_colheita(preservar_arado: bool = true, notify_change: bool = true) -> void:
 	_pending_manual_harvest_rewards.clear()
 	estado_atual = State.VAZIO
 	regado = false
@@ -765,8 +769,9 @@ func _concluir_colheita(preservar_arado: bool = true) -> void:
 	if has_node("SpriteTerra"):
 		_atualizar_visual()
 
-	_notificar_estado_alterado()
 	atualizar_visual_planta("", 0)
+	if notify_change:
+		_notificar_estado_alterado()
 
 # Quando o Timer emitir o sinal de timeout: o estado muda para PRONTO_PARA_COLHER
 func _on_timer_timeout() -> void:

@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-03 - Golem Semeador: Fase C de persistência
+
+- Save v3/v4 passa a registrar flag/prioridade e cargas exclusivas do golem. Preflight sem mutação, elegibilidade do snapshot recebido, legado OFF/sem carga, substituição/replay sem refund e leitura de HOME cacheada durante viagem.
+- Callbacks/waits invalidados por load/pausa/aborto/saída da árvore. Colheita e depósito publicam custódia consistente; baú inválido mantém carga. Save runtime inválido/golem ausente preserva arquivo anterior; gravação/reentrada durante load bloqueadas.
+- Compatibilidade do contrato isolado da pesca corrigida sem inventar bloco fora da vila física. Novo teste com 148 verificações e seis de reabertura em outro processo, I/O só em QA. Scheduler vivo, unlock e UI não ligados; manual adiado e nova exportação somente no fechamento futuro.
+- Fechamento técnico: importação sem erros, suíte completa 48/48 e save pessoal idêntico por hash/tamanho/data. Arte local e UIDs auxiliares alheios preservados fora do commit.
+
 ## 2026-10-03 - Golem Semeador: Fase B de domínio
 
 - Plantio manual e por carga compartilham validação/commit sem alterações na recusa; preservados culturas/estações/rega/verão. Corrigida instalação precoce dos metadados da semente e sinal publicado somente após fonte/cultura/timer consistentes.

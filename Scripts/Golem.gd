@@ -20,6 +20,9 @@ const PRIORITY_PAUSED: int = 4
 
 var state: String = "IDLE"
 var carried_rewards: Array = []
+var seed_cargo := GolemSeedCargo.new()
+var seeding_enabled := false
+var _task_generation := 0
 var target_plot: Node2D = null
 var target_chest: Node2D = null
 var work_priority: int = PRIORITY_HARVEST_FIRST
@@ -136,6 +139,10 @@ func _on_think_timer_timeout() -> void:
 
 	if work_priority == PRIORITY_PAUSED:
 		_registrar_acao("pausado")
+		return
+	# Persistência antes do scheduler: uma carga restaurada fica preservada.
+	if seed_cargo.has_seed():
+		_registrar_acao("carga de semente preservada")
 		return
 
 	if not carried_rewards.is_empty():
@@ -301,6 +308,7 @@ func atualizar_diagnosticos_runtime() -> void:
 	_recalcular_contadores_lotes()
 
 func _parar_execucao_atual() -> void:
+	_task_generation += 1
 	velocity = Vector2.ZERO
 	_movement_callback = Callable()
 	_is_avoiding_obstacle = false
@@ -314,6 +322,39 @@ func _parar_execucao_atual() -> void:
 	_cancelar_vida_ociosa()
 	state = "IDLE"
 	ultima_acao = "pausado"
+
+func _exit_tree() -> void:
+	_parar_execucao_atual()
+
+func get_work_save_data() -> Dictionary:
+	var harvest: Variant = GolemWorkState.harvest_totals(carried_rewards)
+	if harvest == null:
+		return {} # O preflight de gravação recusa carga runtime inválida.
+	return {"version": GolemWorkState.VERSION, "seeding_enabled": seeding_enabled,
+		"work_priority": work_priority, "harvest_cargo": harvest,
+		"seed_cargo": seed_cargo.get_save_data()}
+
+func load_work_save_data(data: Dictionary, grove_restored: bool) -> bool:
+	if not GolemWorkState.is_valid(data, grove_restored):
+		return false
+	_parar_execucao_atual()
+	work_priority = int(data["work_priority"])
+	seeding_enabled = data["seeding_enabled"]
+	carried_rewards = GolemWorkState.harvest_rewards(data["harvest_cargo"])
+	seed_cargo = GolemSeedCargo.new()
+	seed_cargo.apply_save_data(data["seed_cargo"])
+	ultima_acao = "pausado" if work_priority == PRIORITY_PAUSED else "aguardando trabalho"
+	return true
+
+func _dispatch_work_callback(callback: Callable, generation: int) -> void:
+	if is_inside_tree() and generation == _task_generation and callback.is_valid():
+		callback.call()
+
+func _task_is_current(generation: int) -> bool:
+	return is_inside_tree() and not is_queued_for_deletion() and generation == _task_generation
+
+func _receive_harvest_cargo(rewards: Array) -> void:
+	carried_rewards = rewards.duplicate(true)
 
 func _recalcular_contadores_lotes() -> void:
 	lotes_maduros_encontrados = 0
@@ -519,7 +560,8 @@ func _encontrar_bau() -> Node2D:
 	return null
 
 func _iniciar_deslocamento(destino: Vector2, callback: Callable) -> void:
-	_movement_callback = callback
+	_task_generation += 1
+	_movement_callback = Callable(self, "_dispatch_work_callback").bind(callback, _task_generation)
 	_final_destination = destino
 	_is_avoiding_obstacle = false
 	_current_avoidance_point = Vector2.ZERO
@@ -597,6 +639,7 @@ func _tentar_desvio_caldeirao() -> void:
 	print("Golem: travado, desviando do caldeirao para %s." % [str(desvio)])
 
 func _abortar_movimento(mensagem: String) -> void:
+	_task_generation += 1
 	push_warning(mensagem)
 	velocity = Vector2.ZERO
 	_movement_callback = Callable()
@@ -700,7 +743,7 @@ func notify_weather_reaction(weather_id: String) -> bool:
 	return false
 
 func _iniciar_vida_ociosa() -> void:
-	if state != "IDLE" or work_priority == PRIORITY_PAUSED or not carried_rewards.is_empty() or life_state != "IDLE":
+	if state != "IDLE" or work_priority == PRIORITY_PAUSED or seed_cargo.has_seed() or not carried_rewards.is_empty() or life_state != "IDLE":
 		return
 	_idle_cycle_count += 1
 	if _idle_cycle_count % 3 == 0:
@@ -775,8 +818,9 @@ func _chegar_ao_lote() -> void:
 		return
 
 	state = "HARVESTING"
+	var generation := _task_generation
 	await get_tree().create_timer(harvest_duration).timeout
-	if work_priority == PRIORITY_PAUSED or state != "HARVESTING":
+	if not _task_is_current(generation) or work_priority == PRIORITY_PAUSED or state != "HARVESTING":
 		return
 
 	if not is_instance_valid(target_plot) or not target_plot.has_method("harvest_by_golem"):
@@ -786,7 +830,9 @@ func _chegar_ao_lote() -> void:
 		_registrar_acao("sem lote maduro")
 		return
 
-	var colheita: Array = target_plot.harvest_by_golem()
+	var colheita: Array = target_plot.harvest_by_golem(Callable(self, "_receive_harvest_cargo"))
+	if not _task_is_current(generation):
+		return
 	if colheita.is_empty():
 		push_warning("Golem: o lote não entregou colheita.")
 		_limpar_alvo_lote()
@@ -813,8 +859,9 @@ func _chegar_para_regar() -> void:
 		return
 
 	state = "WATERING"
+	var generation := _task_generation
 	await get_tree().create_timer(harvest_duration).timeout
-	if work_priority == PRIORITY_PAUSED or state != "WATERING":
+	if not _task_is_current(generation) or work_priority == PRIORITY_PAUSED or state != "WATERING":
 		return
 
 	if not is_instance_valid(target_plot) or not target_plot.has_method("regar_por_golem"):
@@ -834,7 +881,10 @@ func _chegar_para_regar() -> void:
 			_registrar_acao("rega bloqueada pelo talento")
 		return
 
-	if target_plot.regar_por_golem():
+	var watered: bool = target_plot.regar_por_golem()
+	if not _task_is_current(generation):
+		return
+	if watered:
 		_registrar_acao("regou")
 	else:
 		_registrar_acao("sem lote seco")
@@ -847,8 +897,9 @@ func _chegar_ao_bau() -> void:
 		return
 
 	state = "DEPOSITING"
+	var generation := _task_generation
 	await get_tree().create_timer(deposit_duration).timeout
-	if work_priority == PRIORITY_PAUSED or state != "DEPOSITING":
+	if not _task_is_current(generation) or work_priority == PRIORITY_PAUSED or state != "DEPOSITING":
 		return
 
 	var total_quantidade: int = 0
@@ -868,16 +919,20 @@ func _chegar_ao_bau() -> void:
 			print("Golem: depositou %s x%d no Baú da Vila." % [item_id, quantidade])
 	else:
 		push_warning("Golem: baú inválido para depósito.")
+		target_chest = null
+		state = "IDLE"
+		_registrar_acao("entrega aguardando baú")
+		return
 
-	if total_quantidade > 0:
-		var ui = get_tree().current_scene.get_node_or_null("UI")
-		if ui and ui.has_method("criar_texto_flutuante"):
-			ui.criar_texto_flutuante("+%d itens no Baú" % total_quantidade, target_chest.global_position if is_instance_valid(target_chest) else global_position, Color(0.4, 0.9, 1.0))
-
+	var feedback_position := target_chest.global_position
 	carried_rewards = []
 	target_chest = null
 	state = "IDLE"
 	_registrar_acao("indo ao baú")
+	if total_quantidade > 0:
+		var ui = get_tree().current_scene.get_node_or_null("UI")
+		if ui and ui.has_method("criar_texto_flutuante"):
+			ui.criar_texto_flutuante("+%d itens no Baú" % total_quantidade, feedback_position, Color(0.4, 0.9, 1.0))
 
 func _limpar_alvo_lote() -> void:
 	target_plot = null

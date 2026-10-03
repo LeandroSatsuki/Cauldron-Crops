@@ -1,5 +1,15 @@
 # Decisions
 
+## Decisão 115 - Snapshot do trabalho físico do golem
+
+- Fase C autorizada: bloco opcional golem_work interno v1 com flag de semeadura, prioridade e cargas exclusivas de colheita/semente. Preservar save v3/v4, sem serializar rota/posição/referências/callbacks. Totais da colheita são separados do estoque; não inventar carga não registrada por saves antigos.
+- Preflight GolemWorkState usa restored do snapshot recebido, não da sessão atual; valida tipos/IDs/inteiros/intenção OFF/devolução e carga dupla antes de mudar região/estoques/progresso/golem. JSON de sementes normalizado. Aplicação substitui sem refund ou retirada; legado completo sem bloco OFF/cargas vazias/default, enquanto contrato parcial sem inventário completo nem bloco preserva runtime.
+- Geração invalida callbacks e waits após pause/load/aborto/saída da árvore. Carga e prioridade persistem; rota/tarefa não. HOME cacheada fornece snapshot externo; ausência só avança culturas/caldeirão. Carga de semente restaurada não trabalha enquanto scheduler D ainda não existe. Unlock e UI permanecem E; nenhum save elegível é ativado automaticamente.
+- Colheita instala carga antes de sinal de lote vazio, evitando snapshot entre donos; depósito limpa carga antes de feedback. Baú inválido conserva entrega. Gravação com carga inválida/golem indisponível preserva arquivo anterior; durante load, gravação e reentrada são recusadas. Fixtures fora da vila não ganham bloco inventado, mas save normal exige golem físico disponível.
+- GolemWorkPersistenceSmokeTest: 148 verificações de domínio/JSON/legado/replay/substituição, esperas obsoletas com mesmo estado, sinais consistentes, pausa/cache, save/load real em QA e nova instância; seis verificações extras de reabertura em outro processo. Recusas sintéticas produzem warnings esperados. Manual segue adiado; proximidade/caminho físico e UI não homologados por estes testes.
+- Próxima Fase D integra retirada/transporte/plantio/devolução com esta persistência, preservando canteiro/trigo/fontes/prioridades e sem novos sistemas de economia/mapa/rega automática. Não declarar semeador jogável nesta fase.
+- Fechamento técnico: importação sem erros, suíte completa 48/48 em QA isolado, reabertura em segundo processo e save pessoal intacto por hash/tamanho/data. Arte local e UIDs auxiliares não relacionados fora da publicação; sem nova exportação nesta fase.
+
 ## Decisão 114 - Commit comum de plantio e domínio isolado de carga
 
 - Fase B autorizada e implementada sem ligar semeadura automática. FarmPlot valida sem mutação antes de consumir fonte explícita; clique manual usa Mochila, entrada de golem usa somente GolemSeedCargo e verifica o alvo no registro vivo. Preserva quatro culturas, estações, aragem, rega e aceleração de verão. Recusas conservam metadados/timer/estoques/seleções/sinais; cultura usa cópia do catálogo.

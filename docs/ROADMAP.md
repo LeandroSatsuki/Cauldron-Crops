@@ -1,10 +1,20 @@
 # Evolução do Projeto
 
-## Etapa ativa — Golem Semeador, Fase B fechada (2026-10-03)
+## Etapa ativa — Golem Semeador, Fase C fechada (2026-10-03)
+
+Persistência aditiva v3/v4 do golem físico: flag de semeadura, prioridade, totais da colheita e carga única de semente. Preflight verifica elegibilidade no marco recebido, tipos/IDs/quantidades e proíbe cargas simultâneas; recusa antes de trocar região/estoques/progresso. Load substitui sem refund, invalida callbacks/esperas e não persiste rotas. Legado completo OFF/sem carga; contrato parcial sem bloco não substitui golem. Save externo lê HOME cacheada, sem trabalho físico remoto. Plano em [Farm System — Golem Semeador](FARM_SYSTEM_V2.md#golem-semeador--piloto-aprovado-fase-c-concluída-2026-10-03).
+
+Colheita é instalada na carga antes do sinal de lote vazio; depósito limpa carga antes de feedback e mantém entrega se baú desaparece. Gravação inválida/golem indisponível preserva arquivo anterior; reentrada/gravação durante aplicação é recusada. Fase C não liga scheduler de semeadura, unlock ou UI: carga restaurada fica preservada até integração física.
+
+Regressão nova: 148 verificações mais seis de reabertura em outro processo, arquivos reais somente em QA. Importação sem erros e suíte completa 48/48. Save pessoal idêntico por hash/tamanho/data; arte local e UIDs auxiliares alheios preservados fora do checkpoint. Compatibilidade com fixtures isolados sem golem preservada após regressão de coleção de pesca. Manuais anteriores continuam pendentes, sem pedir teste imediato; sem nova exportação nesta fase.
+
+Próximo incremento: **Fase D — trabalho físico**, chegada real ao baú/lote, retirar uma semente, transportar/plantar/devolver; revalidar alvo/estação/saldo, exclusão mútua com colheita e tratar pausa/aborto/caminho/cache/rotas retomadas. Sem arar automaticamente, consumir Mochila, novos mapas/economia ou ativar saves por elegibilidade. E entrega unlock/UI; F fecha suíte/exportação/checklist.
+
+## Checkpoint anterior — Golem Semeador, Fase B fechada (2026-10-03)
 
 Domínio comum de plantio implementado: validação sem mutação, fonte pessoal explícita no clique manual e fonte de carga separada com identidade verificada no registro da vila. Preserva culturas/estações/rega/verão e elimina instalação de metadados antes de recusas. Sinal só depois de consumo/cultura/timer consistentes. Nenhuma automação foi ligada.
 
-GolemSeedCargo conserva uma semente entre baú, transporte, cultura ou devolução. Retirada exclusivamente do baú, sem complementar na Mochila; devolução ausente mantém pendência e repetição não duplica. Serialização de domínio tem preflight estrito, cópias profundas e substituição sem refund. Não confundir com save integrado: Golem e SaveManager ainda não foram alterados. Plano vigente em [Farm System — Golem Semeador](FARM_SYSTEM_V2.md#golem-semeador--piloto-aprovado-fase-b-concluída-2026-10-03).
+GolemSeedCargo conserva uma semente entre baú, transporte, cultura ou devolução. Retirada exclusivamente do baú, sem complementar na Mochila; devolução ausente mantém pendência e repetição não duplica. Serialização de domínio tem preflight estrito, cópias profundas e substituição sem refund. Não confundir com save integrado: Golem e SaveManager ainda não haviam sido alterados nesta Fase B. Plano vigente em [Farm System — Golem Semeador](FARM_SYSTEM_V2.md#golem-semeador--piloto-aprovado-fase-c-concluída-2026-10-03).
 
 Novo teste de domínio com 365 verificações em QA isolado, importação sem erros e suíte completa 47/47. Save pessoal idêntico por hash/tamanho/data; arte local e UIDs auxiliares não relacionados fora do checkpoint. Nenhum desbloqueio, scheduler, UI, receita, economia ou novo mapa nesta etapa. Fila manual anterior continua pendente, sem pedir teste imediato ao autor indisponível; sem nova exportação nesta fase.
 
@@ -12,7 +22,7 @@ Próximo incremento: **Fase C — persistência**, snapshot/preflight/load do go
 
 ## Checkpoint anterior — Golem Semeador, Fase A fechada (2026-10-03)
 
-Autor aprovou o piloto e o início por análise/contratos. Plano operacional em [Farm System — Golem Semeador](FARM_SYSTEM_V2.md#golem-semeador--piloto-aprovado-fase-b-concluída-2026-10-03). Nesta fase somente documentação: golem existente, trigo, quatro células iniciais `(0,0)/(1,0)/(0,1)/(1,1)`, marco da Clareira, ativação opcional OFF, retirada exclusivamente física do baú e respeito à estação/aragem/ocupação. Sem novo mapa, aragem, economia, NPCs, mastery ou mudança de rega.
+Autor aprovou o piloto e o início por análise/contratos. Plano operacional em [Farm System — Golem Semeador](FARM_SYSTEM_V2.md#golem-semeador--piloto-aprovado-fase-c-concluída-2026-10-03). Nesta fase somente documentação: golem existente, trigo, quatro células iniciais `(0,0)/(1,0)/(0,1)/(1,1)`, marco da Clareira, ativação opcional OFF, retirada exclusivamente física do baú e respeito à estação/aragem/ocupação. Sem novo mapa, aragem, economia, NPCs, mastery ou mudança de rega.
 
 Baseline confirma acoplamento do plantio à Mochila, complemento pessoal no consumo agregado, ausência de carga física no snapshot do golem e callbacks/esperas que precisam ser invalidados. Devolução de semente não reutiliza finalizador que limpa carga com baú inválido. Cargas de colheita/plantio separadas e mutuamente exclusivas no piloto; viagem congela trabalho físico, sem simulação remota. Estes são riscos de integração por leitura, não perda de save pessoal reproduzida.
 

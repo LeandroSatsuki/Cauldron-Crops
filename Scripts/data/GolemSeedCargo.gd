@@ -1,7 +1,7 @@
 extends RefCounted
 class_name GolemSeedCargo
 
-# Domínio do piloto. Ainda não conectado à IA ou ao SaveManager.
+# Domínio do piloto. Persistido pelo golem; scheduler físico ainda não ligado.
 # O chamador físico deve validar chegada/alvo antes de retirada/devolução.
 const SEED_ITEM_ID := "semente_basica"
 const INTENT_TRANSPORT := "transport"
@@ -78,6 +78,9 @@ func apply_save_data(value: Variant) -> bool:
 		return false
 	# Substituição, não restituição: aplicar duas vezes nunca altera o baú.
 	_payload = {} if value == null else (value as Dictionary).duplicate(true)
+	if has_seed():
+		_payload["quantity"] = 1
+		_payload["target_cell"] = {"x": int(_payload["target_cell"]["x"]), "y": int(_payload["target_cell"]["y"])}
 	return true
 
 
