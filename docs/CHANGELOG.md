@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-03 - Save com temporário verificado e backup
+
+- Gravação não trunca diretamente o principal: temporário conferido e backup anterior antes da substituição. Erros visíveis, principal JSON inválido preservado e sem recuperação silenciosa. Novo jogo explícito limpa arquivos associados.
+- Schema v3/v4 e gameplay intactos; 19 verificações novas de arquivos/falhas/save/load em sandbox que recusa user:// pessoal. Testes manuais normais adiados; não forçar interrupções no save habitual.
+- Suíte 44/44, importação e inspeção do aviso em OpenGL; save pessoal intacto. Caso manual SAVE-02 acrescentado ao checklist, sem aceite presumido.
+
 ## 2026-10-03 - Checklist integrado e auditoria delimitada
 
 - ROADMAP centraliza pendências manuais por ID, pré-condições e resultados esperados, sem revogar aceites anteriores; README e planos da Mochila/Bosque apontam para a fila atual.

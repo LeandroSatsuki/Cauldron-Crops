@@ -1,6 +1,16 @@
 # Evolução do Projeto
 
-## Etapa ativa — Checklist integrado e auditoria de riscos (2026-10-03)
+## Etapa ativa — Gravação protegida do save (2026-10-03)
+
+Gravação prepara `savegame.json.tmp`, confere conteúdo após flush/leitura, prepara `.bak.tmp` com o principal anterior e promove para `.bak` antes de substituir o principal. Falhas retornam false e mostram aviso; arquivo principal JSON inválido não é sobrescrito nem promovido ao backup. Temporários órfãos não são carregados. Load permanece explícito do principal, sem recuperação silenciosa; aviso menciona backup quando existe. Novo jogo explicitamente solicitado remove os arquivos associados. Schema v3/v4 e regras de snapshot/aplicação/gameplay permanecem.
+
+Regressão `ProtectedSaveFileSmokeTest`: 19 verificações de I/O, Unicode/v3/v4, primeiro save/substituição, bloqueios reais e falhas simuladas de promoção, temporário incompleto, principal inválido/backup preservado e save/load/recusa com aviso/limpeza reais. Runner recusa execução fora de `Builds/QA`, protegendo user:// pessoal. Não equivale a garantia contra falha física de disco/queda de energia; validação JSON do helper confere integridade de arquivo, não substitui preflight de domínio no load.
+
+Manual adiado: salvar normalmente duas vezes, reabrir/carregar e conferir progresso; aviso de erro só se surgir naturalmente, nunca forçar falha no save pessoal. Checklist integrado abaixo continua vigente. Próximo incremento recomendado: reproduzir e corrigir avisos temporários legados do caldeirão com câmera/resize, sem mudar produção/refund ou criar fila global.
+
+Fechamento técnico: suíte 44/44, importação sem erros e aviso de recusa renderizado/inspecionado em OpenGL. Hash/tamanho/data do save pessoal preservados. A mensagem de falha no fixture é esperada.
+
+## Checkpoint anterior — Checklist integrado e auditoria de riscos (2026-10-03)
 
 Consolidação documental, sem mudança de código, gameplay ou save. A fila manual está abaixo, com aceites anteriores preservados e casos condicionais explicitamente separados. Não solicitar teste imediato enquanto o autor estiver indisponível. Última suíte executada: 43/43 no checkpoint `3d2240f`; não é uma nova execução nesta auditoria.
 
@@ -34,6 +44,10 @@ Preparação segura: usar a sessão existente, anotar quantidades/capacidade/est
 - [ ] **CAP-03 — Cancelamento bloqueado:** se a restituição à Mochila não couber, cancelar, salvar/reabrir/carregar e liberar espaço no baú; tentar cancelar novamente. Esperado: reservas pendentes preservadas e restituição única às origens, sem perda/duplicação. Não confundir com cancelamento comum já aprovado.
 - [ ] **SAVE-01 — Estados anteriores/legados:** se existir cópia segura anterior à restauração ou save v3/v4 antigo real, testar separadamente. Conferir culturas, excesso legado sem truncar, marcos, fontes/receitas e ausência de consumo/recompensa repetidos. Persistência da Clareira já restaurada foi aprovada; não substitui este caso. Sem cópia disponível, manter pendente, não reiniciar o save habitual.
 
+Caso adicional de persistência deste checkpoint:
+
+- [ ] **SAVE-02 — Gravação protegida normal:** salvar duas vezes pelo F5 durante uso normal, fechar/reabrir/carregar e conferir quantidades, culturas e progresso. Esperado: mesmo comportamento de retomada, sem erro na gravação comum. Aviso de falha só será conferido se ocorrer naturalmente; nunca interromper gravação ou bloquear arquivos do save habitual. Backup é proteção anterior, não retomada automática de progresso mais antigo.
+
 #### Bloco D — Experiência
 
 - [ ] **EXP-01 — Arte e leitura:** avaliar composição da vila/Bosque, terreno abaixo dos objetos, água/caminhos/obstáculos, legibilidade dos avisos sobre o mapa e conforto de cliques/arraste/rolagem. Registrar captura, resolução, ferramenta selecionada e ação quando houver problema. Renderização técnica não constitui aprovação artística.
@@ -45,7 +59,7 @@ Registro de retorno por ID: **aprovado / falhou / não executado**, resolução,
 
 | Prioridade | Evidência e limite | Próximo recorte mínimo |
 | --- | --- | --- |
-| Alta — gravação do save | `SaveManager.save_game` abre diretamente `SAVE_PATH` com `WRITE`, grava e fecha; sem temporário/backup ou verificação posterior de gravação. Risco inferido de perder o arquivo anterior numa interrupção/falha; não reproduzido no save pessoal. Testes dev atuais usam snapshots/JSON, não chamadas de save/load em disco. | Gravação protegida e cópia recuperável, retorno de erro verificável; testar primeiro save, substituição, arquivo incompleto e falhas em diretório isolado. Preservar v3/v4 e evitar recuperação silenciosa que esconda perda de progresso. Sem sistema novo de slots/cloud/migração. |
+| Alta — gravação do save (mitigada neste checkpoint) | Baseline gravava diretamente no principal; agora temporário conferido, backup anterior e erros verificados. Regressão de I/O isolado acrescentada. Sem perda reproduzida no save pessoal nem garantia contra falha física/energia. | Conferência manual normal adiada. Backup não é carregado automaticamente; recuperação assistida quando necessária. Sem sistema novo de slots/cloud/migração. |
 | Média — avisos temporários | `Cauldron._mostrar_resultado_pendente` passa coordenada do mundo ao helper da UI sem `hold_seconds`; a contenção/quebra de linha do helper só ocorre quando este é positivo. Risco de texto deslocado/cortado/sobreposto; painel persistente não resolve este caminho legado. | Reproduzir com câmera/resize e uniformizar somente avisos existentes; sem fila global ou mudança de entrega/refund. |
 | Média — falta de espaço na tela | `HUDLayout.find_free_panel_position` retorna posição preferida quando nenhuma candidata cabe; não há política adicional de compactação. Limite já documentado, não regressão comprovada nas cinco resoluções do teste. | Reprodução de arrastes extremos e definição de fallback explícito, preservando escolha de minimização e acesso a cancelar. Não prometer suporte irrestrito. |
 | Pendente de experiência | Testes por sinais/geometria/JSON não cobrem picking real, saves legados reais, arte, conforto ou duração. | Checklist acima, sem inventar aprovação nem bloquear toda continuidade enquanto autor estiver indisponível. |

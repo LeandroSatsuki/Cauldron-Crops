@@ -1,5 +1,13 @@
 # Decisions
 
+## Decisão 109 - Gravação protegida e backup explícito do save
+
+- Autor autorizou o recorte de integridade do save existente. Helper ProtectedSaveFile grava/confere temporário no mesmo diretório, prepara/confere cópia do principal em `.bak.tmp`, promove backup e só então substitui principal. Erros retornam false com mensagem visível. Não abrir principal com WRITE; não substituir backup por principal JSON inválido, não carregar temporário órfão nem fazer recuperação silenciosa. Formato v3/v4, snapshot/preflight/aplicação e gameplay preservados.
+- Backup representa conteúdo anterior íntegro como objeto JSON, não nova validação semântica do gameplay. Load continua sujeito ao preflight existente. Novo jogo explicitamente solicitado remove principal/backup/temporários conhecidos; testes nunca executam esse fluxo no save pessoal. Arquivo principal ausente/inválido ou conteúdo recusado informa existência de backup, sem escolher progresso mais antigo pelo jogador.
+- `ProtectedSaveFileSmokeTest`: 19 verificações, incluindo primeira gravação/Unicode/v3/v4, substituição/backup, falhas de promoção simuladas, diretório ausente, temporários bloqueados de verdade, órfão incompleto, principal inválido preservando backup e save/load/recusa com aviso/limpeza reais. Recusa execução se user:// não estiver sob Builds/QA. Não simula falha física/queda de energia nem oferece garantia de durabilidade absoluta.
+- Fechamento técnico: suíte completa 44/44, importação sem erros, aviso de falha renderizado/inspecionado em OpenGL e save pessoal intacto por hash/tamanho/data. Mensagem da falha sintética é esperada; manual SAVE-02 permanece adiado.
+- Referência da substituição: [DirAccess Godot 4.6](https://docs.godotengine.org/en/4.6/classes/class_diraccess.html#class-diraccess-method-rename-absolute). Mesma pasta/volume e backup reduzem risco, sem afirmar transação atômica garantida em todos os sistemas de arquivos. Aceite manual normal continua adiado; nunca provocar falha no save pessoal. Próximo recorte: avisos temporários legados do caldeirão, preservando transações.
+
 ## Decisão 108 - Checklist único e priorização dos riscos existentes
 
 - Continuidade autorizada para consolidar pendências e auditar riscos, sem implementar sistemas nesta etapa. ROADMAP passa a reunir IDs de teste, pré-condições, resultados esperados e referência aos aceites já registrados; planos de Mochila/Bosque e README apontam para a fila operacional. Não reabrir V0 nem exigir repetição total de testes aprovados.

@@ -3,6 +3,8 @@ extends Node
 const SAVE_PATH := "user://savegame.json"
 const SAVE_VERSION := 4
 const LEGACY_SAVE_VERSION := 3
+const ProtectedSaveFileScript := preload("res://Scripts/data/ProtectedSaveFile.gd")
+var last_file_error := ""
 
 enum FarmSaveSource {
 	NONE,
@@ -14,47 +16,53 @@ func has_save() -> bool:
 	return FileAccess.file_exists(SAVE_PATH)
 
 func delete_save() -> bool:
-	if not has_save():
-		print("SaveManager: nenhum save encontrado para apagar.")
-		return true
-
-	var absolute_path := ProjectSettings.globalize_path(SAVE_PATH)
-	var result := DirAccess.remove_absolute(absolute_path)
-	if result != OK:
-		push_error("SaveManager: nao foi possivel apagar o save. Erro: %s" % result)
-		return false
+	last_file_error = ""
+	# Novo jogo explícito também remove artefatos associados, sem recuperação futura.
+	for suffix in ["", ".bak", ".tmp", ".bak.tmp"]:
+		var path: String = SAVE_PATH + suffix
+		if FileAccess.file_exists(path):
+			var result := DirAccess.remove_absolute(ProjectSettings.globalize_path(path))
+			if result != OK:
+				last_file_error = "Não foi possível apagar o save ou sua cópia de segurança."
+				push_error(last_file_error)
+				return false
 
 	print("SaveManager: save apagado em %s" % SAVE_PATH)
 	return true
 
 func save_game() -> bool:
+	last_file_error = ""
 	var home: Node = _get_save_scene()
 	if home == null or not home.has_method("obter_farm_grid_save_data"):
+		last_file_error = "Fazenda indisponível. O save anterior não foi alterado."
 		push_warning("SaveManager: Fazenda/Vila indisponivel; arquivo pessoal nao sobrescrito.")
 		return false
 	if RegionTravelCoordinator.is_transition_in_progress():
+		last_file_error = "Aguarde o fim da viagem antes de salvar."
 		return false
 	var data := _build_save_data()
-	var json_text := JSON.stringify(data)
-	var file := FileAccess.open(SAVE_PATH, FileAccess.WRITE)
-	if file == null:
-		push_error("SaveManager: nao foi possivel abrir o arquivo para salvar em %s" % SAVE_PATH)
+	var result: Dictionary = ProtectedSaveFileScript.new().write(SAVE_PATH, data)
+	if not result.success:
+		last_file_error = result.message
+		push_warning("SaveManager: %s (erro %s)" % [last_file_error, result.error])
+		_show_file_error("Não foi possível salvar", last_file_error)
 		return false
-
-	file.store_string(json_text)
-	file.close()
 
 	print("SaveManager: jogo salvo em %s" % SAVE_PATH)
 	return true
 
 func load_game() -> bool:
+	last_file_error = ""
 	if not has_save():
 		print("SaveManager: nenhum save encontrado em %s" % SAVE_PATH)
+		if FileAccess.file_exists(SAVE_PATH + ".bak"):
+			_show_file_error("Não foi possível carregar", "O arquivo principal não foi encontrado. A cópia de segurança não foi carregada automaticamente.")
 		return false
 
 	var file := FileAccess.open(SAVE_PATH, FileAccess.READ)
 	if file == null:
 		push_error("SaveManager: nao foi possivel abrir o arquivo de save em %s" % SAVE_PATH)
+		_show_file_error("Não foi possível carregar", "O arquivo não pôde ser lido. Nenhuma cópia foi carregada automaticamente.")
 		return false
 
 	var json_text := file.get_as_text()
@@ -63,13 +71,25 @@ func load_game() -> bool:
 	var parsed = JSON.parse_string(json_text)
 	if parsed == null or typeof(parsed) != TYPE_DICTIONARY:
 		push_error("SaveManager: JSON invalido em %s" % SAVE_PATH)
+		_show_file_error("Não foi possível carregar", "O arquivo está incompleto ou inválido. Nenhuma cópia foi carregada automaticamente.")
 		return false
 
 	if not _apply_save_data(parsed):
+		_show_file_error("Não foi possível carregar", "O conteúdo do save foi recusado. Nenhuma cópia foi carregada automaticamente.")
 		return false
 	_refresh_ui_after_load()
 	print("SaveManager: jogo carregado de %s" % SAVE_PATH)
 	return true
+
+func _show_file_error(title: String, message: String) -> void:
+	last_file_error = message
+	var dialog := AcceptDialog.new()
+	dialog.title = title
+	dialog.dialog_text = message + ("\nExiste uma cópia de segurança em savegame.json.bak. Preserve os arquivos para recuperação assistida." if FileAccess.file_exists(SAVE_PATH + ".bak") else "")
+	get_tree().root.add_child(dialog)
+	dialog.confirmed.connect(dialog.queue_free)
+	dialog.canceled.connect(dialog.queue_free)
+	dialog.popup_centered(Vector2i(520, 180))
 
 func _build_save_data() -> Dictionary:
 	var home: Node = _get_save_scene()
