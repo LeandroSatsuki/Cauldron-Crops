@@ -1581,3 +1581,15 @@ Regressão ProtectedSaveFileSmokeTest com 19 verificações: arquivos reais, Uni
 Fechamento: suíte completa 44/44, importação sem erros e aviso de falha renderizado/inspecionado em OpenGL. Hash/tamanho/data do save pessoal idênticos ao baseline; arquivos locais não relacionados preservados/excluídos da publicação. SAVE-02 acrescentado ao checklist integrado, mantendo manual adiado.
 
 Manual adiado: save normal duas vezes/reabertura/load e progresso preservado; aviso só se ocorrer naturalmente. Nunca forçar falha de disco/encerramento na gravação do save pessoal. Checklist integrado de §54/ROADMAP continua pendente e aceites anteriores preservados. Próximo recorte recomendado: reproduzir/corrigir avisos temporários legados do caldeirão com câmera/resize, sem mudar produção/refund ou implementar fila global.
+
+# 56. ESTADO ATUAL — AVISOS TEMPORÁRIOS DO CALDEIRÃO
+
+Autor autorizou o recorte recomendado. Baseline reproduziu aviso fora da tela. Helper local converte anchor do mundo por transform com canvas e reutiliza criar_texto_flutuante com quatro segundos de leitura/quebra/contorno/input ignorado. CauldronFeedbackLabel contém largura/posição durante resize e procura espaço quando toca HUD, produção ou tracker, reservando altura para saída animada. Aviso novo oculta/remove o anterior; sem fila global ou alteração do helper dos demais sistemas.
+
+Sucesso manual, lote pronto, cancelamento concluído e recusa de resultado usam mesmo caminho; golem mantém limite próprio, sem confundir com Mochila. Produção, receitas/timers/estoques/reservas/entrega/refund/schema de save permanecem. Não prometer ausência de colisão quando não existe espaço livre nem mover/minimizar objetivos do jogador automaticamente.
+
+CauldronTemporaryFeedbackSmokeTest: 33 verificações em quatro resoluções de 800×600 a 1920×1080, três offsets de câmera com scroll efetivamente atualizado, resize com aviso ativo, substituição, leitura/remoção, mouse/quebra, distinção de limite e snapshots de produção/Mochila/Storage invariáveis. Renderização técnica OpenGL conferida. Manual UI-05 acrescentado ao checklist; sem forçar estados de capacidade no save pessoal, sem aprovação artística/picking real presumida.
+
+Fechamento técnico: suíte 45/45, retestes finais de avisos (33), produção (87) e coexistência (305), importação sem erros e inspeção OpenGL. Hash/tamanho/data do save pessoal intactos; warnings de refund bloqueado são esperados nos fixtures e arquivos locais não relacionados ficam fora da publicação.
+
+Próximo recorte recomendado: revisar fallback quando objetivos/painéis eliminam todo espaço livre, preservando acesso a controles e escolha de minimização do jogador, sem gerenciador global de janelas ou nova progressão. Demais casos manuais e aceites anteriores continuam separados.

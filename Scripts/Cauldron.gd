@@ -4,6 +4,8 @@ const MOUSE_LEFT = MOUSE_BUTTON_LEFT
 const UIDragHelperScript = preload("res://Scripts/UIDragHelper.gd")
 const RecipeResolverScript = preload("res://Scripts/data/RecipeResolver.gd")
 const VillageResourceAccessScript = preload("res://Scripts/VillageResourceAccess.gd")
+const FeedbackLabelScript := preload("res://Scripts/CauldronFeedbackLabel.gd")
+var _temporary_feedback: Label
 
 @onready var drop_slot_1: Panel = $PopupLayer/CenterContainer/PopupUI/DropSlot1
 @onready var drop_slot_2: Panel = $PopupLayer/CenterContainer/PopupUI/DropSlot2
@@ -488,7 +490,7 @@ func cancelar_producao_em_lote() -> void:
 
 	var ui = get_tree().current_scene.get_node_or_null("UI")
 	if ui and ui.has_method("criar_texto_flutuante"):
-		ui.criar_texto_flutuante("Produção cancelada", $BaseAnchor/SpriteCaldeirao.global_position, Color.YELLOW)
+		_mostrar_feedback_temporario("Produção cancelada", Color.YELLOW)
 	print("Cauldron: producao em lote cancelada. Reservas devolvidas: %d/%d unidade(s)." % [unidades_devolvidas, restante])
 
 func _contar_ingredientes(ingredientes: Array) -> Dictionary:
@@ -612,7 +614,7 @@ func _processar_tick_lote() -> void:
 		var nome_exibicao = "Golem" if _batch_resultado == "golem_coletor" else Database.obter_nome_item(_batch_resultado)
 		if nome_exibicao == "":
 			nome_exibicao = _batch_resultado
-		ui.criar_texto_flutuante("Lote pronto: %sx %s!" % [_batch_resultado_quantidade, nome_exibicao], $BaseAnchor/SpriteCaldeirao.global_position, Color.GREEN)
+		_mostrar_feedback_temporario("Lote pronto: %sx %s!" % [_batch_resultado_quantidade, nome_exibicao], Color.GREEN)
 
 	if _batch_quantidade_concluida >= _batch_quantidade_total:
 		_finalizar_lote()
@@ -818,7 +820,7 @@ func _tentar_entregar_producao_pronta() -> bool:
 		var nome_exibicao = "Golem" if item_em_producao == "golem_coletor" else Database.obter_nome_item(item_em_producao)
 		if nome_exibicao == "":
 			nome_exibicao = item_em_producao
-		ui.criar_texto_flutuante("Sucesso: %sx %s!" % [_item_quantidade_em_producao, nome_exibicao], $BaseAnchor/SpriteCaldeirao.global_position, Color.GREEN)
+		_mostrar_feedback_temporario("Sucesso: %sx %s!" % [_item_quantidade_em_producao, nome_exibicao], Color.GREEN)
 
 	item_em_producao = ""
 	_item_quantidade_em_producao = 1
@@ -849,9 +851,24 @@ func _mostrar_resultado_pendente(resultado: String) -> void:
 	var message := "Capacidade máxima de Golems atingida. O resultado permanece no caldeirão." if resultado == "golem_coletor" else "Mochila sem espaço. O resultado permanece no caldeirão."
 	var ui = get_tree().current_scene.get_node_or_null("UI")
 	if ui and ui.has_method("criar_texto_flutuante"):
-		ui.criar_texto_flutuante(message, $BaseAnchor/SpriteCaldeirao.global_position, Color(1.0, 0.76, 0.42, 1.0))
+		_mostrar_feedback_temporario(message, Color(1.0, 0.76, 0.42, 1.0))
 	else:
 		print(message)
+
+func _mostrar_feedback_temporario(text: String, color: Color) -> void:
+	var scene := get_tree().current_scene
+	var ui := scene.get_node_or_null("UI") if scene != null else null
+	if ui == null or not ui.has_method("criar_texto_flutuante"):
+		return
+	if is_instance_valid(_temporary_feedback):
+		_temporary_feedback.hide()
+		_temporary_feedback.queue_free()
+	var anchor: Node2D = $BaseAnchor/SpriteCaldeirao
+	var screen_position := anchor.get_global_transform_with_canvas().origin
+	_temporary_feedback = ui.call("criar_texto_flutuante", text, screen_position, color, 4.0)
+	_temporary_feedback.set_script(FeedbackLabelScript)
+	_temporary_feedback.process_mode = Node.PROCESS_MODE_ALWAYS
+	_temporary_feedback.set_process(true)
 
 
 func _iniciar_pulsar_magico():

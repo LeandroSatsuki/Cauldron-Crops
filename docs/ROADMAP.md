@@ -1,6 +1,16 @@
 # Evolução do Projeto
 
-## Etapa ativa — Gravação protegida do save (2026-10-03)
+## Etapa ativa — Avisos temporários do caldeirão contidos (2026-10-03)
+
+Baseline reproduziu aviso fora da tela. Caldeirão converte seu ponto do mundo para tela e reutiliza helper com quatro segundos de leitura, quebra de linha, contorno e mouse ignorado. Aviso novo substitui o anterior; componente local contém largura/posição após resize e busca espaço livre se tocar HUD/produção/objetivo da Clareira, reservando altura para saída animada. Sucesso, lote pronto, cancelamento concluído e recusa de resultado usam o mesmo caminho. Nenhuma mudança de estoque, produção, entrega, refund, timers ou save; helper global/outros sistemas permanecem intactos.
+
+Regressão `CauldronTemporaryFeedbackSmokeTest`: 33 verificações em 800×600, 800×720, 1280×720 e 1920×1080, câmera com offsets efetivamente aplicados, resize com aviso ativo, substituição, duração/saída, input ignorado, distinção Golem/Mochila e snapshots invariáveis. Aviso renderizado em OpenGL. Não promete ausência de sobreposição quando não existe espaço livre; fallback extremo continua separado.
+
+Manual adiado: ler avisos de sucesso/recusa/cancelamento no mapa, câmera/resize e repetição, sem forçar capacidade no save pessoal. Próximo recorte recomendado: revisar fallback quando objetivos/painéis ocupam todo o espaço livre, preservando controles e escolha de minimização do jogador, sem criar gerenciador global de janelas.
+
+Fechamento: suíte 45/45, reteste final do aviso (33), feedback de produção (87) e coexistência (305), importação sem erros e inspeção OpenGL. Save pessoal intacto por hash/tamanho/data; arquivos locais não relacionados excluídos do checkpoint.
+
+## Checkpoint anterior — Gravação protegida do save (2026-10-03)
 
 Gravação prepara `savegame.json.tmp`, confere conteúdo após flush/leitura, prepara `.bak.tmp` com o principal anterior e promove para `.bak` antes de substituir o principal. Falhas retornam false e mostram aviso; arquivo principal JSON inválido não é sobrescrito nem promovido ao backup. Temporários órfãos não são carregados. Load permanece explícito do principal, sem recuperação silenciosa; aviso menciona backup quando existe. Novo jogo explicitamente solicitado remove os arquivos associados. Schema v3/v4 e regras de snapshot/aplicação/gameplay permanecem.
 
@@ -31,6 +41,10 @@ Preparação segura: usar a sessão existente, anotar quantidades/capacidade/est
 - [ ] **UI-03 — Painéis persistentes:** com produção e objetivo da Clareira ativos quando disponíveis, conferir resultado pronto/em preparo/lote/pausa/cancelamento pendente; minimizar objetivo e mover objetivos iniciais/redimensionar. Esperado: avisos legíveis e separados da Mochila/ferramentas/Caderno, botão de cancelar acessível; câmera não arrasta aviso. Não forçar estados indisponíveis. Se não houver espaço livre pela posição escolhida, registrar e minimizar/mover objetivos; não considerar garantida ausência de colisão em qualquer posição.
 - [ ] **UI-04 — Orientação e requisitos:** conforme estados disponíveis, ler próxima ação, falta de carvão/misturas, orientação de retirada do baú e produção. Conferir requisitos do Herbário (baú + Mochila) e Clareira (só Mochila) após transferências/load. Esperado: contador acompanha estoque atual, local externo não consome baú, objetivo concluído permanece oculto. Se projetos já concluídos, não apagar progresso: conferência pré-conclusão fica condicional.
 
+Conferência adicional de apresentação:
+
+- [ ] **UI-05 — Avisos temporários do caldeirão:** ler sucesso, lote pronto e cancelamento; recusa de resultado somente se surgir naturalmente. Mover câmera/redimensionar enquanto aviso aparece e repetir interação. Esperado: aviso contido, quebrado e legível por quatro segundos antes da saída; mensagem nova substitui anterior e não captura cliques. Não exigir ausência de colisão se todos os espaços livres forem ocupados pelo usuário; registrar esse caso separadamente.
+
 #### Bloco B — Produção durante viagem
 
 - [ ] **TR-01 — Concluir:** iniciar lote que permita viajar e usar F5 no Bosque ainda em andamento; anotar estoques/resultados antes. F9 deve retornar à vila e retomar o snapshot. Conferir entrega/consumo únicos, inclusive após reabrir/carregar. Mistura usa 2 carvões por unidade e 4 segundos por preparo; quantidade limitada aos recursos reais. Se terminar antes de salvar, caso de retomada em andamento não executado.
@@ -60,7 +74,7 @@ Registro de retorno por ID: **aprovado / falhou / não executado**, resolução,
 | Prioridade | Evidência e limite | Próximo recorte mínimo |
 | --- | --- | --- |
 | Alta — gravação do save (mitigada neste checkpoint) | Baseline gravava diretamente no principal; agora temporário conferido, backup anterior e erros verificados. Regressão de I/O isolado acrescentada. Sem perda reproduzida no save pessoal nem garantia contra falha física/energia. | Conferência manual normal adiada. Backup não é carregado automaticamente; recuperação assistida quando necessária. Sem sistema novo de slots/cloud/migração. |
-| Média — avisos temporários | `Cauldron._mostrar_resultado_pendente` passa coordenada do mundo ao helper da UI sem `hold_seconds`; a contenção/quebra de linha do helper só ocorre quando este é positivo. Risco de texto deslocado/cortado/sobreposto; painel persistente não resolve este caminho legado. | Reproduzir com câmera/resize e uniformizar somente avisos existentes; sem fila global ou mudança de entrega/refund. |
+| Média — avisos temporários (mitigada neste checkpoint) | Baseline reproduziu texto fora da tela. Avisos do caldeirão agora convertem mundo → tela, quebram linha, mantêm leitura, respeitam resize e procuram espaço quando tocam HUD/painéis. | Conferência manual UI-05 adiada. Falta total de espaço continua no risco de fallback abaixo; sem fila global ou mudança de entrega/refund. |
 | Média — falta de espaço na tela | `HUDLayout.find_free_panel_position` retorna posição preferida quando nenhuma candidata cabe; não há política adicional de compactação. Limite já documentado, não regressão comprovada nas cinco resoluções do teste. | Reprodução de arrastes extremos e definição de fallback explícito, preservando escolha de minimização e acesso a cancelar. Não prometer suporte irrestrito. |
 | Pendente de experiência | Testes por sinais/geometria/JSON não cobrem picking real, saves legados reais, arte, conforto ou duração. | Checklist acima, sem inventar aprovação nem bloquear toda continuidade enquanto autor estiver indisponível. |
 

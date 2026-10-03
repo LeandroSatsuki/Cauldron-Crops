@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-03 - Avisos temporários do caldeirão legíveis na tela
+
+- Corrigido aviso fora da tela reproduzido: conversão mundo/tela, quebra/contorno, quatro segundos de leitura, resize contido e novo aviso substituindo anterior. Procura espaço quando toca HUD/painéis, sem mover objetivos do usuário.
+- Sucesso, lote pronto, cancelamento e recusa uniformizados, sem mudar produção, estoques, entrega/refund ou save. Regressão com 33 verificações e renderização OpenGL; manual UI-05 adiado. Falta total de espaço continua sem garantia de não colisão.
+- Suíte 45/45, regressões relacionadas repetidas após ajuste final, importação sem erros e save pessoal intacto. Arquivos locais não relacionados preservados fora do checkpoint.
+
 ## 2026-10-03 - Save com temporário verificado e backup
 
 - Gravação não trunca diretamente o principal: temporário conferido e backup anterior antes da substituição. Erros visíveis, principal JSON inválido preservado e sem recuperação silenciosa. Novo jogo explícito limpa arquivos associados.

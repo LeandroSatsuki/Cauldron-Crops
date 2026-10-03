@@ -1,5 +1,12 @@
 # Decisions
 
+## Decisão 110 - Avisos temporários do caldeirão em coordenadas de tela
+
+- Autor autorizou corrigir avisos existentes; baseline reproduziu aviso fora da tela. Ponto do caldeirão passa por transform com canvas; helper existente recebe quatro segundos de leitura, quebra/contorno/input ignorado. Componente local de Label contém largura/posição durante resize e, se tocar HUD/produção/tracker, reutiliza busca de espaço livre com reserva vertical para animação. Não altera helper global nem cria fila/janelas novas.
+- Aviso novo oculta/remove o anterior, inclusive entre sucesso, lote pronto, cancelamento e recusa. Limite de golems conserva mensagem própria; estoque, domínio/receitas, entrega/refund/timers e save não mudam. Sem espaço livre não há garantia absoluta de não sobreposição; não mover/minimizar objetivos do jogador automaticamente.
+- `CauldronTemporaryFeedbackSmokeTest`: 33 verificações em quatro resoluções de 800×600 a 1920×1080, três offsets de câmera com scroll atualizado, resize durante aviso, substituição, tempo de leitura/remoção, input/quebra, limite de golems e snapshots invariáveis. Renderização OpenGL conferida. Manual UI-05 adiado; conforto/picking/arte não aprovados por sinais/geometria. Próximo recorte: fallback de falta de espaço, sem ampliar gameplay.
+- Suíte 45/45 e retestes finais do aviso, produção (87) e coexistência (305), importação sem erros e save pessoal intacto por hash/tamanho/data. Warnings de refund bloqueado são esperados nos fixtures.
+
 ## Decisão 109 - Gravação protegida e backup explícito do save
 
 - Autor autorizou o recorte de integridade do save existente. Helper ProtectedSaveFile grava/confere temporário no mesmo diretório, prepara/confere cópia do principal em `.bak.tmp`, promove backup e só então substitui principal. Erros retornam false com mensagem visível. Não abrir principal com WRITE; não substituir backup por principal JSON inválido, não carregar temporário órfão nem fazer recuperação silenciosa. Formato v3/v4, snapshot/preflight/aplicação e gameplay preservados.
