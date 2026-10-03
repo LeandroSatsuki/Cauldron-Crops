@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-03 - HUD responsiva / testes manuais adiados
+
+- Autor autorizou continuidade sem testes manuais imediatos. Casos ainda não validados permanecem pendentes para checklist posterior, sem reabrir aceites já registrados.
+- Mochila com largura/paginação adaptáveis (até 12 slots por página), acesso a todo excesso legado e ferramentas compactas com ícone/número/tooltip. Objetivos mantêm arraste/minimização e botão acompanha o painel; resize fora da vila é aplicado no retorno ao cache.
+- Nenhuma mudança de capacidade, estoques, gameplay, seleção exclusiva, save v4 ou lore. Sem economia/NPCs/sistemas novos.
+- Baseline reproduziu sobreposição; nova regressão passou com 230 verificações em cinco resoluções, suíte 37/37 e renderização OpenGL/D3D12. Importação sem erros; save pessoal intacto. Picking/conforto/arte continuam pendentes.
+
 ## 2026-10-03 - Aceite manual da persistência da Clareira restaurada
 
 - Autor aprovou salvar no Bosque restaurado, carregar retornando à vila com itens/receita preservados, revisitar sem novo consumo/recompensa e fechar/reabrir/carregar mantendo canteiro verde e objetivo oculto.

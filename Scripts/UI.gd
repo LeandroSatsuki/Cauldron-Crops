@@ -561,6 +561,8 @@ var purification_obstacle_ref: Node = null
 @onready var inventory_next_button: Button = $InventoryNextButton
 
 const INVENTORY_PAGE_SIZE: int = 12
+var _inventory_page_size: int = INVENTORY_PAGE_SIZE
+var _toolbar_compact: bool = false
 var _inventory_page: int = 0
 var _last_backpack_milestones: Array[String] = []
 
@@ -3286,6 +3288,8 @@ func atualizar_toolbar_ferramentas() -> void:
 
 
 func _atualizar_texto_botao_ferramenta(button: Button, texto_base: String, ativa: bool) -> void:
+	if _toolbar_compact:
+		texto_base = texto_base.get_slice(" ", 0)
 
 
 
@@ -3926,16 +3930,31 @@ func _on_inventory_next_pressed() -> void:
 	_refresh_inventory_page()
 
 func _refresh_inventory_page() -> void:
-	var page_count := maxi(1, ceili(float(inventory_bar.get_child_count()) / INVENTORY_PAGE_SIZE))
+	var page_count := maxi(1, ceili(float(inventory_bar.get_child_count()) / _inventory_page_size))
 	_inventory_page = clampi(_inventory_page, 0, page_count - 1)
 	for index in range(inventory_bar.get_child_count()):
-		inventory_bar.get_child(index).visible = index >= _inventory_page * INVENTORY_PAGE_SIZE and index < (_inventory_page + 1) * INVENTORY_PAGE_SIZE
+		inventory_bar.get_child(index).visible = index >= _inventory_page * _inventory_page_size and index < (_inventory_page + 1) * _inventory_page_size
 	inventory_page_label.text = "%d/%d" % [_inventory_page + 1, page_count]
 	inventory_page_label.visible = page_count > 1
 	inventory_previous_button.visible = page_count > 1
 	inventory_next_button.visible = page_count > 1
 	inventory_previous_button.disabled = _inventory_page == 0
 	inventory_next_button.disabled = _inventory_page == page_count - 1
+
+
+func set_inventory_page_size(page_size: int) -> void:
+	var next_size := clampi(page_size, 1, INVENTORY_PAGE_SIZE)
+	if next_size == _inventory_page_size:
+		return
+	var first_visible_slot := _inventory_page * _inventory_page_size
+	_inventory_page_size = next_size
+	_inventory_page = floori(float(first_visible_slot) / next_size)
+	_refresh_inventory_page()
+
+
+func set_toolbar_compact(compact: bool) -> void:
+	_toolbar_compact = compact
+	atualizar_toolbar_ferramentas()
 
 func atualizar_destaques() -> void:
 

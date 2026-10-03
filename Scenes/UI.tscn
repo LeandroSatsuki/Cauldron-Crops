@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://cpbky483ya1uj" path="res://Scripts/UI.gd" id="1_uigd"]
 [ext_resource type="Script" path="res://Scripts/VillageChestPanel.gd" id="8_chestpanel"]
+[ext_resource type="Script" path="res://Scripts/HUDLayout.gd" id="9_hudlayout"]
 [ext_resource type="PackedScene" path="res://Scenes/SellMenu.tscn" id="2_sellscene"]
 [ext_resource type="Theme" path="res://Themes/pixel_ui_theme.tres" id="3_pixeltheme"]
 [ext_resource type="Texture2D" uid="uid://bdjfipyjk75yt" path="res://Assets/Tools/tool_hoe.png" id="4_toolhoe"]
@@ -23,6 +24,9 @@ corner_radius_bottom_right = 5
 
 [node name="UI" type="CanvasLayer" unique_id=570246364]
 script = ExtResource("1_uigd")
+
+[node name="HUDLayout" type="Node" parent="."]
+script = ExtResource("9_hudlayout")
 
 [node name="StatusPanel" type="VBoxContainer" parent="." unique_id=2048173949]
 offset_left = 20.0

@@ -1,5 +1,13 @@
 # Decisions
 
+## Decisão 101 - HUD responsiva e continuidade sem gate manual imediato
+
+- O autor não poderá fazer testes agora e autorizou continuar a construção, preparando checklist depois. Publicar incrementos verificados como checkpoints, mantendo aceite manual pendente; não interpretar ausência de teste como aprovação nem autorização irrestrita de sistemas.
+- Corrigir a sobreposição conhecida da Mochila/ferramentas com objetivos em janelas menores. `HUDLayout` trata somente apresentação: largura/paginação até 12 slots, empilhamento em janela estreita, ferramentas compactas com tooltip, botão de minimizar acompanhando objetivos e painel contido no viewport. Não reparentar controles nem alterar recursos, seleção exclusiva, capacidade ou save.
+- A paginação mantém o primeiro índice visível ao trocar tamanho e permite acessar todo excesso legado. `UI` mantém o modo compacto como fonte de verdade porque seu refresh periódico restaura os rótulos; não esconder ferramentas apenas por clipping. HOME reaplica layout ao entrar na árvore depois de resize fora da vila.
+- Objetivos continuam inicialmente no canto superior direito, arrastáveis e opcionais; uma sobreposição deliberada após arrastar não gera reposicionamento forçado. Posições continuam runtime-only. Testado de 800×720 a 2560×1440; não prometer suporte universal a alturas/larguras inferiores.
+- Regressão nova tem 230 verificações de geometria/páginas/seleção/estoque/resize/viagem, com baseline que reproduz o conflito. Suíte 37/37, importação e renderização OpenGL/D3D12 conferidas. Testes isolados não alteram save pessoal. Não substituem cliques reais, conforto ou aceite artístico; pendências reunidas no roadmap/contexto §47.
+
 ## Decisão 100 - Segunda expedição: restauração no Bosque e receita agrícola
 
 - Após escolher novo conteúdo em vez de polimento visual/infraestrutura, o autor aprovou iniciar a grande fase em 2026-10-03. Recorte: pequena clareira no Bosque existente, um projeto, duas receitas e recompensa com efeito real no cultivo. Sem lore definitiva, lojas, moeda, NPCs, combate, regiões extras, mastery ou rede de armazenamento.

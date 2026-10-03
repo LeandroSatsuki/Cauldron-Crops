@@ -11,6 +11,10 @@ func _ready() -> void:
 	_run.call_deferred()
 
 func _run() -> void:
+	# O contrato de 12 slots por página é o layout amplo; janelas menores paginam.
+	get_tree().root.mode = Window.MODE_WINDOWED
+	get_tree().root.size = Vector2i(1920, 1080)
+	await get_tree().process_frame
 	PocoManager.set_process(false)
 	_main = MAIN_SCENE.instantiate()
 	get_tree().root.add_child(_main)

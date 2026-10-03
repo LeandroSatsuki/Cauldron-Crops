@@ -2,6 +2,8 @@
 
 ## Status
 
+Atualização operacional em 2026-10-03: autor adiou testes manuais e autorizou continuar a construção, consolidando checklist depois. Pendências abaixo não são bloqueio automático nem aprovação presumida. HUD agora usa páginas responsivas de até 12 slots (menos em janelas estreitas), mantendo capacidade lógica 12/16/20, stacks 99 e acesso ao excesso legado. Resize preserva o primeiro índice visível; nenhum dado de estoque/posição foi adicionado ao save. Decisão 101/contexto §47 registram regressão de 230 verificações e suíte 37/37. Conferência manual de resize/páginas/ferramentas compactas/objetivos será retomada quando o autor puder testar.
+
 Fases A–C concluídas; D/E implementadas. Em 2026-10-03, o autor aprovou os roteiros manuais de expansão/navegação/transferências/save da Mochila, produção em andamento/retomada/cancelamento do caldeirão e colheita recusada por Mochila cheia, persistida e recuperada após depósito. Permanecem os cenários específicos de captura pendente e entrega/cancelamento do caldeirão bloqueados por capacidade, sem aprovação presumida. Fase E validada automaticamente em 2026-10-01 após autorização explícita para iniciar e finalizar no mesmo ciclo. O autor escolheu expansão por marcos de restauração/exploração: capacidade inicial 12, +4 pelo Herbário e +4 pela primeira coleta no Bosque, até 20 slots; stacks padrão 99. Os relatos históricos abaixo descrevem checkpoints, não o estado atual do limite.
 
 Este marco sucede o fechamento do acesso a recursos da vila. Ele não inclui economia, venda, NPCs, múltiplos baús, filtros avançados, peso, toolbelt separado nem mudança de lore.

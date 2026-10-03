@@ -1,6 +1,18 @@
 # Evolução do Projeto
 
-## Etapa ativa — Segunda expedição / Clareira recuperável (2026-10-03)
+## Etapa ativa — Continuidade com testes manuais adiados / HUD responsiva (2026-10-03)
+
+O autor informou que não poderá testar agora e autorizou continuar a construção, consolidando um checklist posteriormente. Não aguardar cada roteiro manual para executar incrementos delimitados e verificáveis; manter pendências explícitas, sem convertê-las em aprovação. A segunda expedição permanece implementada, com aceites parciais preservados abaixo.
+
+Checkpoint: Mochila adapta largura e quantidade de slots por página à janela, até 12; ferramentas usam ícone/número com tooltip em modo compacto. Objetivos permanecem arrastáveis/minimizáveis, com botão acompanhando o painel e posição contida na janela. Resize feito no Bosque é aplicado no retorno à HOME em cache. Capacidade 12/16/20, estoques, seleção e save v4 não mudam.
+
+Validação: regressão nova com 230 verificações, cinco resoluções (800×720, 1024×768, 1280×720, 1920×1080 e 2560×1440), renderização OpenGL/D3D12 e suíte completa 37/37. Baseline sem o componente reproduziu a sobreposição. Isto não valida picking do sistema operacional, conforto ou direção artística; larguras abaixo de 800 e alturas menores não têm aceite de usabilidade.
+
+Fila manual adiada: produção em viagem (concluir/cancelar em lotes separados), save anterior à restauração sem apagar progresso, intervalo da fonte renovável, captura pendente, bloqueios do caldeirão por capacidade, saves legados reais, conforto/arte/balanceamento e resize/paginação/objetivos da HUD. Manter os roteiros existentes para compor o checklist futuro.
+
+Próximo incremento recomendado: legibilidade e adaptação dos painéis do caldeirão/Livro em janelas menores, após analisar seus contratos. Não iniciar economia, NPCs ou novos sistemas por consequência desta autorização.
+
+## Baseline anterior — Segunda expedição / Clareira recuperável (2026-10-03)
 
 Autor escolheu novo conteúdo e autorizou iniciar o recorte grande. Implementados descoberta → carvão → preparo no caldeirão da vila → retorno com 2 misturas na Mochila → restauração externa → receita agrícola útil. Uma subárea do Bosque existente, fonte determinística renovável e duas receitas; sem economia, NPCs, combate, lore definitiva, nova região ou rede de armazenamento.
 
