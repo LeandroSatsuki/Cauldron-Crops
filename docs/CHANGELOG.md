@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-03 - Aceite manual da logística física do golem
+
+- Autor aprovou colheita → transporte → depósito no baú, inclusive outra entrega com o personagem no caminho, sem perder ou duplicar carga.
+- Roteiros específicos de input, cultivo/resoluções, viagem/retorno, restauração e golem aprovados. Área livre, saves legados, Mochila/persistência do caldeirão e aceite artístico mantêm pendências próprias.
+- Registro somente documental, com revisão do diff; sem nova suíte ou mudança de código/save.
+
 ## 2026-10-03 - Aceite manual de purificação e restauração
 
 - Autor aprovou o roteiro purificação → pedra → cultivo dos quatro lotes 2×2 → Herbário, incluindo ausência de travamentos e recompensa única.
