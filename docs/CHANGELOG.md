@@ -2,7 +2,8 @@
 
 ## 2026-10-03 - Preparação de playtest pós-V0
 
-- Preset Windows separado e exportador limpo reutilizado: suíte opcional, auditoria do pacote, manifesto/hashes, logs, instruções e checklist. Save separado somente na build; projeto/saves pessoais intactos. Exportação em verificação; manual adiado.
+- Preset Windows separado e exportador limpo reutilizado: suíte opcional, auditoria do pacote, manifesto/hashes, logs, instruções e checklist de 16 casos. Save separado somente na build; projeto/saves pessoais intactos. Manual adiado.
+- Fonte `c43abae`: suíte 46/46 no checkout limpo, auditoria do PCK e startup headless/OpenGL de 120 frames sem erros registrados. Corrigidos caminho de QA do exportador e preload obrigatório de teste interno na UI; debug somente explícito no editor, sem F10. Binários/arte local fora do Git; save pessoal intacto por hash/tamanho/data.
 
 ## 2026-10-03 - Fallback de HUD prioriza controles
 

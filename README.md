@@ -89,6 +89,10 @@ Para gerar uma build, instale os templates de exportação compatíveis com sua 
 
 ## Estado do desenvolvimento
 
+Checkpoint atual (2026-10-03): playtest pós-V0 exportado da fonte `c43abae` em cópia limpa, com 46/46 smoke tests, auditoria do pacote e startup headless/OpenGL sem erros. Save próprio da build, manifesto e checklist de 16 casos em `Builds/Playtest/PostV0-20261003`; binários locais não publicados no Git. Save pessoal preservado. Manual/arte/ritmo continuam pendentes; próximo recorte recomendado é propor gameplay/progressão delimitados, não implementar sistemas reservados automaticamente.
+
+### Histórico de checkpoints
+
 Checkpoint seguinte (2026-10-03): save prepara arquivo temporário verificado e mantém cópia anterior `.bak` antes de substituir o principal. Falhas são informadas, sem carregar backup automaticamente; formato v3/v4 e gameplay preservados. Testes de arquivo usam somente sandbox de QA. Save/load manual normal e demais casos do checklist continuam adiados; não provocar falhas no save pessoal.
 
 Estado operacional consolidado (2026-10-03): suíte mais recente 43/43 no checkpoint `3d2240f`; esta atualização é documental, sem nova execução. Expansão/transferências/persistência da Mochila, produção/cancelamento comuns, colheita recusada persistida, layout agrícola e percurso/restauração/persistência após conclusão da Clareira tiveram aceites manuais específicos. Ajustes recentes de interface e casos-limite continuam pendentes. Consulte o [checklist integrado e riscos técnicos](./docs/ROADMAP.md#checklist-integrado--validação-manual-adiada); os checkpoints abaixo são históricos, não uma lista de testes todos ainda pendentes. Próxima recomendação técnica: proteger a gravação do save, sem mudar o formato ou gameplay; ainda não implementada.

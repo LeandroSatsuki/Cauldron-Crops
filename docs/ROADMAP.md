@@ -4,7 +4,11 @@
 
 Preparação autorizada de build Windows local, sem novos sistemas ou mudança de gameplay. Exportador existente ganha modo Playtest: checkout do commit isolado, suíte opcional completa, exclusão de testes internos/docs/ferramentas e auditoria do PCK. Transformação somente no projeto temporário configura save `CauldronCropsPlaytest`; executável direto também não usa o progresso habitual. V0 aprovada permanece histórica, não reaberta.
 
-Pacote local `Builds/Playtest`: EXE/PCK, launcher de compatibilidade, instruções, manifesto com commit/hashes, logs e cópia desta documentação. Todos os casos abaixo continuam pendentes conforme sua pré-condição. Este ambiente começa sem progresso anterior; aceites antigos não precisam ser repetidos como condição de aprovação dos ajustes de interface. Não importar/apagar save pessoal. Resultado de exportação/auditoria ainda em verificação neste commit de preparação.
+Pacote local `Builds/Playtest/PostV0-20261003`: EXE/PCK, launcher de compatibilidade, instruções, manifesto com commit/hashes, logs e somente o checklist integrado extraído abaixo (16 casos). Todos continuam pendentes conforme sua pré-condição. Este ambiente começa sem progresso anterior; aceites antigos não precisam ser repetidos como condição de aprovação dos ajustes de interface. Não importar/apagar save pessoal.
+
+Fechamento técnico: build de fonte `c43abae`, suíte 46/46 no checkout limpo, importação/validação, startup headless de 120 frames, auditoria do PCK e startup OpenGL de 120 frames sem erros registrados. Auditoria confirma save separado, recursos de regiões/receita e exclusão dos diretórios internos. Corrigida dependência de preload de teste agrícola na UI: ação dev agora carrega somente no editor com debug explicitamente habilitado, sem reativar F10. Primeiro runner foi recusado corretamente pelo guard de save; APPDATA passou a ficar em Builds/QA do próprio checkout temporário. Save pessoal intacto por hash/tamanho/data; binários e arte local fora do Git.
+
+Próximo recorte recomendado: propor um bloco delimitado de gameplay/progressão, com objetivos, caminhos determinísticos de aquisição e critérios de aceite, antes de implementar. Economia/NPCs/lore definitiva continuam reservados; playtest/16 casos não são considerados aprovados pela exportação técnica.
 
 ## Checkpoint anterior — Fallback de HUD sem espaço livre (2026-10-03)
 

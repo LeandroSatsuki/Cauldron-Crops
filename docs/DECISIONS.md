@@ -4,7 +4,8 @@
 
 - Recorte autorizado: preparar checkpoint jogável/checklist, sem ampliar conteúdo. Reusar Export-CleanBuild com checkout isolado do commit e preset separado, excluindo testes internos/docs/ferramentas/Builds do PCK. Alterações e arte local não versionadas não entram.
 - Transformação somente no projeto temporário define diretório de save `CauldronCropsPlaytest`, inclusive para abertura direta do EXE. Não copiar progresso pessoal automaticamente nem mudar o projeto de desenvolvimento/schema. Launcher escolhe OpenGL de compatibilidade; configuração gráfica fonte permanece intacta.
-- Manifesto registra commit, hashes, transformação e execução da suíte; auditoria do pacote confere exclusões, recursos dinâmicos e isolamento. Checklist/manual continuam pendentes; startup/export técnico não são aprovação de gameplay/arte. Exportação em verificação neste commit de preparação.
+- Manifesto registra commit, hashes, transformação e execução da suíte; auditoria do pacote confere exclusões, recursos dinâmicos e isolamento. Checklist/manual continuam pendentes; startup/export técnico não são aprovação de gameplay/arte.
+- Fechamento: fonte `c43abae`, suíte limpa 46/46, auditoria do PCK, startup headless/OpenGL de 120 frames sem erros e save pessoal intacto. O teste de arquivo recusou corretamente APPDATA fora do QA do checkout temporário; runner corrigido. UI deixou de fazer preload de um teste dev necessário somente à ação explícita no editor; nenhuma reativação de F10/gameplay. Checklist entregue contém somente seus 16 casos, não todo histórico do ROADMAP. Pacote local ignorado pelo Git; próximo recorte é proposta delimitada de gameplay, não autorização automática de sistemas reservados.
 
 ## Decisão 111 - Prioridade de controles quando a HUD está saturada
 
