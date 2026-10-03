@@ -6,6 +6,8 @@ Fases A–C concluídas. Fase D implementada, com validação manual do piloto e
 
 Este marco sucede o fechamento do acesso a recursos da vila. Ele não inclui economia, venda, NPCs, múltiplos baús, filtros avançados, peso, toolbelt separado nem mudança de lore.
 
+Atualização de aceite em 2026-10-03: autor aprovou o roteiro específico de conferir marcos/capacidade até 20 no baú, repetir coleta no Bosque sem ultrapassar o limite, navegar páginas e selecionar/desselecionar semente na segunda página, transferir itens nos dois sentidos e salvar/reabrir/carregar preservando capacidade/quantidades. Esse roteiro de expansão/navegação está concluído; não equivale a aprovação dos cenários de Mochila cheia, captura/colheita recusada ou persistência/cancelamento do caldeirão. Esses itens do checklist abaixo continuam pendentes. Próximo roteiro manual: produção do caldeirão em andamento, retomada e cancelamento.
+
 ## Objetivo
 
 Transformar gradualmente `GlobalInventory.inventario` na representação real da Mochila, limitada por slots e stacks generosos, preservando:

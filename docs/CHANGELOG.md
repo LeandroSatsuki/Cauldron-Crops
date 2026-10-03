@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-03 - Aceite manual da expansão e navegação da Mochila
+
+- Autor aprovou conferir marcos/capacidade até 20, repetir coleta sem novo aumento, navegar páginas/seleção, transferir nos dois sentidos e salvar/reabrir/carregar mantendo capacidade/quantidades.
+- Aceite restrito ao roteiro proposto; capacidade cheia, captura/colheita recusada e persistência/cancelamento do caldeirão mantêm pendências próprias. Próximo roteiro manual: produção do caldeirão em andamento e retomada/cancelamento.
+- Registro documental, sem alteração de código/save ou nova execução da suíte.
+
 ## 2026-10-03 - Aceite manual do cultivo livre e fechamento dos roteiros de layout
 
 - Autor aprovou criar um lote livre imediatamente abaixo do lado direito da grade inicial, plantar e regar sem sobreposição.
