@@ -1,5 +1,13 @@
 # Decisions
 
+## Decisão 103 - Feedback persistente dos estados existentes do caldeirão
+
+- Continuidade autorizada com testes manuais adiados. O painel de lote estava em coordenadas do mundo e o resultado manual pronto não tinha aviso persistente de tela. Reutilizado o painel em CanvasLayer, opaco e contido no canto inferior direito, independente da câmera; layout reaplicado ao reanexar HOME em cache.
+- Projeção somente leitura apresenta mistura em preparo, resultado pronto, lote ativo, resultado bloqueado por capacidade e cancelamento pendente. Quantidade por preparo não é confundida com número de preparos entregues. Instruções explicam depósito no baú/recolhimento/retomada ou nova tentativa de cancelamento. Capacidade de golems legados não é descrita como espaço na Mochila.
+- Botão/callbacks existentes preservados; cancelamento pendente apenas muda o texto para nova tentativa. Nenhum retry automático, nova fila, mudança de destino, consumo, reserva, timers ou persistência. Load reconstrói apresentação a partir do estado existente.
+- `CauldronFeedbackSmokeTest`: 87 verificações, três resoluções, câmera/cache, estoques invariáveis durante apresentação, estados carregados por JSON, entrega única e restituição às origens após bloqueio. Suíte 39/39 e renderização OpenGL/D3D12 conferidas. Avisos de restituição bloqueada no cenário sintético são esperados; save pessoal não é acessado pelos testes.
+- Checklist manual adiado: legibilidade em jogo, baú para liberar capacidade, recolher/retomar e repetir cancelamento, resize e retorno do Bosque. Sinais/retângulos não validam picking real, conforto, balanceamento ou aprovação artística. Próximo recorte recomendado: avisos de capacidade na pesca/coleta existentes, sem criar sistemas.
+
 ## Decisão 102 - Apresentação responsiva do caldeirão e Livro
 
 - Autor autorizou a etapa após a HUD, mantendo testes manuais adiados. O caldeirão tinha fundo placeholder e controles fora da borda; os detalhes do Livro não tinham limite/rolagem para textos longos. Ajuste restrito à apresentação, sem mudanças de produção, recursos, receitas ou save.

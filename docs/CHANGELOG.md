@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-03 - Avisos persistentes de produção e capacidade do caldeirão
+
+- Painel opaco fixo na tela para mistura em preparo, resultado pronto, lote ativo/pausado e cancelamento pendente; instruções de depósito/recolhimento/nova tentativa e quantidade por preparo. Câmera, resize e retorno ao cache preservam posição contida.
+- Apresentação somente leitura; receitas, timers, estoques, reservas/restituição, destino e save permanecem intactos.
+- Nova regressão com 87 verificações; suíte 39/39, importação e renderização OpenGL/D3D12 conferidas. Save pessoal intacto. Checklist manual continua adiado, sem presumir aceite artístico ou de picking real.
+
 ## 2026-10-03 - Caldeirão e Livro legíveis em janelas menores
 
 - Popup opaco, slots delineados e Fechar dentro da borda. Layout compacto mantém Mochila acessível para ingredientes em janela estreita/baixa; sem apagar o placeholder antigo.

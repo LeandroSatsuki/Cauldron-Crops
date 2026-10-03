@@ -13,10 +13,11 @@ const VillageResourceAccessScript = preload("res://Scripts/VillageResourceAccess
 @onready var popup_ui: Panel = $PopupLayer/CenterContainer/PopupUI
 @onready var batch_timer: Timer = $BatchTimer
 
-@onready var batch_progress_panel: PanelContainer = $BatchProgressPanel
-@onready var batch_status_label: Label = $BatchProgressPanel/MarginContainer/VBoxBatch/BatchStatusLabel
-@onready var batch_progress_bar: ProgressBar = $BatchProgressPanel/MarginContainer/VBoxBatch/BatchProgressBar
-@onready var btn_cancelar_producao: Button = $BatchProgressPanel/MarginContainer/VBoxBatch/BtnCancelarProducao
+@onready var batch_progress_panel: PanelContainer = $StatusLayer/BatchProgressPanel
+@onready var batch_status_label: Label = $StatusLayer/BatchProgressPanel/MarginContainer/VBoxBatch/BatchStatusLabel
+@onready var batch_progress_bar: ProgressBar = $StatusLayer/BatchProgressPanel/MarginContainer/VBoxBatch/BatchProgressBar
+@onready var btn_cancelar_producao: Button = $StatusLayer/BatchProgressPanel/MarginContainer/VBoxBatch/BtnCancelarProducao
+@onready var production_hint_label: Label = $StatusLayer/BatchProgressPanel/MarginContainer/VBoxBatch/ProductionHintLabel
 
 var estado_atual: String = "IDLE"
 var item_em_producao: String = ""
@@ -277,7 +278,7 @@ func load_save_data(data: Dictionary) -> bool:
 		if not _batch_waiting_for_space and not _batch_cancel_pending:
 			batch_timer.wait_time = _batch_tempo_por_unidade
 			batch_timer.start(maxf(float(batch["time_remaining"]), 0.001))
-		_atualizar_interface_lote()
+	_atualizar_interface_lote()
 	return true
 
 
@@ -303,8 +304,7 @@ func calcular_quantidade_maxima_para_ingredientes(ingredientes: Array) -> int:
 func _process(_delta: float) -> void:
 	# Folhas limpas têm células uniformes; pé alinhado ao corpo físico.
 	$BaseAnchor/SpriteCaldeirao.offset.y = -8
-	if _batch_ativo:
-		_atualizar_interface_lote()
+	_atualizar_interface_lote()
 
 func abrir_popup():
 	$PopupLayer.visible = true
@@ -643,9 +643,41 @@ func _finalizar_lote() -> void:
 	_atualizar_botao_cancelar_lote(false)
 
 func _atualizar_interface_lote() -> void:
-	if not _batch_ativo:
-		return
+	var feedback := get_production_feedback()
+	batch_progress_panel.visible = feedback["visible"]
+	batch_status_label.text = feedback["title"]
+	production_hint_label.text = feedback["hint"]
+	batch_progress_bar.visible = feedback["show_progress"]
+	batch_progress_bar.max_value = 1.0
+	batch_progress_bar.value = feedback["progress"]
+	_atualizar_botao_cancelar_lote(feedback["can_cancel"])
+	btn_cancelar_producao.text = "Tentar cancelar novamente" if _batch_cancel_pending else "Cancelar produção"
+	batch_status_label.modulate = Color("ebcb7a") if _batch_cancel_pending or _batch_waiting_for_space or estado_atual == "READY" else Color.WHITE
 
+
+func get_production_feedback() -> Dictionary:
+	# Projeção somente leitura dos estados existentes; nenhum retry/consumo aqui.
+	var feedback := {"visible": false, "title": "", "hint": "", "progress": 0.0, "show_progress": false, "can_cancel": false}
+	if not _batch_ativo and estado_atual not in ["BREWING", "READY"]:
+		return feedback
+	feedback["visible"] = true
+	var result_id := _batch_resultado if _batch_ativo else item_em_producao
+	var quantity := _batch_resultado_quantidade if _batch_ativo else _item_quantidade_em_producao
+	var item_name: String = Database.obter_nome_item(result_id)
+	if item_name.is_empty():
+		item_name = result_id
+	var output := "%dx %s" % [quantity, item_name]
+	if not _batch_ativo:
+		if estado_atual == "BREWING":
+			feedback["title"] = "Mistura em preparo: " + output
+			var destination_hint := "Confira a capacidade de golems." if result_id == "golem_coletor" else "O resultado vai para a Mochila."
+			feedback["hint"] = "Faltam %.1fs. " % $BrewTimer.time_left + destination_hint
+		else:
+			feedback["title"] = "Resultado pronto: " + output
+			feedback["hint"] = _get_result_block_hint(result_id) + " Interaja com o caldeirão para recolher."
+		return feedback
+	feedback["can_cancel"] = true
+	feedback["show_progress"] = true
 	var progresso := 0.0
 	if _batch_quantidade_total > 0:
 		var fase_atual := 1.0
@@ -653,16 +685,25 @@ func _atualizar_interface_lote() -> void:
 			fase_atual = 1.0 - clampf(batch_timer.time_left / _batch_tempo_por_unidade, 0.0, 1.0)
 		progresso = clampf((float(_batch_quantidade_concluida) + fase_atual) / float(_batch_quantidade_total), 0.0, 1.0)
 
-	if batch_progress_bar:
-		batch_progress_bar.max_value = 1.0
-		batch_progress_bar.value = progresso
-	if batch_status_label:
-		if _batch_cancel_pending:
-			batch_status_label.text = "Cancelamento pendente: libere espaço e cancele novamente"
-		elif _batch_waiting_for_space:
-			batch_status_label.text = "Resultado pronto: libere espaço na Mochila"
-		else:
-			batch_status_label.text = "Producao em lote: %s/%s" % [_batch_quantidade_concluida, _batch_quantidade_total]
+	feedback["progress"] = progresso
+	var count := "%d/%d preparos entregues." % [_batch_quantidade_concluida, _batch_quantidade_total]
+	if _batch_cancel_pending:
+		feedback["title"] = "Cancelamento pendente"
+		feedback["hint"] = "Libere espaço na Mochila e tente cancelar novamente. Ingredientes ainda reservados estão preservados."
+		feedback["show_progress"] = false
+	elif _batch_waiting_for_space:
+		feedback["title"] = "Lote pausado: " + output + " pronto"
+		feedback["hint"] = count + " " + _get_result_block_hint(result_id) + " Interaja com o caldeirão para recolher e retomar."
+	else:
+		feedback["title"] = "Produzindo: " + output + " por preparo"
+		feedback["hint"] = count + " Próximo preparo em %.1fs. Interagir com o caldeirão ou usar Cancelar interrompe o lote." % batch_timer.time_left
+	return feedback
+
+
+func _get_result_block_hint(result_id: String) -> String:
+	if result_id == "golem_coletor":
+		return "Verifique a capacidade de golems."
+	return "Libere espaço na Mochila depositando itens no Baú da Vila."
 
 func _on_misturar_button_pressed() -> void:
 	if estado_atual != "IDLE" or _batch_ativo:
@@ -729,6 +770,7 @@ func _on_misturar_button_pressed() -> void:
 	popup_ui.visible = false
 	_iniciar_processo_de_mistura()
 	$BrewTimer.start(recipe_tempo_producao)
+	_atualizar_interface_lote()
 	_limpar_slots()
 	if resultado == "golem_coletor":
 		fechar_popup()
@@ -767,6 +809,7 @@ func _tentar_entregar_producao_pronta() -> bool:
 	if not _entregar_resultado(item_em_producao, _item_quantidade_em_producao):
 		estado_atual = "READY"
 		_mostrar_resultado_pendente(item_em_producao)
+		_atualizar_interface_lote()
 		return false
 
 	estado_atual = "IDLE"
@@ -779,6 +822,7 @@ func _tentar_entregar_producao_pronta() -> bool:
 
 	item_em_producao = ""
 	_item_quantidade_em_producao = 1
+	_atualizar_interface_lote()
 	return true
 
 func _registrar_descoberta(recipe: Dictionary) -> bool:

@@ -1,6 +1,14 @@
 # Evolução do Projeto
 
-## Etapa ativa — Caldeirão e Livro adaptados / testes manuais adiados (2026-10-03)
+## Etapa ativa — Avisos persistentes do caldeirão / testes manuais adiados (2026-10-03)
+
+Produção manual, resultado pronto, lote em andamento/sem espaço e cancelamento pendente agora têm aviso opaco fixo no canto inferior direito. Exibe resultado/quantidade, preparos entregues, tempo e orientação para liberar espaço/recolher ou repetir cancelamento. Resize, câmera e retorno ao cache não deslocam o aviso para fora da tela. Sem alterar receitas, timers, destino, reservas, restituição ou save.
+
+Regressão `CauldronFeedbackSmokeTest`: 87 verificações, três resoluções de 800×720 a 1280×720, JSON em memória, entrega e cancelamento/restituição com capacidade bloqueada. Suíte 39/39; conferência técnica OpenGL/D3D12. Checklist manual adiado: clareza durante produção, depósito no baú e retry de resultado/cancelamento, câmera/resize e retorno do Bosque. Picking real, conforto e arte não são aprovados por esses testes.
+
+Próximo incremento recomendado: revisar e uniformizar avisos de Mochila cheia na pesca/coleta existentes, preservando recursos/capturas pendentes. Não ampliar conteúdo/economia/NPCs automaticamente.
+
+## Checkpoint anterior — Caldeirão e Livro adaptados (2026-10-03)
 
 Continuidade autorizada após a HUD responsiva: popup do caldeirão com fundo opaco, slots delineados e botões dentro da borda. Layout compacto de 320 px de altura em janela baixa, mantendo a Mochila acessível acima em janela estreita. Livro adapta tamanho, quebra títulos/textos e oferece rolagem nos detalhes com acompanhamento do foco. Arraste e posições runtime-only preservados; resize contém os painéis. Custos, tempos, origem dos ingredientes, produção/cancelamento e save não mudam.
 

@@ -6,7 +6,7 @@
 >
 > Este documento **não é uma especificação imutável**. O jogo ainda está sendo descoberto durante o desenvolvimento. Quando houver conflito entre este documento e uma decisão humana mais recente, a decisão humana prevalece.
 
-Estado operacional mais recente (2026-10-03): autor não poderá testar agora e autorizou continuar construção com checklist posterior. Não exigir novo gate manual a cada incremento nem presumir aceite. Segunda expedição implementada com aceites parciais de §46; HUD responsiva em §47 e painéis do caldeirão/Livro em §48 verificados automaticamente. Consultar `ROADMAP.md` para fila atual/pendências. Relatos anteriores são históricos; arte e casos-limite não foram presumidos aprovados.
+Estado operacional mais recente (2026-10-03): autor não poderá testar agora e autorizou continuar construção com checklist posterior. Não exigir novo gate manual a cada incremento nem presumir aceite. Segunda expedição implementada com aceites parciais de §46; HUD responsiva em §47, painéis do caldeirão/Livro em §48 e avisos de produção em §49 verificados automaticamente. Consultar `ROADMAP.md` para fila atual/pendências. Relatos anteriores são históricos; arte e casos-limite não foram presumidos aprovados.
 
 ---
 
@@ -1505,3 +1505,13 @@ Fechamento técnico: suíte completa 38/38, importação sem erros e `git diff -
 Checklist manual adiado deste pacote: abrir caldeirão com Mochila acessível, arrastar dois ingredientes e misturar, navegar/rolar Livro/digitar quantidade, produzir/cancelar, fechar/reabrir, arrastar/redimensionar painéis em janela menor. Não afirmar picking real, conforto ou aceite artístico a partir dos sinais/retângulos; tamanhos abaixo de 800×600 não têm validação de usabilidade. Pendências da expedição/capacidade de §47 continuam separadas.
 
 Próximo incremento recomendado: melhorar comunicação dos estados existentes de produção, resultado pronto e falta de espaço no caldeirão, preservando destino/consumo/refund e save. Não ampliar conteúdo/economia/NPCs automaticamente.
+
+# 49. ESTADO ATUAL — AVISOS PERSISTENTES DO CALDEIRÃO
+
+Autor autorizou o próximo incremento, mantendo a diretriz de testes manuais adiados. Painel de lote antes situado no mundo passa a CanvasLayer, com fundo opaco e posição inferior direita contida no viewport. Reutiliza progress bar/cancelamento existentes; apresenta também produção manual e resultado pronto. Câmera não o desloca; resize e reanexação da HOME em cache atualizam geometria.
+
+`get_production_feedback` é projeção somente leitura: mistura em preparo com tempo/destino, resultado pronto com quantidade e orientação de capacidade/recolhimento, lote ativo com quantidade por preparo/contagem entregue/tempo, lote pausado com recolhimento/retomada e cancelamento pendente com reservas preservadas/nova tentativa. Golem legado utiliza orientação de capacidade própria, não da Mochila. Produção, entrega, cancelamento, timers, origem dos ingredientes, reservas e campos de save não mudam. Não há retry automático ou novos controles de domínio.
+
+`CauldronFeedbackSmokeTest` passou com 87 verificações em 1280×720, 800×720 e 1024×768: estados e JSON em memória, estoques/save invariáveis durante apresentação, câmera/resize/reanexação, resultado bloqueado e entrega única após liberar espaço, lote com resultado por preparo e cancelamento/restituição às origens, incluindo cancelamento pendente. Suíte completa 39/39, importação sem erros e renderização técnica OpenGL/D3D12 conferidas. Avisos de restituição sem espaço são esperados no fixture. Testes isolados não fazem I/O do save pessoal; hash/tamanho/data permanecem iguais ao baseline.
+
+Checklist manual adiado: conferir avisos durante produção e ao terminar, depositar no baú para liberar espaço e recolher/retomar, repetir cancelamento bloqueado, mover câmera/redimensionar/retornar do Bosque. Não converter regressão por sinais/geometria em aceite de picking real, conforto, arte ou balanceamento; demais pendências de §47–48 seguem separadas. Próximo incremento recomendado: revisar/uniformizar comunicação de capacidade na pesca/coleta existentes, sem ampliar recursos, recompensas ou sistemas.

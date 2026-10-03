@@ -8,6 +8,7 @@
 [ext_resource type="Texture2D" uid="uid://is41i8abvdnx" path="res://Assets/placeholder/placeholder_cauldron_ui_panel.png" id="6_jnwib"]
 [ext_resource type="Script" uid="uid://b6l38kew1p7lr" path="res://Scripts/PopupBackground.gd" id="6_popupbg"]
 [ext_resource type="Theme" path="res://Themes/pixel_ui_theme.tres" id="7_pixeltheme"]
+[ext_resource type="Script" path="res://Scripts/CauldronStatusPanel.gd" id="8_statuspanel"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_r0"]
 atlas = ExtResource("3_roxo")
@@ -306,37 +307,46 @@ text = "Receitas"
 [node name="BatchTimer" type="Timer" parent="." unique_id=154337144]
 one_shot = true
 
-[node name="BatchProgressPanel" type="PanelContainer" parent="." unique_id=1134985521]
+[node name="StatusLayer" type="CanvasLayer" parent="."]
+layer = 5
+
+[node name="BatchProgressPanel" type="PanelContainer" parent="StatusLayer" unique_id=1134985521]
 visible = false
 z_index = 20
-custom_minimum_size = Vector2(340, 136)
+custom_minimum_size = Vector2(400, 0)
 offset_left = 780.0
 offset_top = 558.0
 offset_right = 780.0
 offset_bottom = 558.0
-mouse_filter = 2
+mouse_filter = 0
 theme = ExtResource("7_pixeltheme")
+script = ExtResource("8_statuspanel")
 
-[node name="MarginContainer" type="MarginContainer" parent="BatchProgressPanel" unique_id=948156234]
+[node name="MarginContainer" type="MarginContainer" parent="StatusLayer/BatchProgressPanel" unique_id=948156234]
 layout_mode = 2
 theme_override_constants/margin_left = 10
 theme_override_constants/margin_top = 8
 theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 8
 
-[node name="VBoxBatch" type="VBoxContainer" parent="BatchProgressPanel/MarginContainer" unique_id=1649407742]
+[node name="VBoxBatch" type="VBoxContainer" parent="StatusLayer/BatchProgressPanel/MarginContainer" unique_id=1649407742]
 layout_mode = 2
 theme_override_constants/separation = 6
 
-[node name="BatchStatusLabel" type="Label" parent="BatchProgressPanel/MarginContainer/VBoxBatch" unique_id=1566817999]
+[node name="BatchStatusLabel" type="Label" parent="StatusLayer/BatchProgressPanel/MarginContainer/VBoxBatch" unique_id=1566817999]
 layout_mode = 2
 text = "Producao em lote: -"
+autowrap_mode = 2
 
-[node name="BatchProgressBar" type="ProgressBar" parent="BatchProgressPanel/MarginContainer/VBoxBatch" unique_id=348567951]
+[node name="ProductionHintLabel" type="Label" parent="StatusLayer/BatchProgressPanel/MarginContainer/VBoxBatch"]
+layout_mode = 2
+autowrap_mode = 2
+
+[node name="BatchProgressBar" type="ProgressBar" parent="StatusLayer/BatchProgressPanel/MarginContainer/VBoxBatch" unique_id=348567951]
 custom_minimum_size = Vector2(280, 18)
 layout_mode = 2
 max_value = 1.0
 
-[node name="BtnCancelarProducao" type="Button" parent="BatchProgressPanel/MarginContainer/VBoxBatch" unique_id=2147483647]
+[node name="BtnCancelarProducao" type="Button" parent="StatusLayer/BatchProgressPanel/MarginContainer/VBoxBatch" unique_id=2147483647]
 layout_mode = 2
 text = "Cancelar producao"
