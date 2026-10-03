@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-10-03 - Aceite manual da prioridade dos cliques
+
+- Autor validou abrir baú e caldeirão com enxada selecionada, fechar os painéis e arar um lote da grade inicial; resposta: “deu tudo certo”. Roteiro específico da Decisão 99 concluído.
+- Atualização somente documental; não executada nova suíte nem alterado gameplay/save. Os 35/35 testes referem-se ao checkpoint técnico anterior. Resize/save/load, viagem/restauração, Mochila e aceite visual continuam com suas pendências próprias.
+
 ## 2026-10-02 - Prioridade dos cliques com enxada selecionada
 
 - Reproduzido clique no baú consumido pelo fallback agrícola antes do physics picking. Enxada agora deixa cliques sobre colliders chegarem aos objetos/lotes; solo livre mantém o comportamento existente. Nenhuma mudança de save, layout ou conteúdo.

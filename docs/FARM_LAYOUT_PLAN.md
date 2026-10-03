@@ -19,7 +19,7 @@ As seções 1–8 abaixo são planejamento histórico de blockout, não instruç
 3. Purificar o pocket; investigar a pedra e usar cada um dos quatro lotes sem disputa de clique. Confirmar o Herbário lateral e a área livre abaixo da grade.
 4. Viajar ao Bosque, mudar o tamanho da janela e retornar. Confirmar posição/estado da grade e acesso à pesca, baú e caldeirão; observar a entrega física do golem.
 
-Regressão de input corrigida na Decisão 99: com enxada selecionada, clicar no baú/caldeirão deve iniciar a interação contextual, não o feedback de solo livre. Incluir ambos no playtest; o teste técnico verifica que `_unhandled_input` não consome o evento antes do picking, mas não substitui os cliques manuais.
+Regressão de input corrigida na Decisão 99 e validada manualmente pelo autor em 2026-10-03: abriu baú/caldeirão com enxada selecionada, fechou os painéis e arou um lote da grade inicial com sucesso. Aceite restrito a esse roteiro; os quatro passos acima continuam pendentes. O teste técnico verifica que `_unhandled_input` não consome o evento antes do picking.
 
 Teste técnico: `godot --headless --path . res://Scenes/dev/FarmWorldCoordinatesSmokeTest.tscn`. Para inspeção renderizada, executar sem `--headless` e acrescentar `-- --capture-stable-world`; a captura sintética mostra solo arado e fica em `user://farm_world_coordinates.png`, sem escrever `savegame.json`.
 

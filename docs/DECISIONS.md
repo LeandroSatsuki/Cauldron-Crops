@@ -5,7 +5,7 @@
 - Auditoria de continuidade reproduziu uma falha que os testes por callbacks não cobriam: com enxada ativa, `Main._unhandled_input` consumia o clique no baú antes do physics picking. O estágio de picking ocorre depois de `_unhandled_input`; o manipulador do objeto nunca recebia o evento.
 - Correção mínima: reutilizar `_world_position_has_interaction_collider` antes do fallback da enxada. Se há collider, deixar o evento não consumido para o objeto/lote; em solo livre, manter o caminho agrícola existente. Não criar despachante novo nem modificar seleção, sensores, navegação, cultivo, layout ou save.
 - `CoreWorldInteractionSmokeTest` alinha câmera/mouse do viewport e chama o estágio real de `_unhandled_input`: baú, collider do caldeirão, lago e lote existente devem preservar o evento, sem iniciar rota agrícola indevida; solo livre deve continuar criando/arando um lote. A regressão falhou no baú antes da correção.
-- Limite: este teste verifica a prioridade anterior ao picking, não cliques completos do sistema operacional, hitboxes de Control ou conforto visual. Aceite manual continua pendente, incluindo abrir baú/caldeirão com enxada ativa.
+- Limite: este teste verifica a prioridade anterior ao picking, não cliques completos do sistema operacional, hitboxes de Control ou conforto visual. Em 2026-10-03, o autor confirmou sucesso no roteiro manual específico: abrir baú e caldeirão com enxada selecionada, fechar os painéis e arar um lote da grade inicial. Este aceite não inclui o roteiro de resize/save/load, viagem/restauração ou aprovação artística.
 
 ## Decisão 98 - Origem agrícola explícita e estável entre resoluções
 

@@ -1436,4 +1436,6 @@ Auditoria autorizada pela continuidade encontrou/reproduziu clique no baú consu
 
 Regressão no teste integrado verifica o estágio real de `_unhandled_input` sobre baú, collider do caldeirão, lago e lote existente, além de criação/aração em solo livre. Falhou no baú antes da correção. Usa alinhamento câmera/mouse do viewport, não automação de pointer do sistema operacional. Decisão 99 registra contrato e limites; aceite manual continua pendente, especialmente abrir baú/caldeirão com enxada ativa e o roteiro anterior de layout/save/viagem.
 
-Validação deste checkpoint: 35/35 smoke tests sem erros e `git diff --check` limpo. Save pessoal com hash/tamanho/data inalterados; arquivos locais não relacionados fora da publicação. Próximo passo: playtest específico da prioridade dos cliques e roteiro integrado anterior; não iniciar sistemas novos automaticamente.
+Validação deste checkpoint: 35/35 smoke tests sem erros e `git diff --check` limpo. Save pessoal com hash/tamanho/data inalterados; arquivos locais não relacionados fora da publicação.
+
+Aceite manual em 2026-10-03: após receber o roteiro de abrir baú/caldeirão com enxada selecionada, fechar os painéis e arar um lote da grade inicial, o autor respondeu “deu tudo certo”. Prioridade de cliques aprovada nesse escopo. A pendência específica mencionada no parágrafo anterior está concluída; não inferir aprovação de resize/save/load, viagem, restauração ou estética. Próximo passo continua sendo o roteiro integrado anterior; não iniciar sistemas novos automaticamente.
