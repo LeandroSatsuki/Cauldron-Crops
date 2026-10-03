@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-03 - Aceite manual de purificação e restauração
+
+- Autor aprovou o roteiro purificação → pedra → cultivo dos quatro lotes 2×2 → Herbário, incluindo ausência de travamentos e recompensa única.
+- Não amplia o aceite à área livre abaixo da grade, entrega física do golem, saves legados, Mochila/persistência do caldeirão ou estética. Próximo roteiro: transporte e depósito do golem.
+- Registro somente documental, revisado por diff; nenhuma mudança de código/save ou nova execução da suíte.
+
 ## 2026-10-03 - Aceite manual de viagem e retorno após resize
 
 - Autor aprovou viajar ao Bosque, redimensionar fora da vila e retornar, conferindo grade/culturas e acesso a baú, caldeirão e pesca.
