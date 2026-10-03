@@ -1,5 +1,13 @@
 # Decisions
 
+## Decisão 117 - Ativação opcional do semeador e estados no painel
+
+- Fase E autorizada: Semear trigo no painel do golem existente. Marco GroveExpedition.restored libera a opção sem ativar, conceder nova recompensa/talento ou mudar receitas existentes. OFF por padrão e no legado elegível; somente interação explícita usa API da D. Bloco de save da C não mudou.
+- Consulta pura informa motivo de indisponibilidade e estado da carga, sem reservar/consumir estoques ou mudar tarefa/solo/progresso. Atualização/load sincroniza checkbox sem sinal; OFF durante carga conserva devolução física. Não inferir sementes da Mochila. Falta do talento de rega não mascara semeadura nos modos mistos; Só regar continua exigindo talento.
+- Fundo opaco, largura local/quebra, diagnósticos redundantes ocultos e tarefa não duplicada quando cargo já a descreve. Preservar arraste durante atualização/resize/cache, controles/caminhos e prioridades existentes. Sem F10, HUD extra ou infraestrutura global de janelas. Geometria testada em 800×600, 800×720 e 1280×720; inspeção não é aprovação estética/picking manual.
+- GolemSowerUISmokeTest: 325 verificações, três de reabertura em novo processo, clique bloqueado/ON/OFF, estados/consulta sem mutação, recompensas antigas da Clareira, legado/replay, janela/arraste e cache após Bosque. Importação sem erros, suíte completa 50/50 e inspeção OpenGL; save pessoal intacto. QA/arte local/UIDs alheios fora da publicação. Manual adiado.
+- Próxima Fase F fecha auditoria/exportação com save separado e checklist integrado. Não declarar piloto aprovado manualmente ou ampliar escopo por conclusão técnica da UI.
+
 ## Decisão 116 - Semeadura física e devolução com custódia
 
 - Fase D autorizada: scheduler no golem existente, trigo/quatro células, fallback depois da colheita/rega elegíveis e fonte exclusiva VillageChest. API de ativação requer Clareira restaurada, mas não há botão novo nesta fase. OFF por padrão/saves antigos; não arar, consumir Mochila, criar golem/cultura/recompensa ou alterar UI/F10.

@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-03 - Golem Semeador: Fase E de controle e apresentação
+
+- Semear trigo no painel existente, liberado pela Clareira restaurada e desligado por padrão/legado. Abrir/atualizar/load não emite toggle; OFF com cargo preserva retorno físico. Sem novo talento/recompensa/receita/HUD ou F10.
+- Consulta pura mostra terra/estação/canteiro/baú, pausa/modos e transporte/devolução sem alterar domínio. Rega sem talento não mascara semeadura nos modos mistos. Painel opaco com quebra e diagnósticos redundantes ocultos, arraste preservado em atualização/resize/cache.
+- Teste UI com 325 verificações e três de reabertura em novo processo; geometria 800×600/800×720/1280×720, clique e cache após Bosque. Importação sem erros, suíte completa 50/50 e inspeção OpenGL. Save pessoal idêntico por hash/tamanho/data; arquivos locais alheios/QA fora do commit.
+- Manual/conforto continuam pendentes; nova build/auditoria/checklist para Fase F, sem exportação nesta etapa.
+
 ## 2026-10-03 - Golem Semeador: Fase D de trabalho físico
 
 - Scheduler de quatro lotes/trigo como fallback dos modos mistos. Retirada real exclusiva do baú, transporte com ícone e plantio/devolução perto do destino. OFF por padrão; API requer Clareira restaurada, controle UI ainda para E.

@@ -1,6 +1,16 @@
 # Evolução do Projeto
 
-## Etapa ativa — Golem Semeador, Fase D implementada (2026-10-03)
+## Etapa ativa — Golem Semeador, Fase E implementada (2026-10-03)
+
+Controle Semear trigo integrado ao painel existente, bloqueado até a Clareira restaurada e OFF por padrão/legado. Atualizar/abrir/load não emite toggle nem ativa a habilidade; OFF com semente preserva devolução física da D. Nenhuma nova recompensa/talento/receita, HUD permanente ou F10. Consulta pura descreve estoque exclusivo do baú, terra/estação/canteiro, pausa/prioridades, transporte e devolução sem alterar domínio.
+
+Painel opaco com texto/botões contidos, diagnósticos redundantes ocultos e arraste preservado durante texto/resize/cache. Falta do talento de rega não mascara semeadura nos modos mistos; prioridades/irrigação não alteradas. Plano em [Farm System — Golem Semeador](FARM_SYSTEM_V2.md#golem-semeador--piloto-aprovado-fase-e-concluída-2026-10-03).
+
+GolemSowerUISmokeTest: 325 verificações, três adicionais de reabertura em outro processo, 800×600/800×720/1280×720 e cache/resize após Bosque. Importação sem erros e suíte completa 50/50, mais inspeção OpenGL. Save pessoal idêntico por hash/tamanho/data; arte local, builds/saves/QA e UIDs auxiliares alheios fora do checkpoint. Testes manuais/conforto continuam pendentes; sem exigir teste imediato ou exportar nesta fase.
+
+Próximo incremento: **Fase F — fechamento do piloto**, retestes/auditoria do PCK, nova build de playtest isolada e checklist consolidado. Preservar os 16 casos manuais anteriores e acrescentar semeador; não transformar automático em aprovação do autor nem ampliar conteúdo/economia/mundo.
+
+## Checkpoint anterior — Golem Semeador, Fase D implementada (2026-10-03)
 
 Scheduler físico do piloto de quatro lotes/trigo, fallback de colheita/rega nos modos mistos. ON explícito por API somente com Clareira restaurada; OFF por padrão, UI ainda para E. Golem chega ao baú antes de retirar uma semente, transporta com ícone de carga e planta/devolve perto do alvo. Proximidade real, revalidação de saldo/alvo/estação e geração de tarefa; não complementar na Mochila, reservar sementes durante trajeto ou sobrescrever culturas.
 

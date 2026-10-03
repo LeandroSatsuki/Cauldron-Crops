@@ -268,6 +268,9 @@ func get_current_task_label() -> String:
 		return "Descansando"
 	if life_state == "REACTING":
 		return "Reagindo à chuva"
+	# A falta do talento de rega não bloqueia o plantio dos modos mistos.
+	if seed_cargo.has_seed() or state == "MOVING_TO_SEED_CHEST":
+		return str(get_seeding_status()["text"])
 
 	if _prioridade_exige_talento_irrigador(work_priority) and not _tem_skill_golem_irrigador():
 		if work_priority == PRIORITY_WATER_FIRST and lotes_maduros_encontrados > 0:
@@ -988,6 +991,69 @@ func set_seeding_enabled(enabled: bool) -> bool:
 			_parar_execucao_atual()
 	_cancelar_vida_ociosa()
 	return true
+
+
+func get_seeding_status() -> Dictionary:
+	# Consulta de apresentação: não liga habilidade, muda prioridade ou reserva itens.
+	var result := {"unlocked": GroveExpedition.restored, "enabled": seeding_enabled, "code": "off", "text": "Desligado. Ative quando quiser."}
+	if not is_inside_tree():
+		return _seed_status(result, "inactive", "Vila ausente. O trabalho físico está suspenso.")
+	if not GroveExpedition.restored:
+		return _seed_status(result, "locked", "Restaure a Clareira do Bosque para liberar.")
+	if seed_cargo.has_seed():
+		if work_priority == PRIORITY_PAUSED:
+			return _seed_status(result, "paused_cargo", "Pausado com 1 semente preservada" + (" para devolver." if seed_cargo.is_return_pending() else "."))
+		if seed_cargo.is_return_pending():
+			if state in ["MOVING_TO_SEED_RETURN", "RETURNING_SEED"]:
+				return _seed_status(result, "returning", "Devolvendo 1 semente ao Baú da Vila.")
+			return _seed_status(result, "return_pending", "Devolução pendente. A semente permanece com o golem.")
+		if state == "PLANTING_SEED":
+			return _seed_status(result, "planting", "Plantando trigo no canteiro inicial.")
+		if state == "MOVING_TO_SEED_PLOT":
+			return _seed_status(result, "transporting", "Transportando 1 semente de trigo.")
+		return _seed_status(result, "cargo_waiting", "Transporte aguardando caminho. Semente preservada.")
+	if not seeding_enabled:
+		return result
+	if work_priority == PRIORITY_PAUSED:
+		return _seed_status(result, "paused", "Pausado. Retome uma prioridade mista para semear.")
+	if work_priority in [PRIORITY_HARVEST_ONLY, PRIORITY_WATER_ONLY]:
+		return _seed_status(result, "exclusive", "Use Colher primeiro ou Regar primeiro para semear.")
+	if not carried_rewards.is_empty() or state in ["MOVING_TO_PLOT", "HARVESTING", "WATERING", "MOVING_TO_CHEST", "DEPOSITING"]:
+		return _seed_status(result, "other_work", "Colheita e rega têm prioridade; semeia depois.")
+	if state == "MOVING_TO_SEED_CHEST":
+		return _seed_status(result, "fetching", "Indo buscar 1 semente no Baú da Vila.")
+	var prepared := 0
+	var reasons: Dictionary = {}
+	for cell in GolemSeedCargo.PILOT_CELLS:
+		var plot := _obter_farm_plot_por_grid_position(cell)
+		if not is_instance_valid(plot):
+			continue
+		var validation: Dictionary = plot.call("validate_seed_planting", GolemSeedCargo.SEED_ITEM_ID)
+		if validation["success"]:
+			prepared += 1
+		else:
+			reasons[validation["reason"]] = true
+	if prepared == 0:
+		if reasons.has("wrong_season"):
+			return _seed_status(result, "season", "Trigo só é semeado na Primavera.")
+		if reasons.has("untilled"):
+			return _seed_status(result, "soil", "Are um dos 4 lotes iniciais para preparar o canteiro.")
+		if reasons.has("occupied"):
+			return _seed_status(result, "occupied", "Nenhum lote vazio disponível no canteiro inicial.")
+		return _seed_status(result, "unavailable", "Canteiro inicial bloqueado ou indisponível.")
+	var chest := _encontrar_bau() as VillageChest
+	if not is_instance_valid(chest) or chest.is_queued_for_deletion():
+		return _seed_status(result, "no_chest", "Baú da Vila indisponível. Nenhuma semente retirada.")
+	var stock := chest.get_item_quantity(GolemSeedCargo.SEED_ITEM_ID)
+	if stock < 1:
+		return _seed_status(result, "no_seeds", "Deposite sementes de trigo no Baú da Vila; não usa a Mochila.")
+	return _seed_status(result, "ready", "Pronto · %d lote(s) · %d semente(s) no baú." % [prepared, stock])
+
+
+func _seed_status(result: Dictionary, code: String, text: String) -> Dictionary:
+	result["code"] = code
+	result["text"] = text
+	return result
 
 
 func _can_seed_now() -> bool:

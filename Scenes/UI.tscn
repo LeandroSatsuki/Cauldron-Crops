@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://cpbky483ya1uj" path="res://Scripts/UI.gd" id="1_uigd"]
 [ext_resource type="Script" path="res://Scripts/VillageChestPanel.gd" id="8_chestpanel"]
 [ext_resource type="Script" path="res://Scripts/HUDLayout.gd" id="9_hudlayout"]
+[ext_resource type="Script" path="res://Scripts/GolemPanel.gd" id="10_golempanel"]
 [ext_resource type="PackedScene" path="res://Scenes/SellMenu.tscn" id="2_sellscene"]
 [ext_resource type="Theme" path="res://Themes/pixel_ui_theme.tres" id="3_pixeltheme"]
 [ext_resource type="Texture2D" uid="uid://bdjfipyjk75yt" path="res://Assets/Tools/tool_hoe.png" id="4_toolhoe"]
@@ -349,7 +350,8 @@ color = Color(0, 0, 0, 0.001)
 
 [node name="GolemPanel" type="PanelContainer" parent="." unique_id=1900000100]
 visible = false
-custom_minimum_size = Vector2(360, 420)
+custom_minimum_size = Vector2(440, 0)
+script = ExtResource("10_golempanel")
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
@@ -373,7 +375,7 @@ theme_override_constants/margin_bottom = 12
 
 [node name="VBoxGolem" type="VBoxContainer" parent="GolemPanel/MarginContainer" unique_id=1900000102]
 layout_mode = 2
-theme_override_constants/separation = 8
+theme_override_constants/separation = 6
 
 [node name="TitleLabel" type="Label" parent="GolemPanel/MarginContainer/VBoxGolem" unique_id=1900000103]
 layout_mode = 2
@@ -401,19 +403,40 @@ text = "Prioridade atual: --"
 autowrap_mode = 3
 
 [node name="TargetLabel" type="Label" parent="GolemPanel/MarginContainer/VBoxGolem" unique_id=1900000115]
+visible = false
 layout_mode = 2
 text = "Último alvo: --"
 autowrap_mode = 3
 
 [node name="ActionLabel" type="Label" parent="GolemPanel/MarginContainer/VBoxGolem" unique_id=1900000116]
+visible = false
 layout_mode = 2
 text = "Última ação: --"
 autowrap_mode = 3
 
 [node name="CountsLabel" type="Label" parent="GolemPanel/MarginContainer/VBoxGolem" unique_id=1900000117]
+visible = false
 layout_mode = 2
 text = "Contagem: maduros 0 | secos 0"
 autowrap_mode = 3
+
+[node name="SeedingToggle" type="CheckButton" parent="GolemPanel/MarginContainer/VBoxGolem"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 40)
+text = "Semear trigo"
+disabled = true
+
+[node name="SeedingStatus" type="Label" parent="GolemPanel/MarginContainer/VBoxGolem"]
+layout_mode = 2
+text = "Restaure a Clareira do Bosque para liberar."
+autowrap_mode = 3
+
+[node name="SeedingHint" type="Label" parent="GolemPanel/MarginContainer/VBoxGolem"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "4 lotes iniciais · terra arada · Primavera\nSementes de trigo no Baú da Vila."
+autowrap_mode = 3
+mouse_filter = 2
 
 [node name="GridPriorities" type="GridContainer" parent="GolemPanel/MarginContainer/VBoxGolem" unique_id=1900000108]
 layout_mode = 2
@@ -423,26 +446,42 @@ columns = 2
 
 [node name="BtnGolemHarvestFirst" type="Button" parent="GolemPanel/MarginContainer/VBoxGolem/GridPriorities" unique_id=1900000109]
 layout_mode = 2
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(0, 42)
+autowrap_mode = 3
 text = "Colher primeiro"
 
 [node name="BtnGolemWaterFirst" type="Button" parent="GolemPanel/MarginContainer/VBoxGolem/GridPriorities" unique_id=1900000110]
 layout_mode = 2
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(0, 42)
+autowrap_mode = 3
 text = "Regar primeiro"
 
 [node name="BtnGolemHarvestOnly" type="Button" parent="GolemPanel/MarginContainer/VBoxGolem/GridPriorities" unique_id=1900000111]
 layout_mode = 2
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(0, 42)
+autowrap_mode = 3
 text = "Só colher"
 
 [node name="BtnGolemWaterOnly" type="Button" parent="GolemPanel/MarginContainer/VBoxGolem/GridPriorities" unique_id=1900000112]
 layout_mode = 2
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(0, 42)
+autowrap_mode = 3
 text = "Só regar"
 
 [node name="BtnGolemPause" type="Button" parent="GolemPanel/MarginContainer/VBoxGolem/GridPriorities" unique_id=1900000113]
 layout_mode = 2
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(0, 42)
+autowrap_mode = 3
 text = "Pausar"
 
 [node name="BtnFechar" type="Button" parent="GolemPanel/MarginContainer/VBoxGolem" unique_id=1900000114]
 layout_mode = 2
+custom_minimum_size = Vector2(0, 40)
 text = "Fechar"
 
 [node name="PurificationPanel" type="PanelContainer" parent="." unique_id=1900000001]

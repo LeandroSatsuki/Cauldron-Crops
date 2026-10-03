@@ -1,8 +1,10 @@
 # Farm System V2
 
-## Golem Semeador — piloto aprovado, Fase D concluída (2026-10-03)
+<a id="golem-semeador--piloto-aprovado-fase-d-concluída-2026-10-03"></a>
 
-Esta seção é o plano operacional atual do piloto, não uma migração de Farm System V2. As seções seguintes conservam o histórico/direções do sistema. Fases A–D implementadas: contratos, domínio, persistência e trabalho físico. Scheduler funciona quando ativado explicitamente; continua OFF por padrão, sem controle UI até a Fase E. Não declarar o piloto entregue ao jogador antes de E/F e do aceite manual separado.
+## Golem Semeador — piloto aprovado, Fase E concluída (2026-10-03)
+
+Esta seção é o plano operacional atual do piloto, não uma migração de Farm System V2. As seções seguintes conservam o histórico/direções do sistema. Fases A–E implementadas: contratos, domínio, persistência, trabalho físico e controle no painel existente. Clareira restaurada libera a opção, sempre OFF por padrão/legado; só o jogador a ativa. Fase F (auditoria/exportação/checklist) e aceite manual separado permanecem pendentes. Âncora antiga preservada para links de checkpoints anteriores.
 
 ### Recorte fechado
 
@@ -104,7 +106,17 @@ GolemSowerPhysicalSmokeTest: 107 verificações com navegação/timers reais, qu
 
 Fechamento técnico: importação sem erros e suíte completa 49/49 em QA isolado, seguida de reteste físico ampliado e persistência/reabertura em processos separados. Save pessoal idêntico por hash/tamanho/data; arte local e UIDs auxiliares alheios excluídos da publicação. Não equiparar automático a aceite manual.
 
-**Fases A–D implementadas; E/F pendentes.** Próximo incremento: controle e disponibilidade no painel existente, derivando do marco já salvo e mantendo OFF por padrão. Manuais anteriores e observação/conforto do semeador continuam adiados; sem nova exportação nesta fase física.
+### Fase E — disponibilidade e controle no painel existente
+
+Opção `Semear trigo` no GolemPanel já existente; bloqueada enquanto GroveExpedition.restored for false. Reutiliza API física da D e bloco de save da C, sem novo talento/recompensa/RNG. Restaurar a Clareira só libera o controle, não ativa; save antigo elegível continua OFF. Reconciliador de receitas da Clareira mantém exatamente suas recompensas anteriores; não atribuir isso ao semeador. Atualização/load usa set_pressed_no_signal, evitando ligar/desligar tarefas ou emitir toggle só por abrir/atualizar o painel. OFF com cargo mostra pausa/devolução preservada, sem refund remoto.
+
+Consulta pura get_seeding_status informa bloqueio, OFF, modo exclusivo/pausa, estação, terra não arada, canteiro ocupado/indisponível, baú ausente/sem sementes, pronto, outros trabalhos, busca/transporte/plantio e devolução pendente/em curso. Lê validação live das quatro células e estoque exclusivo do baú; não reserva/consome recursos nem altera golem/lotes/progresso. Falta de talento de rega não mascara semeadura dos modos mistos. Prioridades e irrigação permanecem as mesmas; tooltip diferencia modos mistos de Só regar.
+
+Panel local de 440 pixels com fundo opaco, quebra de texto/botões, tamanho contido e posição arrastada preservada em atualização/resize/cache. Mantém caminhos e controles existentes; oculta os três diagnósticos redundantes (alvo/última ação/contagens) e não repete tarefa enquanto o estado da carga já a explica. Sem HUD extra, F10 ou novo sistema de janelas. Geometria validada em 800×600, 800×720 e 1280×720; não prometer layout universal abaixo dessas janelas ou conforto/picking manual aprovado.
+
+GolemSowerUISmokeTest: 325 verificações de clique no toggle, marco/OFF, recompensas existentes, estados/consulta sem mutação, conflito de prioridade/talento, OFF com cargo, JSON/replay/legado, abertura/fechamento/input, fundo opaco/controles nas três resoluções, recálculo preservando arraste e cache/resize após Bosque. Modo de reabertura confirma três verificações em outro processo a partir de arquivo QA. Importação sem erros, suíte completa 50/50 e inspeção OpenGL; save pessoal idêntico por hash/tamanho/data. Renderização técnica não substitui aceite do autor.
+
+**Fases A–E implementadas; F pendente.** Próximo incremento: auditoria do pacote, nova build de playtest com save separado e checklist consolidado do semeador, preservando os 16 casos manuais anteriores. Não exportado nesta fase de UI; manual anterior e observação/conforto do semeador continuam adiados, sem exigir teste imediato.
 
 ## Visão Geral
 

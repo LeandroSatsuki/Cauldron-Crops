@@ -283,6 +283,8 @@ var skill_tree: Panel
 
 
 @onready var golem_panel: PanelContainer = $GolemPanel
+@onready var golem_seeding_toggle: CheckButton = $GolemPanel/MarginContainer/VBoxGolem/SeedingToggle
+@onready var golem_seeding_status: Label = $GolemPanel/MarginContainer/VBoxGolem/SeedingStatus
 
 
 
@@ -9880,6 +9882,7 @@ func _obter_golem_atual() -> Node:
 
 
 func _atualizar_painel_golem() -> void:
+	_atualizar_semeador_golem()
 
 
 
@@ -10187,7 +10190,36 @@ func _configurar_botao_prioridade_golem(button: Button, texto_base: String, sele
 
 
 
-	button.text = ("▶ " if selecionada else "") + texto_base + (" (bloqueado pelo talento)" if bloqueada else "")
+	button.text = ("▶ " if selecionada else "") + texto_base + (" (talento)" if bloqueada else "")
+	button.tooltip_text = ("Só regar exige o talento Golem Irrigador." if texto_base == "Só regar" else "Rega exige o talento Golem Irrigador; Regar primeiro ainda permite colheita e semeadura.") if bloqueada else texto_base
+
+
+func _atualizar_semeador_golem() -> void:
+	if golem_seeding_toggle == null or golem_seeding_status == null:
+		return
+	if not golem_seeding_toggle.toggled.is_connected(_on_golem_seeding_toggled):
+		golem_seeding_toggle.toggled.connect(_on_golem_seeding_toggled)
+	var golem := _obter_golem_atual()
+	if not is_instance_valid(golem) or not golem.has_method("get_seeding_status"):
+		golem_seeding_toggle.set_pressed_no_signal(false)
+		golem_seeding_toggle.disabled = true
+		golem_seeding_status.text = "Golem indisponível."
+		return
+	var status: Dictionary = golem.call("get_seeding_status")
+	if golem_task_label:
+		# O estado da carga já explica a tarefa: não repetir a mesma ação duas vezes.
+		golem_task_label.visible = status["code"] not in ["fetching", "transporting", "planting", "returning", "return_pending", "cargo_waiting", "paused_cargo"]
+	golem_seeding_toggle.set_pressed_no_signal(bool(status["enabled"]))
+	golem_seeding_toggle.disabled = not bool(status["unlocked"])
+	golem_seeding_toggle.tooltip_text = "Semear trigo nos 4 lotes iniciais, após colheita/rega. Sementes somente do Baú da Vila." if status["unlocked"] else "Liberado ao restaurar a Clareira do Bosque."
+	golem_seeding_status.text = str(status["text"])
+
+
+func _on_golem_seeding_toggled(enabled: bool) -> void:
+	var golem := _obter_golem_atual()
+	if is_instance_valid(golem) and golem.has_method("set_seeding_enabled"):
+		golem.call("set_seeding_enabled", enabled)
+	_atualizar_semeador_golem()
 
 
 
