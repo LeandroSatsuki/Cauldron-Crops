@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-03 - Aceite manual de cultivo e persistência entre resoluções
+
+- Autor aprovou o roteiro de arar/plantar/regar um lote inicial, salvar, redimensionar/carregar e fechar/reabrir em outro tamanho de janela/carregar novamente.
+- Aceite restrito às duas situações propostas. Saves legados, viagem/retorno, purificação/restauração, Mochila e estética não foram presumidos aprovados. Próximo roteiro: Bosque → resize → retorno e interações da vila.
+- Registro somente documental, com revisão do diff; nenhuma alteração de código/save ou nova execução de testes automáticos.
+
 ## 2026-10-03 - Aceite manual da prioridade dos cliques
 
 - Autor validou abrir baú e caldeirão com enxada selecionada, fechar os painéis e arar um lote da grade inicial; resposta: “deu tudo certo”. Roteiro específico da Decisão 99 concluído.

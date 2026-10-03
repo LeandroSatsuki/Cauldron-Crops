@@ -12,18 +12,18 @@ As seções 1–8 abaixo são planejamento histórico de blockout, não instruç
 - Baú `(286,716)`, caldeirão físico `(990,521)`, lago `(1288,172)`, chegada `(1180,700)`, entrada do Bosque `(1530,475)` e obstáculo `(1728,802)` permanecem. O lago atual não é bloqueado pelo pocket; aquela direção nas zonas históricas abaixo não descreve o runtime vigente.
 - Save v4/v3 não registra origem histórica. Culturas/progresso/colheitas e coordenadas lógicas são preservados, mas ao abrir a versão nova passam a ocupar este layout canônico. Não apagar lotes ou alterar a ordem para resolver sobreposição.
 
-### Validação manual pendente
+### Validação manual — status em 2026-10-03
 
-1. Abrir a Fazenda, arar/plantar/regar um lote e salvar. Redimensionar a janela e carregar: mesmo estado, mesma posição relativa aos objetos.
-2. Fechar e reabrir em outro tamanho de janela; carregar o mesmo save. Um save anterior pode reposicionar a grade uma vez para o layout canônico, sem perder cultura, terra arada, progresso ou itens.
-3. Purificar o pocket; investigar a pedra e usar cada um dos quatro lotes sem disputa de clique. Confirmar o Herbário lateral e a área livre abaixo da grade.
-4. Viajar ao Bosque, mudar o tamanho da janela e retornar. Confirmar posição/estado da grade e acesso à pesca, baú e caldeirão; observar a entrega física do golem.
+1. **Aprovado pelo autor:** arar/plantar/regar um lote inicial, salvar, redimensionar a janela e carregar; posição relativa, cultura e rega preservadas.
+2. **Aprovado pelo autor:** fechar/reabrir em outro tamanho de janela e carregar novamente o mesmo save. Não implica teste adicional de saves legados: estes podem reposicionar a grade uma vez para o layout canônico.
+3. **Pendente:** purificar o pocket; investigar a pedra e usar cada um dos quatro lotes sem disputa de clique. Confirmar o Herbário lateral e a área livre abaixo da grade.
+4. **Pendente:** viajar ao Bosque, mudar o tamanho da janela e retornar. Confirmar posição/estado da grade e acesso à pesca, baú e caldeirão; observar a entrega física do golem.
 
-Regressão de input corrigida na Decisão 99 e validada manualmente pelo autor em 2026-10-03: abriu baú/caldeirão com enxada selecionada, fechou os painéis e arou um lote da grade inicial com sucesso. Aceite restrito a esse roteiro; os quatro passos acima continuam pendentes. O teste técnico verifica que `_unhandled_input` não consome o evento antes do picking.
+Regressão de input corrigida na Decisão 99 e validada manualmente pelo autor em 2026-10-03: abriu baú/caldeirão com enxada selecionada, fechou os painéis e arou um lote da grade inicial com sucesso. Aceite restrito a esse roteiro; os status acima registram as validações adicionais. O teste técnico verifica que `_unhandled_input` não consome o evento antes do picking.
 
 Teste técnico: `godot --headless --path . res://Scenes/dev/FarmWorldCoordinatesSmokeTest.tscn`. Para inspeção renderizada, executar sem `--headless` e acrescentar `-- --capture-stable-world`; a captura sintética mostra solo arado e fica em `user://farm_world_coordinates.png`, sem escrever `savegame.json`.
 
-Percurso integrado: `godot --headless --path . res://Scenes/dev/CoreWorldInteractionSmokeTest.tscn` cobre purificação → pedra → cultivo dos quatro lotes → Herbário → JSON em cena recriada/resolução diferente, além das aproximações a baú/caldeirão/pesca e entrega do golem. Usa os manipuladores do jogo, sinais dos botões e navegação/física ativas, com recursos/velocidade sintéticos. Não cobre picking do mouse nem hitboxes da interface; os quatro passos manuais acima permanecem pendentes.
+Percurso integrado: `godot --headless --path . res://Scenes/dev/CoreWorldInteractionSmokeTest.tscn` cobre purificação → pedra → cultivo dos quatro lotes → Herbário → JSON em cena recriada/resolução diferente, além das aproximações a baú/caldeirão/pesca e entrega do golem. Usa os manipuladores do jogo, sinais dos botões e navegação/física ativas, com recursos/velocidade sintéticos. Não cobre picking do mouse nem hitboxes da interface; não substitui as validações manuais com status acima.
 
 ---
 
