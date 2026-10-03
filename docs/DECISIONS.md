@@ -13,6 +13,8 @@
 
 - Aceite manual parcial em 2026-10-03: autor validou investigar o canteiro/aprender receita, minimizar/expandir objetivo, coletar 4 carvões e produzir duas misturas pelo Livro mantendo a HUD acessível. Descoberta/coleta/preparo aprovados no roteiro proposto; não inclui restauração, efeito agrícola, save/load, renovação cronometrada, recusa por capacidade ou estética. Próximo roteiro: restauração/recompensa, depois persistência; registro documental sem nova suíte ou gameplay.
 
+- Aceite manual seguinte em 2026-10-03: restauração com duas misturas carregadas, consumo/recompensa únicos, mudança visual/objetivo oculto, fabricação da Infusão da Clareira e efeito da poção no cultivo aprovados no roteiro proposto. Não inclui save/load, duração/balanceamento ou estética. Próximo teste: persistência no Bosque restaurado e depois produção em viagem, sem apagar progresso. Registro documental, sem nova suíte/gameplay.
+
 ## Decisão 99 - Clique nos objetos tem prioridade sobre enxada em solo livre
 
 - Auditoria de continuidade reproduziu uma falha que os testes por callbacks não cobriam: com enxada ativa, `Main._unhandled_input` consumia o clique no baú antes do physics picking. O estágio de picking ocorre depois de `_unhandled_input`; o manipulador do objeto nunca recebia o evento.

@@ -8,7 +8,7 @@ Essas fases continuam sendo o baseline histórico. Em 2026-10-03, após escolher
 
 ## Segunda expedição — Clareira recuperável (2026-10-03)
 
-Estado: percurso implementado; validação automática/renderização técnica concluídas. Descoberta/coleta/preparo aprovados manualmente em 2026-10-03 no roteiro proposto; restauração, efeito agrícola, save/load, duração e balanceamento ainda pendentes. Não é uma nova fase da Mochila nem reabre a V0.
+Estado: percurso implementado; validação automática/renderização técnica concluídas. Descoberta/coleta/preparo e restauração/recompensa agrícola aprovados manualmente em 2026-10-03 nos roteiros propostos; save/load, duração e balanceamento ainda pendentes. Não é uma nova fase da Mochila nem reabre a V0.
 
 ### Escopo e percurso
 
@@ -51,6 +51,8 @@ Os tempos e quantidades são valores de piloto, não balanceamento final. A hip�
 Fechamento automatizado: importação sem erros e suíte completa 36/36 aprovada; save pessoal intacto por hash/tamanho/data. Esses resultados são do checkpoint técnico anterior, não uma nova execução neste aceite documental.
 
 Aceite manual em 2026-10-03: após o roteiro de investigar o canteiro, conferir aprendizado/minimização do objetivo, coletar 4 carvões, voltar à vila e produzir duas misturas pelo Livro mantendo a HUD acessível, o autor respondeu “validado, pode continuar”. Passos 1–3 abaixo aprovados nesse escopo. Não inclui aferição do intervalo renovável, recusa por capacidade, restauração, efeito da poção, save/load ou aprovação artística. Próximo teste: passos 4–5; persistência permanece separada nos passos 6–7.
+
+Aceite manual seguinte em 2026-10-03: autor respondeu “validado pode seguir” ao roteiro de levar duas misturas na Mochila, restaurar com consumo único/canteiro verde/objetivo oculto, repetir o clique sem nova recompensa ou consumo, produzir Infusão da Clareira e aplicar a Poção de Crescimento numa cultura crescendo sem ferramenta. Passos 4–5 aprovados nesse escopo. Persistência, duração/balanceamento e arte não foram incluídos. Próximo teste: salvar no Bosque já restaurado, carregar/reabrir e revisitar; depois produção em viagem (passo 7). Não exigir apagar progresso para repetir a descoberta; o estado anterior à restauração continua sem aceite manual de save/load.
 
 Roteiro:
 

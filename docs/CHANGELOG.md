@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-03 - Aceite manual da restauração e recompensa da Clareira
+
+- Autor validou levar duas misturas na Mochila, restaurar com consumo único/canteiro verde/objetivo oculto, repetir clique sem duplicação, produzir Infusão da Clareira e aplicar a poção numa cultura crescendo sem ferramenta.
+- Restauração/recompensa/efeito agrícola aprovados no roteiro proposto. Save/load, duração/balanceamento e arte ainda pendentes; próximo teste é persistência no Bosque restaurado, seguido de produção em viagem.
+- Apenas documentação e revisão do diff; nenhuma nova suíte, alteração de código ou acesso ao save pessoal.
+
 ## 2026-10-03 - Aceite manual da descoberta e preparo da Clareira
 
 - Autor validou investigar o canteiro/aprender Mistura Restauradora, minimizar/expandir objetivo, coletar 4 carvões e produzir duas misturas pelo Livro na vila, mantendo a HUD acessível.

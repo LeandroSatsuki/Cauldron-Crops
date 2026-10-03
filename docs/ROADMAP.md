@@ -10,6 +10,8 @@ Checkpoint automatizado com `GroveRestorationSliceSmokeTest` (72 verificações)
 
 Aceite manual parcial em 2026-10-03: descoberta da clareira, aprendizado/minimização do objetivo, coleta de 4 carvões e preparo de duas misturas pelo Livro com HUD acessível aprovados no roteiro proposto. Próximo teste: restauração e recompensa agrícola; depois save/load. Renovação cronometrada, capacidade cheia, ritmo e arte não foram presumidos aprovados. Registro somente documental, sem nova suíte ou gameplay.
 
+Aceite seguinte em 2026-10-03: restauração com duas misturas na Mochila, consumo/recompensa únicos, canteiro verde/objetivo oculto, fabricação da Infusão da Clareira e efeito da poção no cultivo aprovados no roteiro proposto. Próximo teste: save/load no Bosque restaurado, reabertura/revisita e depois produção em viagem. Não apagar progresso; duração/balanceamento e arte permanecem pendentes. Somente documentação, sem nova suíte ou gameplay.
+
 ## Baseline operacional anterior — 2026-10-02/03
 
 As fases numeradas abaixo registram o planejamento histórico; não representam uma fila ainda não implementada. O fechamento da V0 foi aprovado. A evolução pós-V0 já entregou exploração do Bosque, acesso a recursos da vila e Fases A–E da Mochila.
