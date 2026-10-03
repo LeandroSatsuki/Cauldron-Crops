@@ -11,6 +11,8 @@
 - Inspeção renderizada reproduziu fechamento do Livro ocultando toda a HUD quando seu host é a UI da vila, em vez do PopupLayer do caldeirão. Correção restrita ao fechamento: ocultar somente o host específico do caldeirão; teste cobre ambos os encaixes, sem refatorar a HUD histórica.
 - Teste integrado com 72 verificações cobre Livro/ingredientes duplicados/fechamento, navegação, capacidade, origem, fases, efeito, JSON/cenas novas, save externo de lote/catch-up/cancelamento e inválidos/compatibilidade (incluindo payload parcial que troca a lista do Livro sem apagar marcos/fontes). Renderização OpenGL/D3D12 é inspeção técnica, não aceite artístico/picking manual. Plano e roteiro em `FIRST_EXTERNAL_REGION_VERTICAL_SLICE.md`; fase publicada como checkpoint enquanto playtest está pendente. Não promete 20–30 minutos: crescimento de protótipo permanece curto e precisa de balanceamento em etapa própria.
 
+- Aceite manual parcial em 2026-10-03: autor validou investigar o canteiro/aprender receita, minimizar/expandir objetivo, coletar 4 carvões e produzir duas misturas pelo Livro mantendo a HUD acessível. Descoberta/coleta/preparo aprovados no roteiro proposto; não inclui restauração, efeito agrícola, save/load, renovação cronometrada, recusa por capacidade ou estética. Próximo roteiro: restauração/recompensa, depois persistência; registro documental sem nova suíte ou gameplay.
+
 ## Decisão 99 - Clique nos objetos tem prioridade sobre enxada em solo livre
 
 - Auditoria de continuidade reproduziu uma falha que os testes por callbacks não cobriam: com enxada ativa, `Main._unhandled_input` consumia o clique no baú antes do physics picking. O estágio de picking ocorre depois de `_unhandled_input`; o manipulador do objeto nunca recebia o evento.

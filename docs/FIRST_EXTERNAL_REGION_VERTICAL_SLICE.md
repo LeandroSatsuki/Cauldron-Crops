@@ -8,7 +8,7 @@ Essas fases continuam sendo o baseline histórico. Em 2026-10-03, após escolher
 
 ## Segunda expedição — Clareira recuperável (2026-10-03)
 
-Estado: percurso implementado; validação automática/renderização técnica concluídas; aceite manual, duração e balanceamento pendentes. Não é uma nova fase da Mochila nem reabre a V0.
+Estado: percurso implementado; validação automática/renderização técnica concluídas. Descoberta/coleta/preparo aprovados manualmente em 2026-10-03 no roteiro proposto; restauração, efeito agrícola, save/load, duração e balanceamento ainda pendentes. Não é uma nova fase da Mochila nem reabre a V0.
 
 ### Escopo e percurso
 
@@ -48,7 +48,9 @@ Os tempos e quantidades são valores de piloto, não balanceamento final. A hip�
 
 `GroveRestorationSliceSmokeTest` possui 72 verificações: aproximação real ao site, descoberta, Livro/quantidade com ingrediente duplicado e fechamento nos dois hosts, receita bloqueada, recusa por capacidade, fonte renovável, restauração pessoal/recusa de Storage remoto, recompensa única, efeito real, JSON em HOME/Bosque recriados, save externo de produção, catch-up, repetição/cancelamento e pré-validação/compatibilidade, incluindo retenção de marcos/fontes/receitas em payload parcial. Não faz I/O do save pessoal. Renderizações OpenGL em 1280×720 e D3D12/Forward+ em 1920×1080 conferem canteiro, objetivo expandido/minimizado, ícone, Livro e HUD após fechar; não equivalem a picking manual, aprovação artística ou aferição de duração.
 
-Fechamento automatizado: importação sem erros e suíte completa 36/36 aprovada; save pessoal intacto por hash/tamanho/data. O roteiro abaixo ainda requer o autor.
+Fechamento automatizado: importação sem erros e suíte completa 36/36 aprovada; save pessoal intacto por hash/tamanho/data. Esses resultados são do checkpoint técnico anterior, não uma nova execução neste aceite documental.
+
+Aceite manual em 2026-10-03: após o roteiro de investigar o canteiro, conferir aprendizado/minimização do objetivo, coletar 4 carvões, voltar à vila e produzir duas misturas pelo Livro mantendo a HUD acessível, o autor respondeu “validado, pode continuar”. Passos 1–3 abaixo aprovados nesse escopo. Não inclui aferição do intervalo renovável, recusa por capacidade, restauração, efeito da poção, save/load ou aprovação artística. Próximo teste: passos 4–5; persistência permanece separada nos passos 6–7.
 
 Roteiro:
 

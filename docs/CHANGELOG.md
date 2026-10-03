@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-03 - Aceite manual da descoberta e preparo da Clareira
+
+- Autor validou investigar o canteiro/aprender Mistura Restauradora, minimizar/expandir objetivo, coletar 4 carvões e produzir duas misturas pelo Livro na vila, mantendo a HUD acessível.
+- Descoberta/coleta/preparo aprovados no roteiro proposto. Restauração, recompensa agrícola e persistência ainda pendentes; renovação cronometrada, capacidade cheia, duração/balanceamento e arte não foram presumidos aprovados.
+- Atualização somente documental e revisão do diff, sem nova execução da suíte ou alteração de código/save. Próximo teste: restauração e uso da recompensa agrícola; save/load em roteiro separado.
+
 ## 2026-10-03 - Checkpoint da segunda expedição: clareira, restauração e receita agrícola
 
 - Após autorização para o recorte de novo conteúdo, adicionados canteiro restaurável no Bosque existente, duas receitas resource-first e um ingrediente com ícone SVG. Descoberta ensina preparação; duas misturas levadas na Mochila restauram e ensinam receita que produz Poção de Crescimento funcional. Repetição não concede/consome novamente.
