@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-03 - Aceite manual da recuperação de colheita com Mochila cheia
+
+- Autor aprovou recusa da colheita com resultado sem espaço, preservação da cultura, save/reabertura/load, depósito no baú e retomada sem perda/duplicação.
+- Caso específico concluído; captura pendente, caldeirão bloqueado por capacidade e saves legados não foram presumidos aprovados. Próxima revisão: aceite visual do estado atual, sem novos sistemas.
+- Somente documentação e revisão do diff; nenhuma mudança de código/save ou nova execução da suíte.
+
 ## 2026-10-03 - Aceite manual da persistência e cancelamento do caldeirão
 
 - Autor aprovou salvar produção em andamento, fechar/reabrir/carregar e concluir sem resultado/consumo duplicado; em outra produção retomada, cancelar devolvendo ingredientes reservados e não utilizados às origens.

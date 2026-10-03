@@ -2,7 +2,7 @@
 
 ## Status
 
-Fases A–C concluídas; D/E implementadas. Em 2026-10-03, o autor aprovou os roteiros manuais de expansão/navegação/transferências/save da Mochila e produção em andamento/retomada/cancelamento do caldeirão. Permanecem os cenários específicos de capacidade cheia e captura/colheita recusada, sem aprovação presumida. Fase E validada automaticamente em 2026-10-01 após autorização explícita para iniciar e finalizar no mesmo ciclo. O autor escolheu expansão por marcos de restauração/exploração: capacidade inicial 12, +4 pelo Herbário e +4 pela primeira coleta no Bosque, até 20 slots; stacks padrão 99. Os relatos históricos abaixo descrevem checkpoints, não o estado atual do limite.
+Fases A–C concluídas; D/E implementadas. Em 2026-10-03, o autor aprovou os roteiros manuais de expansão/navegação/transferências/save da Mochila, produção em andamento/retomada/cancelamento do caldeirão e colheita recusada por Mochila cheia, persistida e recuperada após depósito. Permanecem os cenários específicos de captura pendente e entrega/cancelamento do caldeirão bloqueados por capacidade, sem aprovação presumida. Fase E validada automaticamente em 2026-10-01 após autorização explícita para iniciar e finalizar no mesmo ciclo. O autor escolheu expansão por marcos de restauração/exploração: capacidade inicial 12, +4 pelo Herbário e +4 pela primeira coleta no Bosque, até 20 slots; stacks padrão 99. Os relatos históricos abaixo descrevem checkpoints, não o estado atual do limite.
 
 Este marco sucede o fechamento do acesso a recursos da vila. Ele não inclui economia, venda, NPCs, múltiplos baús, filtros avançados, peso, toolbelt separado nem mudança de lore.
 
@@ -256,12 +256,14 @@ Validar manualmente o piloto e a expansão antes do aceite de experiência das F
 
 1. Abrir o save habitual: quantidades e seleção devem ser preservadas; água não ocupa slot. Se houver excesso legado, depositar pelo Baú da Vila, sem perda de itens.
 2. Colher, coletar no bosque, pescar e transferir itens nos dois sentidos; a interação usual deve permanecer funcional.
-3. Quando a Mochila atingir a capacidade atual (12/16/20), tentar receber um item sem espaço na pilha: a fonte deve permanecer disponível e mostrar aviso. Depositar no baú e tentar novamente deve retomar a ação sem duplicação.
+3. **Aprovado no caso de colheita em 2026-10-03:** Mochila cheia, resultado sem espaço nas pilhas, aviso/cultura preservada e retomada após depósito. Não inferir aprovação de todas as fontes ou estados de bloqueio.
 4. **Aprovado pelo autor em 2026-10-03 no roteiro proposto:** produzir no caldeirão, salvar em andamento, fechar/reabrir/carregar, conferir resultado/consumo únicos e, em outra produção retomada, cancelar devolvendo ingredientes não utilizados às origens. Não inclui cancelamento/entrega bloqueados por capacidade cheia.
 5. Se uma captura ficar pendente por mudança de espaço durante a sincronia, fechar o popup, salvar/reabrir e liberar espaço pelo baú: entrega integral uma única vez e coleção atualizada só depois.
 
 6. Coletar no Bosque e restaurar o Herbário: cada marco concede +4 apenas uma vez, até 20. Se o Herbário já estava restaurado no save antigo, seu bônus deve aparecer ao carregar. Conferir os dois marcos no baú.
 7. Usar as setas da barra, selecionar/desselecionar uma semente na segunda página e transferir recursos no baú. Salvar/reabrir: capacidade e estoques devem ser preservados; revisitar/coletar novamente não aumenta além de 20.
-8. Se uma colheita for recusada por falta de espaço, salvar/reabrir, depositar recursos e tentar novamente: cultura e recompensa devem permanecer disponíveis e ser entregues uma única vez.
+8. **Aprovado pelo autor em 2026-10-03:** colheita recusada por falta de espaço → salvar/reabrir/carregar → depositar no baú → colher novamente, sem perda/duplicação.
 
 Depois do aceite, revisar somente pontos concretos de conforto encontrados na sessão. Economia, NPCs e novos destinos continuam exigindo escopo próprio; não são consequência automática do fechamento técnico da Mochila.
+
+Atualização de fechamento em 2026-10-03: o autor aprovou o roteiro de colheita recusada acima. Próxima revisão: aceite visual do estado atual, mantendo captura pendente, bloqueios do caldeirão por capacidade e saves legados como casos separados; não exigir enchimento artificial da Mochila nem reativar F10. Nenhuma fase nova de gameplay definida por esta revisão.
