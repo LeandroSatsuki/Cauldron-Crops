@@ -1,5 +1,13 @@
 # Decisions
 
+## Decisão 113 - Piloto do Golem Semeador e custódia de sementes
+
+- Autor aprovou o recorte e o início pela análise técnica. Golem físico existente, trigo e quatro lotes iniciais fixos, habilidade derivada de Clareira restaurada, opcional OFF inclusive em save antigo elegível. Sementes vêm dos caminhos atuais e saem somente do baú quando golem chega; nunca usar Mochila como complemento. FarmPlot permanece autoridade e grid apenas identidade/ponte.
+- Baseline: plantio manual acoplado à seleção/consumo pessoal; VillageResourceAccess agrega fontes; SaveManager não registra carga física do golem; finalizador de depósito limpa carga mesmo com baú inválido. Não reutilizar cegamente esses caminhos para sementes. Riscos por leitura, sem perda pessoal reproduzida nem implementação corretiva nesta fase.
+- Custódia única baú → carga → cultura ou devolução física; uma semente por vez, carga separada da colheita. Validação live antes da retirada e do commit; sem bloquear ação do jogador, sobrescrever cultura, remover recurso na recusa ou depender apenas de fim de rota. Pausa/cache/load invalidam callbacks sem apagar carga. Vila ausente não simula deslocamento/plantio remoto.
+- Bloco opcional aditivo de save v3/v4, ausência OFF/sem carga nova; preflight antes de qualquer mutação, aplicação substitutiva sem refund e rota reconstruída. Incluir tratamento da carga de colheita existente na integração do snapshot. Persistência antecede qualquer retirada viva. Sem mudanças de prioridades somente colher/regar/pausado ou de rega/talento.
+- Plano e critérios em FARM_SYSTEM_V2. Fase A só documentação; GolemLife, SaveContract e RegionTravel retestados com QA isolado. Suíte completa anterior 46/46 não repetida; manual anterior continua pendente. Próxima Fase B é domínio/custódia sem scheduler, seguida de persistência, trabalho físico, UI/progressão e fechamento/exportação.
+
 ## Decisão 112 - Build de playtest isolada e rastreável
 
 - Recorte autorizado: preparar checkpoint jogável/checklist, sem ampliar conteúdo. Reusar Export-CleanBuild com checkout isolado do commit e preset separado, excluindo testes internos/docs/ferramentas/Builds do PCK. Alterações e arte local não versionadas não entram.

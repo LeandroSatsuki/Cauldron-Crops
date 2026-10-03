@@ -1,6 +1,16 @@
 # Evolução do Projeto
 
-## Etapa ativa — Checkpoint jogável pós-V0 (2026-10-03)
+## Etapa ativa — Golem Semeador, Fase A fechada (2026-10-03)
+
+Autor aprovou o piloto e o início por análise/contratos. Plano operacional em [Farm System — Golem Semeador](FARM_SYSTEM_V2.md#golem-semeador--piloto-aprovado-fase-a-concluída-2026-10-03). Nesta fase somente documentação: golem existente, trigo, quatro células iniciais `(0,0)/(1,0)/(0,1)/(1,1)`, marco da Clareira, ativação opcional OFF, retirada exclusivamente física do baú e respeito à estação/aragem/ocupação. Sem novo mapa, aragem, economia, NPCs, mastery ou mudança de rega.
+
+Baseline confirma acoplamento do plantio à Mochila, complemento pessoal no consumo agregado, ausência de carga física no snapshot do golem e callbacks/esperas que precisam ser invalidados. Devolução de semente não reutiliza finalizador que limpa carga com baú inválido. Cargas de colheita/plantio separadas e mutuamente exclusivas no piloto; viagem congela trabalho físico, sem simulação remota. Estes são riscos de integração por leitura, não perda de save pessoal reproduzida.
+
+Validação proporcional: GolemLife, SaveContract e RegionTravel passaram em APPDATA de QA isolado. Sem nova suíte completa: 46/46 continua a evidência do playtest anterior. Nenhuma implementação/teste novo ou alteração no save pessoal nesta Fase A. Dezesseis casos manuais anteriores permanecem pendentes.
+
+Próximo incremento: Fase B, domínio comum de validação/commit de plantio e contrato mínimo de custódia/serialização, ainda sem scheduler vivo. Fase C fecha persistência antes de D habilitar retirada/transporte; E entrega unlock/UI; F verifica/exporta. Não pedir teste imediato ao autor indisponível nem declarar golem semeador pronto.
+
+## Checkpoint anterior — Checkpoint jogável pós-V0 (2026-10-03)
 
 Preparação autorizada de build Windows local, sem novos sistemas ou mudança de gameplay. Exportador existente ganha modo Playtest: checkout do commit isolado, suíte opcional completa, exclusão de testes internos/docs/ferramentas e auditoria do PCK. Transformação somente no projeto temporário configura save `CauldronCropsPlaytest`; executável direto também não usa o progresso habitual. V0 aprovada permanece histórica, não reaberta.
 

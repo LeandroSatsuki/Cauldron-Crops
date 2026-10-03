@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-10-03 - Golem Semeador: Fase A e contratos
+
+- Recorte aprovado e plano técnico registrado: quatro lotes/trigo, unlock pela Clareira, retirada física exclusiva do baú, ativação opcional OFF e custódia/transações/save seguros antes da automação viva. Nenhum comportamento novo implementado.
+- Três retestes de baseline (GolemLife, SaveContract, RegionTravel) passaram em QA isolado. Suíte completa anterior 46/46 não repetida; 16 casos manuais continuam pendentes. Scripts/cenas/receitas/save pessoal intactos.
+
 ## 2026-10-03 - Preparação de playtest pós-V0
 
 - Preset Windows separado e exportador limpo reutilizado: suíte opcional, auditoria do pacote, manifesto/hashes, logs, instruções e checklist de 16 casos. Save separado somente na build; projeto/saves pessoais intactos. Manual adiado.

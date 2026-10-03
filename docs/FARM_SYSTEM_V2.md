@@ -1,5 +1,73 @@
 # Farm System V2
 
+## Golem Semeador — piloto aprovado, Fase A concluída (2026-10-03)
+
+Esta seção é o plano operacional atual do piloto, não uma migração de Farm System V2. As seções seguintes conservam o histórico/direções do sistema. Autor aprovou o recorte e o início por análise/contratos; nenhum comportamento novo foi implementado nesta Fase A.
+
+### Recorte fechado
+
+- Reutilizar o golem físico existente, sem criar outra entidade. Plantio opcional, desligado por padrão.
+- Habilidade disponível quando `GroveExpedition.restored` for true; derivar do marco já persistido, sem RNG, segunda recompensa ou árvore de skills nova. Saves antigos restaurados ficam elegíveis, mas nunca ativados automaticamente.
+- Um canteiro fixo de quatro lotes iniciais: células `(0,0)`, `(1,0)`, `(0,1)`, `(1,1)`, resolvidas pelo registro de Main. Somente `semente_basica` (trigo); respeitar a estação atual, aragem, ocupação, visibilidade e bloqueio. Não criar/arar lotes ou limpar culturas existentes.
+- Sementes são obtidas pelos caminhos atuais do caldeirão, depositadas pelo jogador no Village Storage e retiradas fisicamente pelo golem. Nunca complementar com Mochila, gerar sementes ou plantar enquanto está no Bosque.
+- UI no painel existente do golem. Preservar prioridades atuais: semear é fallback dos modos mistos, depois da colheita/rega já elegíveis. Só colher, Só regar e Pausado não iniciam semeadura. Regar continua dependente do talento existente.
+- Fora: novas regiões/culturas, economia/NPCs/lore definitiva, mastery, aragem automática, novas regras de rega, seleção livre de territórios, múltiplos golems e rede de baús.
+
+### Baseline técnico e riscos confirmados por leitura
+
+| Evidência atual | Consequência para o piloto |
+| --- | --- |
+| FarmPlot._on_plot_clicked lê a seleção da Mochila, altera `semente_atual` e remove o item antes de configurar o cultivo. | Extrair validação/commit comum sem dependência da seleção para o golem; recusa deve preservar inclusive metadados do lote. |
+| VillageChest.withdraw_item já permite retirada síncrona exclusiva; VillageResourceAccess.consume complementa na Mochila. | Reutilizar retirada do baú, não o consumo agregado atual. Nenhuma mudança global em caldeirão/purificação. |
+| Golem.carried_rewards é carga runtime de colheita; SaveManager não a inclui no snapshot. | Carga semeadora exige custódia e persistência próprias; integração também deve preservar/substituir corretamente carga de colheita ao carregar, para não misturar estados antigos com novo estoque. Ausência confirmada por leitura, não perda de save pessoal reproduzida. |
+| Golem._chegar_ao_bau limpa carried_rewards mesmo com baú inválido. | Devolução de semente não pode reutilizar cegamente esse finalizador: baú inacessível mantém carga pendente. Não presumir aprovação de todos os extremos do fluxo legado. |
+| Movimentação usa callback; colheita/depósito/rega aguardam SceneTreeTimer. Pausa limpa alvo/callback; cache remove a vila da árvore. | Usar geração/token de tarefa e invalidação em pausa/load/saída da árvore; callback antigo não pode consumir/depositar no novo snapshot. |
+| Main.advance_inactive_time avança culturas e caldeirão, não deslocamento físico do golem. | Preservar essa regra: vila ausente congela trabalho físico; retomar ao voltar, sem plantar por cálculo de tempo/teleporte. |
+
+Esses pontos são requisitos de integração; não constituem auditoria exaustiva nem regressões reproduzidas de todos os fluxos. Baseline novo: GolemLifeSmokeTest, SaveContractSmokeTest e RegionTravelSmokeTest passaram em APPDATA isolado. Última suíte completa permanece 46/46 do checkpoint anterior; não foi repetida nesta fase documental.
+
+### Contrato de custódia e commit
+
+Para cada semente retirada, exatamente um destino lógico: **baú → carga de plantio → cultivo**, ou **carga → baú** em devolução. Estar disponível no alvo não equivale a já ter consumido. Colheita tem carga separada; não iniciar semeadura com entrega de colheita pendente.
+
+| Estado lógico | Quem possui a semente | Regra de saída |
+| --- | --- | --- |
+| Procurar alvo / ir ao baú | Baú | Ao chegar, revalidar alvo e saldo; retirada de uma unidade e instalação da carga no mesmo trecho síncrono. |
+| Carregar / ir ao lote | Golem | Não retirar segunda unidade nem iniciar colheita; revalidar temporada/alvo ao chegar. |
+| Plantar | Golem até commit | Commit síncrono, sem await: validar, consumir a carga, instalar cultura e só então publicar sinais. Recusa não modifica lote nem carga. |
+| Devolução pendente | Golem | Desativação, mudança de estação ou alvo ocupado levam à devolução física; se não houver caminho/baú válido, preservar e informar. |
+| Pausado / vila inativa | Mesmo dono anterior | Congelar tarefa, invalidar callbacks e manter carga; não devolver remotamente. Retomar com rota nova. |
+
+Não reservar estoque durante o trajeto até o baú; o jogador/caldeirão podem consumir antes da chegada. Lote não fica bloqueado ao jogador enquanto golem caminha: se alguém plantar primeiro, golem não sobrescreve nem consome a semente. Chegada exige proximidade real, não apenas NavigationAgent.is_navigation_finished. Referências de lote/baú são revalidadas; falha de navegação nunca destrói carga.
+
+### Contrato de snapshot/load
+
+- Proposta mínima: bloco opcional `golem_work` com versão interna 1, opção de semeadura, prioridade válida, carga de colheita e carga de plantio ausente ou contendo `semente_basica`, quantidade inteira 1, célula alvo e intenção transportar/devolver. Não persistir Callable, Node, NodePath de instância ou rota do NavigationAgent. Nomes finais podem ser ajustados na implementação, sem mudar estes invariantes.
+- Células são identidade lógica por coordenadas, não posição mundial/ordem de nós. Alvo só pode pertencer ao canteiro fixo. Carga de colheita e de plantio não podem coexistir no piloto. Quantidades/IDs/tipos/flags/estados incompatíveis são recusados antes de mutações.
+- Manter compatibilidade v3/v4 com campo aditivo: ausência significa semeadura desligada e sem carga persistida. A elegibilidade vem de restored, não do flag de ativação. Não inventar sementes/carga que o save antigo não registrou.
+- Preflight completo antes de mudar região, baú, culturas, progresso ou golem, usando o marco do snapshot recebido, não o progresso atual da sessão. Aplicação substitui o estado antigo, não faz refund sobre o novo estoque. Invalidar timers/callbacks anteriores; reconstruir destino com registro da vila e rota nova. Load repetido aplica o mesmo snapshot, sem recompensa/retirada/plantio extra.
+- Save na região externa consulta a vila cacheada, incluindo sua carga congelada. Load mantém retorno à vila já existente. Nenhuma simulação offline de transporte/semeadura.
+- Persistência deve estar funcional antes de habilitar qualquer retirada viva do baú. Não publicar piloto que apenas preserve carga durante a sessão.
+
+### Ordem mínima de execução
+
+1. **Fase B — domínio:** extrair validação/commit comum de plantio manual + por fonte explícita; testes de recusa sem mutação, estação, bloqueio, lote ocupado e consumo único. Criar contrato mínimo de carga/serialização, ainda sem scheduler vivo.
+2. **Fase C — persistência:** preflight/snapshot/load do golem e cargas, legado sem ativação, replay, substituição sem refund e preservação da colheita existente. Fixtures somente em QA.
+3. **Fase D — trabalho físico:** ir ao baú, retirar uma semente, caminhar/plantar/devolver; geração de tarefa, pausa, alvo concorrente, falha de caminho e cache/viagem. Reusar golem/navegação sem reestruturar a IA inteira.
+4. **Fase E — progressão/UI:** habilitação pelo marco da Clareira, controle no painel existente e estados legíveis (bloqueado, sem sementes no baú, estação inadequada, terra não preparada, transportando, devolução pendente). Não criar HUD permanente extra ou reativar F10.
+5. **Fase F — fechamento:** suíte completa, testes com timers/viagem/reabertura isolada, auditoria do PCK e nova build de playtest. Atualizar checklist sem transformar automático em aceite manual; commit/push em cada incremento.
+
+### Portões e testes pendentes do piloto
+
+- Conservação de sementes nas quatro fronteiras: antes/depois da retirada, antes/depois de plantar e antes/depois da devolução. Sucesso consome uma unidade; recusa conserva tudo. Mochila/seleção/ferramentas não mudam por automação.
+- Player planta no alvo durante caminhada; estação muda; alvo desaparece/bloqueia; saldo esgota antes da retirada; baú some/caminho falha depois dela. Nenhuma cultura sobrescrita, carga perdida ou depósito repetido.
+- Pausar/desativar/viagem/load durante movimento e espera; callbacks antigos não completam após retomada/load novo. Culturas/caldeirão mantêm sua regra de tempo durante ausência; golem não trabalha à distância.
+- Save/load da carga de semente e de colheita, dois loads seguidos, save antigo sem bloco e payload inválido sem mutação. Marco já restaurado concede elegibilidade sem nova recompensa, com toggle OFF.
+- Colheita/rega/prioridades/vida ociosa e fluxo manual continuam passando. Confirmar geometria/clicks no painel existente em 800×720 e 1280×720. Renderização técnica não aprova conforto.
+- Manual futuro: ativar após Clareira, depositar sementes, arar o canteiro, observar retirada/transporte/plantio, interferir num alvo, pausar/retomar e salvar/reabrir. Sem apagar/editar save pessoal, artificialmente encher Mochila ou pedir teste imediato ao autor indisponível.
+
+**Fase A fechada apenas em documentação.** Fases B–F ainda não implementadas. Nenhum script/cena/item/receita/save foi alterado nesta fase; confirmação manual dos 16 casos anteriores continua pendente.
+
 ## Visão Geral
 
 O sistema atual de lotes fixos é funcional para o protótipo e continua sendo a base jogável enquanto a fazenda evolui.  
