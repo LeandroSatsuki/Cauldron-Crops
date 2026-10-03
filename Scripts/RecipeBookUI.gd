@@ -27,11 +27,21 @@ var cauldron_ref: Node = null
 var recipe_resolver = null
 var _drag_helper: UIDragHelper = null
 var _refresh_check_accum: float = 0.0
+var _layout_initialized: bool = false
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	visible = false
 	z_index = 200
+	var panel_style := StyleBoxFlat.new()
+	panel_style.bg_color = Color("263b2c")
+	panel_style.border_color = Color("aa9860")
+	panel_style.set_border_width_all(2)
+	panel_style.set_corner_radius_all(8)
+	add_theme_stylebox_override("panel", panel_style)
+	get_viewport().size_changed.connect(_queue_layout)
+	visibility_changed.connect(_queue_layout)
+	_queue_layout()
 
 	var title_handle: Control = get_node_or_null("MarginContainer/VBoxRoot/HeaderBar/TitleLabel") as Control
 	if title_handle:
@@ -72,6 +82,20 @@ func _process(delta: float) -> void:
 		_refresh_recipe_list()
 	elif _inventory_changed() and _selected_recipe_id != "":
 		_show_recipe(_selected_recipe_id)
+
+func _queue_layout() -> void:
+	_apply_layout.call_deferred()
+
+func _apply_layout() -> void:
+	if not is_inside_tree():
+		return
+	var viewport_size := get_viewport().get_visible_rect().size
+	size = Vector2(minf(880, viewport_size.x - 40), minf(560, viewport_size.y - 40))
+	if not _layout_initialized:
+		global_position = (viewport_size - size) / 2
+		_layout_initialized = true
+	else:
+		global_position = global_position.clamp(Vector2(20, 20), (viewport_size - size - Vector2(20, 20)).max(Vector2(20, 20)))
 
 func abrir() -> void:
 	visible = true
@@ -173,6 +197,8 @@ func _show_recipe_by_index(index: int) -> void:
 		return
 
 	var recipe_id := str(recipe_list.get_item_metadata(index))
+	var details: ScrollContainer = $MarginContainer/VBoxRoot/Body/RightPanel
+	details.scroll_vertical = 0
 	_selected_recipe_id = recipe_id
 	_craft_quantity = 1
 	_show_recipe(recipe_id)

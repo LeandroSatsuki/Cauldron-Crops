@@ -1,6 +1,14 @@
 # Evolução do Projeto
 
-## Etapa ativa — Continuidade com testes manuais adiados / HUD responsiva (2026-10-03)
+## Etapa ativa — Caldeirão e Livro adaptados / testes manuais adiados (2026-10-03)
+
+Continuidade autorizada após a HUD responsiva: popup do caldeirão com fundo opaco, slots delineados e botões dentro da borda. Layout compacto de 320 px de altura em janela baixa, mantendo a Mochila acessível acima em janela estreita. Livro adapta tamanho, quebra títulos/textos e oferece rolagem nos detalhes com acompanhamento do foco. Arraste e posições runtime-only preservados; resize contém os painéis. Custos, tempos, origem dos ingredientes, produção/cancelamento e save não mudam.
+
+Regressão `AlchemyDialogLayoutSmokeTest`: 131 verificações, catálogo inteiro, descrição longa sintética, cinco resoluções de 800×600 a 1920×1080, drop/captura do fundo, troca de popup, lote de duas unidades, restituição à origem e fechamento nos dois hosts. Inspeção técnica OpenGL/D3D12. Checklist manual adiado: arrastar ingredientes da Mochila, experimentar mistura, navegar/rolar receitas, digitar quantidade, produzir/cancelar e fechar/reabrir/redimensionar/arrastar os painéis. Picking real e conforto/arte não são aprovados pela regressão.
+
+Próximo incremento recomendado: clareza dos estados existentes de produção, resultado pronto e falta de espaço, sem criar fila/destino novo ou mudar receitas. Casos manuais da expedição e capacidade continuam separados e pendentes abaixo.
+
+## Checkpoint anterior — HUD responsiva (2026-10-03)
 
 O autor informou que não poderá testar agora e autorizou continuar a construção, consolidando um checklist posteriormente. Não aguardar cada roteiro manual para executar incrementos delimitados e verificáveis; manter pendências explícitas, sem convertê-las em aprovação. A segunda expedição permanece implementada, com aceites parciais preservados abaixo.
 

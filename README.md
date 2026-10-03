@@ -87,6 +87,8 @@ Para gerar uma build, instale os templates de exportação compatíveis com sua 
 
 ## Estado do desenvolvimento
 
+Checkpoint atual de interface (2026-10-03): HUD/Mochila paginadas conforme largura; caldeirão opaco e compacto com ingredientes acessíveis, Livro redimensionável ao viewport e detalhes roláveis. Autor adiou os testes manuais; continuidade usa verificações automáticas e mantém checklist pendente em `docs/ROADMAP.md`. Não considerar esse checkpoint aprovação estética ou mudança de gameplay/save.
+
 O fechamento da V0 foi aprovado, e o projeto está na evolução pós-V0 de exploração, armazenamento e Mochila. Conteúdo, arte, balanceamento e sistemas de progressão continuam em evolução.
 
 Checkpoint de 2026-10-03: **segunda expedição / clareira recuperável** implementada após autorização para novo conteúdo. Descobrir o canteiro no Bosque ensina preparação; fabricar duas misturas na vila e levá-las na Mochila permite restaurar e aprender uma receita de Poção de Crescimento. Fonte renovável de carvão garante aquisição sem RNG. F5 no Bosque preserva a Fazenda em cache; F9 retorna à vila. Saves anteriores v3/v4 continuam compatíveis. Roteiro/contratos em [plano do Bosque](./docs/FIRST_EXTERNAL_REGION_VERTICAL_SLICE.md). Aceite manual, duração e balanceamento permanecem pendentes; 20–30 minutos ainda não são duração validada.

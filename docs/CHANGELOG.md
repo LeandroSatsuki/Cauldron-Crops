@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-03 - Caldeirão e Livro legíveis em janelas menores
+
+- Popup opaco, slots delineados e Fechar dentro da borda. Layout compacto mantém Mochila acessível para ingredientes em janela estreita/baixa; sem apagar o placeholder antigo.
+- Livro ajusta tamanho, quebra texto e permite rolar detalhes/ações; foco acompanha rolagem e outra receita começa no topo. Arraste runtime-only, caminhos de nós e produção preservados.
+- Nova regressão com 131 verificações em cinco resoluções, catálogo inteiro, descrição longa, quantidade digitada/lote/refund/hosts e capturas OpenGL/D3D12. Suíte completa 38/38, importação sem erros e save pessoal intacto. Testes manuais continuam adiados; nenhuma mudança de custos, timers, estoques, save, economia ou lore.
+
 ## 2026-10-03 - HUD responsiva / testes manuais adiados
 
 - Autor autorizou continuidade sem testes manuais imediatos. Casos ainda não validados permanecem pendentes para checklist posterior, sem reabrir aceites já registrados.

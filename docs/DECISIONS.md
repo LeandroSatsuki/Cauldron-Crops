@@ -1,5 +1,12 @@
 # Decisions
 
+## Decisão 102 - Apresentação responsiva do caldeirão e Livro
+
+- Autor autorizou a etapa após a HUD, mantendo testes manuais adiados. O caldeirão tinha fundo placeholder e controles fora da borda; os detalhes do Livro não tinham limite/rolagem para textos longos. Ajuste restrito à apresentação, sem mudanças de produção, recursos, receitas ou save.
+- `PopupBackground`, usado somente no caldeirão, preserva captura de cliques/drop e organiza controles existentes com fundo opaco na paleta da HUD. Slots delineados, mistura e Livro separados, botão Fechar dentro do painel. Em janela baixa, altura 320; em janela estreita, posição abaixo da Mochila para permitir arrastar ingredientes. O usuário ainda pode arrastar em runtime; resize/reabertura contém o painel. O placeholder não foi apagado do disco.
+- Livro conserva os caminhos de nós/callbacks, mas `RightPanel` passa a ScrollContainer com rolagem vertical e acompanhamento de foco. Títulos/textos quebram linha; selecionar outra receita volta ao início dos detalhes. Tamanho limitado ao viewport, respeitando posição arrastada quando cabe. Root opaco; lista e cabeçalho permanecem acessíveis. Nenhuma infraestrutura genérica de popups ou tema global novo.
+- `AlchemyDialogLayoutSmokeTest` tem 131 verificações em 800×600, 800×720, 1024×768, 1280×720 e 1920×1080: geometria, todos os detalhes do catálogo, descrição longa sintética, drop/fundo, estoque invariável durante layout, lote por sinais com quantidade digitada, cancelamento à origem e fechamento dos dois hosts sem ocultar HUD. Renderização OpenGL/D3D12 inspecionada; testes isolados não usam save pessoal. Não afirmar suporte abaixo de 800×600 ou picking/drag do sistema operacional. Aceite manual/estético fica no checklist futuro.
+
 ## Decisão 101 - HUD responsiva e continuidade sem gate manual imediato
 
 - O autor não poderá fazer testes agora e autorizou continuar a construção, preparando checklist depois. Publicar incrementos verificados como checkpoints, mantendo aceite manual pendente; não interpretar ausência de teste como aprovação nem autorização irrestrita de sistemas.

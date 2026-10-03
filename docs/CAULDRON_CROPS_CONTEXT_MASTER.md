@@ -6,7 +6,7 @@
 >
 > Este documento **não é uma especificação imutável**. O jogo ainda está sendo descoberto durante o desenvolvimento. Quando houver conflito entre este documento e uma decisão humana mais recente, a decisão humana prevalece.
 
-Estado operacional mais recente (2026-10-03): autor não poderá testar agora e autorizou continuar construção com checklist posterior. Não exigir novo gate manual a cada incremento nem presumir aceite. Segunda expedição implementada com aceites parciais de §46; HUD responsiva verificada automaticamente em §47. Consultar `ROADMAP.md` para fila atual/pêndencias. Relatos anteriores são históricos; arte e casos-limite não foram presumidos aprovados.
+Estado operacional mais recente (2026-10-03): autor não poderá testar agora e autorizou continuar construção com checklist posterior. Não exigir novo gate manual a cada incremento nem presumir aceite. Segunda expedição implementada com aceites parciais de §46; HUD responsiva em §47 e painéis do caldeirão/Livro em §48 verificados automaticamente. Consultar `ROADMAP.md` para fila atual/pendências. Relatos anteriores são históricos; arte e casos-limite não foram presumidos aprovados.
 
 ---
 
@@ -1491,3 +1491,17 @@ Validação: baseline sem `HUDLayout` reproduziu sobreposição em 1280×720. `H
 Fila manual adiada para checklist futuro: produção em viagem com conclusão/cancelamento em lotes separados; save anterior à restauração sem apagar progresso; renovação cronometrada do carvão e recusa por capacidade; captura pendente; entrega/refund do caldeirão bloqueados por espaço; saves legados reais; resize/paginação/ferramentas compactas/arraste/minimização; conforto, duração, balanceamento e arte. Preservar aceites anteriores sem exigir repetição total. Roteiros detalhados continuam nos planos de Mochila/Bosque.
 
 Próximo incremento recomendado: analisar e adaptar legibilidade/layout dos painéis de caldeirão e Livro em janelas menores, sem modificar receitas/produção/estoques ou persistência. Novas expansões de gameplay exigem recorte próprio; a impossibilidade de testar não justifica inventar sistemas.
+
+# 48. ESTADO ATUAL — CALDEIRÃO E LIVRO RESPONSIVOS
+
+Autor autorizou seguir com o próximo incremento. `PopupBackground` mantém o contrato de captura de clique/drop e passa a apresentar o caldeirão com fundo opaco, slots delineados e controles dentro da borda. A inspeção em 800×600 identificou Mochila encoberta: altura compacta de 320 e posição abaixo da barra nas janelas estreitas deixam os ingredientes acessíveis. Layout normal mantém 420 de altura. Não apagar assets antigos nem mudar DropSlot/receitas/produção.
+
+Livro conserva caminhos de nós e callbacks; `RightPanel` é agora ScrollContainer, sem rolagem horizontal, com acompanhamento de foco. Detalhes/títulos quebram linha, catálogo permanece na lista separada e cabeçalho/Fechar ficam acessíveis. Selecionar outra receita volta ao topo dos detalhes. O tamanho adapta-se ao viewport; arraste e posição runtime-only permanecem, com contenção no resize/reabertura. Fundo opaco usa a paleta existente, sem tema global/framework novo.
+
+`AlchemyDialogLayoutSmokeTest` passou com 131 verificações: cinco resoluções (800×600, 800×720, 1024×768, 1280×720 e 1920×1080), controles dentro dos painéis, Mochila acessível, catálogo inteiro, descrição longa sintética e acesso à ação por rolagem, estoque intacto durante layout, drop/captura do fundo, troca popup → Livro, lote de duas unidades com quantidade digitada, consumo prioritário do baú/restituição após cancelar, fechamento nos dois hosts sem ocultar HUD. Renderização OpenGL/D3D12 conferida. Testes usam recursos isolados, sem I/O do save pessoal; custos, timers, gameplay/save não foram alterados.
+
+Fechamento técnico: suíte completa 38/38, importação sem erros e `git diff --check` limpo. Hash/tamanho/data do save pessoal idênticos ao baseline; arquivos locais de arte e UID não relacionados ficam fora da publicação.
+
+Checklist manual adiado deste pacote: abrir caldeirão com Mochila acessível, arrastar dois ingredientes e misturar, navegar/rolar Livro/digitar quantidade, produzir/cancelar, fechar/reabrir, arrastar/redimensionar painéis em janela menor. Não afirmar picking real, conforto ou aceite artístico a partir dos sinais/retângulos; tamanhos abaixo de 800×600 não têm validação de usabilidade. Pendências da expedição/capacidade de §47 continuam separadas.
+
+Próximo incremento recomendado: melhorar comunicação dos estados existentes de produção, resultado pronto e falta de espaço no caldeirão, preservando destino/consumo/refund e save. Não ampliar conteúdo/economia/NPCs automaticamente.
