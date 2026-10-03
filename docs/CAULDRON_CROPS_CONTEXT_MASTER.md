@@ -1601,3 +1601,9 @@ Autor autorizou o recorte recomendado. Baseline analítico do fixture: canto pre
 Regressão HUDCrowdedFallbackSmokeTest com 28 verificações em 800×720, 1024×768 e 1280×720: fixtures saturados, redução evitável, limite inevitável, determinismo e arrastes com lote real ativo. Minimizar/cancelar descobertos nos casos integrados e snapshots invariáveis. Renderização OpenGL inspecionada: conteúdo pode se sobrepor no extremo, mas controles testados ficam expostos. Não prometer otimização contínua, zero colisão universal ou picking/conforto manual aprovado.
 
 Fechamento técnico: suíte 46/46 e importação sem erros. UI-06 fica no checklist manual adiado. Save pessoal preservado por hash/tamanho/data; arquivos locais não relacionados excluídos da publicação. Próximo recorte recomendado: preparar checkpoint jogável e revisar o checklist consolidado antes de ampliar conteúdo. Demais aceites/pendências continuam separados.
+
+# 58. ESTADO ATUAL — CHECKPOINT JOGÁVEL PÓS-V0
+
+Preparação autorizada de playtest local Windows. Exportador limpo existente reutilizado com preset separado, suíte opcional e auditoria do PCK. Checkout somente do commit exclui mudanças/arte local; filtro remove dev/docs/tools/Builds do pacote. Transformação exclusiva do projeto temporário define `CauldronCropsPlaytest`, impedindo acesso ao save habitual mesmo pelo EXE direto. Projeto de desenvolvimento, schema e gameplay permanecem intactos; progresso não é copiado automaticamente.
+
+Pacote local inclui EXE/PCK, launcher OpenGL de compatibilidade, instruções, manifesto de commit/hashes, logs e checklist. Exportação/auditoria ainda em verificação no commit de preparação. V0 aprovada permanece fechada; checkpoint pós-V0 e todos os casos condicionais de ROADMAP têm aceites separados. Não exigir teste imediato enquanto autor estiver indisponível.

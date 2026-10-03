@@ -1,6 +1,12 @@
 # Evolução do Projeto
 
-## Etapa ativa — Fallback de HUD sem espaço livre (2026-10-03)
+## Etapa ativa — Checkpoint jogável pós-V0 (2026-10-03)
+
+Preparação autorizada de build Windows local, sem novos sistemas ou mudança de gameplay. Exportador existente ganha modo Playtest: checkout do commit isolado, suíte opcional completa, exclusão de testes internos/docs/ferramentas e auditoria do PCK. Transformação somente no projeto temporário configura save `CauldronCropsPlaytest`; executável direto também não usa o progresso habitual. V0 aprovada permanece histórica, não reaberta.
+
+Pacote local `Builds/Playtest`: EXE/PCK, launcher de compatibilidade, instruções, manifesto com commit/hashes, logs e cópia desta documentação. Todos os casos abaixo continuam pendentes conforme sua pré-condição. Este ambiente começa sem progresso anterior; aceites antigos não precisam ser repetidos como condição de aprovação dos ajustes de interface. Não importar/apagar save pessoal. Resultado de exportação/auditoria ainda em verificação neste commit de preparação.
+
+## Checkpoint anterior — Fallback de HUD sem espaço livre (2026-10-03)
 
 Quando nenhuma candidata fica livre, a busca deixa de retornar sempre ao canto inferior direito. Primeiro minimiza a área sobre controles visíveis/habilitados e slots da Mochila; depois a sobreposição restante; por fim a distância ao canto preferido. Produção, orientação da Clareira e aviso temporário usam essa política, incluindo proteção do cancelamento do lote. Não move/minimiza objetivos automaticamente nem altera gameplay/save. A escolha é limitada às candidatas; saturação total não permite prometer zero sobreposição.
 

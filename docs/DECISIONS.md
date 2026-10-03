@@ -1,5 +1,11 @@
 # Decisions
 
+## Decisão 112 - Build de playtest isolada e rastreável
+
+- Recorte autorizado: preparar checkpoint jogável/checklist, sem ampliar conteúdo. Reusar Export-CleanBuild com checkout isolado do commit e preset separado, excluindo testes internos/docs/ferramentas/Builds do PCK. Alterações e arte local não versionadas não entram.
+- Transformação somente no projeto temporário define diretório de save `CauldronCropsPlaytest`, inclusive para abertura direta do EXE. Não copiar progresso pessoal automaticamente nem mudar o projeto de desenvolvimento/schema. Launcher escolhe OpenGL de compatibilidade; configuração gráfica fonte permanece intacta.
+- Manifesto registra commit, hashes, transformação e execução da suíte; auditoria do pacote confere exclusões, recursos dinâmicos e isolamento. Checklist/manual continuam pendentes; startup/export técnico não são aprovação de gameplay/arte. Exportação em verificação neste commit de preparação.
+
 ## Decisão 111 - Prioridade de controles quando a HUD está saturada
 
 - Autor autorizou o próximo recorte de fallback. Candidatas livres continuam preferidas. Sem espaço livre, minimizar lexicograficamente área sobre controles, sobreposição restante e distância à posição preferida. Proteger botões visíveis/habilitados, slots da Mochila e cancelamento do lote; os três consumidores existentes reutilizam a mesma busca.

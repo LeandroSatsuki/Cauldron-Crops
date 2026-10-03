@@ -3,7 +3,9 @@ param(
     [string]$GodotPath = $env:GODOT4_PATH,
     [string]$Preset = "Windows Desktop - Fase 1 Demo",
     [string]$OutputPath = "Builds/Fase1/CauldronCrops_Fase1.exe",
-    [switch]$SmokeTest
+    [switch]$SmokeTest,
+    [switch]$Playtest,
+    [switch]$RunRegressionSuite
 )
 
 Set-StrictMode -Version Latest
@@ -102,6 +104,12 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 $repoRoot = $repoRootOutput.Trim()
+if ($Playtest) {
+    $Preset = "Windows Desktop - Post-V0 Playtest"
+    if (-not $PSBoundParameters.ContainsKey("OutputPath")) {
+        $OutputPath = "Builds/Playtest/CauldronCrops_Playtest.exe"
+    }
+}
 $godotExecutable = Find-GodotExecutable -RequestedPath $GodotPath
 $outputAbsolute = if ([System.IO.Path]::IsPathRooted($OutputPath)) {
     [System.IO.Path]::GetFullPath($OutputPath)
@@ -111,6 +119,8 @@ $outputAbsolute = if ([System.IO.Path]::IsPathRooted($OutputPath)) {
 $outputDirectory = Split-Path -Parent $outputAbsolute
 $worktreePath = Join-Path $repoRoot "Builds/.clean-export-$PID"
 $worktreeAdded = $false
+$originalAppData = $env:APPDATA
+$qaAppData = Join-Path $repoRoot "Builds/QA/CleanExport-$PID"
 
 if (Test-Path -LiteralPath $worktreePath) {
     throw "Temporary export directory already exists: $worktreePath"
@@ -132,6 +142,15 @@ try {
     }
     $worktreeAdded = $true
 
+    # Export-only transformation: direct launch cannot load the author's save.
+    # This is recorded in the manifest; source gameplay and save schema stay intact.
+    if ($Playtest) {
+        $projectPath = Join-Path $worktreePath "project.godot"
+        $projectText = [System.IO.File]::ReadAllText($projectPath)
+        $projectText = $projectText.Replace("[application]", "[application]`nconfig/use_custom_user_dir=true`nconfig/custom_user_dir_name=`"CauldronCropsPlaytest`"")
+        [System.IO.File]::WriteAllText($projectPath, $projectText)
+    }
+
     $godotCacheDirectory = Join-Path $worktreePath ".godot"
     New-Item -ItemType Directory -Path $godotCacheDirectory -Force | Out-Null
 
@@ -140,8 +159,10 @@ try {
         -Executable $godotExecutable `
         -Arguments @("--path", $worktreePath, "--editor", "--headless", "--quit") `
         -LogPath (Join-Path $godotCacheDirectory "clean-export-import.log") `
-        -FailureMessage "Godot import preparation failed"
+        -FailureMessage "Godot import preparation failed" `
+        -RejectLoggedErrors
 
+    $env:APPDATA = $qaAppData
     Write-Host "Validating the clean project."
     Invoke-GodotCommand `
         -Executable $godotExecutable `
@@ -150,6 +171,23 @@ try {
         -FailureMessage "Clean project validation failed" `
         -RejectLoggedErrors
 
+    if ($RunRegressionSuite) {
+        $tests = Get-ChildItem -LiteralPath (Join-Path $worktreePath "Scenes/dev") -Filter "*SmokeTest.tscn" | Sort-Object Name
+        foreach ($test in $tests) {
+            $log = Join-Path $godotCacheDirectory ($test.BaseName + ".log")
+            Invoke-GodotCommand -Executable $godotExecutable `
+                -Arguments @("--path", $worktreePath, "--headless", ("res://Scenes/dev/" + $test.Name)) `
+                -LogPath $log -FailureMessage $test.Name -RejectLoggedErrors
+            if (-not (Select-String -LiteralPath $log -Pattern ": PASS")) {
+                throw "$($test.Name) did not report PASS."
+            }
+            Write-Host "PASS $($test.Name)"
+        }
+        Write-Host "Regression suite: $($tests.Count)/$($tests.Count)."
+    }
+
+    # Export templates live in the normal Godot profile; export does not run gameplay.
+    $env:APPDATA = $originalAppData
     Write-Host "Creating Windows build."
     Invoke-GodotCommand `
         -Executable $godotExecutable `
@@ -159,11 +197,12 @@ try {
         -RejectLoggedErrors
 
     if ($SmokeTest) {
+        $env:APPDATA = $qaAppData
         $smokeStandardOutput = Join-Path $godotCacheDirectory "clean-export-smoke.stdout.log"
         $smokeStandardError = Join-Path $godotCacheDirectory "clean-export-smoke.stderr.log"
         $process = Start-Process `
             -FilePath $outputAbsolute `
-            -ArgumentList "--headless", "--quit" `
+            -ArgumentList "--headless", "--quit-after", "120" `
             -WorkingDirectory $outputDirectory `
             -WindowStyle Hidden `
             -RedirectStandardOutput $smokeStandardOutput `
@@ -186,10 +225,41 @@ try {
         Write-Host "Smoke test passed."
     }
 
+    if ($Playtest) {
+        $env:APPDATA = $qaAppData
+        $packPath = [System.IO.Path]::ChangeExtension($outputAbsolute, ".pck")
+        Invoke-GodotCommand -Executable $godotExecutable `
+            -Arguments @("--headless", "--main-pack", $packPath, "--script", (Join-Path $worktreePath "tools/Inspect-PlaytestPack.gd")) `
+            -LogPath (Join-Path $godotCacheDirectory "pack-audit.log") `
+            -FailureMessage "Playtest pack audit failed" -RejectLoggedErrors
+        $manifest = [ordered]@{
+            commit = (& git -C $repoRoot rev-parse HEAD).Trim()
+            preset = $Preset
+            export_only_user_directory = "CauldronCropsPlaytest"
+            regression_count = $(if ($RunRegressionSuite) { $tests.Count } else { 0 })
+            executable_sha256 = (Get-FileHash -LiteralPath $outputAbsolute -Algorithm SHA256).Hash
+            pack_sha256 = (Get-FileHash -LiteralPath $packPath -Algorithm SHA256).Hash
+            manual_status = "pending"
+        }
+        $manifest | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $outputDirectory "build-manifest.json") -Encoding UTF8
+        Copy-Item -LiteralPath (Join-Path $worktreePath "tools/StartPlaytest.cmd") -Destination (Join-Path $outputDirectory "StartPlaytest.cmd")
+        Copy-Item -LiteralPath (Join-Path $worktreePath "docs/ROADMAP.md") -Destination (Join-Path $outputDirectory "CHECKLIST.md")
+        Copy-Item -LiteralPath (Join-Path $worktreePath "tools/Playtest-Readme.txt") -Destination (Join-Path $outputDirectory "LEIA-ME.txt")
+        $logsDirectory = Join-Path $outputDirectory "Logs"
+        New-Item -ItemType Directory -Path $logsDirectory -Force | Out-Null
+        Copy-Item -Path (Join-Path $godotCacheDirectory "*.log") -Destination $logsDirectory
+    }
+
     $outputFile = Get-Item -LiteralPath $outputAbsolute
     Write-Host "Build created: $($outputFile.FullName) ($($outputFile.Length) bytes)"
 } finally {
+    $env:APPDATA = $originalAppData
     if ($worktreeAdded) {
+        $resolvedWorktree = [System.IO.Path]::GetFullPath($worktreePath)
+        $expectedParent = [System.IO.Path]::GetFullPath((Join-Path $repoRoot "Builds")) + [System.IO.Path]::DirectorySeparatorChar
+        if (-not $resolvedWorktree.StartsWith($expectedParent, [System.StringComparison]::OrdinalIgnoreCase)) {
+            throw "Refusing cleanup outside Builds: $resolvedWorktree"
+        }
         & git -C $repoRoot worktree remove --force $worktreePath
         if ($LASTEXITCODE -ne 0) {
             Write-Warning "Could not remove temporary worktree: $worktreePath"

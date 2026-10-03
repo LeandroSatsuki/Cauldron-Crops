@@ -81,6 +81,8 @@ Entre os componentes centrais estão `SaveManager`, `GlobalInventory`, `RecipeRe
 
 ### Demo para Windows
 
+Playtest pós-V0: `tools/Export-CleanBuild.ps1 -Playtest -SmokeTest -RunRegressionSuite` exporta somente o commit atual em checkout isolado. Saída local em `Builds/Playtest/`, fora do Git; inclui EXE/PCK, `StartPlaytest.cmd` (compatibilidade OpenGL), manifesto/hashes, logs e cópia do checklist de `docs/ROADMAP.md`. A transformação exclusiva da build usa `%APPDATA%/CauldronCropsPlaytest`, sem ler/copiar o save habitual. É um ambiente separado que começa sem progresso; não substitui os aceites anteriores nem presume aprovação manual. O preset histórico abaixo permanece disponível.
+
 O projeto possui o preset `Windows Desktop - Fase 1 Demo` em `export_presets.cfg`.
 
 Para gerar uma build, instale os templates de exportação compatíveis com sua versão do Godot e exporte para a pasta `Builds/Fase1/`. Os binários são ignorados pelo Git e não fazem parte do repositório.

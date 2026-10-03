@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-10-03 - Preparação de playtest pós-V0
+
+- Preset Windows separado e exportador limpo reutilizado: suíte opcional, auditoria do pacote, manifesto/hashes, logs, instruções e checklist. Save separado somente na build; projeto/saves pessoais intactos. Exportação em verificação; manual adiado.
+
 ## 2026-10-03 - Fallback de HUD prioriza controles
 
 - Falta de espaço agora escolhe menor área sobre controles e depois menor sobreposição restante, em vez do canto fixo. Produção, objetivo da Clareira e aviso do caldeirão usam a política; cancelamento do lote protegido.
