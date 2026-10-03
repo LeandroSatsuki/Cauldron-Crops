@@ -14,6 +14,7 @@ const BLOCKED_FEEDBACK_COLOR := Color(1.0, 0.76, 0.42, 1.0)
 @export_range(24.0, 160.0, 1.0) var interaction_distance: float = 62.0
 @export var prompt_verb: String = "Coletar"
 @export var backpack_milestone_id: String = ""
+@export var expedition_source_id: String = ""
 
 
 @onready var available_visual: Node2D = get_node_or_null("AvailableVisual") as Node2D
@@ -32,9 +33,15 @@ var _feedback_origin: Vector2 = Vector2.ZERO
 
 func _ready() -> void:
 	add_to_group("forage_node")
+	if expedition_source_id != "":
+		GroveExpedition.forage_state_changed.connect(_on_persistent_state_changed)
+		_collected = bool(GroveExpedition.get_forage_state(expedition_source_id)["collected"])
 	input_pickable = true
 	if prompt_label != null:
 		prompt_label.text = "%s %s" % [prompt_verb, Database.obter_nome_item(resource_id)]
+		if expedition_source_id == GroveExpedition.RENEWABLE_SOURCE:
+			prompt_label.offset_left = -230.0
+			prompt_label.offset_right = 230.0
 	if feedback_label != null:
 		_feedback_origin = feedback_label.position
 	if not input_event.is_connected(_on_input_event):
@@ -48,6 +55,10 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	z_index = int(global_position.y) + 8
+	if expedition_source_id == GroveExpedition.RENEWABLE_SOURCE and prompt_label != null:
+		var remaining: float = float(GroveExpedition.get_forage_state(expedition_source_id)["renewal_remaining"])
+		prompt_label.visible = true
+		prompt_label.text = "Carvão renovável · %ds" % ceili(remaining) if _collected else "Coletar 2 carvões · renova em 45s"
 	if _collected or available_visual == null:
 		return
 	_pulse_time += delta
@@ -63,6 +74,8 @@ func collect() -> bool:
 		_show_feedback("Mochila sem espaço.", BLOCKED_FEEDBACK_COLOR)
 		return false
 	_collected = true
+	if expedition_source_id != "":
+		GroveExpedition.record_collection(expedition_source_id)
 	_refresh_state()
 	var message := "+%d %s" % [quantity, Database.obter_nome_item(resource_id)]
 	if GlobalInventory.award_backpack_milestone(backpack_milestone_id):
@@ -74,6 +87,13 @@ func collect() -> bool:
 
 func is_collected() -> bool:
 	return _collected
+
+
+func _on_persistent_state_changed(source_id: String) -> void:
+	if source_id != expedition_source_id:
+		return
+	_collected = bool(GroveExpedition.get_forage_state(expedition_source_id)["collected"])
+	_refresh_state()
 
 
 func get_collection_state() -> Dictionary:
@@ -130,7 +150,7 @@ func _refresh_state() -> void:
 
 func _refresh_prompt() -> void:
 	if prompt_label != null:
-		prompt_label.visible = _hovered and not _collected
+		prompt_label.visible = expedition_source_id == GroveExpedition.RENEWABLE_SOURCE or (_hovered and not _collected)
 
 
 func _show_feedback(text: String, color: Color = FEEDBACK_COLOR) -> void:

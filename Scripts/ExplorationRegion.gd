@@ -41,6 +41,17 @@ func _process(delta: float) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if event is InputEventKey and event.pressed and not event.echo and event.keycode in [KEY_F5, KEY_F9]:
+		var viewport: Viewport = get_viewport()
+		if event.keycode == KEY_F5:
+			SaveManager.save_game()
+		else:
+			if SaveManager.load_game():
+				var ui: Node = get_tree().current_scene.get_node_or_null("UI")
+				if ui != null and ui.has_method("reiniciar_objetivos_iniciais_apos_load"):
+					ui.call("reiniciar_objetivos_iniciais_apos_load")
+		viewport.set_input_as_handled()
+		return
 	if event is not InputEventMouseButton:
 		return
 	var mouse_event: InputEventMouseButton = event
@@ -49,6 +60,10 @@ func _unhandled_input(event: InputEvent) -> void:
 	var click_position: Vector2 = get_global_mouse_position()
 	if try_move_player_to(click_position):
 		get_viewport().set_input_as_handled()
+
+
+func on_region_became_inactive() -> void:
+	_cancel_pending_interaction()
 
 
 func _configure_navigation() -> void:

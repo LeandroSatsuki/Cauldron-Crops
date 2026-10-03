@@ -29,7 +29,12 @@ func _run() -> void:
 	await get_tree().physics_frame
 	await get_tree().physics_frame
 
-	var forage_nodes: Array[Node] = get_tree().get_nodes_in_group("forage_node")
+	# Preservar o contrato dos quatro pontos originais. A nova fonte renovável
+	# tem quantidade/ciclo próprios, cobertos por GroveRestorationSliceSmokeTest.
+	var forage_nodes: Array[Node] = []
+	for node: Node in get_tree().get_nodes_in_group("forage_node"):
+		if node.get("expedition_source_id") != GroveExpedition.RENEWABLE_SOURCE:
+			forage_nodes.append(node)
 	if forage_nodes.size() != EXPECTED_NODE_COUNT:
 		_fail("esperados %d pontos fisicos, encontrados %d" % [EXPECTED_NODE_COUNT, forage_nodes.size()])
 		return

@@ -83,9 +83,12 @@ func abrir() -> void:
 func fechar() -> void:
 	visible = false
 	var popup_host := get_parent()
-	if popup_host != null:
+	var current_scene := get_tree().current_scene if get_tree() != null else null
+	var cauldron_popup := current_scene.get_node_or_null("CauldronUI/PopupLayer") if current_scene != null else null
+	# O encaixe alternativo é a própria HUD: fechar o Livro não deve ocultá-la.
+	if popup_host != null and popup_host == cauldron_popup:
 		popup_host.visible = false
-	var ui := get_tree().current_scene.get_node_or_null("UI") if get_tree() != null and get_tree().current_scene != null else null
+	var ui := current_scene.get_node_or_null("UI") if current_scene != null else null
 	if ui != null and ui.has_method("_atualizar_modal_blocker"):
 		ui.call_deferred("_atualizar_modal_blocker")
 

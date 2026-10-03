@@ -28,6 +28,12 @@ func delete_save() -> bool:
 	return true
 
 func save_game() -> bool:
+	var home: Node = _get_save_scene()
+	if home == null or not home.has_method("obter_farm_grid_save_data"):
+		push_warning("SaveManager: Fazenda/Vila indisponivel; arquivo pessoal nao sobrescrito.")
+		return false
+	if RegionTravelCoordinator.is_transition_in_progress():
+		return false
 	var data := _build_save_data()
 	var json_text := JSON.stringify(data)
 	var file := FileAccess.open(SAVE_PATH, FileAccess.WRITE)
@@ -66,6 +72,10 @@ func load_game() -> bool:
 	return true
 
 func _build_save_data() -> Dictionary:
+	var home: Node = _get_save_scene()
+	if home != null and home.has_method("_reconstruir_farm_grid_manager"):
+		# FarmPlot é a autoridade: incluir tempo/efeitos atuais, não o índice antigo.
+		home.call("_reconstruir_farm_grid_manager")
 	var inventory_copy: Dictionary = GlobalInventory.inventario.duplicate(true)
 	var village_chest_inventory: Dictionary = {}
 	var village_chest := _get_village_chest()
@@ -76,7 +86,7 @@ func _build_save_data() -> Dictionary:
 	var farm_grid: Dictionary = {}
 	var tree: SceneTree = get_tree()
 	if tree != null:
-		var lotes_terra: Array = tree.get_nodes_in_group("lotes_terra")
+		var lotes_terra: Array = _get_save_group_nodes("lotes_terra")
 		for lote_variant in lotes_terra:
 			var lote: Node = lote_variant
 			if lote and lote.has_method("get_save_data"):
@@ -84,7 +94,7 @@ func _build_save_data() -> Dictionary:
 			else:
 				farm_plots.append({})
 
-		var scene: Node = tree.current_scene
+		var scene: Node = _get_save_scene()
 		if scene != null and scene.has_method("obter_farm_grid_save_data"):
 			var farm_grid_variant: Variant = scene.call("obter_farm_grid_save_data")
 			if typeof(farm_grid_variant) == TYPE_DICTIONARY:
@@ -98,7 +108,7 @@ func _build_save_data() -> Dictionary:
 	var purification_progress: Dictionary = {}
 	var restoration_projects: Dictionary = {}
 	if tree != null:
-		var obstacles: Array = tree.get_nodes_in_group("purification_obstacle")
+		var obstacles: Array = _get_save_group_nodes("purification_obstacle")
 		for obstacle_variant in obstacles:
 			var obstacle: Node = obstacle_variant
 			if obstacle and obstacle.has_method("get_save_data"):
@@ -109,7 +119,7 @@ func _build_save_data() -> Dictionary:
 					purification_obstacles[obstacle_id] = bool(obstacle_data.get("purified", false))
 					var obstacle_progress: Dictionary = _safe_dictionary(obstacle_data.get("purification_progress", {}))
 					purification_progress[obstacle_id] = obstacle_progress.duplicate(true)
-		var projects: Array = tree.get_nodes_in_group("restoration_project")
+		var projects: Array = _get_save_group_nodes("restoration_project")
 		for project_variant in projects:
 			var project: Node = project_variant
 			if project == null or not project.has_method("get_save_data"):
@@ -123,6 +133,8 @@ func _build_save_data() -> Dictionary:
 
 	return {
 		"version": SAVE_VERSION,
+		"grove_expedition": GroveExpedition.get_save_data(),
+		"home_inactive_seconds": RegionTravelCoordinator.get_inactive_region_elapsed_seconds(&"farm_village"),
 		"cauldrons": _build_cauldron_save_data(),
 		"fishing_pending_capture": _build_fishing_save_data(),
 		"inventory": {
@@ -165,6 +177,14 @@ func _build_save_data() -> Dictionary:
 	}
 
 func _apply_save_data(data: Dictionary) -> bool:
+	# Pré-validar os campos opcionais antes de mudar região, recursos ou flags.
+	if data.has("grove_expedition") and not GroveExpedition.is_save_data_valid(data["grove_expedition"]):
+		push_warning("SaveManager: expedicao invalida; save nao aplicado.")
+		return false
+	var inactive_seconds: Variant = data.get("home_inactive_seconds", 0.0)
+	if not (inactive_seconds is float or inactive_seconds is int) or not is_finite(float(inactive_seconds)) or float(inactive_seconds) < 0.0:
+		push_warning("SaveManager: intervalo de ausencia invalido; save nao aplicado.")
+		return false
 	var save_version: int = _read_save_version(data)
 	if not _is_save_version_supported(save_version):
 		if save_version > SAVE_VERSION:
@@ -202,7 +222,16 @@ func _apply_save_data(data: Dictionary) -> bool:
 	var current_inventory: Dictionary = {} if inventory_data.get("inventario") is Dictionary else GlobalInventory.inventario.duplicate(true)
 
 	for key in saved_inventory.keys():
-		current_inventory[key] = int(saved_inventory.get(key, 0))
+		var quantity: Variant = saved_inventory[key]
+		if str(key).strip_edges() == "" or not (quantity is float or quantity is int) or not is_finite(float(quantity)) or float(quantity) < 0.0 or float(int(quantity)) != float(quantity):
+			push_warning("SaveManager: inventario pessoal invalido; save nao aplicado.")
+			return false
+		current_inventory[key] = int(quantity)
+
+	var home: Node = _get_save_scene()
+	if home != null and home != get_tree().current_scene and home.has_method("obter_farm_grid_save_data"):
+		if not RegionTravelCoordinator.return_home_for_load():
+			return false
 
 	if not GlobalInventory.set_inventory_contents(current_inventory):
 		push_error("SaveManager: inventario pessoal invalido no save.")
@@ -216,6 +245,14 @@ func _apply_save_data(data: Dictionary) -> bool:
 		# Restaurar o plantio deve manter a mesma exclusividade do clique na UI.
 		ToolManager.clear_tool()
 	GlobalInventory.receitas_descobertas = _safe_array(inventory_data.get("receitas_descobertas", GlobalInventory.receitas_descobertas)).duplicate(true)
+	if data.has("grove_expedition"):
+		GroveExpedition.load_save_data(data["grove_expedition"])
+	elif inventory_data.get("inventario") is Dictionary:
+		# Saves completos anteriores à clareira começam o recorte intacto.
+		GroveExpedition.reset_progress()
+	else:
+		# Payload parcial pode substituir a lista do Livro, mas não os marcos.
+		GroveExpedition.reconcile_recipe_discoveries()
 	GlobalInventory.pontos_alquimia = int(inventory_data.get("pontos_alquimia", GlobalInventory.pontos_alquimia))
 	GlobalInventory.skills_desbloqueadas = _safe_array(inventory_data.get("skills_desbloqueadas", GlobalInventory.skills_desbloqueadas)).duplicate(true)
 	GlobalInventory.aplicar_colecao_pesca_save(
@@ -303,6 +340,10 @@ func _apply_save_data(data: Dictionary) -> bool:
 		for spot in get_tree().get_nodes_in_group("fishing_spot"):
 			if current_scene != null and current_scene.is_ancestor_of(spot) and spot.has_method("reset_after_load"):
 				spot.call("reset_after_load")
+	if float(inactive_seconds) > 0.0 and current_scene != null and current_scene.has_method("advance_inactive_time"):
+		current_scene.call("advance_inactive_time", float(inactive_seconds))
+	if current_scene != null and current_scene.has_method("_reconstruir_farm_grid_manager"):
+		current_scene.call("_reconstruir_farm_grid_manager")
 	return true
 
 
@@ -320,7 +361,7 @@ func _resolve_backpack_progress(data: Dictionary, inventory_data: Dictionary) ->
 
 
 func _get_fishing_minigame() -> Node:
-	var scene: Node = get_tree().current_scene
+	var scene: Node = _get_save_scene()
 	var ui: Node = scene.get_node_or_null("UI") if scene != null else null
 	if ui == null:
 		return null
@@ -345,10 +386,10 @@ func _is_fishing_save_payload_valid(data: Dictionary) -> bool:
 
 func _get_cauldron_nodes() -> Dictionary:
 	var nodes: Dictionary = {}
-	var scene: Node = get_tree().current_scene
+	var scene: Node = _get_save_scene()
 	if scene == null:
 		return nodes
-	for cauldron in get_tree().get_nodes_in_group("cauldrons"):
+	for cauldron in _get_save_group_nodes("cauldrons"):
 		if scene.is_ancestor_of(cauldron) and cauldron.has_method("get_save_data") and cauldron.has_method("load_save_data"):
 			nodes[str(scene.get_path_to(cauldron))] = cauldron
 	return nodes
@@ -453,12 +494,37 @@ func _get_village_chest() -> Node:
 	if tree == null:
 		return null
 
-	var chests: Array = tree.get_nodes_in_group("village_chest")
+	var chests: Array = _get_save_group_nodes("village_chest")
 	for chest in chests:
 		if is_instance_valid(chest):
 			return chest
 
 	return null
+
+
+func _get_save_scene() -> Node:
+	var current: Node = get_tree().current_scene
+	if current != null and current.has_method("obter_farm_grid_save_data"):
+		return current
+	var home: Node = RegionTravelCoordinator.get_cached_region_scene(&"farm_village")
+	return home if home != null else current
+
+
+func _get_save_group_nodes(group_name: String) -> Array:
+	var scene: Node = _get_save_scene()
+	if scene == null:
+		return get_tree().get_nodes_in_group(group_name)
+	var nodes: Array = []
+	_collect_group_nodes(scene, group_name, nodes)
+	return nodes
+
+
+func _collect_group_nodes(parent: Node, group_name: String, nodes: Array) -> void:
+	# get_nodes_in_group não inclui os filhos da vila em cache fora da árvore.
+	if parent.is_in_group(group_name):
+		nodes.append(parent)
+	for child in parent.get_children():
+		_collect_group_nodes(child, group_name, nodes)
 
 func _aplicar_estado_obstaculos_purificados(purification_obstacles_data: Dictionary, purification_progress_data: Dictionary = {}) -> void:
 	var tree: SceneTree = get_tree()

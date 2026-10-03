@@ -4,7 +4,65 @@
 
 Fases A, B, C e D implementadas, automatizadas e aprovadas manualmente. As correções posteriores de continuidade também foram automatizadas e aprovadas manualmente.
 
-Continua sem autorização para conteúdo final, lore definitiva, novos itens ou expansão do save.
+Essas fases continuam sendo o baseline histórico. Em 2026-10-03, após escolher novo conteúdo e aprovar o início da grande fase, o autor autorizou o recorte adicional abaixo. A autorização não inclui lore definitiva, economia, NPCs ou ampliação irrestrita do mundo.
+
+## Segunda expedição — Clareira recuperável (2026-10-03)
+
+Estado: percurso implementado; validação automática/renderização técnica concluídas; aceite manual, duração e balanceamento pendentes. Não é uma nova fase da Mochila nem reabre a V0.
+
+### Escopo e percurso
+
+1. Investigar o canteiro seco no fim do caminho principal do Bosque. A descoberta ensina **Mistura Restauradora** no Livro de Receitas; as luzes opcionais continuam atmosféricas e independentes.
+2. Reunir carvão e retornar à vila. No caldeirão/Livro, **2 carvões → 1 Mistura Restauradora**, em 4 segundos. Preparar **2 misturas**; a vila mantém consumo preferencial do Storage e complemento da Mochila.
+3. Retornar ao canteiro carregando as duas misturas na Mochila. O projeto não consulta o Storage remoto. Restaurar consome exatamente duas e muda visualmente o canteiro seco para plantas verdes.
+4. Aprender **Infusão da Clareira**: **carvão + Mistura Restauradora → 1 Poção de Crescimento**, em 4 segundos. Reutiliza o consumível existente: botão **Usar Poção (3 Cargas)** no Caderno da Fazenda; cada clique numa cultura crescendo, sem ferramenta ativa, consome uma carga e reduz pela metade o tempo restante.
+
+Somente uma pequena subárea do mapa existente, um projeto, duas receitas e um item intermediário. O Herbário da vila permanece intacto; o site externo é específico deste recorte e reutiliza `VillageResourceAccess` sem Storage para as transações. Não criar framework genérico de projetos, quests, aquisição ou mastery.
+
+### Aquisição e prevenção de bloqueios
+
+| Conteúdo | Caminho determinístico | Custo/uso | RNG exclusivo? |
+| --- | --- | --- | --- |
+| Carvão | Quatro pontos originais + nova fonte ao lado da clareira | Fonte nova entrega 2 e renova em 45 segundos de sessão | Não |
+| Receita de preparação | Investigar canteiro | Nenhum recurso para aprender | Não |
+| Mistura Restauradora | Caldeirão após descoberta | 2 carvões; restauração ou receita agrícola após completar | Não |
+| Receita agrícola | Restaurar canteiro com a carga pessoal | 2 misturas; recompensa única | Não |
+| Poção de Crescimento | Nova receita ou receita existente `trigo_raiz_gelida` | Alternativa ao caminho sazonal; efeito agrícola já funcional | Não |
+
+A fonte renovável oferece recuperação se materiais forem usados em outra receita. Coleta recusada por capacidade não esgota o ponto nem inicia o intervalo. Os quatro pontos antigos continuam de coleta única, agora persistidos. A fonte nova não deposita no baú, não renova os demais pontos e não estabelece dias/estações ou simulação offline. O intervalo continua durante a sessão, inclusive na vila; ao fechar o jogo, fica congelado e retoma do valor salvo.
+
+Os tempos e quantidades são valores de piloto, não balanceamento final. A hipótese anterior de 20–30 minutos **não foi validada**; os cultivos de protótipo são curtos. Este checkpoint fecha o percurso funcional, não promete essa duração nem acrescenta esperas artificiais. Moeda, lore e saída universal econômica continuam aguardando recorte próprio; a mistura possui dois usos concretos e nenhum preço de venda definido agora.
+
+### Interface e persistência
+
+- Objetivo opaco, minimizável, no canto inferior direito, visível na vila/Bosque após descoberta. Some ao restaurar e fica oculto durante modais da vila. Posição/minimização são runtime-only; contador mostra somente misturas na Mochila.
+- `RecipeData.exige_descoberta` é opcional e padrão `false`. Só as duas receitas novas exigem aprendizado; mistura bloqueada não perde ingredientes e lote bloqueado não reserva recursos. Demais receitas mantêm descoberta experimental.
+- Save v4 recebe campos opcionais `grove_expedition` e `home_inactive_seconds`; saves completos v3/v4 sem o primeiro iniciam o recorte intacto. Payload parcial sem esses campos preserva o progresso runtime. Flags reconciliam as duas receitas sem duplicá-las.
+- `GroveExpedition` guarda somente descoberta/restauração e cinco IDs conhecidos de fonte. Validação rejeita flags contraditórias, tipos/IDs/intervalos inválidos antes de mudar região ou recursos.
+- F5 passa a funcionar no Bosque: snapshot lê a Fazenda preservada em cache, incluindo lotes, Storage, purificação, Herbário, caldeirão e captura pendente. Não sobrescrever arquivo se HOME está indisponível ou durante transição.
+- F9 fora da vila retoma HOME pela entrada do Bosque, cancela o destino externo e aplica o snapshot. Reabrir continua iniciando a cena HOME; posição externa não é salva. Tempo de ausência já decorrido **na sessão até salvar** avança cultivo/caldeirão uma vez após restaurar recursos/produtores. Não contar tempo com o jogo fechado nem simular logística offline de golems.
+- `FarmPlot` continua autoridade: save reconstrói seu snapshot atual e aplicação da poção notifica a alteração. Regressão reproduziu save conservando o tempo anterior à redução e protege a correção.
+- Fechar o Livro oculta somente seu painel e, quando vinculado a ele, o PopupLayer do caldeirão. A inspeção reproduziu o encaixe alternativo que ocultava toda a HUD; regressão protege ambos os hosts.
+
+### Verificação e roteiro manual pendente
+
+`GroveRestorationSliceSmokeTest` possui 72 verificações: aproximação real ao site, descoberta, Livro/quantidade com ingrediente duplicado e fechamento nos dois hosts, receita bloqueada, recusa por capacidade, fonte renovável, restauração pessoal/recusa de Storage remoto, recompensa única, efeito real, JSON em HOME/Bosque recriados, save externo de produção, catch-up, repetição/cancelamento e pré-validação/compatibilidade, incluindo retenção de marcos/fontes/receitas em payload parcial. Não faz I/O do save pessoal. Renderizações OpenGL em 1280×720 e D3D12/Forward+ em 1920×1080 conferem canteiro, objetivo expandido/minimizado, ícone, Livro e HUD após fechar; não equivalem a picking manual, aprovação artística ou aferição de duração.
+
+Fechamento automatizado: importação sem erros e suíte completa 36/36 aprovada; save pessoal intacto por hash/tamanho/data. O roteiro abaixo ainda requer o autor.
+
+Roteiro:
+
+1. Carregar o jogo existente, visitar o Bosque e investigar o canteiro ao final do caminho principal. Conferir receita aprendida e minimizar/expandir o objetivo.
+2. Coletar pelo menos 4 carvões. Se necessário, aguardar/revisitar a fonte renovável; todos devem entrar na Mochila, não no Storage.
+3. Na vila, abrir Livro de Receitas, selecionar Mistura Restauradora, digitar quantidade 2 e produzir. Conferir HUD acessível após fechar/iniciar produção. Se depositar as misturas no baú, retirar antes da expedição.
+4. Retornar e restaurar carregando as duas; confirmar consumo único, canteiro verde, receita nova e objetivo oculto. Outro clique não concede recompensa nem consome mais itens.
+5. Fazer mais uma mistura e combinar com carvão pela Infusão da Clareira. Usar a poção e clicar numa cultura crescendo sem ferramenta; os tempos atuais são curtos, portanto realizar próximo ao lote. Não interpretar utilidade/balanceamento definitivo a partir do teste sintético de 8 segundos.
+6. F5 no Bosque antes e depois da restauração; F9 deve retornar à vila. Fechar/reabrir/carregar e revisitar; conferir flags, quantidades, fontes e ausência de recompensa duplicada.
+7. Em outra produção de duas misturas, viajar enquanto produz, salvar no Bosque e carregar; verificar conclusão/consumo únicos e, se cancelar antes de terminar, restituição apenas da reserva restante à origem.
+
+Pendências anteriores (captura pendente, entrega/refund do caldeirão bloqueados por capacidade, saves legados reais e arte geral) continuam separadas. Revisar ritmo/legibilidade após este playtest, sem iniciar lojas/NPCs/combate ou novos sistemas automaticamente.
+
+## Baseline histórico das fases A–D
 
 ### Entrega da Fase A
 

@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="RecipeData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://Scripts/data/RecipeData.gd" id="1_recipe"]
+
+[resource]
+script = ExtResource("1_recipe")
+id = "mistura_restauradora_bosque"
+nome = "Mistura Restauradora"
+descricao = "Combine dois carvões. Leve duas misturas na Mochila à clareira do Bosque; o projeto não acessa o baú da vila."
+categoria = "restauracao"
+ingredientes = Array[String](["carvao", "carvao"])
+resultado_item = "mistura_restauradora"
+resultado_quantidade = 1
+tempo_producao = 4.0
+exige_descoberta = true
+recompensa_pontos_alquimia = 0
+tags = Array[String](["bosque", "restauracao", "preparacao"])

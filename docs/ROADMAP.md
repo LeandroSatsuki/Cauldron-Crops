@@ -1,6 +1,14 @@
 # Evolução do Projeto
 
-## Estado operacional — 2026-10-02
+## Etapa ativa — Segunda expedição / Clareira recuperável (2026-10-03)
+
+Autor escolheu novo conteúdo e autorizou iniciar o recorte grande. Implementados descoberta → carvão → preparo no caldeirão da vila → retorno com 2 misturas na Mochila → restauração externa → receita agrícola útil. Uma subárea do Bosque existente, fonte determinística renovável e duas receitas; sem economia, NPCs, combate, lore definitiva, nova região ou rede de armazenamento.
+
+Plano/contratos/roteiro: `FIRST_EXTERNAL_REGION_VERTICAL_SLICE.md`, seção Segunda expedição; Decisão 100 e contexto §46. Save externo preserva HOME em cache e F9 retorna à vila; campos opcionais mantêm v3/v4 anteriores. A recompensa reutiliza Poção de Crescimento, com redução persistente do tempo agrícola. Alvo de duração 20–30 minutos ainda não validado; não confundir percurso funcional com balanceamento final.
+
+Checkpoint automatizado com `GroveRestorationSliceSmokeTest` (72 verificações) e renderização técnica OpenGL/D3D12. Fechamento do Livro preserva a HUD nos dois hosts, após regressão reproduzida. Próximo passo: playtest manual do recorte e retorno sobre ritmo/clareza. Arte, captura pendente, capacidade na entrega/refund e saves legados reais continuam com pendências próprias. Não ampliar o conteúdo automaticamente.
+
+## Baseline operacional anterior — 2026-10-02/03
 
 As fases numeradas abaixo registram o planejamento histórico; não representam uma fila ainda não implementada. O fechamento da V0 foi aprovado. A evolução pós-V0 já entregou exploração do Bosque, acesso a recursos da vila e Fases A–E da Mochila.
 

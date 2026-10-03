@@ -369,6 +369,9 @@ func iniciar_producao_em_lote(recipe_id: String, quantidade: int) -> bool:
 	if recipe.is_empty():
 		push_warning("Cauldron: receita inexistente para producao em lote: %s" % recipe_id)
 		return false
+	if not recipe_resolver.is_recipe_available(recipe_id):
+		push_warning("Cauldron: aprenda a receita antes de produzir: %s" % recipe_id)
+		return false
 	if quantidade <= 0:
 		push_warning("Cauldron: quantidade invalida para producao em lote: %s" % str(quantidade))
 		return false
@@ -683,7 +686,11 @@ func _on_misturar_button_pressed() -> void:
 		return
 		
 	# Resolve a combinacao pelo contrato rico, preservando fallback legado.
-	var recipe: Dictionary = recipe_resolver.find_recipe_for_ingredients([item1, item2]) if recipe_resolver != null else {}
+	var recipe: Dictionary = recipe_resolver.find_recipe_for_ingredients([item1, item2], true) if recipe_resolver != null else {}
+	if not recipe.is_empty() and not recipe_resolver.is_recipe_available(str(recipe.get("id", ""))):
+		if resultado_label:
+			resultado_label.text = "Aprenda esta receita investigando/restaurando a clareira no Bosque."
+		return
 	var resultado: String = str(recipe.get("resultado_item", ""))
 		
 	if resultado == "":

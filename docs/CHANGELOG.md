@@ -1,5 +1,15 @@
 # Changelog
 
+## 2026-10-03 - Checkpoint da segunda expedição: clareira, restauração e receita agrícola
+
+- Após autorização para o recorte de novo conteúdo, adicionados canteiro restaurável no Bosque existente, duas receitas resource-first e um ingrediente com ícone SVG. Descoberta ensina preparação; duas misturas levadas na Mochila restauram e ensinam receita que produz Poção de Crescimento funcional. Repetição não concede/consome novamente.
+- Fonte nova de carvão determinística e renovável (2/45s de sessão), sem esgotar ao recusar capacidade. Fontes antigas mantêm coleta única e ganham persistência. Objetivo opaco/minimizável, oculto em modais e após concluir; sem economia/NPCs/combate/lore definitiva.
+- Receitas novas exigem aprendizado, sem perder ingredientes em tentativa bloqueada. Livro/ingredientes duplicados e produção existente reutilizados; Herbário e contratos de recursos da vila preservados.
+- Save opcional v4 guarda progresso/fontes e intervalo de ausência da sessão; F5 externo captura HOME em cache e F9 externo retorna à vila. Compatibilidade com saves completos anteriores/parciais e pré-validação. Cultivo/caldeirão retomam intervalo uma vez, sem simular jogo fechado.
+- Regressão nova reproduziu redução da poção ausente do snapshot; aplicação agora notifica FarmPlot e save reconstrói índice atual. Cache verifica validade antes do tipo de instância liberada.
+- Inspeção renderizada reproduziu fechamento do Livro ocultando toda a HUD no encaixe alternativo; fechamento agora oculta somente o host específico do caldeirão. Teste cobre ambos os hosts.
+- Teste integrado com 72 verificações; importação sem erros, suíte completa 36/36 e renderização técnica OpenGL/D3D12 do percurso, objetivo, Livro, HUD e ícone em duas resoluções. Hash/tamanho/data confirmam save pessoal intacto. Aceite manual, duração/balanceamento e arte permanecem pendentes; hipótese de 20–30 minutos não foi comprovada. Plano/roteiro e Decisão 100 documentados.
+
 ## 2026-10-03 - Aceite manual da recuperação de colheita com Mochila cheia
 
 - Autor aprovou recusa da colheita com resultado sem espaço, preservação da cultura, save/reabertura/load, depósito no baú e retomada sem perda/duplicação.

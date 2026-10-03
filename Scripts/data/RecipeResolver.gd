@@ -60,7 +60,12 @@ func get_recipe(recipe_id: String) -> Dictionary:
 
 	return {}
 
-func find_recipe_for_ingredients(ingredients: Array) -> Dictionary:
+func is_recipe_available(recipe_id: String) -> bool:
+	var recipe_data: RecipeData = get_recipe_data(recipe_id)
+	return recipe_exists(recipe_id) and (recipe_data == null or not recipe_data.exige_descoberta or recipe_id in GlobalInventory.receitas_descobertas)
+
+
+func find_recipe_for_ingredients(ingredients: Array, include_locked: bool = false) -> Dictionary:
 	if ingredients.is_empty():
 		return {}
 
@@ -72,6 +77,8 @@ func find_recipe_for_ingredients(ingredients: Array) -> Dictionary:
 			var recipe_id := str(recipe_id_variant)
 			var recipe_data := get_recipe_data(recipe_id)
 			if recipe_data == null:
+				continue
+			if not include_locked and not is_recipe_available(recipe_id):
 				continue
 			if _ingredients_match(ingredients, recipe_data.ingredientes, recipe_data.ordem_importa):
 				return get_recipe(recipe_id)

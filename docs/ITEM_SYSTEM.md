@@ -1,5 +1,11 @@
 # Item System — Catálogo de Itens V0
 
+## Incremento da clareira — 2026-10-03
+
+`mistura_restauradora` é o único item novo do recorte autorizado. Ingrediente comum, empilhamento padrão 99, produzido no caldeirão com dois carvões após investigar o canteiro. Dois são consumidos pela restauração externa; após completar, cada mistura + carvão produz Poção de Crescimento. Nunca se torna apenas loot sem uso após a missão.
+
+Ícone vetorial em `Assets/Items/mistura_restauradora.svg`; catálogo procura PNG primeiro e SVG como fallback, compartilhado por slots, drops e transferências. Metadados de preço/venda permanecem sem economia implementada (`valor_base=0`, venda desativada neste piloto); revisar ao criar a saída universal aprovada conceitualmente, não interpretar como exclusão econômica definitiva do item. Lore e moeda não foram definidos. Ver plano do Bosque/Decisão 100.
+
 ## Visão geral
 
 O projeto agora tem um catálogo central mínimo de itens em `Scripts/Database.gd`.

@@ -76,9 +76,48 @@ func get_transition_overlay_alpha() -> float:
 
 func get_cached_region_scene(region_id: StringName) -> Node:
 	var scene_variant: Variant = _cached_region_scenes.get(String(region_id))
-	if scene_variant is Node and is_instance_valid(scene_variant):
+	if is_instance_valid(scene_variant) and scene_variant is Node:
 		return scene_variant
 	return null
+
+
+func get_inactive_region_elapsed_seconds(region_id: StringName) -> float:
+	var key := String(region_id)
+	if not _region_inactive_since_msec.has(key):
+		return 0.0
+	return maxf(float(Time.get_ticks_msec() - int(_region_inactive_since_msec[key])) / 1000.0, 0.0)
+
+
+func return_home_for_load() -> bool:
+	# Load sempre retoma a vila. Não reconciliar tempo do runtime abandonado:
+	# o snapshot possui seu próprio intervalo de ausência, aplicado pelo save.
+	var tree: SceneTree = get_tree()
+	var home: Node = get_cached_region_scene(&"farm_village")
+	if _transition_in_progress or tree == null or home == null:
+		return false
+	if tree.current_scene == home:
+		_region_inactive_since_msec.erase("farm_village")
+		return true
+	if not _region_scene_has_entry(home, "from_foraging_grove"):
+		return false
+	var source: Node = tree.current_scene
+	_disconnect_active_scene()
+	if source != null:
+		if source.has_method("on_region_became_inactive"):
+			source.call("on_region_became_inactive")
+		_cached_region_scenes[_active_region_id] = source
+		_region_inactive_since_msec[_active_region_id] = Time.get_ticks_msec()
+		tree.current_scene = null
+		if source.get_parent() != null:
+			source.get_parent().remove_child(source)
+	if home.get_parent() == null:
+		tree.root.add_child(home)
+	tree.current_scene = home
+	_region_inactive_since_msec.erase("farm_village")
+	if home.has_method("on_region_became_active"):
+		home.call("on_region_became_active")
+	register_region_scene(home)
+	return bool(home.call("enter_region_at", &"from_foraging_grove"))
 
 
 func _on_region_transition_requested(request: Dictionary) -> void:

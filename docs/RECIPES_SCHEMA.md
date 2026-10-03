@@ -1,5 +1,13 @@
 # Recipes Schema
 
+## Extensão do recorte da clareira — 2026-10-03
+
+- `RecipeData.exige_descoberta` é opcional, padrão `false`; receitas existentes não mudam. `RecipeResolver.is_recipe_available` verifica aprendizado apenas quando esse campo está ativo.
+- `find_recipe_for_ingredients` omite receitas bloqueadas por padrão; parâmetro `include_locked=true` permite ao caldeirão reconhecer a combinação e informar o aprendizado necessário **sem consumir ingredientes**. Lotes também verificam disponibilidade antes da reserva.
+- Duas receitas resource-first: `mistura_restauradora_bosque` (carvão ×2 → mistura ×1) e `infusao_clareira` (carvão + mistura → Poção de Crescimento ×1), 4 segundos/craft. Descoberta/restauração reconciliam os IDs aprendidos; pontos de alquimia novos são zero neste recorte.
+- Livro e mistura manual reutilizam o mesmo contrato; ingrediente repetido é contado por quantidade, não como um carvão apenas. Receita sazonal anterior da poção permanece válida.
+- Progresso/compatibilidade e roteiro em `FIRST_EXTERNAL_REGION_VERTICAL_SLICE.md`, Segunda expedição. Sem regra genérica de mastery, matriz de aquisição implementada ou catálogo legado novo.
+
 ## Estado Atual
 O sistema de receitas do projeto está em transição híbrida: o catálogo rico vive em `Resource .tres` dentro de `Data/recipes/`, e o gameplay ainda mantém fallback legado em `Scripts/Database.gd` para compatibilidade.
 

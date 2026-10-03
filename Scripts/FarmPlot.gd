@@ -192,6 +192,7 @@ func _on_plot_clicked() -> void:
 			if GlobalInventory.cargas_crescimento > 0:
 				GlobalInventory.cargas_crescimento -= 1
 				timer.start(timer.time_left / 2.0)
+				_notificar_estado_alterado()
 				print("Poção aplicada! Tempo reduzido pela metade.")
 			else:
 				_mostrar_feedback("A planta ainda está crescendo.")

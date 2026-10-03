@@ -15,6 +15,7 @@ const RECEITA_ITEM_IDS := [
 	"semente_verao",
 	"semente_outono",
 	"pocao_crescimento",
+	"mistura_restauradora",
 	"pocao_aceleradora",
 	"essencia_sombria",
 	"adubo_flamejante",
@@ -36,6 +37,18 @@ const ITEM_FALLBACK_DATA: Dictionary = {
 }
 
 var itens: Dictionary = {
+	"mistura_restauradora": {
+		"nome": "Mistura Restauradora",
+		"categoria": "ingrediente",
+		"raridade": "comum",
+		"valor_base": 0,
+		"pode_vender": false,
+		"pode_usar_em_receita": true,
+		"tags": ["restauracao", "ingrediente", "bosque"],
+		"origem": "alquimia",
+		"descricao": "Leve duas na Mochila para restaurar a clareira. Após restaurar, combine uma com carvão para produzir Poção de Crescimento.",
+		"icone": "✦"
+	},
 	"agua": {
 		"nome": "Água",
 		"categoria": "recurso",
@@ -417,7 +430,8 @@ func obter_textura_item(item_id: String) -> Texture2D:
 
 	var caminhos := [
 		"res://Assets/Items/%s.png" % item_id,
-		"res://Assets/%s.png" % item_id
+		"res://Assets/%s.png" % item_id,
+		"res://Assets/Items/%s.svg" % item_id
 	]
 
 	for caminho in caminhos:

@@ -89,6 +89,8 @@ Para gerar uma build, instale os templates de exportação compatíveis com sua 
 
 O fechamento da V0 foi aprovado, e o projeto está na evolução pós-V0 de exploração, armazenamento e Mochila. Conteúdo, arte, balanceamento e sistemas de progressão continuam em evolução.
 
+Checkpoint de 2026-10-03: **segunda expedição / clareira recuperável** implementada após autorização para novo conteúdo. Descobrir o canteiro no Bosque ensina preparação; fabricar duas misturas na vila e levá-las na Mochila permite restaurar e aprender uma receita de Poção de Crescimento. Fonte renovável de carvão garante aquisição sem RNG. F5 no Bosque preserva a Fazenda em cache; F9 retorna à vila. Saves anteriores v3/v4 continuam compatíveis. Roteiro/contratos em [plano do Bosque](./docs/FIRST_EXTERNAL_REGION_VERTICAL_SLICE.md). Aceite manual, duração e balanceamento permanecem pendentes; 20–30 minutos ainda não são duração validada.
+
 Checkpoint de 2026-10-01: Fase E implementada, 33/33 smoke tests passaram com expansão 12 → 16 → 20, compatibilidade com excesso legado e persistência de marcos/produções/capturas. Interface ampliada conferida por renderização OpenGL. Conforto da expansão, piloto e persistência do caldeirão ainda aguardam validação manual do autor. Cada fechamento de etapa inclui commit e push, conforme [AGENTS.md](./AGENTS.md).
 
 Fechamento integrado posterior: 34/34 testes passaram. Colheita recusada agora preserva itens e bônus sorteados no save, para retomada manual ou pelo golem. A viagem real também valida expansão/HUD no retorno, depósito seletivo e save/load sem duplicação. Testes manuais permanecem pendentes.
@@ -121,11 +123,11 @@ As cenas de smoke test ficam em `Scenes/dev/`; testes automáticos não substitu
 
 ## Próximos passos
 
-- validar manualmente save/load e cancelamento da produção do caldeirão;
-- validar cultivo/save/load após resize e reabertura em outra janela, pocket/pedra e retorno do Bosque no layout canônico; roteiro no plano de layout;
-- validar o piloto ativo: recusa, depósito/liberação de espaço e retomada, incluindo saves antigos e captura pendente;
-- validar os dois marcos, páginas da barra, seleção na segunda página e save/load da capacidade; roteiro no plano da Mochila;
-- ajustar balanceamento a partir do playtest, sem antecipar economia, NPCs ou conteúdo adicional.
+- playtest do recorte da clareira: descoberta, Livro/preparo, carga pessoal, restauração, recompensa agrícola e save/load no Bosque;
+- avaliar ritmo e clareza; o percurso funcional não equivale a duração/balanceamento final;
+- validar separadamente os casos ainda pendentes de captura, entrega/refund bloqueados por capacidade e saves legados reais;
+- revisar arte/UX com captura atual do autor. Os aceites funcionais anteriores estão registrados no contexto §45, sem presumir aprovação artística;
+- não ampliar economia, NPCs ou outros conteúdos automaticamente.
 
 ## Autor
 
