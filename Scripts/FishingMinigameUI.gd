@@ -44,6 +44,7 @@ var _marker_direction: float = 1.0
 var _mare_cintilante_rewarded: bool = false
 var _pending_rewards: Dictionary = {}
 var _pending_mare_cintilante: bool = false
+var _popup_origin := Vector2.ZERO
 
 func _ready() -> void:
 	set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -52,6 +53,16 @@ func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	set_process_unhandled_input(true)
 	if popup_panel:
+		var style := StyleBoxFlat.new()
+		style.bg_color = Color("263b2c")
+		style.border_color = Color("aa9860")
+		style.set_border_width_all(2)
+		style.set_corner_radius_all(8)
+		style.content_margin_left = 12
+		style.content_margin_right = 12
+		style.content_margin_top = 10
+		style.content_margin_bottom = 10
+		popup_panel.add_theme_stylebox_override("panel", style)
 		popup_panel.custom_minimum_size = POPUP_SIZE
 		popup_panel.size = POPUP_SIZE
 		popup_panel.mouse_filter = Control.MOUSE_FILTER_STOP
@@ -96,8 +107,13 @@ func _ready() -> void:
 	_resetar_barra()
 	_atualizar_label_colecao()
 	_aplicar_estado_visivel(false)
+	get_viewport().size_changed.connect(func() -> void:
+		if visible:
+			_posicionar_popup.call_deferred(_popup_origin)
+	)
 
 func abrir_popup(origem_global: Vector2) -> Control:
+	_popup_origin = origem_global
 	# Uma segunda tentativa nunca pode sobrescrever uma captura ainda sem espaco.
 	if has_pending_capture() and not _tentar_entregar_recompensa_pendente():
 		return null
@@ -125,6 +141,7 @@ func abrir_popup(origem_global: Vector2) -> Control:
 		close_button.disabled = false
 	if auto_close_timer:
 		auto_close_timer.stop()
+	_posicionar_popup.call_deferred(_popup_origin)
 	return self
 
 func configurar_pesca_favorecida(valor: bool) -> void:
@@ -196,12 +213,13 @@ func _confirmar_tentativa() -> void:
 	var recompensa_entregue := _aplicar_recompensa(resultado_final)
 	if not recompensa_entregue:
 		if result_label:
-			result_label.text = "Captura preservada: libere espaço na Mochila."
+			result_label.text = get_pending_capture_feedback()
 			result_label.modulate = Color(1.0, 0.76, 0.42, 1.0)
 		if instruction_label:
-			instruction_label.text = "Feche o popup; a captura será guardada quando houver espaço."
+			instruction_label.text = "Feche este painel e deposite itens no Baú da Vila. A captura entra automaticamente na Mochila quando couber inteira."
 		if auto_close_timer:
 			auto_close_timer.stop()
+		_posicionar_popup.call_deferred(_popup_origin)
 		return
 	if result_label:
 		match resultado_final:
@@ -267,6 +285,17 @@ func _aplicar_recompensa(resultado: FishingResult) -> bool:
 
 func has_pending_capture() -> bool:
 	return not _pending_rewards.is_empty()
+
+func get_pending_capture_feedback() -> String:
+	# Somente apresentação: não entrega, substitui ou registra a captura.
+	if not has_pending_capture():
+		return ""
+	var items: PackedStringArray = []
+	var ids := _pending_rewards.keys()
+	ids.sort()
+	for item_id in ids:
+		items.append("%dx %s" % [_pending_rewards[item_id], Database.obter_nome_item(item_id)])
+	return "Mochila sem espaço. Captura preservada: " + ", ".join(items) + "."
 
 func get_save_data() -> Dictionary:
 	if not has_pending_capture():
@@ -388,9 +417,10 @@ func _posicionar_popup(origem_global: Vector2) -> void:
 		return
 
 	var viewport_size: Vector2 = get_viewport_rect().size
-	var popup_size: Vector2 = popup_panel.custom_minimum_size
+	var popup_size: Vector2 = popup_panel.get_combined_minimum_size()
 	if popup_size == Vector2.ZERO:
 		popup_size = POPUP_SIZE
+	popup_panel.size = popup_size
 
 	var desired_position: Vector2 = origem_global + Vector2(-popup_size.x * 0.5, -popup_size.y - 32.0)
 	var max_x: float = max(POPUP_MARGIN, viewport_size.x - popup_size.x - POPUP_MARGIN)

@@ -6,7 +6,7 @@
 >
 > Este documento **não é uma especificação imutável**. O jogo ainda está sendo descoberto durante o desenvolvimento. Quando houver conflito entre este documento e uma decisão humana mais recente, a decisão humana prevalece.
 
-Estado operacional mais recente (2026-10-03): autor não poderá testar agora e autorizou continuar construção com checklist posterior. Não exigir novo gate manual a cada incremento nem presumir aceite. Segunda expedição implementada com aceites parciais de §46; HUD responsiva em §47, painéis do caldeirão/Livro em §48 e avisos de produção em §49 verificados automaticamente. Consultar `ROADMAP.md` para fila atual/pendências. Relatos anteriores são históricos; arte e casos-limite não foram presumidos aprovados.
+Estado operacional mais recente (2026-10-03): autor não poderá testar agora e autorizou continuar construção com checklist posterior. Não exigir novo gate manual a cada incremento nem presumir aceite. Segunda expedição implementada com aceites parciais de §46; HUD responsiva em §47, painéis do caldeirão/Livro em §48, avisos de produção em §49 e de capacidade na pesca/coleta em §50 verificados automaticamente. Consultar `ROADMAP.md` para fila atual/pendências. Relatos anteriores são históricos; arte e casos-limite não foram presumidos aprovados.
 
 ---
 
@@ -1515,3 +1515,15 @@ Autor autorizou o próximo incremento, mantendo a diretriz de testes manuais adi
 `CauldronFeedbackSmokeTest` passou com 87 verificações em 1280×720, 800×720 e 1024×768: estados e JSON em memória, estoques/save invariáveis durante apresentação, câmera/resize/reanexação, resultado bloqueado e entrega única após liberar espaço, lote com resultado por preparo e cancelamento/restituição às origens, incluindo cancelamento pendente. Suíte completa 39/39, importação sem erros e renderização técnica OpenGL/D3D12 conferidas. Avisos de restituição sem espaço são esperados no fixture. Testes isolados não fazem I/O do save pessoal; hash/tamanho/data permanecem iguais ao baseline.
 
 Checklist manual adiado: conferir avisos durante produção e ao terminar, depositar no baú para liberar espaço e recolher/retomar, repetir cancelamento bloqueado, mover câmera/redimensionar/retornar do Bosque. Não converter regressão por sinais/geometria em aceite de picking real, conforto, arte ou balanceamento; demais pendências de §47–48 seguem separadas. Próximo incremento recomendado: revisar/uniformizar comunicação de capacidade na pesca/coleta existentes, sem ampliar recursos, recompensas ou sistemas.
+
+# 50. ESTADO ATUAL — AVISOS DE CAPACIDADE NA PESCA E COLETA
+
+Continuidade autorizada, sem exigir playtest imediato. Coleta recusada mostra quantidade/item, informa que o recurso permanece no ponto e orienta depositar no Baú da Vila/voltar. Aviso tem quatro segundos de leitura antes da saída; textos de sucesso conservam duração anterior. Ponto, recompensa, marco e persistência só mudam no fluxo bem-sucedido existente.
+
+Lago distingue recusa antes da sincronia (espaço para possíveis resultados, sem captura prometida) de captura já preservada. Esta lista todos os itens/quantidades e orienta depósito para entrega automática integral. Texto é projeção somente leitura dos campos existentes. Avisos de capacidade são transformados do mundo para tela, contidos no viewport e não bloqueiam cliques; demais textos flutuantes conservam seu comportamento. Painel da pesca passa a fundo opaco na paleta existente, com instruções/resultado quebrando linha e geometria recalculada após texto/resize para manter Fechar acessível.
+
+Não muda preflight da pesca, atomicidade da entrega, coleção apenas após recebimento, proteção contra nova tentativa sobrescrever pendência, receita/recompensa, capacidade, destino ou schema de save. Captura continua entregue automaticamente pelo fluxo existente quando inativa e com espaço; recurso externo continua exigindo retorno/coleta, sem teleporte ao Storage.
+
+`CollectionCapacityFeedbackSmokeTest`: 18 verificações de fonte/estoque preservados, duração, pré-recusa sem abrir sincronia, captura dupla sem coleção prematura, textos/item/quantidade, painel opaco/contido em 800×600, 1024×768 e 1280×720, JSON e recusa de sobrescrita, depósito → entrega integral única e coleta única. Suíte completa 40/40, importação sem erros e inspeção OpenGL/D3D12. Fixture isolado, sem I/O do save pessoal; hash/tamanho/data iguais ao baseline.
+
+Manual adiado: leitura dos avisos no Bosque/lago, depósito/retorno para coletar, espaço ocupado durante sincronia → fechar/save/load → liberar espaço e conferir entrega única. Picking, conforto e direção artística permanecem pendentes; aceites prévios não são revogados. Próximo incremento recomendado: clareza dos requisitos/recusas da restauração existente (Herbário e Clareira), diferenciando Mochila e Storage local, sem novos projetos/recompensas/sistemas.

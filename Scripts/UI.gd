@@ -5031,7 +5031,7 @@ func _on_comprar_verao_button_mouse_exited() -> void:
 
 
 
-func criar_texto_flutuante(texto: String, posicao_global: Vector2, cor: Color) -> void:
+func criar_texto_flutuante(texto: String, posicao_global: Vector2, cor: Color, hold_seconds: float = 0.0) -> void:
 
 
 
@@ -5072,6 +5072,16 @@ func criar_texto_flutuante(texto: String, posicao_global: Vector2, cor: Color) -
 
 
 	add_child(label)
+	if hold_seconds > 0.0:
+		label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		label.size.x = 380.0
+		label.add_theme_color_override("font_outline_color", Color("18241b"))
+		label.add_theme_constant_override("outline_size", 6)
+		var screen_size := get_viewport().get_visible_rect().size
+		label.size.y = label.get_minimum_size().y
+		posicao_global = Vector2(clampf(posicao_global.x, 20, maxf(20, screen_size.x - label.size.x - 20)), clampf(posicao_global.y, 70, maxf(70, screen_size.y - label.size.y - 20)))
+		label.position = posicao_global
 
 
 
@@ -5095,6 +5105,8 @@ func criar_texto_flutuante(texto: String, posicao_global: Vector2, cor: Color) -
 
 
 
+	if hold_seconds > 0.0:
+		tween.tween_interval(hold_seconds)
 	tween.tween_property(label, "global_position", posicao_global + Vector2(0, -50), 1.0)
 
 

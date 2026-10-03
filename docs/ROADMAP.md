@@ -1,6 +1,14 @@
 # Evolução do Projeto
 
-## Etapa ativa — Avisos persistentes do caldeirão / testes manuais adiados (2026-10-03)
+## Etapa ativa — Avisos de capacidade na pesca/coleta / testes manuais adiados (2026-10-03)
+
+Recusa de coleta informa quantidade/item, preservação no chão e depósito/retorno. Pesca distingue falta de espaço antes da sincronia de captura já obtida/preservada, listando itens e explicando entrega automática integral. Avisos curtos de capacidade permanecem quatro segundos antes de sumir; no lago, posição contida na tela sem capturar input. Painel da pesca opaco, textos quebrados e reposicionamento mantêm Fechar acessível em janela menor.
+
+`CollectionCapacityFeedbackSmokeTest`: 18 verificações, três resoluções, recusa/retenção, duração, captura dupla, JSON e depósito → retomada única. Suíte 40/40, importação e OpenGL/D3D12 conferidos. Manual adiado: leitura no mundo, voltar do Bosque após depósito, captura bloqueada na sincronia/fechar/load/liberar espaço. Sem alteração de aquisição, recompensas, coleção, capacidade, persistência ou armazenamento remoto.
+
+Próximo incremento recomendado: revisar clareza dos requisitos/recusas da restauração já existente (Herbário e Clareira), distinguindo recursos da Mochila e acesso ao armazenamento da vila. Sem novos projetos/recompensas ou expansão de sistemas.
+
+## Checkpoint anterior — Avisos persistentes do caldeirão (2026-10-03)
 
 Produção manual, resultado pronto, lote em andamento/sem espaço e cancelamento pendente agora têm aviso opaco fixo no canto inferior direito. Exibe resultado/quantidade, preparos entregues, tempo e orientação para liberar espaço/recolher ou repetir cancelamento. Resize, câmera e retorno ao cache não deslocam o aviso para fora da tela. Sem alterar receitas, timers, destino, reservas, restituição ou save.
 

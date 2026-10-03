@@ -71,7 +71,7 @@ func collect() -> bool:
 		return false
 	var insertion: Dictionary = GlobalInventory.try_add_items({resource_id: quantity})
 	if not bool(insertion.get("success", false)):
-		_show_feedback("Mochila sem espaço.", BLOCKED_FEEDBACK_COLOR)
+		_show_feedback(get_capacity_feedback(), BLOCKED_FEEDBACK_COLOR, 4.0)
 		return false
 	_collected = true
 	if expedition_source_id != "":
@@ -87,6 +87,9 @@ func collect() -> bool:
 
 func is_collected() -> bool:
 	return _collected
+
+func get_capacity_feedback() -> String:
+	return "Mochila sem espaço para %dx %s.\nRecurso permanece aqui.\nDeposite no Baú da Vila e volte para coletar." % [quantity, Database.obter_nome_item(resource_id)]
 
 
 func _on_persistent_state_changed(source_id: String) -> void:
@@ -153,7 +156,7 @@ func _refresh_prompt() -> void:
 		prompt_label.visible = expedition_source_id == GroveExpedition.RENEWABLE_SOURCE or (_hovered and not _collected)
 
 
-func _show_feedback(text: String, color: Color = FEEDBACK_COLOR) -> void:
+func _show_feedback(text: String, color: Color = FEEDBACK_COLOR, hold_seconds: float = 0.0) -> void:
 	if feedback_label == null:
 		print(text)
 		return
@@ -166,6 +169,8 @@ func _show_feedback(text: String, color: Color = FEEDBACK_COLOR) -> void:
 	_feedback_tween = create_tween()
 	_feedback_tween.set_trans(Tween.TRANS_QUAD)
 	_feedback_tween.set_ease(Tween.EASE_OUT)
+	if hold_seconds > 0.0:
+		_feedback_tween.tween_interval(hold_seconds)
 	_feedback_tween.tween_property(feedback_label, "position", _feedback_origin + Vector2(0.0, -30.0), 0.75)
 	_feedback_tween.parallel().tween_property(feedback_label, "modulate:a", 0.0, 0.75)
 	_feedback_tween.tween_callback(func() -> void: feedback_label.visible = false)

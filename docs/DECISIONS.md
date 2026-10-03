@@ -1,5 +1,12 @@
 # Decisions
 
+## Decisão 104 - Avisos de capacidade na pesca e coleta
+
+- Autor autorizou o recorte recomendado, com playtest adiado. Avisos passam a explicar a diferença entre recurso externo não coletado (permanece no ponto; depositar na vila e voltar) e captura já obtida (preservada; entrega automática integral quando houver espaço). Nenhuma nova fila, destino ou mudança de aquisição.
+- Coleta informa item/quantidade e mantém o aviso por quatro segundos antes da animação de saída; recompensa e marco só ocorrem na coleta bem-sucedida. Pesca antes da sincronia informa falta de espaço para os resultados possíveis, sem prometer uma captura ainda não obtida. Avisos de capacidade no lago são convertidos do mundo para tela, contidos no viewport e não capturam input.
+- Captura preservada lista os itens/quantidades, inclusive recompensa dupla; texto é projeção somente leitura. Painel da pesca opaco, instruções/resultado com quebra de linha e reposicionamento após texto/resize mantêm Fechar acessível. Entrega automática, atomicidade, coleção após entrega, proteção contra sobrescrita e campos de save permanecem intactos. Demais textos flutuantes mantêm duração histórica.
+- `CollectionCapacityFeedbackSmokeTest`: 18 verificações de fonte/estoque preservados, duração de leitura, recusa pré-sincronia, captura dupla, layout em 800×600/1024×768/1280×720, JSON, nova tentativa bloqueada e depósito → entrega/coleta únicas. Inspeção OpenGL/D3D12; testes isolados sem I/O do save pessoal. Checklist manual adiado: leitura no Bosque/lago, depósito/retorno, captura bloqueada durante sincronia e retomada após save/load. Picking, conforto e arte não presumidos aprovados.
+
 ## Decisão 103 - Feedback persistente dos estados existentes do caldeirão
 
 - Continuidade autorizada com testes manuais adiados. O painel de lote estava em coordenadas do mundo e o resultado manual pronto não tinha aviso persistente de tela. Reutilizado o painel em CanvasLayer, opaco e contido no canto inferior direito, independente da câmera; layout reaplicado ao reanexar HOME em cache.

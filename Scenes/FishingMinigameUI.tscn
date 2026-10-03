@@ -41,6 +41,7 @@ horizontal_alignment = 1
 layout_mode = 2
 text = "Clique no momento certo."
 horizontal_alignment = 1
+autowrap_mode = 2
 
 [node name="BarArea" type="Control" parent="PopupPanel/MarginContainer/VBoxContainer"]
 layout_mode = 2
@@ -70,6 +71,7 @@ color = Color(1, 0.835294, 0.278431, 0.97)
 layout_mode = 2
 text = "Resultado: aguardando..."
 horizontal_alignment = 1
+autowrap_mode = 2
 
 [node name="CollectionLabel" type="Label" parent="PopupPanel/MarginContainer/VBoxContainer"]
 layout_mode = 2

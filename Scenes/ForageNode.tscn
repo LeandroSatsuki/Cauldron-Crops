@@ -68,14 +68,15 @@ horizontal_alignment = 1
 
 [node name="FeedbackLabel" type="Label" parent="."]
 visible = false
-offset_left = -105.0
+offset_left = -210.0
 offset_top = -74.0
-offset_right = 105.0
+offset_right = 210.0
 offset_bottom = -42.0
 mouse_filter = 2
 text = "+1 Recurso"
 label_settings = SubResource("LabelSettings_forage")
 horizontal_alignment = 1
+autowrap_mode = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape_forage")

@@ -90,7 +90,7 @@ func _on_lake_clicked_at(click_global_position: Vector2) -> void:
 	var ui: Node = _obter_ui_principal()
 	var popup: Node = ui.get("fishing_minigame_ui") if ui != null else null
 	if is_instance_valid(popup) and popup.has_method("has_pending_capture") and bool(popup.call("has_pending_capture")):
-		_mostrar_feedback("Libere espaço para guardar a captura anterior.", click_global_position)
+		_mostrar_feedback(popup.call("get_pending_capture_feedback") + "\nDeposite no Baú da Vila para receber a captura.", click_global_position, 4.0)
 		return
 	if fishing_state == FishingState.MINIGAME_ACTIVE:
 		_mostrar_feedback("Finalize a pesca atual.", click_global_position)
@@ -104,7 +104,7 @@ func _on_lake_clicked_at(click_global_position: Vector2) -> void:
 	if bool(tool_manager.call("is_fishing_rod_selected")):
 		if fishing_state == FishingState.FISH_BITING:
 			if not _can_receive_possible_fishing_reward():
-				_mostrar_feedback("Mochila sem espaço para a captura.", click_global_position)
+				_mostrar_feedback("Mochila sem espaço para os possíveis resultados.\nDeposite no Baú da Vila e volte para pescar.", click_global_position, 4.0)
 				return
 			if _abrir_pesca_sincronia(click_global_position):
 				_definir_estado(FishingState.MINIGAME_ACTIVE)
@@ -191,11 +191,13 @@ func _definir_estado(novo_estado: FishingState) -> void:
 			if fishing_bite_timer != null:
 				fishing_bite_timer.stop()
 
-func _mostrar_feedback(texto: String, origem_global: Vector2) -> void:
+func _mostrar_feedback(texto: String, origem_global: Vector2, hold_seconds: float = 0.0) -> void:
 	var feedback_position: Vector2 = origem_global + FEEDBACK_OFFSET
+	if hold_seconds > 0.0:
+		feedback_position = get_viewport().get_canvas_transform() * feedback_position
 	var ui: Node = _obter_ui_principal()
 	if ui != null and ui.has_method("criar_texto_flutuante"):
-		ui.call("criar_texto_flutuante", texto, feedback_position, FEEDBACK_COR)
+		ui.call("criar_texto_flutuante", texto, feedback_position, FEEDBACK_COR, hold_seconds)
 	else:
 		print(texto)
 

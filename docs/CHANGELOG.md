@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-03 - Mochila cheia: pesca e coleta com orientação de retomada
+
+- Coleta mostra quantidade/item, recurso preservado no ponto e depósito/retorno; aviso permanece quatro segundos antes de sumir. Lago distingue recusa antes da pesca de captura já preservada, com avisos contidos na tela e sem bloquear cliques.
+- Painel da pesca opaco, textos com quebra de linha e tamanho/posição recalculados; captura pendente lista todos os itens e explica entrega automática integral após depósito. Sem mudar captura, recompensas, coleção, capacidade ou save.
+- Regressão nova com 18 verificações e inspeção OpenGL/D3D12; suíte completa 40/40 e importação sem erros. Save pessoal intacto; testes manuais permanecem na fila para checklist posterior.
+
 ## 2026-10-03 - Avisos persistentes de produção e capacidade do caldeirão
 
 - Painel opaco fixo na tela para mistura em preparo, resultado pronto, lote ativo/pausado e cancelamento pendente; instruções de depósito/recolhimento/nova tentativa e quantidade por preparo. Câmera, resize e retorno ao cache preservam posição contida.
