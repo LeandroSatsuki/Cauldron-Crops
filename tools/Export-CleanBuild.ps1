@@ -120,7 +120,7 @@ $outputDirectory = Split-Path -Parent $outputAbsolute
 $worktreePath = Join-Path $repoRoot "Builds/.clean-export-$PID"
 $worktreeAdded = $false
 $originalAppData = $env:APPDATA
-$qaAppData = Join-Path $repoRoot "Builds/QA/CleanExport-$PID"
+$qaAppData = Join-Path $worktreePath "Builds/QA/GodotSandboxCleanExport"
 
 if (Test-Path -LiteralPath $worktreePath) {
     throw "Temporary export directory already exists: $worktreePath"
@@ -243,7 +243,10 @@ try {
         }
         $manifest | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $outputDirectory "build-manifest.json") -Encoding UTF8
         Copy-Item -LiteralPath (Join-Path $worktreePath "tools/StartPlaytest.cmd") -Destination (Join-Path $outputDirectory "StartPlaytest.cmd")
-        Copy-Item -LiteralPath (Join-Path $worktreePath "docs/ROADMAP.md") -Destination (Join-Path $outputDirectory "CHECKLIST.md")
+        $roadmap = [System.IO.File]::ReadAllText((Join-Path $worktreePath "docs/ROADMAP.md"))
+        $checklist = [regex]::Match($roadmap, '(?s)### Checklist integrado.*?(?=\r?\n### Riscos técnicos)')
+        if (-not $checklist.Success) { throw "Integrated checklist was not found." }
+        [System.IO.File]::WriteAllText((Join-Path $outputDirectory "CHECKLIST.md"), $checklist.Value)
         Copy-Item -LiteralPath (Join-Path $worktreePath "tools/Playtest-Readme.txt") -Destination (Join-Path $outputDirectory "LEIA-ME.txt")
         $logsDirectory = Join-Path $outputDirectory "Logs"
         New-Item -ItemType Directory -Path $logsDirectory -Force | Out-Null
