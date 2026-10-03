@@ -1,6 +1,56 @@
 # Evolução do Projeto
 
-## Etapa ativa — Coexistência de objetivos, produção e HUD / testes manuais adiados (2026-10-03)
+## Etapa ativa — Checklist integrado e auditoria de riscos (2026-10-03)
+
+Consolidação documental, sem mudança de código, gameplay ou save. A fila manual está abaixo, com aceites anteriores preservados e casos condicionais explicitamente separados. Não solicitar teste imediato enquanto o autor estiver indisponível. Última suíte executada: 43/43 no checkpoint `3d2240f`; não é uma nova execução nesta auditoria.
+
+Auditoria delimitada identificou gravação direta do save sem proteção intermediária, avisos temporários ainda no caminho legado e fallback de layout sem garantia quando não existe espaço livre. Não há perda de save reproduzida nem auditoria exaustiva de todos os sistemas. Próximo incremento recomendado: proteger a gravação do save contra falhas/interrupções, com testes de arquivo isolados e sem mudar o schema v4, gameplay ou save pessoal. Esta recomendação ainda não foi implementada.
+
+### Checklist integrado — validação manual adiada
+
+Fonte operacional para os checkpoints pós-V0 atuais. Roteiros e contratos originais permanecem em [Mochila](PERSONAL_INVENTORY_ARCHITECTURE_PLAN.md) e [segunda expedição](FIRST_EXTERNAL_REGION_VERTICAL_SLICE.md). Não reabrir a V0 nem tratar autorização de continuidade como aceite dos testes.
+
+Já aprovados pelo autor nos roteiros de 2026-10-03: coordenadas agrícolas/resize/viagem e acesso com enxada; logística do golem com personagem no caminho; marcos 12 → 16 → 20, navegação/transferências/persistência da Mochila; produção e cancelamento comuns retomados após load; colheita recusada persistida e retomada; descoberta/coleta/preparo da Clareira, restauração/recompensa/efeito agrícola e persistência após restauração. Não exigir repetição completa destes aceites; os ajustes posteriores de interface ainda precisam da conferência específica abaixo.
+
+Preparação segura: usar a sessão existente, anotar quantidades/capacidade/estado de produção antes de cada caso e não apagar progresso. F5/F9 aqui são atalhos dentro do jogo, não comandos do editor. Nunca reativar F10, editar o save pessoal ou fabricar enchimento artificial para testar. Caso sem pré-condição disponível fica **não executado**, não aprovado. Compatibilidade com save antigo só em cópia/ambiente separado, nunca sobrescrevendo o atual. Não provocar falha de disco ou encerramento durante gravação no save pessoal.
+
+#### Bloco A — Interface e interação (primeira sessão disponível)
+
+- [ ] **UI-01 — HUD/objetivos:** em 1280×720 e janela estreita de 800×720, conferir páginas da Mochila, seleção/desseleção e ferramentas compactas. Minimizar/expandir e arrastar objetivos iniciais; redimensionar e viajar ao Bosque/redimensionar/voltar. Esperado: acesso a todos os itens, toggle acompanhando painel, sem mudar capacidade/quantidades. Janelas menores não são homologadas.
+- [ ] **UI-02 — Baú/caldeirão/Livro:** com enxada selecionada, abrir baú e conferir Mochila ao lado, quantidade digitada e mover tudo nos dois sentidos; fechar e arar um lote. Abrir caldeirão, arrastar ingredientes, misturar, abrir/navegar/rolar Livro, digitar quantidade, produzir e fechar/reabrir/arrastar/redimensionar. Esperado: controles acessíveis, HUD não desaparece, cliques nos painéis não causam movimento/cultivo. Conferência das interfaces novas, não revogação do aceite anterior de picking.
+- [ ] **UI-03 — Painéis persistentes:** com produção e objetivo da Clareira ativos quando disponíveis, conferir resultado pronto/em preparo/lote/pausa/cancelamento pendente; minimizar objetivo e mover objetivos iniciais/redimensionar. Esperado: avisos legíveis e separados da Mochila/ferramentas/Caderno, botão de cancelar acessível; câmera não arrasta aviso. Não forçar estados indisponíveis. Se não houver espaço livre pela posição escolhida, registrar e minimizar/mover objetivos; não considerar garantida ausência de colisão em qualquer posição.
+- [ ] **UI-04 — Orientação e requisitos:** conforme estados disponíveis, ler próxima ação, falta de carvão/misturas, orientação de retirada do baú e produção. Conferir requisitos do Herbário (baú + Mochila) e Clareira (só Mochila) após transferências/load. Esperado: contador acompanha estoque atual, local externo não consome baú, objetivo concluído permanece oculto. Se projetos já concluídos, não apagar progresso: conferência pré-conclusão fica condicional.
+
+#### Bloco B — Produção durante viagem
+
+- [ ] **TR-01 — Concluir:** iniciar lote que permita viajar e usar F5 no Bosque ainda em andamento; anotar estoques/resultados antes. F9 deve retornar à vila e retomar o snapshot. Conferir entrega/consumo únicos, inclusive após reabrir/carregar. Mistura usa 2 carvões por unidade e 4 segundos por preparo; quantidade limitada aos recursos reais. Se terminar antes de salvar, caso de retomada em andamento não executado.
+- [ ] **TR-02 — Cancelar:** em outro lote, repetir viagem/F5/F9 ainda em andamento e cancelar antes de terminar. Esperado: devolver somente reservas não utilizadas às origens, não devolver ingredientes de resultados já entregues, não duplicar resultado. Não modificar timers nem usar lote concluído como evidência deste cenário.
+- [ ] **TR-03 — Fonte renovável:** coletar os 2 carvões da fonte ao lado da Clareira, cronometrar cerca de 45 segundos de sessão e revisitar, incluindo tempo na vila. Esperado: renovação apenas da fonte nova, entrega na Mochila; jogo fechado não conta como tempo de renovação. Se houver recusa por capacidade, ponto preservado e intervalo não iniciado.
+
+#### Bloco C — Capacidade e persistência (somente se o estado surgir naturalmente)
+
+- [ ] **CAP-01 — Captura pendente:** se o espaço disponível mudar durante a sincronia e a captura não couber, fechar popup, salvar/reabrir/carregar, depositar no baú. Esperado: captura integral entregue uma única vez quando inativa e houver espaço; coleção só avança após recebimento, nova pesca não sobrescreve a pendência. Mochila cheia antes de iniciar é outro caso: sincronia não abre, sem captura prometida.
+- [ ] **CAP-02 — Resultado bloqueado:** concluir produção sem espaço para o resultado. Esperado: pronto preservado no caldeirão, aviso claro e lote sem descartar reserva/avançar entrega; após save/load e depósito, interagir para recolher/retomar, uma vez. Não transferir automaticamente resultado para Village Storage.
+- [ ] **CAP-03 — Cancelamento bloqueado:** se a restituição à Mochila não couber, cancelar, salvar/reabrir/carregar e liberar espaço no baú; tentar cancelar novamente. Esperado: reservas pendentes preservadas e restituição única às origens, sem perda/duplicação. Não confundir com cancelamento comum já aprovado.
+- [ ] **SAVE-01 — Estados anteriores/legados:** se existir cópia segura anterior à restauração ou save v3/v4 antigo real, testar separadamente. Conferir culturas, excesso legado sem truncar, marcos, fontes/receitas e ausência de consumo/recompensa repetidos. Persistência da Clareira já restaurada foi aprovada; não substitui este caso. Sem cópia disponível, manter pendente, não reiniciar o save habitual.
+
+#### Bloco D — Experiência
+
+- [ ] **EXP-01 — Arte e leitura:** avaliar composição da vila/Bosque, terreno abaixo dos objetos, água/caminhos/obstáculos, legibilidade dos avisos sobre o mapa e conforto de cliques/arraste/rolagem. Registrar captura, resolução, ferramenta selecionada e ação quando houver problema. Renderização técnica não constitui aprovação artística.
+- [ ] **EXP-02 — Ritmo e utilidade:** quando for possível observar uma sessão representativa, medir tempo efetivo e avaliar clareza do loop, viagens, renovação e utilidade da Poção de Crescimento. A hipótese de 20–30 minutos não está validada; não repetir descoberta apagando progresso nem alongar timers artificialmente para atingir a meta.
+
+Registro de retorno por ID: **aprovado / falhou / não executado**, resolução, pré-condição, ação, esperado e observado. Um caso aprovado não encerra os outros; informar perda/duplicação/travamento separadamente de preferência estética. Aceite completo de experiência depende destes retornos, não da suíte automática.
+
+### Riscos técnicos auditados — sem implementação nesta etapa
+
+| Prioridade | Evidência e limite | Próximo recorte mínimo |
+| --- | --- | --- |
+| Alta — gravação do save | `SaveManager.save_game` abre diretamente `SAVE_PATH` com `WRITE`, grava e fecha; sem temporário/backup ou verificação posterior de gravação. Risco inferido de perder o arquivo anterior numa interrupção/falha; não reproduzido no save pessoal. Testes dev atuais usam snapshots/JSON, não chamadas de save/load em disco. | Gravação protegida e cópia recuperável, retorno de erro verificável; testar primeiro save, substituição, arquivo incompleto e falhas em diretório isolado. Preservar v3/v4 e evitar recuperação silenciosa que esconda perda de progresso. Sem sistema novo de slots/cloud/migração. |
+| Média — avisos temporários | `Cauldron._mostrar_resultado_pendente` passa coordenada do mundo ao helper da UI sem `hold_seconds`; a contenção/quebra de linha do helper só ocorre quando este é positivo. Risco de texto deslocado/cortado/sobreposto; painel persistente não resolve este caminho legado. | Reproduzir com câmera/resize e uniformizar somente avisos existentes; sem fila global ou mudança de entrega/refund. |
+| Média — falta de espaço na tela | `HUDLayout.find_free_panel_position` retorna posição preferida quando nenhuma candidata cabe; não há política adicional de compactação. Limite já documentado, não regressão comprovada nas cinco resoluções do teste. | Reprodução de arrastes extremos e definição de fallback explícito, preservando escolha de minimização e acesso a cancelar. Não prometer suporte irrestrito. |
+| Pendente de experiência | Testes por sinais/geometria/JSON não cobrem picking real, saves legados reais, arte, conforto ou duração. | Checklist acima, sem inventar aprovação nem bloquear toda continuidade enquanto autor estiver indisponível. |
+
+## Checkpoint anterior — Coexistência de objetivos, produção e HUD (2026-10-03)
 
 Baseline reproduziu objetivo da Clareira encobrindo aviso do caldeirão. Ambos agora buscam espaço livre de tela, considerando Mochila, ferramentas, botões visíveis do Caderno e objetivos iniciais arrastados. Produção tem prioridade; tracker evita seu retângulo. Altura natural do tracker acompanha conteúdo/minimização; resize e eventos de layout recalculam posições. Área vazia do VBox legado das lojas não é tratada como botão visível. Sem mudança de estoque, timers, progresso ou save.
 

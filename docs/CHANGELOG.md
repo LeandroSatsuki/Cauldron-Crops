@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-03 - Checklist integrado e auditoria delimitada
+
+- ROADMAP centraliza pendências manuais por ID, pré-condições e resultados esperados, sem revogar aceites anteriores; README e planos da Mochila/Bosque apontam para a fila atual.
+- Registrados riscos de gravação direta do save, avisos temporários legados e ausência de espaço livre para painéis. Recomendada proteção de gravação com testes isolados, ainda sem implementação.
+- Somente documentação; nenhum código/gameplay/save alterado. Última suíte 43/43 é do checkpoint `3d2240f`, não nova execução nesta etapa. Testes manuais continuam adiados.
+
 ## 2026-10-03 - Objetivos e produção sem sobreposição com a HUD
 
 - Corrigida colisão reproduzida entre tracker da Clareira e aviso do caldeirão. Layout considera Mochila, ferramentas, Caderno visível e posição arrastada dos objetivos; produção tem prioridade. Tracker usa altura natural e respeita minimização/resize.

@@ -250,6 +250,8 @@ Fechamento: implementação da Fase E concluída; aceite manual e ajustes finos 
 
 ## Próximo passo — aceite manual integrado
 
+Fila operacional consolidada em [ROADMAP — Checklist integrado](ROADMAP.md#checklist-integrado--validação-manual-adiada), preservando aceites de expansão/transferências/produção comum/colheita abaixo. Captura pendente, bloqueios de entrega/refund e saves legados reais continuam separados; não executar enchimento artificial nem apagar progresso.
+
 Fechamento integrado posterior à Fase E, em 2026-10-01: 34/34 testes passaram. O teste da viagem verifica a expansão obtida no Bosque, atualização real do HUD ao retornar, depósito seletivo e dois loads. A auditoria corrigiu a perda do sorteio da colheita recusada no load: `pending_harvest_rewards` acompanha o grid v4, mantém itens/quantidades para retomada manual ou pelo golem e é validado antes de mutações. Essa pendência era restrita à sessão no checkpoint da Fase C. Consultar Decisão 95 e `FARM_SYSTEM_V2.md`. Trata-se de consistência dos fluxos existentes; a aprovação manual abaixo continua pendente.
 
 Regressão completa posterior ao ajuste do painel, em 2026-10-01: 32/32 smoke tests passaram, sem erros de script ou falhas reportadas. Nenhuma alteração de gameplay foi necessária. A aprovação manual abaixo permanece pendente; este resultado não encerra a Fase D.

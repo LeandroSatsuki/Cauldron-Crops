@@ -1,5 +1,12 @@
 # Decisions
 
+## Decisão 108 - Checklist único e priorização dos riscos existentes
+
+- Continuidade autorizada para consolidar pendências e auditar riscos, sem implementar sistemas nesta etapa. ROADMAP passa a reunir IDs de teste, pré-condições, resultados esperados e referência aos aceites já registrados; planos de Mochila/Bosque e README apontam para a fila operacional. Não reabrir V0 nem exigir repetição total de testes aprovados.
+- Testes manuais permanecem adiados. Casos de capacidade, estados anteriores à restauração e saves legados reais são condicionais; sem pré-condição segura, marcar não executado. Não editar/apagar save pessoal, reativar F10 ou encher artificialmente a Mochila. A última suíte 43/43 pertence ao checkpoint `3d2240f`, não foi executada novamente nesta revisão documental.
+- Auditoria delimitada confirmou gravação direta em SaveManager sem temporário/backup; risco de interrupção/falha é inferido, sem perda reproduzida. Testes dev atuais exercitam snapshots/JSON, não save/load de arquivo. Avisos temporários do caldeirão ainda usam caminho legado sem contenção e busca de layout tem fallback potencialmente sobreposto quando não há espaço livre. Não declarar auditoria exaustiva nem regressão dos cenários já testados.
+- Próximo recorte recomendado: proteção da gravação e cópia recuperável, testes de I/O isolados, falhas sem destruir último save válido e erro visível; preservar schema v3/v4 e gameplay. Não implementar slots/cloud/framework de migração ou recuperação silenciosa. Isso é manutenção de integridade do sistema existente, não revogação automática da decisão histórica de adiar arquitetura avançada de persistência. Implementação aguarda continuidade autorizada para esse recorte.
+
 ## Decisão 107 - Objetivos e produção respeitam áreas ocupadas da HUD
 
 - Baseline reproduziu colisão entre objetivo da Clareira e aviso persistente do caldeirão. Ajuste restrito à apresentação: busca posições próximas ao canto inferior direito, evitando Mochila, ferramentas, botões visíveis do Caderno e objetivos iniciais. Produção tem prioridade; tracker evita também seu retângulo. Não reposicionar os objetivos arrastados pelo jogador para acomodar estes avisos.

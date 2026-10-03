@@ -87,6 +87,8 @@ Para gerar uma build, instale os templates de exportação compatíveis com sua 
 
 ## Estado do desenvolvimento
 
+Estado operacional consolidado (2026-10-03): suíte mais recente 43/43 no checkpoint `3d2240f`; esta atualização é documental, sem nova execução. Expansão/transferências/persistência da Mochila, produção/cancelamento comuns, colheita recusada persistida, layout agrícola e percurso/restauração/persistência após conclusão da Clareira tiveram aceites manuais específicos. Ajustes recentes de interface e casos-limite continuam pendentes. Consulte o [checklist integrado e riscos técnicos](./docs/ROADMAP.md#checklist-integrado--validação-manual-adiada); os checkpoints abaixo são históricos, não uma lista de testes todos ainda pendentes. Próxima recomendação técnica: proteger a gravação do save, sem mudar o formato ou gameplay; ainda não implementada.
+
 Checkpoint atual de interface (2026-10-03): HUD/Mochila paginadas conforme largura; caldeirão opaco e compacto com ingredientes acessíveis, Livro redimensionável ao viewport e detalhes roláveis. Autor adiou os testes manuais; continuidade usa verificações automáticas e mantém checklist pendente em `docs/ROADMAP.md`. Não considerar esse checkpoint aprovação estética ou mudança de gameplay/save.
 
 O fechamento da V0 foi aprovado, e o projeto está na evolução pós-V0 de exploração, armazenamento e Mochila. Conteúdo, arte, balanceamento e sistemas de progressão continuam em evolução.

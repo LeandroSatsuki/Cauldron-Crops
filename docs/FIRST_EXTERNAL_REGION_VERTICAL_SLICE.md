@@ -8,6 +8,8 @@ Essas fases continuam sendo o baseline histórico. Em 2026-10-03, após escolher
 
 ## Segunda expedição — Clareira recuperável (2026-10-03)
 
+Checklist operacional consolidado em [ROADMAP — Checklist integrado](ROADMAP.md#checklist-integrado--validação-manual-adiada). Os roteiros e aceites abaixo são o histórico detalhado; o checklist separa casos aprovados, ajustes posteriores e cenários condicionais sem exigir apagar progresso.
+
 Atualização de continuidade: o autor não poderá testar agora e autorizou seguir com a construção, reunindo checklist depois. Produção em viagem (conclusão/cancelamento em lotes separados), save anterior à restauração, renovação cronometrada/capacidade e conforto/balanceamento permanecem pendentes; não reiniciar o save pessoal para fabricar cenários. A HUD da vila recebeu adaptação de largura/páginas/ferramentas/objetivos, incluindo resize durante viagem, sem mudar o recorte ou sua persistência. Consultar contexto §47 e Decisão 101; testes automáticos não equivalem a esses aceites manuais.
 
 Estado: percurso implementado; validação automática/renderização técnica concluídas. Descoberta/coleta/preparo, restauração/recompensa agrícola e save/load no Bosque já restaurado aprovados manualmente em 2026-10-03 nos roteiros propostos. Produção em viagem, save anterior à restauração, duração e balanceamento ainda pendentes. Não é uma nova fase da Mochila nem reabre a V0.
