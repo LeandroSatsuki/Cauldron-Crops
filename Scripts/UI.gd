@@ -30,7 +30,6 @@ var pixel_ui_theme = preload("res://Themes/pixel_ui_theme.tres")
 
 
 
-const FarmGridManagerSmokeTestScript = preload("res://Scripts/dev/FarmGridManagerSmokeTest.gd")
 
 
 
@@ -8875,6 +8874,11 @@ func _on_debug_clear_chest_pressed() -> void:
 
 
 func _on_debug_test_farm_grid_pressed() -> void:
+	if not debug_shortcuts_enabled or not OS.has_feature("editor"):
+		return
+	var smoke_test: Variant = load("res://Scripts/dev/FarmGridManagerSmokeTest.gd")
+	if smoke_test == null:
+		return
 
 
 
@@ -8890,7 +8894,7 @@ func _on_debug_test_farm_grid_pressed() -> void:
 
 
 
-	var passou: bool = FarmGridManagerSmokeTestScript.run()
+	var passou: bool = smoke_test.run()
 
 
 
