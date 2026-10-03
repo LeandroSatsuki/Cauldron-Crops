@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-03 - Golem Semeador: Fase D de trabalho físico
+
+- Scheduler de quatro lotes/trigo como fallback dos modos mistos. Retirada real exclusiva do baú, transporte com ícone e plantio/devolução perto do destino. OFF por padrão; API requer Clareira restaurada, controle UI ainda para E.
+- Revalidação de saldo/alvo/estação/solo; concorrência não sobrescreve cultura. Pausa/load/cache/aborto invalidam ações antigas e preservam custódia. OFF/modo exclusivo devolve fisicamente; caminho ou baú indisponível não perde sementes. Navegação da semente exige proximidade, com tolerância inicial e trajeto limitado.
+- Novo teste físico com 107 verificações em QA isolado: quatro viagens, interferências, falhas, timers, JSON/replay, Bosque/retorno e scheduler recorrente na velocidade padrão (relógio QA acelerado/culturas longas no fixture). Sem alterar Mochila, receitas, colheita/rega, UI/F10 ou schema do save. Manual permanece pendente; sem nova build nesta fase.
+- Fechamento técnico: importação sem erros, suíte completa 49/49 e retestes finais de física/persistência/reabertura. Save pessoal idêntico por hash/tamanho/data; arte local e UIDs auxiliares não relacionados preservados fora do commit.
+
 ## 2026-10-03 - Golem Semeador: Fase C de persistência
 
 - Save v3/v4 passa a registrar flag/prioridade e cargas exclusivas do golem. Preflight sem mutação, elegibilidade do snapshot recebido, legado OFF/sem carga, substituição/replay sem refund e leitura de HOME cacheada durante viagem.

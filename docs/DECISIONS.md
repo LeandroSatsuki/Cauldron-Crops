@@ -1,5 +1,14 @@
 # Decisions
 
+## Decisão 116 - Semeadura física e devolução com custódia
+
+- Fase D autorizada: scheduler no golem existente, trigo/quatro células, fallback depois da colheita/rega elegíveis e fonte exclusiva VillageChest. API de ativação requer Clareira restaurada, mas não há botão novo nesta fase. OFF por padrão/saves antigos; não arar, consumir Mochila, criar golem/cultura/recompensa ou alterar UI/F10.
+- Retirada somente ao chegar à aproximação sul do baú, revalidando alvo/estação/saldo. Uma semente em cargo antes de caminhar; nenhuma reserva antes da chegada. Plantio valida novamente alvo vivo no registro, proximidade real, estação/solo/bloqueio/visibilidade/ocupação. Consumir/instalar cultura continua no commit síncrono da B; callback obsoleto não finaliza sobre snapshot reentrante.
+- Navegação da semente não aceita mero fim de rota como chegada. Tolerância de sincronização inicial, caminho vazio/fim distante e limite de trajeto conservam cargo em falha; reutiliza desvio legado, sem prometer navegação universal ou reestruturar IA inteira. Ícone acompanha a carga. Colheita/rega mantêm navegação e talento atuais.
+- Pausa congela. OFF ou modo exclusivo encaminha devolução física, sem refund remoto; baú ausente, espera interrompida ou caminho impossível mantém semente. Geração protege movimentos/plantio/devolução; load/cache retomam do cargo sem retirada extra. Vila ausente continua sem transporte offline/remoto; saves e schemas da C permanecem.
+- GolemSowerPhysicalSmokeTest cobre 107 verificações com rotas/timers reais, conservação, concorrência, pausa/OFF/prioridades, caminho/baú, JSON/replay e viagem/retorno; scheduler recorrente na velocidade padrão usa apenas relógio QA acelerado/culturas longas no fixture. Testes manuais continuam adiados; E entrega disponibilidade/controle no painel existente e F fecha exportação/checklist. Não presumir piloto completo/aprovado manualmente.
+- Fechamento técnico: importação sem erros e suíte completa 49/49 em QA isolado, mais retestes físicos/persistência/reabertura. Save pessoal preservado por hash/tamanho/data; arte local e UIDs auxiliares alheios fora da publicação. Sem nova exportação.
+
 ## Decisão 115 - Snapshot do trabalho físico do golem
 
 - Fase C autorizada: bloco opcional golem_work interno v1 com flag de semeadura, prioridade e cargas exclusivas de colheita/semente. Preservar save v3/v4, sem serializar rota/posição/referências/callbacks. Totais da colheita são separados do estoque; não inventar carga não registrada por saves antigos.

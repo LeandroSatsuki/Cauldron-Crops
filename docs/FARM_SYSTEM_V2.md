@@ -1,8 +1,8 @@
 # Farm System V2
 
-## Golem Semeador — piloto aprovado, Fase C concluída (2026-10-03)
+## Golem Semeador — piloto aprovado, Fase D concluída (2026-10-03)
 
-Esta seção é o plano operacional atual do piloto, não uma migração de Farm System V2. As seções seguintes conservam o histórico/direções do sistema. Fases A–C concluídas: contratos, domínio e persistência. Semeadura automática ainda não ligada; trabalho físico e UI continuam nas fases seguintes.
+Esta seção é o plano operacional atual do piloto, não uma migração de Farm System V2. As seções seguintes conservam o histórico/direções do sistema. Fases A–D implementadas: contratos, domínio, persistência e trabalho físico. Scheduler funciona quando ativado explicitamente; continua OFF por padrão, sem controle UI até a Fase E. Não declarar o piloto entregue ao jogador antes de E/F e do aceite manual separado.
 
 ### Recorte fechado
 
@@ -92,7 +92,19 @@ GolemWorkPersistenceSmokeTest: 148 verificações de preflight/recusa sem mutaç
 
 Fechamento técnico da C: importação sem erros e suíte completa 48/48 em APPDATA de QA isolado, mais reabertura em processo separado. Save pessoal idêntico por hash/tamanho/data; arte local e UIDs auxiliares alheios não publicados. Sem nova exportação ou aprovação manual nesta fase.
 
-**Fases A–C fechadas; D–F ainda não implementadas.** Próximo incremento: trabalho físico e custódia, reconstruindo rotas a partir da carga persistida, sem modificar recorte/culturas/fontes ou habilitar automaticamente saves elegíveis.
+### Fase D — trabalho físico e retomada da custódia
+
+Golem procura um dos quatro lotes válidos do piloto como fallback dos modos mistos, depois de colheita/rega elegíveis. API `set_seeding_enabled` recusa ON sem o marco da Clareira e não tem botão nesta fase. OFF/legado continuam sem plantio automático. Não arar, consumir Mochila ou complementar por VillageResourceAccess; carga pendente precede outros trabalhos. Reutilizados entidade, registro de Main, NavigationAgent, desvio legado e tokens da C, sem reformular a IA da colheita/rega.
+
+Ida ao baú não reserva estoque. Chegada revalida referência, alvo, estação e saldo; retira uma unidade do VillageChest e instala cargo síncrono. Aproximação sul a 48 pixels do centro evita mirar dentro do obstáculo. Caminhada da semente tem finalização própria com proximidade real até 14 pixels do destino, tolerância inicial para sincronização do NavigationAgent e aborto com carga preservada quando caminho vazio/termina longe ou ultrapassa 30 segundos. Não prometer que o navegador legado resolve todo obstáculo: falha mantém a custódia e permite nova tentativa. Ícone de semente acompanha o golem enquanto há carga, inclusive pausa/devolução.
+
+Lote é revalidado após espera de plantio, com identidade no registro, proximidade, estação, terra arada, bloqueio, visibilidade e ocupação. Recusa vira devolução física, sem sobrescrever cultura do jogador. Pausado congela; OFF ou prioridade exclusiva converte carga em devolução pendente, sem refund remoto. Devolução só deposita perto do baú, após espera protegida pelo token; baú ausente durante trajeto/espera conserva cargo. Load/cache/aborto invalidam tarefa velha; retomada reconstrói rota do cargo persistido, sem retirar outra semente ou transportar fora da vila. Sinal de plantio que carrega outro snapshot não permite o finalizador antigo alterar a nova tarefa.
+
+GolemSowerPhysicalSmokeTest: 107 verificações com navegação/timers reais, quatro células, célula extra recusada, estoque não reservado, saldo esgotado, bloqueio antes da retirada, jogador plantando primeiro, estação/visibilidade, callback distante, caminho impossível, baú ausente e durante depósito, pausa/ON-OFF/prioridade exclusiva, timers obsoletos, JSON/replay/rota pós-load, save QA externo/cache/retorno e precedência de colheita/rega. Inclui scheduler recorrente com quatro sementes/quatro culturas a 128 pixels/s; apenas relógio QA acelerado e crescimento longo no fixture. Fixture preserva o comportamento existente de seleção da Enxada (que limpa a seleção de sementes); isso não é alteração da automação. Warning de caminho impossível é intencional no fixture.
+
+Fechamento técnico: importação sem erros e suíte completa 49/49 em QA isolado, seguida de reteste físico ampliado e persistência/reabertura em processos separados. Save pessoal idêntico por hash/tamanho/data; arte local e UIDs auxiliares alheios excluídos da publicação. Não equiparar automático a aceite manual.
+
+**Fases A–D implementadas; E/F pendentes.** Próximo incremento: controle e disponibilidade no painel existente, derivando do marco já salvo e mantendo OFF por padrão. Manuais anteriores e observação/conforto do semeador continuam adiados; sem nova exportação nesta fase física.
 
 ## Visão Geral
 

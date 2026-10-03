@@ -1,7 +1,7 @@
 extends RefCounted
 class_name GolemSeedCargo
 
-# Domínio do piloto. Persistido pelo golem; scheduler físico ainda não ligado.
+# Domínio do piloto. Persistido pelo golem, com scheduler físico separado.
 # O chamador físico deve validar chegada/alvo antes de retirada/devolução.
 const SEED_ITEM_ID := "semente_basica"
 const INTENT_TRANSPORT := "transport"

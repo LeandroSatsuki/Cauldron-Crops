@@ -45,6 +45,11 @@ var _life_timer: Timer
 var _home_position: Vector2 = Vector2.ZERO
 var _idle_cycle_count: int = 0
 var _rest_point: Node2D = null
+const SEED_MOVEMENT_STATES := ["MOVING_TO_SEED_CHEST", "MOVING_TO_SEED_PLOT", "MOVING_TO_SEED_RETURN"]
+const SEED_ARRIVAL_DISTANCE := 14.0
+var _seed_target_cell := Vector2i(-1, -1)
+var _seed_route_elapsed := 0.0
+var _seed_cargo_visual: Sprite2D
 
 func _ready() -> void:
 	_think_timer = Timer.new()
@@ -66,6 +71,14 @@ func _ready() -> void:
 	_life_timer.timeout.connect(_on_life_timer_timeout)
 	add_child(_life_timer)
 	_configure_player_collision_exception.call_deferred()
+	_seed_cargo_visual = Sprite2D.new()
+	_seed_cargo_visual.name = "SeedCargoVisual"
+	_seed_cargo_visual.texture = preload("res://Assets/Tools/tool_seed.png")
+	_seed_cargo_visual.scale = Vector2.ONE
+	_seed_cargo_visual.position = Vector2(17, -25)
+	_seed_cargo_visual.z_index = 2
+	_seed_cargo_visual.visible = false
+	add_child(_seed_cargo_visual)
 
 
 func _configure_player_collision_exception() -> void:
@@ -82,8 +95,13 @@ func _configure_player_collision_exception() -> void:
 func _process(_delta: float) -> void:
 	z_index = int(global_position.y) + 3
 	_atualizar_visual_vida()
+	if _seed_cargo_visual:
+		_seed_cargo_visual.visible = seed_cargo.has_seed()
 
 func _physics_process(delta: float) -> void:
+	if state in SEED_MOVEMENT_STATES:
+		_process_seed_movement(delta)
+		return
 	var esta_em_movimento: bool = _esta_em_movimento()
 	if navigation_agent == null:
 		if esta_em_movimento:
@@ -140,9 +158,8 @@ func _on_think_timer_timeout() -> void:
 	if work_priority == PRIORITY_PAUSED:
 		_registrar_acao("pausado")
 		return
-	# Persistência antes do scheduler: uma carga restaurada fica preservada.
 	if seed_cargo.has_seed():
-		_registrar_acao("carga de semente preservada")
+		_resume_seed_cargo()
 		return
 
 	if not carried_rewards.is_empty():
@@ -187,6 +204,8 @@ func _on_think_timer_timeout() -> void:
 				_registrar_acao("sem lote seco")
 			else:
 				_registrar_acao("sem lote maduro")
+	if work_priority in [PRIORITY_HARVEST_FIRST, PRIORITY_WATER_FIRST] and _start_seeding():
+		return
 	_iniciar_vida_ociosa()
 
 func _tem_skill_golem_irrigador() -> bool:
@@ -210,6 +229,9 @@ func set_work_priority(nova_prioridade: int) -> bool:
 	if work_priority == PRIORITY_PAUSED:
 		_parar_execucao_atual()
 	else:
+		if (seed_cargo.has_seed() or state in SEED_MOVEMENT_STATES or state == "PLANTING_SEED") and work_priority in [PRIORITY_HARVEST_ONLY, PRIORITY_WATER_ONLY]:
+			seed_cargo.mark_return_pending()
+			_parar_execucao_atual()
 		if _prioridade_exige_talento_irrigador(work_priority) and not _tem_skill_golem_irrigador():
 			ultima_acao = "rega bloqueada pelo talento"
 		else:
@@ -254,6 +276,8 @@ func get_current_task_label() -> String:
 
 	if not carried_rewards.is_empty() and state == "IDLE":
 		return "Pronto para entregar colheita"
+	if seed_cargo.has_seed():
+		return "Devolvendo semente" if seed_cargo.is_return_pending() else "Transportando semente"
 
 	match state:
 		"MOVING_TO_PLOT":
@@ -266,6 +290,8 @@ func get_current_task_label() -> String:
 			return "Depositando"
 		"WATERING":
 			return "Irrigando"
+		"MOVING_TO_SEED_CHEST":
+			return "Indo buscar semente"
 		_:
 			var prioridade_efetiva: int = _obter_prioridade_efetiva()
 			match prioridade_efetiva:
@@ -347,7 +373,7 @@ func load_work_save_data(data: Dictionary, grove_restored: bool) -> bool:
 	return true
 
 func _dispatch_work_callback(callback: Callable, generation: int) -> void:
-	if is_inside_tree() and generation == _task_generation and callback.is_valid():
+	if _task_is_current(generation) and callback.is_valid():
 		callback.call()
 
 func _task_is_current(generation: int) -> bool:
@@ -648,7 +674,11 @@ func _abortar_movimento(mensagem: String) -> void:
 	_stuck_time = 0.0
 	_avoidance_attempts = 0
 	_final_destination = Vector2.ZERO
-	if state == "MOVING_TO_PLOT":
+	if state in SEED_MOVEMENT_STATES:
+		_limpar_alvo_lote()
+		target_chest = null
+		_registrar_acao("semente aguardando caminho" if seed_cargo.has_seed() else "plantio aguardando caminho")
+	elif state == "MOVING_TO_PLOT":
 		_limpar_alvo_lote()
 	elif state == "MOVING_TO_CHEST":
 		target_chest = null
@@ -715,7 +745,7 @@ func _obter_centro_caldeirao() -> Vector2:
 	return Vector2.ZERO
 
 func _esta_em_movimento() -> bool:
-	return state == "MOVING_TO_PLOT" or state == "MOVING_TO_CHEST" or state == "MOVING_TO_REST"
+	return state in SEED_MOVEMENT_STATES or state == "MOVING_TO_PLOT" or state == "MOVING_TO_CHEST" or state == "MOVING_TO_REST"
 
 func get_life_state() -> String:
 	return life_state
@@ -945,3 +975,191 @@ func _obter_posicao_interacao_lote(lote: Node2D) -> Vector2:
 func _on_crop_sensor_area_area_entered(area: Area2D) -> void:
 	if area and area.has_method("rustle_from_golem"):
 		area.rustle_from_golem()
+
+
+# Piloto físico: nenhum consumidor agregado/Mochila e nenhuma reserva em trânsito.
+func set_seeding_enabled(enabled: bool) -> bool:
+	if enabled and not GroveExpedition.restored:
+		return false
+	seeding_enabled = enabled
+	if not enabled:
+		seed_cargo.mark_return_pending()
+		if state in SEED_MOVEMENT_STATES or state == "PLANTING_SEED":
+			_parar_execucao_atual()
+	_cancelar_vida_ociosa()
+	return true
+
+
+func _can_seed_now() -> bool:
+	return seeding_enabled and GroveExpedition.restored and work_priority in [PRIORITY_HARVEST_FIRST, PRIORITY_WATER_FIRST] and carried_rewards.is_empty()
+
+
+func _valid_seed_plot(plot: Node2D) -> bool:
+	return is_instance_valid(plot) and plot.is_inside_tree() and not plot.is_queued_for_deletion() and plot.has_method("validate_seed_planting") and bool(plot.call("validate_seed_planting", GolemSeedCargo.SEED_ITEM_ID)["success"])
+
+
+func _start_seeding() -> bool:
+	if not _can_seed_now() or seed_cargo.has_seed():
+		return false
+	var chest := _encontrar_bau() as VillageChest
+	if chest == null or chest.get_item_quantity(GolemSeedCargo.SEED_ITEM_ID) < 1:
+		_registrar_acao("sem sementes no baú")
+		return false
+	var nearest: Node2D = null
+	var distance := INF
+	for cell in GolemSeedCargo.PILOT_CELLS:
+		var plot := _obter_farm_plot_por_grid_position(cell)
+		if not _valid_seed_plot(plot):
+			continue
+		var candidate_distance := global_position.distance_to(_obter_posicao_interacao_lote(plot))
+		if candidate_distance < distance:
+			nearest = plot
+			distance = candidate_distance
+			_seed_target_cell = cell
+	if nearest == null:
+		_registrar_acao("sem lote preparado para trigo")
+		return false
+	target_plot = nearest
+	target_chest = chest
+	_cancelar_vida_ociosa()
+	state = "MOVING_TO_SEED_CHEST"
+	_registrar_acao("indo buscar semente")
+	_start_seed_route(_seed_chest_position(chest), Callable(self, "_arrive_seed_chest"))
+	return true
+
+
+func _seed_chest_position(chest: Node2D) -> Vector2:
+	# Aproximação sul, fora do corpo/obstáculo do baú; nunca mirar seu centro.
+	return chest.global_position + Vector2(0, 48)
+
+
+func _seed_chest_in_reach() -> bool:
+	return is_instance_valid(target_chest) and target_chest.is_inside_tree() and not target_chest.is_queued_for_deletion() and target_chest is VillageChest and global_position.distance_to(_seed_chest_position(target_chest)) <= SEED_ARRIVAL_DISTANCE
+
+
+func _seed_plot_in_reach() -> bool:
+	return is_instance_valid(target_plot) and global_position.distance_to(_obter_posicao_interacao_lote(target_plot)) <= SEED_ARRIVAL_DISTANCE
+
+
+func _start_seed_route(destination: Vector2, callback: Callable) -> void:
+	_seed_route_elapsed = 0.0
+	_iniciar_deslocamento(destination, callback)
+
+
+func _process_seed_movement(delta: float) -> void:
+	_seed_route_elapsed += delta
+	if _seed_route_elapsed > 30.0:
+		_abortar_movimento("Golem: trajeto de semente indisponível; custódia preservada.")
+		return
+	var destination := _current_avoidance_point if _is_avoiding_obstacle else _final_destination
+	if global_position.distance_to(destination) <= SEED_ARRIVAL_DISTANCE:
+		velocity = Vector2.ZERO
+		_concluir_deslocamento()
+		return
+	if navigation_agent == null:
+		_abortar_movimento("Golem: navegação de semente indisponível.")
+		return
+	if NavigationServer2D.map_get_iteration_id(navigation_agent.get_navigation_map()) == 0:
+		return # Mapa recém-inserido (inclusive retorno da vila cacheada).
+	var next := navigation_agent.get_next_path_position()
+	if navigation_agent.get_current_navigation_path().is_empty() or navigation_agent.is_navigation_finished():
+		if _seed_route_elapsed < 0.2:
+			velocity = Vector2.ZERO
+			return # NavigationAgent pode entregar caminho vazio no primeiro tick.
+		_abortar_movimento("Golem: caminho terminou longe do destino; semente preservada.")
+		return
+	var direction := next - global_position
+	velocity = direction.normalized() * minf(move_speed_pixels_per_second, direction.length() / maxf(delta, 0.001))
+	move_and_slide()
+	_monitorar_travamento(delta)
+
+
+func _arrive_seed_chest() -> void:
+	if state != "MOVING_TO_SEED_CHEST":
+		return
+	var live := _obter_farm_plot_por_grid_position(_seed_target_cell)
+	if not _can_seed_now() or not _seed_chest_in_reach() or live != target_plot or not _valid_seed_plot(live):
+		_finish_seed_job("retirada recusada; estoque preservado")
+		return
+	if not seed_cargo.take_from_chest(target_chest as VillageChest, _seed_target_cell):
+		_finish_seed_job("sem sementes no baú")
+		return
+	_resume_seed_cargo()
+
+
+func _resume_seed_cargo() -> void:
+	if not seed_cargo.has_seed() or work_priority == PRIORITY_PAUSED:
+		return
+	_cancelar_vida_ociosa()
+	var cell := seed_cargo.get_target_cell()
+	var plot := _obter_farm_plot_por_grid_position(cell)
+	if not _can_seed_now() or not _valid_seed_plot(plot):
+		seed_cargo.mark_return_pending()
+	if seed_cargo.is_return_pending():
+		target_plot = null
+		target_chest = _encontrar_bau()
+		if not is_instance_valid(target_chest):
+			_finish_seed_job("devolução aguardando baú")
+			return
+		state = "MOVING_TO_SEED_RETURN"
+		_registrar_acao("devolvendo semente")
+		_start_seed_route(_seed_chest_position(target_chest), Callable(self, "_arrive_seed_return"))
+	else:
+		target_plot = plot
+		target_chest = null
+		_registrar_alvo(plot)
+		state = "MOVING_TO_SEED_PLOT"
+		_registrar_acao("transportando semente")
+		_start_seed_route(_obter_posicao_interacao_lote(plot), Callable(self, "_arrive_seed_plot"))
+
+
+func _arrive_seed_plot() -> void:
+	if state != "MOVING_TO_SEED_PLOT":
+		return
+	if not _seed_plot_in_reach():
+		_finish_seed_job("semente aguardando caminho")
+		return
+	state = "PLANTING_SEED"
+	var generation := _task_generation
+	await get_tree().create_timer(harvest_duration).timeout
+	if not _task_is_current(generation) or state != "PLANTING_SEED" or work_priority == PRIORITY_PAUSED:
+		return
+	var live := _obter_farm_plot_por_grid_position(seed_cargo.get_target_cell())
+	if not _can_seed_now() or live != target_plot or not _valid_seed_plot(live) or not _seed_plot_in_reach():
+		seed_cargo.mark_return_pending()
+		_resume_seed_cargo()
+		return
+	var result: Dictionary = live.call("try_plant_from_golem_cargo", seed_cargo)
+	# O sinal do lote pode carregar outro snapshot: não tocar a nova tarefa.
+	if not _task_is_current(generation):
+		return
+	if result["success"]:
+		_finish_seed_job("plantou trigo")
+	else:
+		seed_cargo.mark_return_pending()
+		_resume_seed_cargo()
+
+
+func _arrive_seed_return() -> void:
+	if state != "MOVING_TO_SEED_RETURN":
+		return
+	if not _seed_chest_in_reach():
+		_finish_seed_job("devolução aguardando caminho")
+		return
+	state = "RETURNING_SEED"
+	var generation := _task_generation
+	await get_tree().create_timer(deposit_duration).timeout
+	if not _task_is_current(generation) or state != "RETURNING_SEED" or work_priority == PRIORITY_PAUSED:
+		return
+	if _seed_chest_in_reach() and seed_cargo.return_to_chest(target_chest as VillageChest):
+		_finish_seed_job("semente devolvida")
+	else:
+		_finish_seed_job("devolução aguardando baú/caminho")
+
+
+func _finish_seed_job(message: String) -> void:
+	velocity = Vector2.ZERO
+	target_plot = null
+	target_chest = null
+	state = "IDLE"
+	_registrar_acao(message)
