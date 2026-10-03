@@ -140,49 +140,8 @@ func _on_plot_clicked() -> void:
 
 	match estado_atual:
 		State.VAZIO:
-			# Se o lote for clicado no estado VAZIO:
-			var semente_id = GlobalInventory.semente_selecionada
-			if semente_id == "":
-				_mostrar_feedback("Selecione uma semente no inventario.")
-				return
-			if semente_id in Database:
-				semente_atual = Database.get(semente_id)
-			else:
-				push_error("Semente '%s' não encontrada no Autoload Database!" % semente_id)
-				return
-			
-			if semente_atual.get("estacao_ideal") != SeasonManager.estacao_atual:
-				print("Semente fora de época! Essa planta não cresce nesta estação.")
-				return
-
-			if not arado:
-				_mostrar_feedback("Are a terra antes de plantar.")
-				return
-			
-			if not GlobalInventory.remover_item(semente_id, 1):
-				print("Sem sementes deste tipo no estoque!")
-				return
-			
-			semente_id_plantada = semente_id
-			var tempo = semente_atual.get("tempo_crescimento_segundos", 3.0)
-			if regado:
-				tempo = tempo * 0.8
-			if SeasonManager.estacao_atual == SeasonManager.Estacao.VERAO:
-				tempo = tempo * 0.8
-			
-			# Configura o Timer com o tempo_crescimento_segundos
-			timer.wait_time = tempo
-			tempo_total_crescimento = tempo
-			
-			# Inicia o timer
-			timer.start()
-			
-			# Muda o estado para CRESCENDO
-			estado_atual = State.CRESCENDO
-			_atualizar_visual()
-			_notificar_estado_alterado()
-			atualizar_visual_planta(semente_id_plantada, 0)
-			_mostrar_feedback("Semente plantada!")
+			var result := try_plant_from_personal_inventory(GlobalInventory.semente_selecionada)
+			_mostrar_feedback(_planting_feedback(str(result.get("reason", ""))))
 
 		State.PRONTO_PARA_COLHER:
 			if not _colher_manualmente(true):
@@ -196,6 +155,91 @@ func _on_plot_clicked() -> void:
 				print("Poção aplicada! Tempo reduzido pela metade.")
 			else:
 				_mostrar_feedback("A planta ainda está crescendo.")
+
+
+func validate_seed_planting(seed_id: String) -> Dictionary:
+	# Consulta pura: inclusive metadados, timer e sinais ficam intactos na recusa.
+	if not is_inside_tree() or is_queued_for_deletion() or not is_instance_valid(timer):
+		return _planting_result(false, "unavailable")
+	if expansion_blocked:
+		return _planting_result(false, "blocked")
+	if not is_visible_in_tree():
+		return _planting_result(false, "hidden")
+	if estado_atual != State.VAZIO:
+		return _planting_result(false, "occupied")
+	if seed_id == "":
+		return _planting_result(false, "no_seed")
+	var seed_data := _obter_dados_semente_por_id(seed_id)
+	if seed_data.is_empty():
+		return _planting_result(false, "invalid_seed")
+	if seed_data.get("estacao_ideal") != SeasonManager.estacao_atual:
+		return _planting_result(false, "wrong_season")
+	if not arado:
+		return _planting_result(false, "untilled")
+	return _planting_result(true, "")
+
+
+func try_plant_from_personal_inventory(seed_id: String) -> Dictionary:
+	return _try_plant_seed(seed_id, Callable(GlobalInventory, "remover_item").bind(seed_id, 1))
+
+
+func try_plant_from_golem_cargo(cargo: GolemSeedCargo) -> Dictionary:
+	if cargo == null or not cargo.has_seed():
+		return _planting_result(false, "no_cargo")
+	var cell := cargo.get_target_cell()
+	var scene: Node = get_tree().current_scene if is_inside_tree() else null
+	# A identidade vem do registro vivo, nunca do nome/posição visual do nó.
+	if scene == null or not scene.has_method("obter_farm_plot_por_grid_position"):
+		return _planting_result(false, "target_mismatch")
+	if scene.call("obter_farm_plot_por_grid_position", cell) != self:
+		return _planting_result(false, "target_mismatch")
+	if not cargo.can_consume_for_plant(GolemSeedCargo.SEED_ITEM_ID, cell):
+		return _planting_result(false, "return_pending")
+	return _try_plant_seed(
+		GolemSeedCargo.SEED_ITEM_ID,
+		Callable(cargo, "consume_for_plant").bind(GolemSeedCargo.SEED_ITEM_ID, cell)
+	)
+
+
+func _try_plant_seed(seed_id: String, consume_seed: Callable) -> Dictionary:
+	var validation := validate_seed_planting(seed_id)
+	if not bool(validation.get("success", false)):
+		return validation
+	# Somente os dois consumidores internos síncronos/sem sinais acima.
+	# Não aceitar fontes agregadas nem callbacks externos que publiquem estado parcial.
+	if not consume_seed.is_valid() or not bool(consume_seed.call()):
+		return _planting_result(false, "no_stock")
+
+	semente_atual = _obter_dados_semente_por_id(seed_id)
+	semente_id_plantada = seed_id
+	pronto_para_colher = false
+	var growth_time := float(semente_atual.get("tempo_crescimento_segundos", 3.0))
+	if regado:
+		growth_time *= 0.8
+	if SeasonManager.estacao_atual == SeasonManager.Estacao.VERAO:
+		growth_time *= 0.8
+	tempo_total_crescimento = growth_time
+	timer.start(growth_time)
+	estado_atual = State.CRESCENDO
+	_atualizar_visual()
+	atualizar_visual_planta(seed_id, 0)
+	# Todos os observadores já veem fonte consumida, cultura e timer consistentes.
+	_notificar_estado_alterado()
+	return _planting_result(true, "")
+
+
+func _planting_result(success: bool, reason: String) -> Dictionary:
+	return {"success": success, "reason": reason}
+
+
+func _planting_feedback(reason: String) -> String:
+	match reason:
+		"": return "Semente plantada!"
+		"no_seed": return "Selecione uma semente no inventario."
+		"wrong_season": return "Semente fora de época!"
+		"untilled": return "Are a terra antes de plantar."
+		"no_stock": return "Sem sementes deste tipo na Mochila!"
+		_: return "Não é possível plantar neste lote."
 
 
 func tentar_arar(mostrar_feedback: bool = true) -> bool:

@@ -1,8 +1,8 @@
 # Farm System V2
 
-## Golem Semeador — piloto aprovado, Fase A concluída (2026-10-03)
+## Golem Semeador — piloto aprovado, Fase B concluída (2026-10-03)
 
-Esta seção é o plano operacional atual do piloto, não uma migração de Farm System V2. As seções seguintes conservam o histórico/direções do sistema. Autor aprovou o recorte e o início por análise/contratos; nenhum comportamento novo foi implementado nesta Fase A.
+Esta seção é o plano operacional atual do piloto, não uma migração de Farm System V2. As seções seguintes conservam o histórico/direções do sistema. Fase A documental e Fase B de domínio concluídas; semeadura automática ainda não ligada. Persistência do golem, trabalho físico e UI continuam nas fases seguintes.
 
 ### Recorte fechado
 
@@ -66,7 +66,19 @@ Não reservar estoque durante o trajeto até o baú; o jogador/caldeirão podem 
 - Colheita/rega/prioridades/vida ociosa e fluxo manual continuam passando. Confirmar geometria/clicks no painel existente em 800×720 e 1280×720. Renderização técnica não aprova conforto.
 - Manual futuro: ativar após Clareira, depositar sementes, arar o canteiro, observar retirada/transporte/plantio, interferir num alvo, pausar/retomar e salvar/reabrir. Sem apagar/editar save pessoal, artificialmente encher Mochila ou pedir teste imediato ao autor indisponível.
 
-**Fase A fechada apenas em documentação.** Fases B–F ainda não implementadas. Nenhum script/cena/item/receita/save foi alterado nesta fase; confirmação manual dos 16 casos anteriores continua pendente.
+### Fase B — domínio comum e carga isolada
+
+FarmPlot agora oferece consulta pura `validate_seed_planting` e duas entradas explícitas: `try_plant_from_personal_inventory` e `try_plant_from_golem_cargo`. Clique manual usa a primeira; mantém quatro culturas, estação, terra arada, rega, aceleração de verão e limpeza da última semente selecionada. Recusa não instala `semente_atual`, muda timer/solo/estoque ou publica sinal. Alvo bloqueado, invisível (inclusive ancestral), ocupado ou fora da árvore é recusado. Plantio pela carga confere a identidade do nó no registro vivo da Main, não a posição visual ou um ID fornecido pelo chamador.
+
+Commit interno só usa os dois consumidores síncronos atuais, sem await/sinais: remover uma semente pessoal ou consumir a carga. Configura cultura/timer/visual antes de emitir `estado_alterado`; observadores e bridge já enxergam a fonte consumida. Não é uma API genérica para callbacks externos, nem consumo agregado de VillageResourceAccess. Metadados da cultura são cópia do catálogo.
+
+`GolemSeedCargo` é domínio RefCounted sem rota/Node/Callable armazenados: retirada exclusiva de uma semente do VillageChest, alvo entre as quatro células, intenção transportar/devolver, consumo único e devolução explícita única. Baú ausente/fora da árvore/aguardando exclusão conserva carga. O chamador físico futuro é responsável por proximidade real, validação live do alvo e exclusão mútua com carga de colheita. Não há integração na IA nesta fase.
+
+Serialização da carga ausente é `null`; presente contém exatamente `item_id`, `quantity: 1`, `target_cell: {x,y}` e `intent: transport|return`. Aceita números JSON integrais exatos, não bool/string/fração/coerção, IDs alheios ou células fora do piloto. Snapshot/aplicação fazem cópia profunda; aplicação válida substitui carga sem retirada/refund; payload inválido conserva o estado anterior. Esta é somente serialização de domínio: **SaveManager ainda não grava a carga** e o bloco `golem_work` continua para a Fase C.
+
+Regressão `GolemSowerDomainSmokeTest`: 365 verificações de recusa sem mutação, quatro culturas/rega/verão, clique manual, conservação de fontes, quatro identidades do canteiro, jogador ocupando alvo, observadores consistentes, cópias/round-trip/replay e payloads inválidos/devolução única. Importação sem erros e suíte completa **47/47** em APPDATA de QA isolado; save pessoal idêntico por hash/tamanho/data. Sem alteração de Golem, SaveManager, desbloqueios, receitas ou UI; nenhuma retirada automática habilitada. Os 16 casos manuais anteriores e o playtest físico futuro continuam pendentes. Sem nova exportação nesta fase de domínio.
+
+**Fases A e B fechadas; C–F ainda não implementadas.** Próxima fase: snapshot/preflight/load do golem, incluindo carga de colheita e compatibilidade v3/v4, antes de qualquer scheduler vivo.
 
 ## Visão Geral
 

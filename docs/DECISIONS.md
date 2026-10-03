@@ -1,5 +1,14 @@
 # Decisions
 
+## Decisão 114 - Commit comum de plantio e domínio isolado de carga
+
+- Fase B autorizada e implementada sem ligar semeadura automática. FarmPlot valida sem mutação antes de consumir fonte explícita; clique manual usa Mochila, entrada de golem usa somente GolemSeedCargo e verifica o alvo no registro vivo. Preserva quatro culturas, estações, aragem, rega e aceleração de verão. Recusas conservam metadados/timer/estoques/seleções/sinais; cultura usa cópia do catálogo.
+- Os dois consumidores internos atuais são síncronos e não emitem sinais; estado agrícola/timer/visual ficam completos antes de publicar estado_alterado. Não abrir callback de fonte agregada/externa nem consumir VillageResourceAccess para sementes. Observadores e bridge verificam estoque/carga já consumidos, sem await entre fronteiras de custódia.
+- GolemSeedCargo representa uma unidade de trigo, alvo fixo e intenção transportar/devolver, sem referência de nó/rota persistida. Retirada exclusiva do VillageChest, segunda retirada impedida, consumo/devolução únicos. Baú indisponível conserva pendência; capacidade futura do Storage exige rever contrato de depósito, hoje ilimitado/síncrono. Proximidade e exclusão mútua com colheita serão obrigações da integração física, não implementadas neste domínio.
+- Payload ausente null; presente exatamente item_id/quantity/target_cell/intent. Preflight estrito aceita números integrais JSON exatos sem coerção de bool/string/frações; cópias profundas e aplicação substitutiva sem refund. É serialização de domínio, não persistência integrada: SaveManager/Golem permanecem intactos até Fase C. Nenhuma carga nova entra nos saves ou é retirada automaticamente nesta etapa.
+- GolemSowerDomainSmokeTest: 365 verificações, incluindo quatro culturas/modificadores, recusa sem mutação, quatro células/identidade, alvo ocupado pelo jogador, fonte exclusiva, sinal consistente, JSON/replay/payload inválido e devolução única. Manual permanece adiado. Próxima Fase C trata snapshot/preflight/load de sementes e colheita antes de habilitar scheduler na D; sem ampliar economia/UI/lore por consequência.
+- Fechamento técnico: importação sem erros, suíte completa 47/47 em QA isolado e save pessoal intacto por hash/tamanho/data. Sem nova exportação nesta fase; arte local e UIDs auxiliares não relacionados excluídos da publicação.
+
 ## Decisão 113 - Piloto do Golem Semeador e custódia de sementes
 
 - Autor aprovou o recorte e o início pela análise técnica. Golem físico existente, trigo e quatro lotes iniciais fixos, habilidade derivada de Clareira restaurada, opcional OFF inclusive em save antigo elegível. Sementes vêm dos caminhos atuais e saem somente do baú quando golem chega; nunca usar Mochila como complemento. FarmPlot permanece autoridade e grid apenas identidade/ponte.

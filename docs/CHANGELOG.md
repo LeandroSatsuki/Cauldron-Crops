@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-03 - Golem Semeador: Fase B de domínio
+
+- Plantio manual e por carga compartilham validação/commit sem alterações na recusa; preservados culturas/estações/rega/verão. Corrigida instalação precoce dos metadados da semente e sinal publicado somente após fonte/cultura/timer consistentes.
+- Domínio de carga exclusiva do baú: uma semente, quatro alvos, transporte/devolução explícitos, consumo/devolução únicos e serialização estrita com cópias/replay sem refund. Sem integração na IA/save do jogo, unlock ou UI; automação ainda desligada.
+- Novo GolemSowerDomainSmokeTest com 365 verificações em QA isolado. Próxima Fase C fecha persistência do golem/cargas antes da retirada viva. Testes manuais anteriores e fluxo físico futuro continuam pendentes.
+- Fechamento técnico: importação sem erros, suíte completa 47/47 e save pessoal idêntico por hash/tamanho/data. Sem nova exportação; arte local e UIDs auxiliares não relacionados preservados fora do commit.
+
 ## 2026-10-03 - Golem Semeador: Fase A e contratos
 
 - Recorte aprovado e plano técnico registrado: quatro lotes/trigo, unlock pela Clareira, retirada física exclusiva do baú, ativação opcional OFF e custódia/transações/save seguros antes da automação viva. Nenhum comportamento novo implementado.
