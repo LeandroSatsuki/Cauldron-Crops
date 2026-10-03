@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-03 - Aceite manual da persistência e cancelamento do caldeirão
+
+- Autor aprovou salvar produção em andamento, fechar/reabrir/carregar e concluir sem resultado/consumo duplicado; em outra produção retomada, cancelar devolvendo ingredientes reservados e não utilizados às origens.
+- Não inclui capacidade cheia na entrega/cancelamento, captura/colheita recusada, saves legados ou estética. Próxima etapa de validação: casos-limite da Mochila, não novos sistemas.
+- Registro somente documental e revisão do diff; nenhuma mudança de código/save ou nova execução da suíte.
+
 ## 2026-10-03 - Aceite manual da expansão e navegação da Mochila
 
 - Autor aprovou conferir marcos/capacidade até 20, repetir coleta sem novo aumento, navegar páginas/seleção, transferir nos dois sentidos e salvar/reabrir/carregar mantendo capacidade/quantidades.

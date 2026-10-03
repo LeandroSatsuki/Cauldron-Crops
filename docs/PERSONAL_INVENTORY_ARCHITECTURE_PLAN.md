@@ -2,11 +2,13 @@
 
 ## Status
 
-Fases A–C concluídas. Fase D implementada, com validação manual do piloto e da persistência do caldeirão ainda pendentes. Fase E implementada e validada automaticamente em 2026-10-01, após autorização explícita para iniciar e finalizar a fase no mesmo ciclo. O autor escolheu expansão por marcos de restauração/exploração: capacidade inicial 12, +4 pelo Herbário e +4 pela primeira coleta no Bosque, até 20 slots; stacks padrão 99. Isso substitui o gate anterior para executar a Fase E, sem presumir aprovação manual. Os relatos históricos abaixo descrevem checkpoints, não o estado atual do limite.
+Fases A–C concluídas; D/E implementadas. Em 2026-10-03, o autor aprovou os roteiros manuais de expansão/navegação/transferências/save da Mochila e produção em andamento/retomada/cancelamento do caldeirão. Permanecem os cenários específicos de capacidade cheia e captura/colheita recusada, sem aprovação presumida. Fase E validada automaticamente em 2026-10-01 após autorização explícita para iniciar e finalizar no mesmo ciclo. O autor escolheu expansão por marcos de restauração/exploração: capacidade inicial 12, +4 pelo Herbário e +4 pela primeira coleta no Bosque, até 20 slots; stacks padrão 99. Os relatos históricos abaixo descrevem checkpoints, não o estado atual do limite.
 
 Este marco sucede o fechamento do acesso a recursos da vila. Ele não inclui economia, venda, NPCs, múltiplos baús, filtros avançados, peso, toolbelt separado nem mudança de lore.
 
 Atualização de aceite em 2026-10-03: autor aprovou o roteiro específico de conferir marcos/capacidade até 20 no baú, repetir coleta no Bosque sem ultrapassar o limite, navegar páginas e selecionar/desselecionar semente na segunda página, transferir itens nos dois sentidos e salvar/reabrir/carregar preservando capacidade/quantidades. Esse roteiro de expansão/navegação está concluído; não equivale a aprovação dos cenários de Mochila cheia, captura/colheita recusada ou persistência/cancelamento do caldeirão. Esses itens do checklist abaixo continuam pendentes. Próximo roteiro manual: produção do caldeirão em andamento, retomada e cancelamento.
+
+Aceite seguinte em 2026-10-03: autor aprovou iniciar produção (preferencialmente em lote), salvar em andamento, fechar/reabrir/carregar e conferir resultado/consumo únicos; em outra produção, repetir a retomada e cancelar, devolvendo ingredientes reservados e não utilizados às origens sem duplicação. Esse roteiro do caldeirão está concluído; cenários de bloqueio por falta de espaço, captura/colheita recusada e compatibilidade com saves legados não foram incluídos. Próxima etapa de validação: casos-limite de capacidade/recompensas; não forçar preenchimento via F10 ou edição do save.
 
 ## Objetivo
 
@@ -255,7 +257,7 @@ Validar manualmente o piloto e a expansão antes do aceite de experiência das F
 1. Abrir o save habitual: quantidades e seleção devem ser preservadas; água não ocupa slot. Se houver excesso legado, depositar pelo Baú da Vila, sem perda de itens.
 2. Colher, coletar no bosque, pescar e transferir itens nos dois sentidos; a interação usual deve permanecer funcional.
 3. Quando a Mochila atingir a capacidade atual (12/16/20), tentar receber um item sem espaço na pilha: a fonte deve permanecer disponível e mostrar aviso. Depositar no baú e tentar novamente deve retomar a ação sem duplicação.
-4. Produzir no caldeirão, salvar durante a mistura ou lote, fechar/reabrir e carregar. Conferir resultado único e cancelamento devolvendo ingredientes às origens. Este teste anterior continua pendente, não foi marcado como aprovado pela autorização de continuidade.
+4. **Aprovado pelo autor em 2026-10-03 no roteiro proposto:** produzir no caldeirão, salvar em andamento, fechar/reabrir/carregar, conferir resultado/consumo únicos e, em outra produção retomada, cancelar devolvendo ingredientes não utilizados às origens. Não inclui cancelamento/entrega bloqueados por capacidade cheia.
 5. Se uma captura ficar pendente por mudança de espaço durante a sincronia, fechar o popup, salvar/reabrir e liberar espaço pelo baú: entrega integral uma única vez e coleção atualizada só depois.
 
 6. Coletar no Bosque e restaurar o Herbário: cada marco concede +4 apenas uma vez, até 20. Se o Herbário já estava restaurado no save antigo, seu bônus deve aparecer ao carregar. Conferir os dois marcos no baú.
