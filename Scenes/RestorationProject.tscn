@@ -53,14 +53,18 @@ color = Color(0.86, 1, 0.62, 0.95)
 polygon = PackedVector2Array(0, -6, 3, -2, 6, 0, 3, 2, 0, 6, -3, 2, -6, 0, -3, -2)
 
 [node name="PromptLabel" type="Label" parent="."]
-offset_left = -116.0
-offset_top = -82.0
-offset_right = 116.0
-offset_bottom = -38.0
+offset_left = -180.0
+offset_top = -150.0
+offset_right = 180.0
+offset_bottom = -48.0
+mouse_filter = 2
 text = "Herbario em ruinas\nClique para restaurar (5 Trigo + 1 Agua)"
 horizontal_alignment = 1
 theme_override_colors/font_color = Color(0.78, 0.96, 0.7, 1)
-theme_override_font_sizes/font_size = 13
+theme_override_font_sizes/font_size = 16
+theme_override_colors/font_outline_color = Color(0.07, 0.12, 0.08, 1)
+theme_override_constants/outline_size = 6
+autowrap_mode = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_restoration")

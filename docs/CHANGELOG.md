@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-03 - Restauração: contadores e origem dos materiais
+
+- Herbário mostra disponível/necessário e uso de Baú da Vila + Mochila; recusas explicam falta, recompensa bloqueada e nova tentativa sem consumo. Avisos repetidos são substituídos, com tempo para leitura e posição de tela contida.
+- Clareira mostra misturas na Mochila e ausência de acesso ao baú remoto; descoberta/conclusão preservadas. Textos com contraste e quebra de linha acima dos objetos.
+- Sem mudança de custos, recompensas, transações, marcos ou save. Nova regressão com 18 verificações, suíte 41/41, importação e OpenGL/D3D12 conferidos. Save pessoal intacto; checklist manual adiado.
+
 ## 2026-10-03 - Mochila cheia: pesca e coleta com orientação de retomada
 
 - Coleta mostra quantidade/item, recurso preservado no ponto e depósito/retorno; aviso permanece quatro segundos antes de sumir. Lago distingue recusa antes da pesca de captura já preservada, com avisos contidos na tela e sem bloquear cliques.

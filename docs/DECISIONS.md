@@ -1,5 +1,12 @@
 # Decisions
 
+## Decisão 105 - Requisitos de restauração e origem dos recursos
+
+- Autor autorizou melhorar comunicação do Herbário e da Clareira existentes. Herbário apresenta disponível/necessário por item somando Storage e Mochila; recusa informa o que falta e consumo prioritário do baú. Falta de espaço na recompensa informa item/quantidade, depósito e nova tentativa, sem consumo do custo. Aviso novo substitui anterior para evitar sobreposição em cliques repetidos.
+- Clareira mostra misturas disponíveis/necessárias somente na Mochila e explica que não acessa o Baú da Vila. Recusa orienta preparar as faltantes e preserva carga; antes da descoberta continua apenas “Investigar clareira”. Contadores acompanham recursos runtime, inclusive após load. Conclusão oculta requisitos do Herbário e mantém a Clareira identificada como restaurada.
+- Ajuste de texto, contraste, quebra de linha e espaço acima dos objetos. Avisos do Herbário usam conversão mundo → tela e quatro segundos de leitura do helper existente; helper retorna o Label para substituição local, sem fila/framework novo. Custos, purificação, transações, recompensas/marcos, aprendizagem e schema de save não mudam.
+- `RestorationFeedbackSmokeTest`: 18 verificações de contadores/origens, consultas sem consumo, recusas/capacidade, substituição de aviso, JSON e restaurações/recompensas únicas; renderização técnica OpenGL/D3D12. Suíte 41/41 e save pessoal intacto. Manual adiado: leitura no mapa, alterar estoques pelo baú, recusas e nova tentativa, visita com misturas no baú versus Mochila. Picking/conforto/arte não aprovados automaticamente.
+
 ## Decisão 104 - Avisos de capacidade na pesca e coleta
 
 - Autor autorizou o recorte recomendado, com playtest adiado. Avisos passam a explicar a diferença entre recurso externo não coletado (permanece no ponto; depositar na vila e voltar) e captura já obtida (preservada; entrega automática integral quando houver espaço). Nenhuma nova fila, destino ou mudança de aquisição.

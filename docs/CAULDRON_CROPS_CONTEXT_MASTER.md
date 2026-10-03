@@ -6,7 +6,7 @@
 >
 > Este documento **não é uma especificação imutável**. O jogo ainda está sendo descoberto durante o desenvolvimento. Quando houver conflito entre este documento e uma decisão humana mais recente, a decisão humana prevalece.
 
-Estado operacional mais recente (2026-10-03): autor não poderá testar agora e autorizou continuar construção com checklist posterior. Não exigir novo gate manual a cada incremento nem presumir aceite. Segunda expedição implementada com aceites parciais de §46; HUD responsiva em §47, painéis do caldeirão/Livro em §48, avisos de produção em §49 e de capacidade na pesca/coleta em §50 verificados automaticamente. Consultar `ROADMAP.md` para fila atual/pendências. Relatos anteriores são históricos; arte e casos-limite não foram presumidos aprovados.
+Estado operacional mais recente (2026-10-03): autor não poderá testar agora e autorizou continuar construção com checklist posterior. Não exigir novo gate manual a cada incremento nem presumir aceite. Segunda expedição implementada com aceites parciais de §46; polimento de HUD/painéis/avisos em §47–50 e requisitos de restauração em §51 verificados automaticamente. Consultar `ROADMAP.md` para fila atual/pendências. Relatos anteriores são históricos; arte e casos-limite não foram presumidos aprovados.
 
 ---
 
@@ -1527,3 +1527,13 @@ Não muda preflight da pesca, atomicidade da entrega, coleção apenas após rec
 `CollectionCapacityFeedbackSmokeTest`: 18 verificações de fonte/estoque preservados, duração, pré-recusa sem abrir sincronia, captura dupla sem coleção prematura, textos/item/quantidade, painel opaco/contido em 800×600, 1024×768 e 1280×720, JSON e recusa de sobrescrita, depósito → entrega integral única e coleta única. Suíte completa 40/40, importação sem erros e inspeção OpenGL/D3D12. Fixture isolado, sem I/O do save pessoal; hash/tamanho/data iguais ao baseline.
 
 Manual adiado: leitura dos avisos no Bosque/lago, depósito/retorno para coletar, espaço ocupado durante sincronia → fechar/save/load → liberar espaço e conferir entrega única. Picking, conforto e direção artística permanecem pendentes; aceites prévios não são revogados. Próximo incremento recomendado: clareza dos requisitos/recusas da restauração existente (Herbário e Clareira), diferenciando Mochila e Storage local, sem novos projetos/recompensas/sistemas.
+
+# 51. ESTADO ATUAL — REQUISITOS E RECUSAS DE RESTAURAÇÃO
+
+Autor autorizou o recorte recomendado. Herbário mostra disponível/necessário somando baú e Mochila; recusa informa faltantes e consumo prioritário do Storage/complemento pessoal. Se a recompensa não couber, identifica item/quantidade e orienta depositar/tentar de novo, sem consumir custos. Aviso novo substitui anterior para evitar textos empilhados em cliques repetidos. Contadores consultam estados atuais, também após load, sem consumir ou alterar progresso.
+
+Clareira mantém descoberta gratuita e mostra misturas disponíveis/necessárias apenas na Mochila. Explica que Baú da Vila não é usado no local externo; recusa orienta preparar faltantes no caldeirão e informa preservação da carga. Antes de descobrir continua apenas “Investigar clareira”; restaurada conserva identificação sem requisitos obsoletos. Custos, purificação, reservas/transações, recompensas/marcos, aprendizagem e campos de save não mudam.
+
+Textos contrastados, quebrados e com espaço acima dos objetos. Avisos do Herbário usam conversão mundo → tela e quatro segundos de leitura do helper existente; retorno do Label permite substituição local, sem infraestrutura de fila. `RestorationFeedbackSmokeTest`: 18 verificações de contadores/origens, consulta invariável, recusa/capacidade, substituição do aviso, JSON e restaurações/recompensas únicas. Suíte completa 41/41, importação sem erros e OpenGL/D3D12 conferidos com fixture sintético. Save pessoal intacto por hash/tamanho/data; arquivos locais não relacionados excluídos do checkpoint.
+
+Checklist manual adiado: ler requisitos no mapa, mudar estoques pelo baú/conferir contadores, recusar por falta/espaço e retomar, visitar a Clareira com misturas no baú versus Mochila. Sinais/renderização técnica não aprovam picking real, conforto ou arte; pendências de §47–50 continuam próprias. Próximo incremento recomendado: orientação contextual do objetivo da expedição conforme materiais e carga, sem novas quests/etapas/recompensas.

@@ -16,6 +16,7 @@ const VillageResourceAccessScript = preload("res://Scripts/VillageResourceAccess
 var restored_state: bool = false
 var area_purified: bool = false
 var _village_resource_access = null
+var _feedback_label: Label
 
 @onready var collision_shape: CollisionShape2D = $CollisionShape2D
 @onready var ruined_visual: Node2D = $RuinedVisual
@@ -34,6 +35,22 @@ func set_area_purified(value: bool) -> void:
 	if is_inside_tree():
 		_refresh_state()
 
+func _process(_delta: float) -> void:
+	if area_purified and not restored_state:
+		prompt_label.text = get_requirements_feedback()
+
+func get_requirements_feedback() -> String:
+	# Consulta somente leitura; o consumo continua exclusivo de try_restore.
+	if restored_state:
+		return "Herbário restaurado"
+	var parts: PackedStringArray = []
+	var access = _get_village_resource_access()
+	var requirements := _build_requirement_totals()
+	for item_id in requirements:
+		parts.append("%s: %d/%d" % [Database.obter_nome_item(item_id), access.get_available(item_id), requirements[item_id]])
+	var source := "Baú da Vila + Mochila" if _find_village_storage() != null else "Recursos da Mochila"
+	return "Herbário em ruínas\n" + " · ".join(parts) + "\n" + source + "\nClique para restaurar"
+
 
 func try_restore() -> bool:
 	if not area_purified or restored_state:
@@ -46,7 +63,7 @@ func try_restore() -> bool:
 	if restoration_reward_item_id != "" and restoration_reward_quantity > 0:
 		reward[restoration_reward_item_id] = restoration_reward_quantity
 		if not GlobalInventory.can_accept_items(reward):
-			_show_feedback("Mochila sem espaço para a recompensa da restauração.")
+			_show_feedback("Mochila sem espaço para %dx %s.\nDeposite no Baú da Vila e tente restaurar novamente.\nNenhum recurso foi consumido." % [restoration_reward_quantity, Database.obter_nome_item(restoration_reward_item_id)])
 			return false
 	var requirements := _build_requirement_totals()
 	var receipt: Dictionary = {}
@@ -155,6 +172,7 @@ func _refresh_state() -> void:
 		restored_visual.visible = area_purified and restored_state
 	if prompt_label:
 		prompt_label.visible = area_purified and not restored_state
+		prompt_label.text = get_requirements_feedback()
 
 
 func _format_missing_requirements(missing: Dictionary) -> String:
@@ -170,7 +188,7 @@ func _format_missing_requirements(missing: Dictionary) -> String:
 		if Database != null and Database.has_method("obter_nome_item"):
 			item_name = str(Database.obter_nome_item(item_id))
 		parts.append("%s x%d" % [item_name, int(missing.get(item_id, 0))])
-	return "Faltam: %s." % ", ".join(parts)
+	return "Faltam: %s.\nUsa o Baú da Vila primeiro; a Mochila completa o restante.\nNenhum recurso foi consumido." % ", ".join(parts)
 
 
 func _show_feedback(text: String) -> void:
@@ -178,6 +196,9 @@ func _show_feedback(text: String) -> void:
 	if tree != null and tree.current_scene != null:
 		var ui: Node = tree.current_scene.get_node_or_null("UI")
 		if ui != null and ui.has_method("criar_texto_flutuante"):
-			ui.call("criar_texto_flutuante", text, global_position + Vector2(0.0, -52.0), Color(0.64, 0.95, 0.66, 1.0))
+			if is_instance_valid(_feedback_label):
+				_feedback_label.queue_free()
+			var screen_position := get_viewport().get_canvas_transform() * (global_position + Vector2(0.0, -52.0))
+			_feedback_label = ui.call("criar_texto_flutuante", text, screen_position, Color(0.64, 0.95, 0.66, 1.0), 4.0)
 			return
 	print(text)

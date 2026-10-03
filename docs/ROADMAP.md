@@ -1,6 +1,14 @@
 # Evolução do Projeto
 
-## Etapa ativa — Avisos de capacidade na pesca/coleta / testes manuais adiados (2026-10-03)
+## Etapa ativa — Requisitos de restauração claros / testes manuais adiados (2026-10-03)
+
+Herbário apresenta disponível/necessário somando Baú da Vila e Mochila, com recusa de materiais/recompensa e orientação de depósito/nova tentativa. Clareira conta apenas misturas na Mochila e explica que o baú remoto não é usado. Consultas não consomem recursos; custos, recompensas, marcos, transações e save preservados. Textos contrastados/quebrados; avisos do Herbário substituem anteriores, sem empilhar.
+
+Regressão `RestorationFeedbackSmokeTest`: 18 verificações; suíte 41/41, importação e inspeção OpenGL/D3D12. Manual adiado: legibilidade sobre o mapa, contadores após transferir no baú, falta de materiais/espaço e retry, visita à Clareira com carga na Mochila versus baú. Pendências anteriores continuam separadas, sem aprovação presumida.
+
+Próximo incremento recomendado: revisar orientação do objetivo da expedição para indicar a próxima ação conforme descoberta, materiais disponíveis e mistura carregada, evitando instruções repetidas/desatualizadas. Sem novas etapas de progressão, quests ou recompensas.
+
+## Checkpoint anterior — Avisos de capacidade na pesca/coleta (2026-10-03)
 
 Recusa de coleta informa quantidade/item, preservação no chão e depósito/retorno. Pesca distingue falta de espaço antes da sincronia de captura já obtida/preservada, listando itens e explicando entrega automática integral. Avisos curtos de capacidade permanecem quatro segundos antes de sumir; no lago, posição contida na tela sem capturar input. Painel da pesca opaco, textos quebrados e reposicionamento mantêm Fechar acessível em janela menor.
 

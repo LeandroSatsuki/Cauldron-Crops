@@ -5031,7 +5031,7 @@ func _on_comprar_verao_button_mouse_exited() -> void:
 
 
 
-func criar_texto_flutuante(texto: String, posicao_global: Vector2, cor: Color, hold_seconds: float = 0.0) -> void:
+func criar_texto_flutuante(texto: String, posicao_global: Vector2, cor: Color, hold_seconds: float = 0.0) -> Label:
 
 
 
@@ -5098,6 +5098,7 @@ func criar_texto_flutuante(texto: String, posicao_global: Vector2, cor: Color, h
 
 
 	var tween = create_tween()
+	tween.bind_node(label)
 
 
 
@@ -5124,6 +5125,7 @@ func criar_texto_flutuante(texto: String, posicao_global: Vector2, cor: Color, h
 
 
 	tween.tween_callback(label.queue_free)
+	return label
 
 
 

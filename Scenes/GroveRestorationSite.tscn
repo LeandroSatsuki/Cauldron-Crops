@@ -13,7 +13,7 @@ shape = SubResource("Shape_site")
 
 [node name="Prompt" type="Label" parent="."]
 offset_left = -210.0
-offset_top = -102.0
+offset_top = -140.0
 offset_right = 210.0
 offset_bottom = -69.0
 mouse_filter = 2
@@ -23,11 +23,12 @@ theme_override_constants/outline_size = 6
 theme_override_font_sizes/font_size = 20
 text = "Investigar clareira"
 horizontal_alignment = 1
+autowrap_mode = 2
 
 [node name="Feedback" type="Label" parent="."]
 visible = false
 offset_left = -270.0
-offset_top = -220.0
+offset_top = -320.0
 offset_right = 270.0
 offset_bottom = -110.0
 mouse_filter = 2
@@ -35,3 +36,4 @@ theme_override_colors/font_outline_color = Color(0.07, 0.12, 0.08, 1)
 theme_override_constants/outline_size = 6
 theme_override_font_sizes/font_size = 18
 horizontal_alignment = 1
+autowrap_mode = 2

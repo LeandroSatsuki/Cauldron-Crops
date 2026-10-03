@@ -26,7 +26,7 @@ func interact() -> bool:
 	var access := ResourceAccess.new()
 	var receipt: Dictionary = access.consume({GroveExpedition.MIXTURE_ITEM: GroveExpedition.REQUIRED_MIXTURES})
 	if not bool(receipt.get("success", false)):
-		_show_feedback("Traga 2 Misturas Restauradoras na Mochila.\nPrepare-as no caldeirão da vila.", Color("ecd99b"))
+		_show_feedback(get_requirements_feedback() + "\nPrepare as que faltam no caldeirão da vila.\nNenhuma mistura foi consumida.", Color("ecd99b"))
 		return false
 	if not GroveExpedition.complete_restoration():
 		access.refund(receipt)
@@ -46,8 +46,19 @@ func _on_input_event(viewport: Viewport, event: InputEvent, _shape_index: int) -
 
 func _refresh() -> void:
 	if prompt != null:
-		prompt.text = "Clareira restaurada" if GroveExpedition.restored else ("Restaurar · 2 misturas na Mochila" if GroveExpedition.discovered else "Investigar clareira")
+		prompt.text = get_requirements_feedback()
 	queue_redraw()
+
+func _process(_delta: float) -> void:
+	if GroveExpedition.discovered and not GroveExpedition.restored:
+		prompt.text = get_requirements_feedback()
+
+func get_requirements_feedback() -> String:
+	if GroveExpedition.restored:
+		return "Clareira restaurada"
+	if not GroveExpedition.discovered:
+		return "Investigar clareira"
+	return "Restaurar · %d/%d Misturas Restauradoras na Mochila\nBaú da Vila não é usado aqui." % [GlobalInventory.get_item_quantity(GroveExpedition.MIXTURE_ITEM), GroveExpedition.REQUIRED_MIXTURES]
 
 
 func _draw() -> void:
