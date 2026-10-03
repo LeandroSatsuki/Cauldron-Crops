@@ -1,5 +1,12 @@
 # Decisions
 
+## Decisão 106 - Próxima ação contextual da expedição
+
+- Autor autorizou orientar o objetivo da Clareira conforme recursos existentes. Texto estático foi substituído por uma próxima ação e contador da Mochila: coletar carvão faltante, preparar apenas misturas faltantes, retirar quantidade necessária do baú, aguardar/recolher produção ou resolver cancelamento pendente. Com carga suficiente, orienta levar ao Bosque ou interagir com a Clareira conforme a região.
+- Consulta HOME atual/em cache somente para informação do baú/caldeirão; não transfere recursos nem reconcilia timers. Carvão da vila pode orientar retorno/preparo, mas não é consumido remotamente. Receita/custo piloto de 2 carvões por mistura permanecem; não há nova etapa, automação de produção, recompensa, flag ou schema de save. Sem descoberta/restauração pendente, texto vazio e tracker oculto pelas regras existentes.
+- Minimização e ocultação em modais preservadas. `GroveObjectiveGuidanceSmokeTest`: 37 verificações de orientação, consultas invariáveis, produção manual/lote/bloqueio/cancelamento, viagem real com HOME em cache, JSON, minimização e contenção em três resoluções. Suíte 42/42 e importação/renderização OpenGL/D3D12 conferidas; avisos de refund bloqueado são esperados no fixture.
+- Manual adiado: conferir cada orientação com estoques reais, produção e depósito/retirada, viagem e minimização. Não afirmar picking, conforto ou layout global aprovado. Próximo incremento recomendado: conferir coexistência dos painéis de objetivos/produção/HUD e corrigir sobreposições concretas, sem novo conteúdo ou sistemas.
+
 ## Decisão 105 - Requisitos de restauração e origem dos recursos
 
 - Autor autorizou melhorar comunicação do Herbário e da Clareira existentes. Herbário apresenta disponível/necessário por item somando Storage e Mochila; recusa informa o que falta e consumo prioritário do baú. Falta de espaço na recompensa informa item/quantidade, depósito e nova tentativa, sem consumo do custo. Aviso novo substitui anterior para evitar sobreposição em cliques repetidos.

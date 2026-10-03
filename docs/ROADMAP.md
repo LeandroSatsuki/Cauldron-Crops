@@ -1,6 +1,14 @@
 # Evolução do Projeto
 
-## Etapa ativa — Requisitos de restauração claros / testes manuais adiados (2026-10-03)
+## Etapa ativa — Orientação contextual da expedição / testes manuais adiados (2026-10-03)
+
+Objetivo troca instruções estáticas por próxima ação: reunir carvão faltante, preparar quantidade faltante, retirar do baú quando há mistura, aguardar/recolher no caldeirão ou resolver cancelamento pendente. Com carga suficiente, levar ao Bosque/interagir com a Clareira conforme região. Consulta somente leitura de HOME/cache; nenhuma transferência, produção automática ou alteração de progressão/save.
+
+`GroveObjectiveGuidanceSmokeTest`: 37 verificações de contexto/estoques/produção, viagem real/cache, JSON, minimização e três resoluções; suíte 42/42, importação e inspeção OpenGL/D3D12. Manual adiado: transições de orientação em gameplay, produção, depósito/retirada/viagem e minimização. Coexistência global de painéis/conforto/arte não presumidos aprovados.
+
+Próximo incremento recomendado: conferir coexistência dos painéis de objetivos/produção/HUD e corrigir sobreposições concretas durante gameplay, sem novos sistemas/conteúdo.
+
+## Checkpoint anterior — Requisitos de restauração claros (2026-10-03)
 
 Herbário apresenta disponível/necessário somando Baú da Vila e Mochila, com recusa de materiais/recompensa e orientação de depósito/nova tentativa. Clareira conta apenas misturas na Mochila e explica que o baú remoto não é usado. Consultas não consomem recursos; custos, recompensas, marcos, transações e save preservados. Textos contrastados/quebrados; avisos do Herbário substituem anteriores, sem empilhar.
 

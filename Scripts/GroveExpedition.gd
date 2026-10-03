@@ -133,8 +133,50 @@ func reconcile_recipe_discoveries() -> void:
 
 
 func get_objective_text() -> String:
+	if not discovered or restored:
+		return ""
 	var carried: int = GlobalInventory.get_item_quantity(MIXTURE_ITEM)
-	return "2 carvões → 1 mistura no caldeirão.\nLeve 2 à clareira do Bosque.\nMochila: %d / %d misturas\nRetire do baú antes de sair.\n\nCarvão renovável ao fim do caminho.\nRecompensa: receita de crescimento." % [carried, REQUIRED_MIXTURES]
+	var scene := get_tree().current_scene
+	var region_id := ""
+	if scene != null and scene.has_method("get_current_region_identity"):
+		region_id = str(scene.call("get_current_region_identity").get("region_id", ""))
+	var home: Node = scene if region_id == "farm_village" else RegionTravelCoordinator.get_cached_region_scene(&"farm_village")
+	var chest: Node = home.get_node_or_null("VillageChest") if home != null else null
+	var stored := int(chest.call("get_item_quantity", MIXTURE_ITEM)) if chest != null else 0
+	var missing := maxi(0, REQUIRED_MIXTURES - carried)
+	var next_action: String
+	if missing == 0:
+		next_action = "Interaja com a clareira para restaurar." if region_id == "foraging_grove" else "Leve as 2 misturas à clareira do Bosque."
+	elif stored > 0:
+		var take := mini(stored, missing)
+		next_action = "Retire %d mistura%s do Baú da Vila para a Mochila." % [take, "" if take == 1 else "s"]
+		if region_id == "foraging_grove":
+			next_action = "Volte à vila. " + next_action
+	else:
+		var cauldron: Node = home.get_node_or_null("CauldronUI") if home != null else null
+		var production: Dictionary = cauldron.call("get_save_data") if cauldron != null else {}
+		var batch: Dictionary = production.get("batch", {})
+		var producing_mixture: bool = production.get("result_item", "") == MIXTURE_ITEM or batch.get("result_item", "") == MIXTURE_ITEM
+		if producing_mixture:
+			if bool(batch.get("cancel_pending", false)):
+				next_action = "Cancelamento pendente: libere espaço na Mochila e tente cancelar no caldeirão."
+			elif production.get("state", "") == "READY" or bool(batch.get("waiting_for_space", false)):
+				next_action = "Mistura pronta: libere espaço na Mochila e interaja com o caldeirão para recolher."
+			else:
+				next_action = "Misturas em preparo. Aguarde o resultado do caldeirão."
+			if region_id == "foraging_grove":
+				next_action = "Volte à vila. " + next_action
+		else:
+			var personal_charcoal := GlobalInventory.get_item_quantity("carvao")
+			var stored_charcoal := int(chest.call("get_item_quantity", "carvao")) if chest != null else 0
+			var charcoal_missing := maxi(0, missing * 2 - personal_charcoal - stored_charcoal)
+			if charcoal_missing > 0:
+				next_action = "Reúna mais %d %s. Fonte renovável ao fim do caminho do Bosque." % [charcoal_missing, "carvão" if charcoal_missing == 1 else "carvões"]
+			else:
+				next_action = "Prepare %d mistura%s pelo Livro no caldeirão: 2 carvões por mistura." % [missing, "" if missing == 1 else "s"]
+				if region_id == "foraging_grove":
+					next_action = "Volte à vila. " + next_action
+	return "Próxima ação: " + next_action + "\n\nMochila: %d / %d misturas" % [carried, REQUIRED_MIXTURES] + ("\nBaú da Vila: %d mistura%s" % [stored, "" if stored == 1 else "s"] if stored > 0 else "")
 
 
 func _create_tracker() -> void:

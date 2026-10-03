@@ -6,7 +6,7 @@
 >
 > Este documento **não é uma especificação imutável**. O jogo ainda está sendo descoberto durante o desenvolvimento. Quando houver conflito entre este documento e uma decisão humana mais recente, a decisão humana prevalece.
 
-Estado operacional mais recente (2026-10-03): autor não poderá testar agora e autorizou continuar construção com checklist posterior. Não exigir novo gate manual a cada incremento nem presumir aceite. Segunda expedição implementada com aceites parciais de §46; polimento de HUD/painéis/avisos em §47–50 e requisitos de restauração em §51 verificados automaticamente. Consultar `ROADMAP.md` para fila atual/pendências. Relatos anteriores são históricos; arte e casos-limite não foram presumidos aprovados.
+Estado operacional mais recente (2026-10-03): autor não poderá testar agora e autorizou continuar construção com checklist posterior. Não exigir novo gate manual a cada incremento nem presumir aceite. Segunda expedição implementada com aceites parciais de §46; polimento em §47–51 e orientação contextual da expedição em §52 verificados automaticamente. Consultar `ROADMAP.md` para fila atual/pendências. Relatos anteriores são históricos; arte e casos-limite não foram presumidos aprovados.
 
 ---
 
@@ -1537,3 +1537,13 @@ Clareira mantém descoberta gratuita e mostra misturas disponíveis/necessárias
 Textos contrastados, quebrados e com espaço acima dos objetos. Avisos do Herbário usam conversão mundo → tela e quatro segundos de leitura do helper existente; retorno do Label permite substituição local, sem infraestrutura de fila. `RestorationFeedbackSmokeTest`: 18 verificações de contadores/origens, consulta invariável, recusa/capacidade, substituição do aviso, JSON e restaurações/recompensas únicas. Suíte completa 41/41, importação sem erros e OpenGL/D3D12 conferidos com fixture sintético. Save pessoal intacto por hash/tamanho/data; arquivos locais não relacionados excluídos do checkpoint.
 
 Checklist manual adiado: ler requisitos no mapa, mudar estoques pelo baú/conferir contadores, recusar por falta/espaço e retomar, visitar a Clareira com misturas no baú versus Mochila. Sinais/renderização técnica não aprovam picking real, conforto ou arte; pendências de §47–50 continuam próprias. Próximo incremento recomendado: orientação contextual do objetivo da expedição conforme materiais e carga, sem novas quests/etapas/recompensas.
+
+# 52. ESTADO ATUAL — ORIENTAÇÃO CONTEXTUAL DA EXPEDIÇÃO
+
+Autor autorizou o recorte recomendado. Objetivo apresenta próxima ação e contador da Mochila, em vez de repetir todos os passos: reunir carvão que falta, preparar só misturas faltantes, retirar quantidade necessária do baú quando disponível, aguardar produção, recolher resultado pronto/bloqueado ou resolver cancelamento pendente. Com duas misturas carregadas, orienta levar ao Bosque ou interagir com a Clareira conforme região. Antes da descoberta e após conclusão, texto vazio; visibilidade/minimização/modal seguem regras existentes.
+
+Texto consulta estoques e snapshot de produção da HOME atual ou preservada em cache somente para informação. Não transfere recursos, avança timers, altera fontes/receitas/progresso nem cria automação/fila/quest. Contagem de carvão pode incluir Storage para orientar retorno/preparo; consumo externo continua estritamente pessoal. Custo de 2 carvões por mistura, produção, recompensa e schema de save não mudam.
+
+`GroveObjectiveGuidanceSmokeTest`: 37 verificações de orientação em estados de material/carga/baú, produção manual/lote/pronto/bloqueado/cancelamento pendente, consulta sem mutação, viagem real/HOME em cache, JSON, minimização e contenção em 800×720, 1024×768 e 1280×720. Suíte 42/42, importação sem erros e renderização técnica OpenGL/D3D12. Warnings de refund bloqueado são esperados no fixture; save pessoal intacto por hash/tamanho/data.
+
+Manual adiado: transições de orientação em jogo com materiais reais, depósito/retirada, preparo/conclusão/bloqueio/cancelamento, viagem e minimização. Não presumir picking, conforto, arte ou coexistência global de painéis; pendências de §47–51 continuam separadas. Próximo incremento recomendado: conferir coexistência de objetivos/produção/HUD e corrigir sobreposições concretas, sem ampliar gameplay.

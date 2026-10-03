@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-03 - Objetivo da expedição com próxima ação contextual
+
+- Objetivo indica reunir carvão faltante, preparar misturas faltantes, retirar do baú, aguardar/recolher produção ou resolver cancelamento pendente; com duas misturas na Mochila, orienta viagem/restauração conforme a região. Não pede retirada quando o baú está vazio.
+- Consultas somente leitura em HOME atual/cache; minimização/ocultação em modais e após conclusão preservadas. Sem mudança de custo, produção, recursos, progressão ou save.
+- Regressão nova com 37 verificações, suíte 42/42, importação e OpenGL/D3D12 conferidos. Save pessoal intacto; orientação em gameplay real continua no checklist manual adiado.
+
 ## 2026-10-03 - Restauração: contadores e origem dos materiais
 
 - Herbário mostra disponível/necessário e uso de Baú da Vila + Mochila; recusas explicam falta, recompensa bloqueada e nova tentativa sem consumo. Avisos repetidos são substituídos, com tempo para leitura e posição de tela contida.
