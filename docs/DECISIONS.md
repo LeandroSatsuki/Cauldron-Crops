@@ -1,5 +1,12 @@
 # Decisions
 
+## Decisão 111 - Prioridade de controles quando a HUD está saturada
+
+- Autor autorizou o próximo recorte de fallback. Candidatas livres continuam preferidas. Sem espaço livre, minimizar lexicograficamente área sobre controles, sobreposição restante e distância à posição preferida. Proteger botões visíveis/habilitados, slots da Mochila e cancelamento do lote; os três consumidores existentes reutilizam a mesma busca.
+- Não mover/minimizar objetivos do jogador nem criar gerenciador global/compactação automática. Escolha entre candidatas, não otimização contínua ou garantia de zero sobreposição em tela saturada. Conteúdo não interativo pode ser coberto no extremo.
+- `HUDCrowdedFallbackSmokeTest`: 28 verificações em três resoluções, saturação evitável/inevitável, determinismo, arrastes com lote ativo, minimizar/cancelar e snapshots de domínio invariáveis. OpenGL inspecionado. Picking/conforto manual UI-06 permanecem adiados; produção, estoque, progressão e save intactos.
+- Fechamento técnico: suíte 46/46, importação sem erros e save pessoal intacto por hash/tamanho/data. Arquivos locais não relacionados fora do checkpoint. Próximo recorte: preparar checkpoint jogável/checklist, sem ampliar conteúdo automaticamente.
+
 ## Decisão 110 - Avisos temporários do caldeirão em coordenadas de tela
 
 - Autor autorizou corrigir avisos existentes; baseline reproduziu aviso fora da tela. Ponto do caldeirão passa por transform com canvas; helper existente recebe quatro segundos de leitura, quebra/contorno/input ignorado. Componente local de Label contém largura/posição durante resize e, se tocar HUD/produção/tracker, reutiliza busca de espaço livre com reserva vertical para animação. Não altera helper global nem cria fila/janelas novas.

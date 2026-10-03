@@ -1593,3 +1593,11 @@ CauldronTemporaryFeedbackSmokeTest: 33 verificações em quatro resoluções de 
 Fechamento técnico: suíte 45/45, retestes finais de avisos (33), produção (87) e coexistência (305), importação sem erros e inspeção OpenGL. Hash/tamanho/data do save pessoal intactos; warnings de refund bloqueado são esperados nos fixtures e arquivos locais não relacionados ficam fora da publicação.
 
 Próximo recorte recomendado: revisar fallback quando objetivos/painéis eliminam todo espaço livre, preservando acesso a controles e escolha de minimização do jogador, sem gerenciador global de janelas ou nova progressão. Demais casos manuais e aceites anteriores continuam separados.
+
+# 57. ESTADO ATUAL — FALLBACK COM HUD SATURADA
+
+Autor autorizou o recorte recomendado. Baseline analítico do fixture: canto preferido cobria região protegida mesmo havendo alternativa menos sobreposta, porque toda tela era considerada ocupada. Busca ainda prefere candidatas livres; sem nenhuma, prioriza menor área sobre controles, depois sobreposição restante e distância. Protege botões visíveis/habilitados e slots da Mochila; tracker/aviso protegem cancelar produção. Nenhum gerenciador global, mudança de gameplay/save, movimento ou minimização automática dos objetivos.
+
+Regressão HUDCrowdedFallbackSmokeTest com 28 verificações em 800×720, 1024×768 e 1280×720: fixtures saturados, redução evitável, limite inevitável, determinismo e arrastes com lote real ativo. Minimizar/cancelar descobertos nos casos integrados e snapshots invariáveis. Renderização OpenGL inspecionada: conteúdo pode se sobrepor no extremo, mas controles testados ficam expostos. Não prometer otimização contínua, zero colisão universal ou picking/conforto manual aprovado.
+
+Fechamento técnico: suíte 46/46 e importação sem erros. UI-06 fica no checklist manual adiado. Save pessoal preservado por hash/tamanho/data; arquivos locais não relacionados excluídos da publicação. Próximo recorte recomendado: preparar checkpoint jogável e revisar o checklist consolidado antes de ampliar conteúdo. Demais aceites/pendências continuam separados.

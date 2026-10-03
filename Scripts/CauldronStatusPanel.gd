@@ -43,5 +43,5 @@ func _apply_layout() -> void:
 	size.y = get_combined_minimum_size().y
 	var scene := get_tree().current_scene
 	var ui := scene.get_node_or_null("UI") if scene != null else null
-	position = HUDLayoutScript.find_free_panel_position(size, screen_size, HUDLayoutScript.get_occupied_hud_rects(ui))
+	position = HUDLayoutScript.find_free_panel_position(size, screen_size, HUDLayoutScript.get_occupied_hud_rects(ui), HUDLayoutScript.get_protected_hud_rects(ui))
 	_applying_layout = false

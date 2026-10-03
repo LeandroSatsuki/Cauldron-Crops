@@ -1,6 +1,16 @@
 # Evolução do Projeto
 
-## Etapa ativa — Avisos temporários do caldeirão contidos (2026-10-03)
+## Etapa ativa — Fallback de HUD sem espaço livre (2026-10-03)
+
+Quando nenhuma candidata fica livre, a busca deixa de retornar sempre ao canto inferior direito. Primeiro minimiza a área sobre controles visíveis/habilitados e slots da Mochila; depois a sobreposição restante; por fim a distância ao canto preferido. Produção, orientação da Clareira e aviso temporário usam essa política, incluindo proteção do cancelamento do lote. Não move/minimiza objetivos automaticamente nem altera gameplay/save. A escolha é limitada às candidatas; saturação total não permite prometer zero sobreposição.
+
+`HUDCrowdedFallbackSmokeTest`: 28 verificações, três resoluções de 800×720 a 1280×720, fixtures sem espaço livre e saturação inevitável, determinismo, arrastes com lote ativo, botões minimizar/cancelar e snapshots invariáveis. Renderização OpenGL inspecionada: no caso extremo há sobreposição de conteúdo, mas os controles testados permanecem descobertos. Manual UI-06 adiado, sem presumir picking ou conforto aprovados.
+
+Fechamento técnico: suíte 46/46, importação sem erros, inspeção OpenGL e save pessoal intacto por hash/tamanho/data. Arte local não relacionada e UID preexistente ficam fora da publicação.
+
+Próximo recorte recomendado: preparar um checkpoint jogável e revisar o checklist consolidado de playtest antes de ampliar conteúdo. Não criar novas mecânicas por consequência deste ajuste.
+
+## Checkpoint anterior — Avisos temporários do caldeirão contidos (2026-10-03)
 
 Baseline reproduziu aviso fora da tela. Caldeirão converte seu ponto do mundo para tela e reutiliza helper com quatro segundos de leitura, quebra de linha, contorno e mouse ignorado. Aviso novo substitui o anterior; componente local contém largura/posição após resize e busca espaço livre se tocar HUD/produção/objetivo da Clareira, reservando altura para saída animada. Sucesso, lote pronto, cancelamento concluído e recusa de resultado usam o mesmo caminho. Nenhuma mudança de estoque, produção, entrega, refund, timers ou save; helper global/outros sistemas permanecem intactos.
 
@@ -45,6 +55,8 @@ Conferência adicional de apresentação:
 
 - [ ] **UI-05 — Avisos temporários do caldeirão:** ler sucesso, lote pronto e cancelamento; recusa de resultado somente se surgir naturalmente. Mover câmera/redimensionar enquanto aviso aparece e repetir interação. Esperado: aviso contido, quebrado e legível por quatro segundos antes da saída; mensagem nova substitui anterior e não captura cliques. Não exigir ausência de colisão se todos os espaços livres forem ocupados pelo usuário; registrar esse caso separadamente.
 
+- [ ] **UI-06 — HUD sem espaço livre:** durante produção normal, reduzir a janela e arrastar objetivos para perto dos painéis de produção/Clareira. Conferir acesso por clique a minimizar, ferramentas/Mochila e cancelar, sem exigir ausência de toda sobreposição de conteúdo. Objetivos não devem ser movidos/minimizados automaticamente. Cancelar somente um lote que você realmente queira interromper; não editar save nem reativar F10. Registrar tamanho da janela/posição se algum controle ficar coberto.
+
 #### Bloco B — Produção durante viagem
 
 - [ ] **TR-01 — Concluir:** iniciar lote que permita viajar e usar F5 no Bosque ainda em andamento; anotar estoques/resultados antes. F9 deve retornar à vila e retomar o snapshot. Conferir entrega/consumo únicos, inclusive após reabrir/carregar. Mistura usa 2 carvões por unidade e 4 segundos por preparo; quantidade limitada aos recursos reais. Se terminar antes de salvar, caso de retomada em andamento não executado.
@@ -69,13 +81,13 @@ Caso adicional de persistência deste checkpoint:
 
 Registro de retorno por ID: **aprovado / falhou / não executado**, resolução, pré-condição, ação, esperado e observado. Um caso aprovado não encerra os outros; informar perda/duplicação/travamento separadamente de preferência estética. Aceite completo de experiência depende destes retornos, não da suíte automática.
 
-### Riscos técnicos auditados — sem implementação nesta etapa
+### Riscos técnicos auditados — acompanhamento dos checkpoints
 
 | Prioridade | Evidência e limite | Próximo recorte mínimo |
 | --- | --- | --- |
 | Alta — gravação do save (mitigada neste checkpoint) | Baseline gravava diretamente no principal; agora temporário conferido, backup anterior e erros verificados. Regressão de I/O isolado acrescentada. Sem perda reproduzida no save pessoal nem garantia contra falha física/energia. | Conferência manual normal adiada. Backup não é carregado automaticamente; recuperação assistida quando necessária. Sem sistema novo de slots/cloud/migração. |
 | Média — avisos temporários (mitigada neste checkpoint) | Baseline reproduziu texto fora da tela. Avisos do caldeirão agora convertem mundo → tela, quebram linha, mantêm leitura, respeitam resize e procuram espaço quando tocam HUD/painéis. | Conferência manual UI-05 adiada. Falta total de espaço continua no risco de fallback abaixo; sem fila global ou mudança de entrega/refund. |
-| Média — falta de espaço na tela | `HUDLayout.find_free_panel_position` retorna posição preferida quando nenhuma candidata cabe; não há política adicional de compactação. Limite já documentado, não regressão comprovada nas cinco resoluções do teste. | Reprodução de arrastes extremos e definição de fallback explícito, preservando escolha de minimização e acesso a cancelar. Não prometer suporte irrestrito. |
+| Média — falta de espaço na tela (mitigação limitada) | Fallback agora prioriza controles e reduz sobreposição entre candidatas. Fixture reproduz o canto antigo cobrindo região evitável; 28 verificações e renderização técnica. Saturação absoluta ainda implica colisão de conteúdo. | UI-06 manual adiado; não prometer zero colisão/picking aprovado, compactação automática ou suporte irrestrito. |
 | Pendente de experiência | Testes por sinais/geometria/JSON não cobrem picking real, saves legados reais, arte, conforto ou duração. | Checklist acima, sem inventar aprovação nem bloquear toda continuidade enquanto autor estiver indisponível. |
 
 ## Checkpoint anterior — Coexistência de objetivos, produção e HUD (2026-10-03)

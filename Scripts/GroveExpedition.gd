@@ -268,4 +268,9 @@ func _layout_tracker() -> void:
 		production.visibility_changed.connect(_queue_tracker_layout)
 	if production != null and production.is_visible_in_tree():
 		occupied.append(production.get_global_rect())
-	_tracker.position = HUDLayoutScript.find_free_panel_position(_tracker.size, screen, occupied)
+	var protected := HUDLayoutScript.get_protected_hud_rects(ui)
+	if production != null and production.is_visible_in_tree():
+		var cancel := scene.get_node_or_null("CauldronUI/StatusLayer/BatchProgressPanel/MarginContainer/VBoxBatch/BtnCancelarProducao") as Control
+		if cancel != null and cancel.is_visible_in_tree():
+			protected.append(cancel.get_global_rect())
+	_tracker.position = HUDLayoutScript.find_free_panel_position(_tracker.size, screen, occupied, protected)

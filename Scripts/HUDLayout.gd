@@ -128,30 +128,61 @@ static func get_occupied_hud_rects(ui: Node) -> Array[Rect2]:
 	return rectangles
 
 
-static func find_free_panel_position(panel_size: Vector2, screen: Vector2, occupied: Array[Rect2]) -> Vector2:
+static func get_protected_hud_rects(ui: Node) -> Array[Rect2]:
+	var rectangles: Array[Rect2] = []
+	if ui == null:
+		return rectangles
+	for control in ui.find_children("*", "BaseButton", true, false):
+		if control.is_visible_in_tree() and not control.disabled:
+			rectangles.append(control.get_global_rect())
+	# Slots são painéis interativos, não BaseButton.
+	var inventory := ui.get_node_or_null("InventoryBackdrop") as Control
+	if inventory != null and inventory.is_visible_in_tree():
+		rectangles.append(inventory.get_global_rect())
+	return rectangles
+
+static func find_free_panel_position(panel_size: Vector2, screen: Vector2, occupied: Array[Rect2], protected: Array[Rect2] = []) -> Vector2:
 	# Apresentação apenas: objetivos arrastados não são movidos por esta busca.
 	var preferred := screen - panel_size - Vector2(20, 20)
 	var xs: Array[float] = [preferred.x, 20.0]
 	var ys: Array[float] = [preferred.y, 20.0]
-	for rectangle in occupied:
+	for rectangle in occupied + protected:
 		xs.append(rectangle.position.x - panel_size.x - 12.0)
 		xs.append(rectangle.end.x + 12.0)
 		ys.append(rectangle.position.y - panel_size.y - 12.0)
 		ys.append(rectangle.end.y + 12.0)
 	var best := Vector2(maxf(20, preferred.x), maxf(20, preferred.y))
 	var distance := INF
+	var fallback := best
+	var fallback_protected_overlap := INF
+	var fallback_score := INF
+	var fallback_distance := INF
 	for x in xs:
 		for y in ys:
-			var candidate := Rect2(Vector2(x, y), panel_size)
+			var bounded := Vector2(clampf(x, 12.0, maxf(12.0, screen.x - panel_size.x - 12.0)), clampf(y, 12.0, maxf(12.0, screen.y - panel_size.y - 12.0)))
+			var candidate := Rect2(bounded, panel_size)
 			if not Rect2(Vector2(12, 12), screen - Vector2(24, 24)).encloses(candidate):
 				continue
 			var blocked := false
+			var overlap := 0.0
 			for rectangle in occupied:
 				if candidate.intersects(rectangle.grow(6.0)):
 					blocked = true
-					break
+					overlap += candidate.intersection(rectangle.grow(6.0)).get_area()
+			var protected_overlap := 0.0
+			for rectangle in protected:
+				protected_overlap += candidate.intersection(rectangle.grow(6.0)).get_area()
+			if protected_overlap > 0.0:
+				blocked = true
 			var candidate_distance := candidate.position.distance_squared_to(preferred)
+			# Controles têm prioridade sobre a área de conteúdo inevitavelmente coberta.
+			var same_priority := is_equal_approx(protected_overlap, fallback_protected_overlap)
+			if protected_overlap < fallback_protected_overlap or (same_priority and (overlap < fallback_score or (is_equal_approx(overlap, fallback_score) and candidate_distance < fallback_distance))):
+				fallback = candidate.position
+				fallback_protected_overlap = protected_overlap
+				fallback_score = overlap
+				fallback_distance = candidate_distance
 			if not blocked and candidate_distance < distance:
 				best = candidate.position
 				distance = candidate_distance
-	return best
+	return best if distance < INF else fallback

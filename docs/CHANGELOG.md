@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-03 - Fallback de HUD prioriza controles
+
+- Falta de espaço agora escolhe menor área sobre controles e depois menor sobreposição restante, em vez do canto fixo. Produção, objetivo da Clareira e aviso do caldeirão usam a política; cancelamento do lote protegido.
+- Posição/minimização escolhidas pelo usuário e gameplay/save preservados. Saturação total ainda pode sobrepor conteúdo; não há compactação automática. Regressão com 28 verificações e inspeção OpenGL; manual UI-06 adiado.
+- Suíte 46/46 e importação sem erros. Save pessoal intacto por hash/tamanho/data; arquivos locais não relacionados preservados fora do checkpoint.
+
 ## 2026-10-03 - Avisos temporários do caldeirão legíveis na tela
 
 - Corrigido aviso fora da tela reproduzido: conversão mundo/tela, quebra/contorno, quatro segundos de leitura, resize contido e novo aviso substituindo anterior. Procura espaço quando toca HUD/painéis, sem mover objetivos do usuário.

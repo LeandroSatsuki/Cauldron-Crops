@@ -18,8 +18,16 @@ func _process(_delta: float) -> void:
 	var tracker: Control = GroveExpedition.get("_tracker")
 	if tracker != null and tracker.is_visible_in_tree():
 		occupied.append(tracker.get_global_rect())
+	var protected := HUDLayoutScript.get_protected_hud_rects(get_parent())
+	var toggle: Control = GroveExpedition.get("_tracker_toggle")
+	if toggle != null and toggle.is_visible_in_tree():
+		protected.append(toggle.get_global_rect())
+	if production != null and production.is_visible_in_tree():
+		var cancel := scene.get_node_or_null("CauldronUI/StatusLayer/BatchProgressPanel/MarginContainer/VBoxBatch/BtnCancelarProducao") as Control
+		if cancel != null and cancel.is_visible_in_tree():
+			protected.append(cancel.get_global_rect())
 	for rectangle in occupied:
 		if get_global_rect().intersects(rectangle.grow(6.0)):
 			# Reserva vertical para a saída animada; não move os painéis do jogador.
-			position = HUDLayoutScript.find_free_panel_position(size + Vector2(0, 50), screen, occupied) + Vector2(0, 50)
+			position = HUDLayoutScript.find_free_panel_position(size + Vector2(0, 50), screen, occupied, protected) + Vector2(0, 50)
 			break
