@@ -17,7 +17,7 @@ As seções 1–8 abaixo são planejamento histórico de blockout, não instruç
 1. **Aprovado pelo autor:** arar/plantar/regar um lote inicial, salvar, redimensionar a janela e carregar; posição relativa, cultura e rega preservadas.
 2. **Aprovado pelo autor:** fechar/reabrir em outro tamanho de janela e carregar novamente o mesmo save. Não implica teste adicional de saves legados: estes podem reposicionar a grade uma vez para o layout canônico.
 3. **Pendente:** purificar o pocket; investigar a pedra e usar cada um dos quatro lotes sem disputa de clique. Confirmar o Herbário lateral e a área livre abaixo da grade.
-4. **Pendente:** viajar ao Bosque, mudar o tamanho da janela e retornar. Confirmar posição/estado da grade e acesso à pesca, baú e caldeirão; observar a entrega física do golem.
+4. **Aprovado pelo autor:** viajar ao Bosque, mudar o tamanho da janela e retornar; conferir grade/culturas, abrir baú/caldeirão e pescar. **Pendente separadamente:** observar a entrega física do golem, que não fez parte do roteiro aprovado.
 
 Regressão de input corrigida na Decisão 99 e validada manualmente pelo autor em 2026-10-03: abriu baú/caldeirão com enxada selecionada, fechou os painéis e arou um lote da grade inicial com sucesso. Aceite restrito a esse roteiro; os status acima registram as validações adicionais. O teste técnico verifica que `_unhandled_input` não consome o evento antes do picking.
 

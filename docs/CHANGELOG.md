@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-03 - Aceite manual de viagem e retorno após resize
+
+- Autor aprovou viajar ao Bosque, redimensionar fora da vila e retornar, conferindo grade/culturas e acesso a baú, caldeirão e pesca.
+- Não inclui entrega física do golem, purificação/restauração ou os roteiros completos de Mochila/persistência do caldeirão. Demais pendências mantidas; próximo roteiro manual é purificação → pedra → quatro lotes → Herbário.
+- Registro somente documental; revisão do diff, sem código/save ou nova execução da suíte.
+
 ## 2026-10-03 - Aceite manual de cultivo e persistência entre resoluções
 
 - Autor aprovou o roteiro de arar/plantar/regar um lote inicial, salvar, redimensionar/carregar e fechar/reabrir em outro tamanho de janela/carregar novamente.
