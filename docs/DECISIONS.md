@@ -1,5 +1,12 @@
 # Decisions
 
+## Decisão 99 - Clique nos objetos tem prioridade sobre enxada em solo livre
+
+- Auditoria de continuidade reproduziu uma falha que os testes por callbacks não cobriam: com enxada ativa, `Main._unhandled_input` consumia o clique no baú antes do physics picking. O estágio de picking ocorre depois de `_unhandled_input`; o manipulador do objeto nunca recebia o evento.
+- Correção mínima: reutilizar `_world_position_has_interaction_collider` antes do fallback da enxada. Se há collider, deixar o evento não consumido para o objeto/lote; em solo livre, manter o caminho agrícola existente. Não criar despachante novo nem modificar seleção, sensores, navegação, cultivo, layout ou save.
+- `CoreWorldInteractionSmokeTest` alinha câmera/mouse do viewport e chama o estágio real de `_unhandled_input`: baú, collider do caldeirão, lago e lote existente devem preservar o evento, sem iniciar rota agrícola indevida; solo livre deve continuar criando/arando um lote. A regressão falhou no baú antes da correção.
+- Limite: este teste verifica a prioridade anterior ao picking, não cliques completos do sistema operacional, hitboxes de Control ou conforto visual. Aceite manual continua pendente, incluindo abrir baú/caldeirão com enxada ativa.
+
 ## Decisão 98 - Origem agrícola explícita e estável entre resoluções
 
 - Após a auditoria somente leitura, o autor autorizou a implementação em 2026-10-02. O diagnóstico reproduziu deslocamento da grade com viewport 1280×720, 1920×1080, 2560×1440 e 2560×1009; em 1920×1080 havia interseção com o caldeirão e nas janelas maiores com a entrada do Bosque. O piloto também podia tocar a corrupção. Resize na mesma instância não movia a grade; recriar a cena recalculava a origem.

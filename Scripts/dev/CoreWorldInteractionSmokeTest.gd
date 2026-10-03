@@ -41,6 +41,8 @@ func _run() -> void:
 		_fail("cena principal incompleta para validar interacoes")
 		return
 
+	if not _test_hoe_input_priority(chest, cauldron, fishing_spot):
+		return
 	if not await _test_chest_approach(player, chest, ui):
 		return
 	if not await _test_cauldron_approach(player, cauldron):
@@ -59,6 +61,52 @@ func _run() -> void:
 	await get_tree().process_frame
 	print("CoreWorldInteractionSmokeTest: PASS - aproximacao, pesca/bau/caldeirao/golem, purificacao -> pedra -> quatro lotes -> Herbario e JSON/resize preservam o percurso.")
 	get_tree().quit(0)
+
+
+func _test_hoe_input_priority(chest: VillageChest, cauldron: Node2D, fishing_spot: Node2D) -> bool:
+	# Align the canvas with the viewport mouse, without OS pointer automation.
+	# Exercise _unhandled_input before the later physics picking stage.
+	var camera: Camera2D = _main.get_node("MainCamera") as Camera2D
+	var original_position: Vector2 = camera.position
+	_main.call("set_camera_follow_enabled", false)
+	ToolManager.force_select_tool(ToolManager.ToolType.HOE)
+	var targets: Array[Vector2] = [
+		chest.global_position,
+		(cauldron.get_node("BaseAnchor/ObstacleBody/CollisionShape2D") as Node2D).global_position,
+		fishing_spot.global_position,
+		(_main.call("obter_farm_plot_por_grid_position", Vector2i(0, 0)) as Node2D).global_position,
+	]
+	for target in targets:
+		camera.position += target - _main.get_global_mouse_position()
+		camera.force_update_scroll()
+		if not _expect_route(_main.get_global_mouse_position().distance_to(target) < 0.1, "fixture nao alinhou clique ao objeto"):
+			return false
+		if not _expect_route(_main.call("_world_position_has_interaction_collider", target), "fixture do objeto sem collider em " + str(target)):
+			return false
+		var reset_event := InputEventAction.new()
+		reset_event.action = "smoke_test_unused_action"
+		_main.get_viewport().push_input(reset_event)
+		_main.call("_unhandled_input", _left_click())
+		if not _expect_route(not _main.get_viewport().is_input_handled() and not _main.call("has_pending_player_interaction"), "enxada consumiu clique de objeto antes do physics picking em " + str(target)):
+			return false
+	var free_cell := Vector2i(6, 5)
+	var free_position: Vector2 = _main.call("_converter_grid_em_posicao_global", free_cell)
+	camera.position += free_position - _main.get_global_mouse_position()
+	camera.force_update_scroll()
+	if not _expect_route(not _main.call("_world_position_has_interaction_collider", free_position), "fixture de solo livre contem collider"):
+		return false
+	var reset_event := InputEventAction.new()
+	reset_event.action = "smoke_test_unused_action"
+	_main.get_viewport().push_input(reset_event)
+	_main.call("_unhandled_input", _left_click())
+	var free_plot: Node2D = _main.call("obter_farm_plot_por_grid_position", free_cell) as Node2D
+	if not _expect_route(_main.get_viewport().is_input_handled() and free_plot != null and free_plot.get("arado"), "prioridade dos objetos bloqueou enxada em solo livre"):
+		return false
+	camera.position = original_position
+	camera.force_update_scroll()
+	_main.call("set_camera_follow_enabled", true)
+	ToolManager.clear_tool()
+	return true
 
 
 func _test_chest_approach(player: PlayerAvatar, chest: VillageChest, ui: Node) -> bool:

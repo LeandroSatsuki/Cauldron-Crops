@@ -2183,6 +2183,10 @@ func _unhandled_input(event: InputEvent) -> void:
 			if tool_manager != null and tool_manager.has_method("get_active_tool"):
 				var active_tool: int = int(tool_manager.call("get_active_tool"))
 				if active_tool == int(ToolManager.ToolType.HOE):
+					# Physics picking runs after _unhandled_input. Let objects/plots
+					# receive their own click instead of treating them as free soil.
+					if _world_position_has_interaction_collider(click_position):
+						return
 					handle_hoe_world_click(click_position)
 					get_viewport().set_input_as_handled()
 					return

@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-02 - Prioridade dos cliques com enxada selecionada
+
+- Reproduzido clique no baú consumido pelo fallback agrícola antes do physics picking. Enxada agora deixa cliques sobre colliders chegarem aos objetos/lotes; solo livre mantém o comportamento existente. Nenhuma mudança de save, layout ou conteúdo.
+- Regressão ampliada cobre baú, caldeirão, lago, lote existente e solo livre no estágio real de `_unhandled_input`, além do percurso integrado anterior. O teste falhava antes da correção; cliques do sistema operacional e conforto visual permanecem pendentes.
+- Validação: 35/35 smoke tests sem erros, regressão reproduzida antes/corrigida depois e `git diff --check` limpo. Hash/tamanho/data do save pessoal inalterados; arte/arquivos locais não relacionados preservados.
+
 ## 2026-10-02 - Regressão integrada do percurso de restauração
 
 - `CoreWorldInteractionSmokeTest` ampliado: aproximação física à purificação, entrega pelos sinais dos botões reais, investigação da pedra, arar/plantar/regar os quatro lotes e restaurar o Herbário. Confere consumo, recompensa única e expansão da Mochila para 16 slots.

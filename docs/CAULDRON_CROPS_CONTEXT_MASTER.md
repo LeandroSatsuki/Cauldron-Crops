@@ -1429,3 +1429,11 @@ Próximo passo: validar manualmente o layout canônico e save/load em janelas di
 Continuidade técnica em 2026-10-02: o teste integrado das interações agora encadeia purificação → investigação → arar/plantar/regar os quatro lotes → Herbário, usando os manipuladores reais e navegação/física ativas. Confere consumo, recompensa/marco únicos e reaplicação de JSON em outra cena/resolução. Somente teste/documentação, com recursos e velocidade sintéticos e sem I/O de save pessoal. Não testa picking do mouse ou hitboxes de Control; o aceite manual acima continua pendente, sem presumir aprovação a partir de “pode seguir”.
 
 Checkpoint validado com suíte 35/35 sem erros e reexecução do percurso após conferir o tamanho efetivo dos viewports headless. Hash, tamanho e data do save pessoal permanecem inalterados. Próximo passo continua sendo o roteiro manual de layout/interações, não novos sistemas.
+
+# 45. ESTADO ATUAL — PRIORIDADE DO INPUT COM ENXADA
+
+Auditoria autorizada pela continuidade encontrou/reproduziu clique no baú consumido em `Main._unhandled_input` com enxada ativa, antes do physics picking. Os testes anteriores chamavam diretamente os callbacks e não detectavam essa etapa. A correção reutiliza a consulta física existente: colliders deixam o evento seguir até o objeto/lote; solo livre continua pelo fallback agrícola. Não muda seleção, sensores, navegação, layout, conteúdo ou save.
+
+Regressão no teste integrado verifica o estágio real de `_unhandled_input` sobre baú, collider do caldeirão, lago e lote existente, além de criação/aração em solo livre. Falhou no baú antes da correção. Usa alinhamento câmera/mouse do viewport, não automação de pointer do sistema operacional. Decisão 99 registra contrato e limites; aceite manual continua pendente, especialmente abrir baú/caldeirão com enxada ativa e o roteiro anterior de layout/save/viagem.
+
+Validação deste checkpoint: 35/35 smoke tests sem erros e `git diff --check` limpo. Save pessoal com hash/tamanho/data inalterados; arquivos locais não relacionados fora da publicação. Próximo passo: playtest específico da prioridade dos cliques e roteiro integrado anterior; não iniciar sistemas novos automaticamente.

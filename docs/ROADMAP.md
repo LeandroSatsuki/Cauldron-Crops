@@ -16,6 +16,8 @@ Próximo passo: validar manualmente cultivo/save/load e reabertura em janelas di
 
 Checkpoint técnico seguinte: percurso purificação → pedra → quatro culturas → Herbário coberto no teste integrado, incluindo consumo/recompensa/marco únicos e JSON em cena recriada/resolução diferente. Nenhuma mudança de gameplay. Callbacks/sinais com navegação real não validam picking do mouse/hitboxes da UI; o próximo passo manual acima não foi substituído.
 
+Auditoria seguinte reproduziu conflito de prioridade com enxada ativa: o fallback agrícola consumia cliques antes do picking dos objetos. Corrigido apenas esse despacho e ampliada a regressão para objetos/lotes e solo livre (Decisão 99). Incluir baú/caldeirão com enxada ativa no roteiro manual; nenhum sistema novo autorizado por este checkpoint.
+
 ## Fase 0 - Estado atual
 
 - O projeto já possui o loop principal validado em sua base atual.
