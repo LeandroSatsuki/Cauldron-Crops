@@ -1,6 +1,16 @@
 # Evolução do Projeto
 
-## Etapa ativa — Orientação contextual da expedição / testes manuais adiados (2026-10-03)
+## Etapa ativa — Coexistência de objetivos, produção e HUD / testes manuais adiados (2026-10-03)
+
+Baseline reproduziu objetivo da Clareira encobrindo aviso do caldeirão. Ambos agora buscam espaço livre de tela, considerando Mochila, ferramentas, botões visíveis do Caderno e objetivos iniciais arrastados. Produção tem prioridade; tracker evita seu retângulo. Altura natural do tracker acompanha conteúdo/minimização; resize e eventos de layout recalculam posições. Área vazia do VBox legado das lojas não é tratada como botão visível. Sem mudança de estoque, timers, progresso ou save.
+
+`HUDPanelCoexistenceSmokeTest`: 305 verificações em cinco resoluções, resultado pronto/preparo/lote ativo/lote pausado/cancelamento pendente, arraste, minimização, acesso geométrico ao cancelamento e estados invariáveis. Manual continua adiado: coexistência durante gameplay, arraste/resize, minimizar e interagir com baú/caldeirão sem captura indevida de cliques. Resoluções menores que 800×720 e posições arbitrárias sem espaço livre não recebem aceite de usabilidade.
+
+Suíte completa 43/43, importação sem erros e inspeção técnica OpenGL/D3D12. Save pessoal intacto por hash/tamanho/data; avisos transitórios de ações não fazem parte desta coordenação dos painéis persistentes.
+
+Próximo incremento recomendado: consolidar o checklist integrado das pendências manuais e auditar os riscos técnicos restantes do recorte atual antes de ampliar conteúdo. Não presumir fechamento artístico ou aprovação manual.
+
+## Checkpoint anterior — Orientação contextual da expedição (2026-10-03)
 
 Objetivo troca instruções estáticas por próxima ação: reunir carvão faltante, preparar quantidade faltante, retirar do baú quando há mistura, aguardar/recolher no caldeirão ou resolver cancelamento pendente. Com carga suficiente, levar ao Bosque/interagir com a Clareira conforme região. Consulta somente leitura de HOME/cache; nenhuma transferência, produção automática ou alteração de progressão/save.
 

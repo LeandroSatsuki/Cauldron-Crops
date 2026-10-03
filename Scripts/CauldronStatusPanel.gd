@@ -1,4 +1,5 @@
 extends PanelContainer
+const HUDLayoutScript = preload("res://Scripts/HUDLayout.gd")
 
 # Apresentação em coordenadas de tela, sem depender da câmera ou do save.
 var _layout_queued := false
@@ -18,6 +19,12 @@ func _ready() -> void:
 	get_viewport().size_changed.connect(_queue_layout)
 	minimum_size_changed.connect(_queue_layout)
 	visibility_changed.connect(_queue_layout)
+	var ui := get_node_or_null("../../../UI")
+	if ui != null:
+		for node_name in ["InventoryBackdrop", "ToolBarPanel", "LeftPanel", "InitialObjectivesPanel"]:
+			var control: Control = ui.get_node(node_name)
+			control.item_rect_changed.connect(_queue_layout)
+			control.visibility_changed.connect(_queue_layout)
 	_queue_layout()
 
 func _queue_layout() -> void:
@@ -34,5 +41,7 @@ func _apply_layout() -> void:
 	var screen_size := get_viewport().get_visible_rect().size
 	size.x = minf(400, screen_size.x - 40)
 	size.y = get_combined_minimum_size().y
-	position = Vector2(screen_size.x - size.x - 20, maxf(20, screen_size.y - size.y - 20))
+	var scene := get_tree().current_scene
+	var ui := scene.get_node_or_null("UI") if scene != null else null
+	position = HUDLayoutScript.find_free_panel_position(size, screen_size, HUDLayoutScript.get_occupied_hud_rects(ui))
 	_applying_layout = false

@@ -1,5 +1,13 @@
 # Decisions
 
+## Decisão 107 - Objetivos e produção respeitam áreas ocupadas da HUD
+
+- Baseline reproduziu colisão entre objetivo da Clareira e aviso persistente do caldeirão. Ajuste restrito à apresentação: busca posições próximas ao canto inferior direito, evitando Mochila, ferramentas, botões visíveis do Caderno e objetivos iniciais. Produção tem prioridade; tracker evita também seu retângulo. Não reposicionar os objetivos arrastados pelo jogador para acomodar estes avisos.
+- Reutilizados helpers em HUDLayout, sem framework de janelas ou novos sistemas. O VBox legado possui altura vazia das lojas removidas: só seus filhos visíveis reservam espaço. Altura do tracker segue conteúdo/minimização. Eventos de geometria/visibilidade/resize e refresh existente mantêm layout atualizado. Sem alterar estoques, reservas, produção, timers, progresso ou save.
+- Regressão com 305 verificações em 800×720, 1024×768, 1280×720, 1920×1080 e 2560×1440: cinco estados de produção, arraste, minimização, cancelamento contido e snapshots invariáveis. Warnings de restituição bloqueada são esperados no fixture sintético. Testes não acessam o save pessoal.
+- Suíte completa 43/43, importação sem erros e inspeção técnica OpenGL/D3D12. Save pessoal intacto por hash/tamanho/data; avisos transitórios de ações continuam fora do escopo da coordenação dos painéis persistentes.
+- Manual adiado: conforto no mapa, minimizar/arrastar/redimensionar e clicar em baú/caldeirão com avisos ativos. Busca não promete coexistência quando o jogador ocupa todo o espaço livre ou em resoluções menores não homologadas; picking real e arte não aprovados por geometria/renderização. Próximo recorte: checklist integrado e auditoria das pendências existentes, sem expansão automática de conteúdo.
+
 ## Decisão 106 - Próxima ação contextual da expedição
 
 - Autor autorizou orientar o objetivo da Clareira conforme recursos existentes. Texto estático foi substituído por uma próxima ação e contador da Mochila: coletar carvão faltante, preparar apenas misturas faltantes, retirar quantidade necessária do baú, aguardar/recolher produção ou resolver cancelamento pendente. Com carga suficiente, orienta levar ao Bosque ou interagir com a Clareira conforme a região.

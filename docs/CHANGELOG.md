@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-03 - Objetivos e produção sem sobreposição com a HUD
+
+- Corrigida colisão reproduzida entre tracker da Clareira e aviso do caldeirão. Layout considera Mochila, ferramentas, Caderno visível e posição arrastada dos objetivos; produção tem prioridade. Tracker usa altura natural e respeita minimização/resize.
+- Reserva de espaço não inclui a área vazia das lojas removidas. Sem mudanças de produção, estoque, progressão ou persistência.
+- Nova regressão com 305 verificações em cinco resoluções e cinco estados de produção. Checklist manual permanece adiado, sem presumir aprovação de conforto, arte ou picking real.
+- Suíte completa 43/43, importação e inspeção técnica OpenGL/D3D12. Save pessoal intacto; arquivos locais não relacionados excluídos do checkpoint.
+
 ## 2026-10-03 - Objetivo da expedição com próxima ação contextual
 
 - Objetivo indica reunir carvão faltante, preparar misturas faltantes, retirar do baú, aguardar/recolher produção ou resolver cancelamento pendente; com duas misturas na Mochila, orienta viagem/restauração conforme a região. Não pede retirada quando o baú está vazio.

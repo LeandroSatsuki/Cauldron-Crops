@@ -106,3 +106,52 @@ func _queue_objectives_sync() -> void:
 		return
 	_objectives_sync_queued = true
 	_sync_objectives_toggle.call_deferred()
+
+
+static func get_occupied_hud_rects(ui: Node) -> Array[Rect2]:
+	var rectangles: Array[Rect2] = []
+	if ui == null:
+		return rectangles
+	for node_name in ["InventoryBackdrop", "ToolBarPanel", "LeftPanel", "InitialObjectivesPanel"]:
+		var control := ui.get_node_or_null(node_name) as Control
+		if control != null and control.is_visible_in_tree():
+			if node_name == "LeftPanel":
+				# O VBox legado conserva altura vazia das lojas removidas.
+				for child in control.get_children():
+					if child is Control and child.is_visible_in_tree():
+						rectangles.append(child.get_global_rect())
+			else:
+				rectangles.append(control.get_global_rect())
+	var toggle: Control = ui.get("initial_objectives_toggle_button")
+	if toggle != null and toggle.is_visible_in_tree():
+		rectangles.append(toggle.get_global_rect())
+	return rectangles
+
+
+static func find_free_panel_position(panel_size: Vector2, screen: Vector2, occupied: Array[Rect2]) -> Vector2:
+	# Apresentação apenas: objetivos arrastados não são movidos por esta busca.
+	var preferred := screen - panel_size - Vector2(20, 20)
+	var xs: Array[float] = [preferred.x, 20.0]
+	var ys: Array[float] = [preferred.y, 20.0]
+	for rectangle in occupied:
+		xs.append(rectangle.position.x - panel_size.x - 12.0)
+		xs.append(rectangle.end.x + 12.0)
+		ys.append(rectangle.position.y - panel_size.y - 12.0)
+		ys.append(rectangle.end.y + 12.0)
+	var best := Vector2(maxf(20, preferred.x), maxf(20, preferred.y))
+	var distance := INF
+	for x in xs:
+		for y in ys:
+			var candidate := Rect2(Vector2(x, y), panel_size)
+			if not Rect2(Vector2(12, 12), screen - Vector2(24, 24)).encloses(candidate):
+				continue
+			var blocked := false
+			for rectangle in occupied:
+				if candidate.intersects(rectangle.grow(6.0)):
+					blocked = true
+					break
+			var candidate_distance := candidate.position.distance_squared_to(preferred)
+			if not blocked and candidate_distance < distance:
+				best = candidate.position
+				distance = candidate_distance
+	return best

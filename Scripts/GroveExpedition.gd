@@ -10,6 +10,7 @@ const MIXTURE_ITEM := "mistura_restauradora"
 const REQUIRED_MIXTURES := 2
 const RENEWABLE_SOURCE := "clearing_charcoal"
 const CHARCOAL_RENEWAL_SECONDS := 45.0
+const HUDLayoutScript = preload("res://Scripts/HUDLayout.gd")
 const SOURCE_IDS: Array[String] = [
 	"charcoal_entry", "charcoal_branch", "charcoal_main", "charcoal_deep", RENEWABLE_SOURCE,
 ]
@@ -22,6 +23,7 @@ var _tracker_body: Label
 var _tracker_toggle: Button
 var _tracker_collapsed: bool = false
 var _tracker_refresh_seconds: float = 0.0
+var _tracker_layout_queued := false
 
 
 func _ready() -> void:
@@ -187,11 +189,8 @@ func _create_tracker() -> void:
 	_tracker = PanelContainer.new()
 	_tracker.name = "ExpeditionPanel"
 	layer.add_child(_tracker)
-	_tracker.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_RIGHT)
-	_tracker.offset_left = -354.0
-	_tracker.offset_top = -246.0
-	_tracker.offset_right = -18.0
-	_tracker.offset_bottom = -18.0
+	_tracker.minimum_size_changed.connect(_queue_tracker_layout)
+	get_viewport().size_changed.connect(_queue_tracker_layout)
 	var style := StyleBoxFlat.new()
 	style.bg_color = Color("233528")
 	style.border_color = Color("81996b")
@@ -237,4 +236,36 @@ func _refresh_tracker() -> void:
 	_tracker_toggle.text = "Clareira · %s" % ["expandir +" if _tracker_collapsed else "minimizar −"]
 	_tracker_body.visible = not _tracker_collapsed
 	_tracker_body.text = get_objective_text()
-	_tracker.offset_top = -66.0 if _tracker_collapsed else -246.0
+	_queue_tracker_layout()
+
+
+func _queue_tracker_layout() -> void:
+	if _tracker_layout_queued:
+		return
+	_tracker_layout_queued = true
+	_layout_tracker.call_deferred()
+
+
+func _layout_tracker() -> void:
+	_tracker_layout_queued = false
+	if _tracker == null or not _tracker.is_visible_in_tree():
+		return
+	var screen := get_viewport().get_visible_rect().size
+	_tracker.size.x = minf(336.0, screen.x - 40.0)
+	_tracker.size.y = _tracker.get_combined_minimum_size().y
+	var scene := get_tree().current_scene
+	var ui := scene.get_node_or_null("UI") if scene != null else null
+	var occupied := HUDLayoutScript.get_occupied_hud_rects(ui)
+	if ui != null:
+		for node_name in ["InventoryBackdrop", "ToolBarPanel", "LeftPanel", "InitialObjectivesPanel"]:
+			var control: Control = ui.get_node(node_name)
+			if not control.item_rect_changed.is_connected(_queue_tracker_layout):
+				control.item_rect_changed.connect(_queue_tracker_layout)
+				control.visibility_changed.connect(_queue_tracker_layout)
+	var production := scene.get_node_or_null("CauldronUI/StatusLayer/BatchProgressPanel") as Control if scene != null else null
+	if production != null and not production.item_rect_changed.is_connected(_queue_tracker_layout):
+		production.item_rect_changed.connect(_queue_tracker_layout)
+		production.visibility_changed.connect(_queue_tracker_layout)
+	if production != null and production.is_visible_in_tree():
+		occupied.append(production.get_global_rect())
+	_tracker.position = HUDLayoutScript.find_free_panel_position(_tracker.size, screen, occupied)
