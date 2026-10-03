@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-03 - Aceite manual da persistência da Clareira restaurada
+
+- Autor aprovou salvar no Bosque restaurado, carregar retornando à vila com itens/receita preservados, revisitar sem novo consumo/recompensa e fechar/reabrir/carregar mantendo canteiro verde e objetivo oculto.
+- Persistência após restauração aprovada no roteiro proposto. Próximo teste: produção em viagem, conclusão e cancelamento em lotes separados. Save anterior à restauração, capacidade cheia, duração/balanceamento e arte não foram presumidos aprovados.
+- Apenas documentação e revisão do diff; nenhuma nova suíte, alteração de código ou acesso ao save pessoal. Roteiro de produção considera os tempos curtos atuais sem alterá-los ou forçar estado via F10/save.
+
 ## 2026-10-03 - Aceite manual da restauração e recompensa da Clareira
 
 - Autor validou levar duas misturas na Mochila, restaurar com consumo único/canteiro verde/objetivo oculto, repetir clique sem duplicação, produzir Infusão da Clareira e aplicar a poção numa cultura crescendo sem ferramenta.

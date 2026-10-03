@@ -8,7 +8,7 @@ Essas fases continuam sendo o baseline histórico. Em 2026-10-03, após escolher
 
 ## Segunda expedição — Clareira recuperável (2026-10-03)
 
-Estado: percurso implementado; validação automática/renderização técnica concluídas. Descoberta/coleta/preparo e restauração/recompensa agrícola aprovados manualmente em 2026-10-03 nos roteiros propostos; save/load, duração e balanceamento ainda pendentes. Não é uma nova fase da Mochila nem reabre a V0.
+Estado: percurso implementado; validação automática/renderização técnica concluídas. Descoberta/coleta/preparo, restauração/recompensa agrícola e save/load no Bosque já restaurado aprovados manualmente em 2026-10-03 nos roteiros propostos. Produção em viagem, save anterior à restauração, duração e balanceamento ainda pendentes. Não é uma nova fase da Mochila nem reabre a V0.
 
 ### Escopo e percurso
 
@@ -54,6 +54,8 @@ Aceite manual em 2026-10-03: após o roteiro de investigar o canteiro, conferir 
 
 Aceite manual seguinte em 2026-10-03: autor respondeu “validado pode seguir” ao roteiro de levar duas misturas na Mochila, restaurar com consumo único/canteiro verde/objetivo oculto, repetir o clique sem nova recompensa ou consumo, produzir Infusão da Clareira e aplicar a Poção de Crescimento numa cultura crescendo sem ferramenta. Passos 4–5 aprovados nesse escopo. Persistência, duração/balanceamento e arte não foram incluídos. Próximo teste: salvar no Bosque já restaurado, carregar/reabrir e revisitar; depois produção em viagem (passo 7). Não exigir apagar progresso para repetir a descoberta; o estado anterior à restauração continua sem aceite manual de save/load.
 
+Aceite manual seguinte em 2026-10-03: autor respondeu “aprovado pode seguir” ao roteiro de F5 no Bosque restaurado, F9 retornando à vila com itens/receita preservados, revisita com canteiro verde/objetivo oculto e sem consumo/recompensa repetidos, seguido de fechar/reabrir/carregar e repetir a conferência. Persistência após restauração aprovada nesse escopo. Não inclui save anterior à restauração, produção em viagem, capacidade cheia, duração/balanceamento ou estética. Próximo teste: passo 7, conclusão e cancelamento em lotes separados.
+
 Roteiro:
 
 1. Carregar o jogo existente, visitar o Bosque e investigar o canteiro ao final do caminho principal. Conferir receita aprendida e minimizar/expandir o objetivo.
@@ -62,7 +64,7 @@ Roteiro:
 4. Retornar e restaurar carregando as duas; confirmar consumo único, canteiro verde, receita nova e objetivo oculto. Outro clique não concede recompensa nem consome mais itens.
 5. Fazer mais uma mistura e combinar com carvão pela Infusão da Clareira. Usar a poção e clicar numa cultura crescendo sem ferramenta; os tempos atuais são curtos, portanto realizar próximo ao lote. Não interpretar utilidade/balanceamento definitivo a partir do teste sintético de 8 segundos.
 6. F5 no Bosque antes e depois da restauração; F9 deve retornar à vila. Fechar/reabrir/carregar e revisitar; conferir flags, quantidades, fontes e ausência de recompensa duplicada.
-7. Em outra produção de duas misturas, viajar enquanto produz, salvar no Bosque e carregar; verificar conclusão/consumo únicos e, se cancelar antes de terminar, restituição apenas da reserva restante à origem.
+7. Iniciar lote de misturas com quantidade suficiente para viajar ainda em produção (cada unidade leva 4 segundos; aumentar a quantidade somente até o que os recursos disponíveis permitirem). Anotar carvão no baú/Mochila e misturas antes de começar; viajar, salvar no Bosque e carregar. Em um lote, concluir e conferir resultado único/consumo de 2 carvões por mistura. Em outro lote retomado, cancelar antes de terminar e conferir devolução apenas dos ingredientes dos crafts não entregues às origens. Se o lote terminar antes do F5, não validar retomada/cancelamento em andamento com esse caso; não alterar timers, usar F10 ou editar o save para forçar o teste.
 
 Pendências anteriores (captura pendente, entrega/refund do caldeirão bloqueados por capacidade, saves legados reais e arte geral) continuam separadas. Revisar ritmo/legibilidade após este playtest, sem iniciar lojas/NPCs/combate ou novos sistemas automaticamente.
 

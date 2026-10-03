@@ -12,6 +12,8 @@ Aceite manual parcial em 2026-10-03: descoberta da clareira, aprendizado/minimiz
 
 Aceite seguinte em 2026-10-03: restauração com duas misturas na Mochila, consumo/recompensa únicos, canteiro verde/objetivo oculto, fabricação da Infusão da Clareira e efeito da poção no cultivo aprovados no roteiro proposto. Próximo teste: save/load no Bosque restaurado, reabertura/revisita e depois produção em viagem. Não apagar progresso; duração/balanceamento e arte permanecem pendentes. Somente documentação, sem nova suíte ou gameplay.
 
+Aceite seguinte em 2026-10-03: persistência no Bosque restaurado (F5/F9, retorno com itens/receita, revisita e reabertura/load sem consumo/recompensa repetidos) aprovada no roteiro proposto. Próximo teste: produção em viagem, conclusão e cancelamento em lotes separados. Save anterior à restauração, capacidade cheia, duração/balanceamento e arte permanecem pendentes. Apenas documentação, sem nova suíte/código/save.
+
 ## Baseline operacional anterior — 2026-10-02/03
 
 As fases numeradas abaixo registram o planejamento histórico; não representam uma fila ainda não implementada. O fechamento da V0 foi aprovado. A evolução pós-V0 já entregou exploração do Bosque, acesso a recursos da vila e Fases A–E da Mochila.

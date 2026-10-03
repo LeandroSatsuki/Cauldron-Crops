@@ -15,6 +15,8 @@
 
 - Aceite manual seguinte em 2026-10-03: restauração com duas misturas carregadas, consumo/recompensa únicos, mudança visual/objetivo oculto, fabricação da Infusão da Clareira e efeito da poção no cultivo aprovados no roteiro proposto. Não inclui save/load, duração/balanceamento ou estética. Próximo teste: persistência no Bosque restaurado e depois produção em viagem, sem apagar progresso. Registro documental, sem nova suíte/gameplay.
 
+- Aceite manual seguinte em 2026-10-03: F5/F9 no Bosque restaurado, retorno à vila com itens/receita, revisita e reabertura/load preservando canteiro/objetivo, sem recompensa/consumo repetidos, aprovados no roteiro proposto. Não inclui produção em viagem ou save anterior à restauração. Próximo teste: conclusão e cancelamento em lotes separados, usando quantidade suficiente para viajar/salvar em andamento sem alterar timers ou save. Registro somente documental, sem nova suíte/gameplay.
+
 ## Decisão 99 - Clique nos objetos tem prioridade sobre enxada em solo livre
 
 - Auditoria de continuidade reproduziu uma falha que os testes por callbacks não cobriam: com enxada ativa, `Main._unhandled_input` consumia o clique no baú antes do physics picking. O estágio de picking ocorre depois de `_unhandled_input`; o manipulador do objeto nunca recebia o evento.
