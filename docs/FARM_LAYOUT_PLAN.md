@@ -16,7 +16,7 @@ As seções 1–8 abaixo são planejamento histórico de blockout, não instruç
 
 1. **Aprovado pelo autor:** arar/plantar/regar um lote inicial, salvar, redimensionar a janela e carregar; posição relativa, cultura e rega preservadas.
 2. **Aprovado pelo autor:** fechar/reabrir em outro tamanho de janela e carregar novamente o mesmo save. Não implica teste adicional de saves legados: estes podem reposicionar a grade uma vez para o layout canônico.
-3. **Aprovado pelo autor:** roteiro de purificação → pedra → arar/plantar/regar cada lote 2×2 → restaurar Herbário lateral, sem travamentos ou recompensa duplicada. **Pendente separadamente:** inspeção específica da área livre abaixo da grade, que não foi solicitada nesse roteiro.
+3. **Aprovado pelo autor:** roteiro de purificação → pedra → arar/plantar/regar cada lote 2×2 → restaurar Herbário lateral, sem travamentos ou recompensa duplicada. Em roteiro separado, aprovou criar um lote livre imediatamente abaixo do lado direito da grade inicial, plantar e regar, sem sobreposição. Não implica inspeção artística ou teste manual de todas as células do piloto.
 4. **Aprovado pelo autor:** viajar ao Bosque, mudar o tamanho da janela e retornar; conferir grade/culturas, abrir baú/caldeirão e pescar. Em roteiro separado, também aprovou o golem colher, transportar e depositar, inclusive com o personagem no caminho, sem perda/duplicação de carga.
 
 Regressão de input corrigida na Decisão 99 e validada manualmente pelo autor em 2026-10-03: abriu baú/caldeirão com enxada selecionada, fechou os painéis e arou um lote da grade inicial com sucesso. Aceite restrito a esse roteiro; os status acima registram as validações adicionais. O teste técnico verifica que `_unhandled_input` não consome o evento antes do picking.

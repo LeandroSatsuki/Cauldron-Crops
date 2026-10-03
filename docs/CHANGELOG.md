@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-03 - Aceite manual do cultivo livre e fechamento dos roteiros de layout
+
+- Autor aprovou criar um lote livre imediatamente abaixo do lado direito da grade inicial, plantar e regar sem sobreposição.
+- Roteiros funcionais propostos de input, cultivo/resoluções, viagem/retorno, restauração, golem e lote livre concluídos. Não amplia o aceite a todas as células, saves legados, Mochila/persistência do caldeirão ou composição artística; nenhum sistema novo iniciado.
+- Somente documentação e revisão do diff, sem nova suíte ou mudança de código/save.
+
 ## 2026-10-03 - Aceite manual da logística física do golem
 
 - Autor aprovou colheita → transporte → depósito no baú, inclusive outra entrega com o personagem no caminho, sem perder ou duplicar carga.
