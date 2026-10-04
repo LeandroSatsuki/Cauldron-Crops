@@ -58,6 +58,9 @@ func save_game() -> bool:
 			last_file_error = "Estado de Solo Vivo inválido. O save anterior não foi alterado."
 			return false
 	var data := _build_save_data()
+	if not GroveExpedition.is_save_data_valid(data.get("grove_expedition")):
+		last_file_error = "Estado da expedição inválido. O save anterior não foi alterado."
+		return false
 	if not _is_living_soil_save_valid(data, _resolve_farm_save_source(data, SAVE_VERSION)):
 		last_file_error = "Estado de Solo Vivo inválido. O save anterior não foi alterado."
 		return false

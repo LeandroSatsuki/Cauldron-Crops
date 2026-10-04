@@ -3,6 +3,7 @@ extends Node
 
 const GROVE_SCENE := preload("res://Scenes/ForagingGroveRegion.tscn")
 const EXPECTED_NODE_COUNT := 4
+const ORIGINAL_SOURCE_IDS := ["charcoal_entry", "charcoal_branch", "charcoal_main", "charcoal_deep"]
 
 
 var _inventory_before: Dictionary = {}
@@ -29,11 +30,10 @@ func _run() -> void:
 	await get_tree().physics_frame
 	await get_tree().physics_frame
 
-	# Preservar o contrato dos quatro pontos originais. A nova fonte renovável
-	# tem quantidade/ciclo próprios, cobertos por GroveRestorationSliceSmokeTest.
+	# Preservar os quatro IDs originais, sem incluir fontes renováveis novas.
 	var forage_nodes: Array[Node] = []
 	for node: Node in get_tree().get_nodes_in_group("forage_node"):
-		if node.get("expedition_source_id") != GroveExpedition.RENEWABLE_SOURCE:
+		if node.get("expedition_source_id") in ORIGINAL_SOURCE_IDS:
 			forage_nodes.append(node)
 	if forage_nodes.size() != EXPECTED_NODE_COUNT:
 		_fail("esperados %d pontos fisicos, encontrados %d" % [EXPECTED_NODE_COUNT, forage_nodes.size()])

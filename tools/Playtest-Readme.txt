@@ -13,7 +13,15 @@ Nao copie saves antigos para este ambiente sem planejar uma copia segura.
 
 F5 salva; F9 carrega. F10 permanece desativado.
 CHECKLIST.md contem os casos pendentes e os aceites anteriores.
-Inclui 50 casos: 45 anteriores preservados e 5 de Aceleradora (AC).
+Inclui 55 casos: 50 anteriores preservados e 5 de Raiz renovavel (RG).
+No Bosque, fonte de Raiz Gelida perto da bifurcacao inicial (960,630).
+Entrega 1 na Mochila e renova em 45 segundos de jogo aberto, inclusive
+durante tempo na vila. Sem espaco, preserva o recurso e nao inicia espera.
+Sem requisito de restauracao/purificacao ou progresso offline.
+Trigo + raiz gera Crescimento; peixe comum + raiz gera Infusao Purificadora.
+Receitas existentes, dois segundos, descoberta pela mistura normal.
+Coleta nao concede receita, XP, marco ou slots. Visual provisorio; arte
+com Antigravity. Carvao continua 2 unidades/45s e independente da Raiz.
 Clareira restaurada libera Semear trigo no painel do golem, sem ativar.
 O piloto usa trigo, Primavera, quatro lotes iniciais arados e sementes
 depositadas no Bau da Vila. Nao ara sozinho nem usa a Mochila.

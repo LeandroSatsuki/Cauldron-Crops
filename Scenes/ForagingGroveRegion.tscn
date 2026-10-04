@@ -139,6 +139,12 @@ quantity = 2
 backpack_milestone_id = "foraging_grove_collection"
 expedition_source_id = "clearing_charcoal"
 
+[node name="RenewableRoot" parent="ForageNodes" instance=ExtResource("7_forage")]
+position = Vector2(960, 630)
+resource_id = "raiz_gelida"
+quantity = 1
+expedition_source_id = "grove_root"
+
 [node name="RestorationSite" parent="." instance=ExtResource("9_site")]
 position = Vector2(2250, 620)
 

@@ -10,10 +10,11 @@ const LIVING_SOIL_RECIPE := "solo_vivo_retencao"
 const MIXTURE_ITEM := "mistura_restauradora"
 const REQUIRED_MIXTURES := 2
 const RENEWABLE_SOURCE := "clearing_charcoal"
+const ROOT_SOURCE := "grove_root"
 const CHARCOAL_RENEWAL_SECONDS := 45.0
 const HUDLayoutScript = preload("res://Scripts/HUDLayout.gd")
 const SOURCE_IDS: Array[String] = [
-	"charcoal_entry", "charcoal_branch", "charcoal_main", "charcoal_deep", RENEWABLE_SOURCE,
+	"charcoal_entry", "charcoal_branch", "charcoal_main", "charcoal_deep", RENEWABLE_SOURCE, ROOT_SOURCE,
 ]
 
 var discovered: bool = false
@@ -70,12 +71,20 @@ func get_forage_state(source_id: String) -> Dictionary:
 	return _forage_states.get(source_id, {"collected": false, "renewal_remaining": 0.0}).duplicate(true)
 
 
+func is_renewable_source(source_id: String) -> bool:
+	return source_id in [RENEWABLE_SOURCE, ROOT_SOURCE]
+
+
+func get_renewal_seconds(source_id: String) -> float:
+	return CHARCOAL_RENEWAL_SECONDS if is_renewable_source(source_id) else 0.0
+
+
 func record_collection(source_id: String) -> void:
 	if source_id not in SOURCE_IDS:
 		return
 	_forage_states[source_id] = {
 		"collected": true,
-		"renewal_remaining": CHARCOAL_RENEWAL_SECONDS if source_id == RENEWABLE_SOURCE else 0.0,
+		"renewal_remaining": get_renewal_seconds(source_id),
 	}
 	forage_state_changed.emit(source_id)
 
@@ -101,9 +110,9 @@ func is_save_data_valid(value: Variant) -> bool:
 			return false
 		if not is_finite(float(remaining)) or float(remaining) < 0.0 or float(remaining) > CHARCOAL_RENEWAL_SECONDS:
 			return false
-		if source_id != RENEWABLE_SOURCE and float(remaining) != 0.0:
+		if not is_renewable_source(source_id) and float(remaining) != 0.0:
 			return false
-		if (not state["collected"] and float(remaining) != 0.0) or (source_id == RENEWABLE_SOURCE and state["collected"] and float(remaining) <= 0.0):
+		if (not state["collected"] and float(remaining) != 0.0) or (is_renewable_source(source_id) and state["collected"] and float(remaining) <= 0.0):
 			return false
 	return true
 

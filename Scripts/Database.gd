@@ -129,8 +129,8 @@ var itens: Dictionary = {
 		"pode_vender": true,
 		"pode_usar_em_receita": true,
 		"tags": ["crop", "raiz", "ingrediente", "frio"],
-		"origem": "cultivo",
-		"descricao": "Raiz resistente ao frio, útil em receitas geladas.",
+		"origem": "cultivo_e_coleta",
+		"descricao": "Cultive no inverno ou colete no Bosque: uma raiz por coleta, renovando em 45 segundos de jogo aberto. No caldeirão, combine com trigo para Crescimento ou com peixe comum para Infusão Purificadora. A coleta entra na Mochila.",
 		"icone": "🧊"
 	},
 	"palha_rara": {

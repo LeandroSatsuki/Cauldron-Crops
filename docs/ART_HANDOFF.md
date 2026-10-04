@@ -65,3 +65,16 @@ Avatar em `Scenes/PlayerAvatar.tscn`, baú em `Scenes/VillageChest.tscn`, golem 
 O backlog histórico de ícones permanece em `ITEM_TEXTURE_BACKLOG.md`; as duas notas acima complementam esse levantamento com contratos atuais. Antigravity decide conceito, prioridade artística e produção com o autor. Nenhum sprite, textura, configuração de renderização ou asset do autor foi alterado por este documento.
 
 Resposta Antigravity: pendente. Plano de substituição: pendente. Aceite artístico do autor: pendente.
+
+### Fonte renovável de Raiz Gélida no Bosque
+
+**Registro:** 2026-10-04. Contrato aprovado pelo autor, implementação funcional neste incremento; resultados de QA/pacote serão consolidados no fechamento. Não é uma nova cultura ou uma mudança do conceito artístico da Raiz.
+
+- Item `raiz_gelida`, ID persistente da fonte `grove_root`; cena `Scenes/ForagingGroveRegion.tscn`, nó `ForageNodes/RenewableRoot`, posição de mundo `(960,630)`. Código em `Scripts/ForageNode.gd`, `Scripts/GroveExpedition.gd` e descrição em `Scripts/Database.gd`.
+- Função: aproximação física por clique, uma unidade na Mochila, renovação em 45s de jogo aberto inclusive na vila. Primeira visita disponível sem purificação/restauração, sem receita/XP/marco/slots concedidos pela coleta. Raiz cultivada no inverno continua o mesmo item.
+- Estados: disponível, esgotada aguardando renovação e disponível novamente. Recusa por capacidade não esgota; aviso transitório explica depósito/retorno. Texto atual informa item/quantidade/tempo, sem rótulo de carvão na Raiz.
+- Placeholder: instância da geometria já existente em `Scenes/ForageNode.tscn`, sem desenho/asset novo produzido por Codex. Texto identifica a Raiz; forma final, conceito e acabamento ficam com Antigravity.
+- Demanda visual: representação própria da fonte disponível/esgotada e legibilidade dos dois estados no Bosque, usando o item existente; esta nota não pede paleta, lore, nova planta, bioma ou coleta automática.
+- Restrições: preservar posição lógica e ponto alcançável, `AvailableVisual`/`DepletedVisual`, `CollisionShape2D` de picking (raio atual 34) e alcance 62; área não é novo obstáculo físico de navegação. Não ampliar colisões por trocar o sprite. Rótulos/feedback não capturam mouse. Sprite/efeito não concede recursos antes da chegada.
+- Arte em andamento no workspace por outro agente permanece separada desta entrega de código. O PNG local de item, se presente, não é certificado ou publicado como arte aprovada por este incremento; o pacote limpo usa os recursos versionados.
+- Resposta Antigravity: pendente. Nova arte integrada por Codex: pendente. Aceite artístico do autor: pendente.

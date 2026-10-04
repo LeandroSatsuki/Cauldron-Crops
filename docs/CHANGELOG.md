@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-04 - Raiz Gélida renovável autorizada
+
+- Contrato confirmado pelo autor: uma Raiz/45s sessão, primeira visita e Mochila; fonte `grove_root` em `(960,630)` no Bosque, sem nova receita/XP/marco/slot/estação. Carvão/cultivo/consumíveis atuais preservados.
+- Implementação e QA em andamento com engenharia guiada por perfil e revisão independente, sem consulta artística. Fonte geométrica reutilizada para teste; demandas serão registradas ao Antigravity em ART_HANDOFF.
+- Preflight do domínio de expedição antes da gravação e guarda de contexto da coleta integram o recorte. QA dedicado headless corrigido 86, fixture 2/reabertura 8 em processo novo passaram; capacidade18/restauração73 preservadas. Primeiro PASS69 com SCRIPT ERROR de teste rejeitado; versão corrigida exige conclusão das duas receitas. Pacote/suíte completa ainda pendentes; 50 textos antigos intactos + cinco RG = 55 manuais pendentes, nenhum save pessoal.
+
 ## 2026-10-04 - Passagem para Antigravity e proposta de aquisição
 
 - Autor separou direção/produção artística no Antigravity. Criado `ART_HANDOFF.md` como passagem permanente com notas funcionais de Aceleradora/Solo Vivo e referências de protótipos existentes; sem arte criada ou guia/paleta redefinidos.

@@ -1,5 +1,7 @@
 # Cauldron Crops
 
+Direção e produção de arte: Antigravity, com aprovação criativa do autor. Código e validação funcional: Codex. A passagem permanente de conteúdo/estados/restrições técnicas está em `docs/ART_HANDOFF.md`; visuais de teste não são arte final aprovada.
+
 <p align="center">
   Jogo 2D de fazenda e alquimia em que plantações, receitas e golems formam um ciclo de descoberta e automação.
 </p>

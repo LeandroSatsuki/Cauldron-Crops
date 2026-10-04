@@ -20,8 +20,37 @@ func _initialize() -> void:
 		return
 	if not _check_accelerator_contract():
 		return
-	print("PlaytestPackAudit: PASS - recursos, receitas sustentáveis, Poço, Solo Vivo, Aceleradora, aplicação, exclusões e save separado.")
+	if not _check_root_contract():
+		return
+	print("PlaytestPackAudit: PASS - recursos, receitas sustentáveis, Poço, Solo Vivo, Aceleradora, Raiz renovável, aplicação, exclusões e save separado.")
 	quit(0)
+
+func _check_root_contract() -> bool:
+	var expedition: GDScript = ResourceLoader.load("res://Scripts/GroveExpedition.gd")
+	var constants := expedition.get_script_constant_map()
+	if constants.get("ROOT_SOURCE") != "grove_root" or constants.get("CHARCOAL_RENEWAL_SECONDS") != 45.0:
+		return _fail("Raiz renovável ausente/intervalo diferente do contrato")
+	if "grove_root" not in constants.get("SOURCE_IDS", []):
+		return _fail("ID de Raiz ausente no domínio persistente")
+	var scene: PackedScene = ResourceLoader.load("res://Scenes/ForagingGroveRegion.tscn")
+	var state := scene.get_state()
+	var found := false
+	for index in state.get_node_count():
+		if state.get_node_name(index) != &"RenewableRoot":
+			continue
+		var properties := {}
+		for property_index in state.get_node_property_count(index):
+			properties[str(state.get_node_property_name(index, property_index))] = state.get_node_property_value(index, property_index)
+		if properties.get("position") != Vector2(960, 630) or properties.get("resource_id") != "raiz_gelida" or properties.get("quantity") != 1 or properties.get("expedition_source_id") != "grove_root" or properties.get("backpack_milestone_id", "") != "":
+			return _fail("fonte de Raiz fora do contrato de posição/quantidade/ID/sem marco")
+		found = true
+	if not found:
+		return _fail("fonte física de Raiz ausente no Bosque")
+	for pair in [["pocao_crescimento_basica", "trigo_raiz_gelida", ["raiz_gelida", "trigo"], "pocao_crescimento"], ["raiz_gelida_peixe_comum", "raiz_gelida_peixe_comum", ["raiz_gelida", "peixe_comum"], "pocao_purificadora_fraca"]]:
+		var recipe: Resource = ResourceLoader.load("res://Data/recipes/%s.tres" % pair[0])
+		if recipe == null or recipe.get("id") != pair[1] or recipe.get("ingredientes") != pair[2] or recipe.get("resultado_item") != pair[3] or recipe.get("resultado_quantidade") != 1 or recipe.get("tempo_producao") != 2.0 or recipe.get("recompensa_pontos_alquimia") != 1 or recipe.get("exige_descoberta"):
+			return _fail("receita existente da Raiz alterada: " + str(pair[0]))
+	return true
 
 func _check_accelerator_contract() -> bool:
 	var golem: GDScript = ResourceLoader.load("res://Scripts/Golem.gd")

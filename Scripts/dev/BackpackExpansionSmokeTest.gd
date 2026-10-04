@@ -79,6 +79,8 @@ func _test_balance_and_milestones() -> bool:
 	return true
 
 func _test_real_actions() -> bool:
+	# Coleta real exige que o Bosque seja a região corrente, mesmo no fixture.
+	get_tree().current_scene = _grove
 	GlobalInventory.apply_backpack_progress([])
 	GlobalInventory.set_inventory_contents({"trigo": 1188})
 	var forage: ForageNode = _grove.get_node("ForageNodes/CharcoalOptionalBranch")
@@ -93,6 +95,7 @@ func _test_real_actions() -> bool:
 	_grove.get_node("ForageNodes/CharcoalNearEntry").collect()
 	if not _expect(GlobalInventory.get_slot_capacity() == 16 and not forage.collect(), "segunda coleta repetiu ampliacao"):
 		return false
+	get_tree().current_scene = _main
 	var project: Node = _main.get_node("RestorationProject_FirstHerbarium")
 	project.call("set_area_purified", true)
 	_chest.set_contents({})

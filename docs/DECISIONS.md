@@ -1,5 +1,12 @@
 # Decisions
 
+## Decisão 132 - Coleta renovável de Raiz Gélida aprovada
+
+- Autor confirmou “OK, pode seguir. Aprovado.” à proposta integral: uma Raiz por coleta, renovação de 45s com jogo aberto inclusive vila, primeira visita sem purificação/restauração, resultado pessoal e sem offline.
+- Implementar um ForageNode no Bosque existente, `(960,630)`, ID `grove_root`, sem marco/slots/XP ou aprendizado automático. Preservar carvão dois/45s, cultivo de inverno e receitas/custos/tempos/descoberta atuais. Não reativar estação/economia ou criar mapa/cultura/animal/golem.
+- Estado no domínio da expedição/save v4, legado sem o ID começa disponível, replay não entrega recursos. Relógio global sem segundo desconto no retorno; fonte sem capacidade permanece disponível. Guardas de coleta por contexto e preflight do writer acompanham a integração.
+- Arte com Antigravity; reutilizar apenas geometria de protótipo e registrar nova nota em ART_HANDOFF. Contrato aprovado não é aceite de picking/arte/ritmo/balanceamento. Implementação/QA/pacote serão registrados no fechamento; 50 manuais anteriores preservados + cinco RG = 55 pendentes, sem teste imediato obrigatório.
+
 ## Decisão 131 - Arte no Antigravity e passagem permanente
 
 - Autor atribuiu explicitamente direção/produção de arte ao Antigravity externo. Codex concentra código, integração funcional, testes e documentação; não criar arte final ou elaborar placeholders artísticos. Usar assets existentes ou geometria mínima para testar.
