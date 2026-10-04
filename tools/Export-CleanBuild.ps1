@@ -187,41 +187,37 @@ try {
             }
             Write-Host "PASS $($test.Name)"
             # Reopen immediately, before another fixture can replace the QA save.
-            $reopenMode = switch ($test.BaseName) {
-                "GolemWorkPersistenceSmokeTest" { "--verify-sower-reopen" }
-                "GolemSowerUISmokeTest" { "--verify-seeding-ui-reopen" }
-                default { $null }
-            }
-            if ($reopenMode) {
-                $expectedChecks = if ($test.BaseName -eq "GolemWorkPersistenceSmokeTest") { 6 } else { 3 }
-                $reopenLog = Join-Path $godotCacheDirectory ($test.BaseName + "-reopen.log")
-                Invoke-GodotCommand -Executable $godotExecutable `
-                    -Arguments @("--path", $worktreePath, "--headless", ("res://Scenes/dev/" + $test.Name), "--", $reopenMode) `
-                    -LogPath $reopenLog -FailureMessage "$($test.Name) process reopen" -RejectLoggedErrors
-                if (-not (Select-String -LiteralPath $reopenLog -Pattern (": PASS - " + $expectedChecks + " verific"))) {
-                    throw "$($test.Name) process reopen did not report the expected $expectedChecks checks."
+            $steps = @(switch ($test.BaseName) {
+                "GolemWorkPersistenceSmokeTest" {
+                    @{ Name = "reopen"; Mode = "--verify-sower-reopen"; Checks = 6; Reopen = $true }
                 }
-                $reopenCount++
-                Write-Host "PASS $($test.Name) process reopen"
-            }
-            if ($test.BaseName -eq "SustainableFarmCycleSmokeTest") {
-                # The default run leaves recovery in progress. Verify it before
-                # preparing a separate replant persistence fixture in the same QA profile.
-                foreach ($step in @(
-                    @{ Name = "recovery-reopen"; Mode = "--verify-seed-cycle-reopen"; Checks = 8; Reopen = $true },
-                    @{ Name = "replant-fixture"; Mode = "--prepare-seed-replant-save"; Checks = 2; Reopen = $false },
+                "GolemSowerUISmokeTest" {
+                    @{ Name = "reopen"; Mode = "--verify-seeding-ui-reopen"; Checks = 3; Reopen = $true }
+                }
+                "SustainableFarmCycleSmokeTest" {
+                    @{ Name = "recovery-reopen"; Mode = "--verify-seed-cycle-reopen"; Checks = 8; Reopen = $true }
+                    @{ Name = "replant-fixture"; Mode = "--prepare-seed-replant-save"; Checks = 2; Reopen = $false }
                     @{ Name = "replant-reopen"; Mode = "--verify-seed-cycle-reopen"; Checks = 8; Reopen = $true }
-                )) {
-                    $stepLog = Join-Path $godotCacheDirectory ($test.BaseName + "-" + $step.Name + ".log")
-                    Invoke-GodotCommand -Executable $godotExecutable `
-                        -Arguments @("--path", $worktreePath, "--headless", ("res://Scenes/dev/" + $test.Name), "--", $step.Mode) `
-                        -LogPath $stepLog -FailureMessage "$($test.Name) $($step.Name)" -RejectLoggedErrors
-                    if (-not (Select-String -LiteralPath $stepLog -Pattern (": PASS - " + $step.Checks + " verific"))) {
-                        throw "$($test.Name) $($step.Name) did not report the expected $($step.Checks) checks."
-                    }
-                    if ($step.Reopen) { $reopenCount++ } else { $additionalFixtureCount++ }
-                    Write-Host "PASS $($test.Name) $($step.Name) ($($step.Checks) checks)"
                 }
+                "VillageWellPhysicalSmokeTest" {
+                    @{ Name = "physical-reopen"; Mode = "--verify-well-physical-reopen"; Checks = 4; Reopen = $true }
+                }
+                "VillageWellProgressSmokeTest" {
+                    @{ Name = "project-reopen"; Mode = "--verify-well-reopen"; Checks = 8; Reopen = $true }
+                    @{ Name = "water-skill-fixture"; Mode = "--prepare-water-skill-save"; Checks = 2; Reopen = $false }
+                    @{ Name = "water-skill-reopen"; Mode = "--verify-well-reopen"; Checks = 8; Reopen = $true }
+                }
+            })
+            foreach ($step in $steps) {
+                $stepLog = Join-Path $godotCacheDirectory ($test.BaseName + "-" + $step.Name + ".log")
+                Invoke-GodotCommand -Executable $godotExecutable `
+                    -Arguments @("--path", $worktreePath, "--headless", ("res://Scenes/dev/" + $test.Name), "--", $step.Mode) `
+                    -LogPath $stepLog -FailureMessage "$($test.Name) $($step.Name)" -RejectLoggedErrors
+                if (-not (Select-String -LiteralPath $stepLog -Pattern (": PASS - " + $step.Checks + " verific"))) {
+                    throw "$($test.Name) $($step.Name) did not report the expected $($step.Checks) checks."
+                }
+                if ($step.Reopen) { $reopenCount++ } else { $additionalFixtureCount++ }
+                Write-Host "PASS $($test.Name) $($step.Name) ($($step.Checks) checks)"
             }
         }
         Write-Host "Regression suite: $($tests.Count)/$($tests.Count)."

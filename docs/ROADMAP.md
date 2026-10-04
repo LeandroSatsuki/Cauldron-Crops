@@ -1,6 +1,10 @@
 # Evolução do Projeto
 
-## Etapa atual — Vila em Reconstrução, Poço: incremento 2 (2026-10-04)
+## Etapa atual — Vila em Reconstrução, Poço: incremento 3 em validação (2026-10-04)
+
+Fechamento autorizado, sem novo gameplay. Exportador integra reaberturas do Poço físico/projeto/habilidade imediatamente após cada teste, preservando modos anteriores e distinguindo sete reaberturas de dois fixtures. Auditoria do PCK confere recursos, custo/benefício/alternativa, preflight e instância/posição física sem conceder progresso. Checklist ampliado para **36 pendências**, com os 30 casos anteriores intactos e WL-01–WL-06 novos. Nova exportação limpa e auditoria ainda em execução; não tratar esta preparação como pacote entregue ou aceite manual.
+
+## Checkpoint anterior — Vila em Reconstrução, Poço: incremento 2 (2026-10-04)
 
 Incrementos 1–2 concluídos tecnicamente. Poço físico em `(540, 280)`, acima do limite agrícola e fora dos lotes/trilhas atuais; collider/corpo/obstáculo separados e política de construção. Aproximação existente com destino fora do corpo e confirmação revalidando proximidade/vila ativa. Painel compacto opaco/arrastável apresenta reserva, custo por ícones/quantidades e estados da melhoria. Fechar/Escape/load/viagem/cache liberam contexto; cliques de fundo e atalhos de ferramentas bloqueados enquanto aberto. Mesmos custos/alternativa/benefício, sem recarga instantânea, retirada de água, F10 ou HUD nova.
 
@@ -213,7 +217,18 @@ Usar a nova build com save separado e preservar progresso já existente. Anotar 
 - [ ] **SC-05 — Persistência das receitas:** salvar um lote de Recuperação ou Replantio ainda em andamento, reabrir/carregar e conferir saldos/resultado; recarregar o snapshot para verificar substituição sem soma de estoque. Esperado: quantidade exata por craft, sem cobrança ou entrega duplicada. Se terminar antes de salvar, retomada em andamento não executada; não alongar timers. Não pressupor progresso offline.
 - [ ] **SC-06 — Capacidade e cancelamento:** somente se ocorrer naturalmente, conferir resultado de sementes sem espaço ou cancelamento de lote ainda pendente. Esperado: resultado integral preservado, nunca parcialmente entregue ou redirecionado ao baú; cancelamento devolve apenas reservas não usadas às origens. Liberar espaço por depósito normal e salvar/carregar conforme CAP-02/CAP-03; sem fabricar enchimento ou interromper gravação.
 
-Total integrado: **30 casos pendentes** (24 anteriores preservados + 6 do ciclo sustentável). Aprovações anteriores permanecem registradas acima; esses casos não foram executados manualmente nesta etapa.
+#### Bloco G — Poço da Vila (seis casos novos, todos pendentes)
+
+Usar a nova build de playtest com save separado, preservando progresso já existente. Anotar água/capacidade, trigo/mistura na Mochila/baú e pontos antes/depois. Preferir caminhos normais; não editar save, usar F10, acelerar relógio ou fabricar falhas. Alternativa antiga/legado exige estado elegível natural ou cópia segura já disponível; sem pré-condição, registrar não executado. Não presumir progresso offline.
+
+- [ ] **WL-01 — Localização e acesso:** encontrar o Poço acima dos canteiros; com enxada selecionada, clicar de longe e observar aproximação/parada fora do corpo antes de abrir. Antes da Clareira, conferir projeto bloqueado, reserva funcional e painel opaco legível. Esperado: ferramenta preservada, sem andar contra parede nem arar sob construção; abrir não gasta/concede água.
+- [ ] **WL-02 — Marco, consulta e materiais:** restaurar a Clareira pelos caminhos normais e abrir o painel. Se faltar trigo/mistura, conferir orientação e confirmação indisponível, sem gasto. Fechar, transferir recursos entre Mochila/baú e reabrir: quantidades/custo refletem estoque atual; consulta não dá XP/benefício nem exige retirar do baú.
+- [ ] **WL-03 — Projeto e cobrança única:** com benefício ainda não obtido, reunir 8 trigos + 1 mistura e confirmar. Quando possível, dividir fontes para observar baú primeiro/complemento pessoal. Esperado: custo exato, capacidade 20, visual concluído, reserva sem recarga instantânea e regeneração sem aceleração. Abrir/repetir confirmação não cobra novamente nem concede pontos/habilidade.
+- [ ] **WL-04 — Alternativa e legado:** somente com estado elegível, obter o talento antigo por 1 ponto antes do projeto. Esperado: mesmo benefício/capacidade, projeto reconhece concluído sem cobrar materiais; talento não exige Clareira. Depois do projeto, talento não cobra ponto adicional. Capacidade legada maior não diminui nem compra melhoria duplicada. Caminhos incompatíveis no mesmo progresso podem ficar não executados, sem reset do save pessoal.
+- [ ] **WL-05 — Persistência e viagem:** após melhoria, F5, fechar/reabrir/F9 e conferir visual/capacidade/estoques/água do snapshot. Recarregar não soma benefício nem repete cobrança. Viajar ao Bosque fecha painel e não permite consumo remoto; F5 fora/F9 retorna à vila e conserva estado. Tempo posterior ao snapshot pode ser revertido normalmente; sem esperar regeneração offline.
+- [ ] **WL-06 — Painel e regressões:** em 800×720 e 1280×720, abrir/arrastar/atualizar/redimensionar/fechar por botão e Escape. Esperado: controles contidos, fundo opaco, atualização conserva arraste e clique de fundo/atalhos não alteram mundo/ferramenta enquanto aberto. Depois, com enxada, abrir baú/caldeirão, fechar e arar um lote válido; viajar/voltar não deixa modal travado. Registrar conforto/posição/arte separadamente da integridade dos recursos.
+
+Total integrado: **36 casos pendentes** (30 anteriores preservados + 6 do Poço). Aprovações anteriores permanecem registradas acima; esses casos não foram executados manualmente nesta etapa.
 
 Registro de retorno por ID: **aprovado / falhou / não executado**, resolução, pré-condição, ação, esperado e observado. Um caso aprovado não encerra os outros; informar perda/duplicação/travamento separadamente de preferência estética. Aceite completo de experiência depende destes retornos, não da suíte automática.
 

@@ -6,7 +6,7 @@ func _initialize() -> void:
 		return
 	if not _inspect("res://"):
 		return
-	for path in ["res://Scenes/Main.tscn", "res://Scenes/UI.tscn", "res://Scenes/ForagingGroveRegion.tscn", "res://Scenes/PrototypeExternalRegion.tscn", "res://Data/recipes/semente_basica_tomate_sol.tres", "res://Scripts/Golem.gd", "res://Scripts/GolemPanel.gd", "res://Scripts/data/GolemSeedCargo.gd", "res://Scripts/data/GolemWorkState.gd", "res://Assets/Tools/tool_seed.png"]:
+	for path in ["res://Scenes/Main.tscn", "res://Scenes/UI.tscn", "res://Scenes/ForagingGroveRegion.tscn", "res://Scenes/PrototypeExternalRegion.tscn", "res://Data/recipes/semente_basica_tomate_sol.tres", "res://Scripts/Golem.gd", "res://Scripts/GolemPanel.gd", "res://Scripts/data/GolemSeedCargo.gd", "res://Scripts/data/GolemWorkState.gd", "res://Assets/Tools/tool_seed.png", "res://Scenes/VillageWell.tscn", "res://Scripts/VillageWell.gd", "res://Scripts/VillageWellPanel.gd", "res://Scripts/data/VillageWellState.gd"]:
 		if not ResourceLoader.exists(path) or ResourceLoader.load(path) == null:
 			_fail("recurso necessário ausente: " + path)
 			return
@@ -14,8 +14,44 @@ func _initialize() -> void:
 		return
 	if not _check_seed_recipe("res://Data/recipes/semente_trigo_replantio.tres", "semente_trigo_replantio", ["trigo", "trigo"], 3):
 		return
-	print("PlaytestPackAudit: PASS - recursos, receitas sustentáveis, exclusões e save separado.")
+	if not _check_well_contract():
+		return
+	print("PlaytestPackAudit: PASS - recursos, receitas sustentáveis, Poço, exclusões e save separado.")
 	quit(0)
+
+func _check_well_contract() -> bool:
+	# Carregar do PCK, sem preload que mascare a ausência numa build antiga.
+	var contract: GDScript = ResourceLoader.load("res://Scripts/data/VillageWellState.gd")
+	var constants := contract.get_script_constant_map()
+	if constants.get("BASE_CAPACITY") != 10 or constants.get("IMPROVED_CAPACITY") != 20 or constants.get("WATER_SKILL") != "skill_agua" or constants.get("PROJECT_REQUIREMENTS") != {"trigo": 8, "mistura_restauradora": 1}:
+		return _fail("contrato de capacidade/custo/alternativa do Poço alterado")
+	var project := {"inventory": {"inventario": {}, "skills_desbloqueadas": []}, "poco": {"capacidade_maxima": 10, "agua_atual": 7, "melhoria_projeto": true}, "grove_expedition": {"restored": true}}
+	var resolved: Dictionary = contract.call("resolve_snapshot", project, 10, false, [], false)
+	if not resolved.get("valid", false) or resolved.get("capacity") != 20 or resolved.get("water") != 7 or not resolved.get("project", false):
+		return _fail("preflight do projeto não conserva benefício/reserva")
+	project["grove_expedition"]["restored"] = false
+	resolved = contract.call("resolve_snapshot", project, 10, false, [], false)
+	if resolved.get("valid", false):
+		return _fail("projeto aceita snapshot sem Clareira restaurada")
+	var legacy := {"inventory": {"inventario": {}, "skills_desbloqueadas": ["skill_agua"]}, "poco": {"capacidade_maxima": 30, "agua_atual": 35}}
+	resolved = contract.call("resolve_snapshot", legacy, 10, false, [], false)
+	if not resolved.get("valid", false) or resolved.get("capacity") != 30 or resolved.get("water") != 35 or resolved.get("project", true):
+		return _fail("preflight legado altera capacidade/reserva/projeto")
+	legacy["poco"]["capacidade_maxima"] = 10
+	resolved = contract.call("resolve_snapshot", legacy, 10, false, [], false)
+	if not resolved.get("valid", false) or resolved.get("capacity") != 20:
+		return _fail("habilidade antiga não concede o mesmo benefício")
+	# Inspecionar instância declarada, sem criar objetos ou conceder progresso.
+	var main: PackedScene = ResourceLoader.load("res://Scenes/Main.tscn")
+	var well: PackedScene = ResourceLoader.load("res://Scenes/VillageWell.tscn")
+	var state := main.get_state()
+	for index in state.get_node_count():
+		if state.get_node_name(index) != &"VillageWell" or state.get_node_instance(index) != well:
+			continue
+		for property_index in state.get_node_property_count(index):
+			if state.get_node_property_name(index, property_index) == &"position" and state.get_node_property_value(index, property_index) == Vector2(540, 280):
+				return true
+	return _fail("Poço físico ausente/fora da posição aprovada na cena principal")
 
 func _check_seed_recipe(path: String, id: String, ingredients: Array, quantity: int) -> bool:
 	if not ResourceLoader.exists(path):

@@ -13,7 +13,7 @@ Nao copie saves antigos para este ambiente sem planejar uma copia segura.
 
 F5 salva; F9 carrega. F10 permanece desativado.
 CHECKLIST.md contem os casos pendentes e os aceites anteriores.
-Inclui 24 casos anteriores e 6 do Ciclo Sustentavel (SC-01 a SC-06).
+Inclui 36 casos: 30 anteriores preservados e 6 do Poco (WL-01 a WL-06).
 Clareira restaurada libera Semear trigo no painel do golem, sem ativar.
 O piloto usa trigo, Primavera, quatro lotes iniciais arados e sementes
 depositadas no Bau da Vila. Nao ara sozinho nem usa a Mochila.
@@ -23,6 +23,13 @@ As receitas estao disponiveis por padrao, levam 2 segundos por craft
 e nao concedem pontos de alquimia. Eventos de colheita antigos permanecem.
 Resultado vai para a Mochila: plante manualmente ou deposite para o golem.
 Salvar producao em andamento e condicional: se terminou antes, nao executado.
+Poco fisico fica acima dos canteiros, proximo ao nucleo da vila.
+Clique para aproximar e abrir, mesmo com ferramenta selecionada.
+Projeto opcional: Clareira restaurada, 8 trigos + 1 mistura restauradora.
+Consome bau primeiro e complementa pela Mochila; capacidade 10 para 20.
+Nao enche agua instantaneamente nem acelera regeneracao. Sem tempo offline.
+Talento antigo de 1 ponto continua alternativa sem acumular/pagar duas vezes.
+O painel mostra a reserva; nao retira agua manualmente para a Mochila.
 Registre ID, aprovado/falhou/nao executado, resolucao e observado.
 Nao force estados indisponiveis nem provoque falhas de gravacao.
 Aprovacao tecnica de startup nao significa aprovacao manual do gameplay.
