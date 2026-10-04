@@ -38,7 +38,7 @@ func _check_tomato_contract() -> bool:
 	var script: GDScript = ResourceLoader.load("res://Scripts/Database.gd")
 	var catalog: Node = script.new()
 	var seed: Dictionary = catalog.get("semente_verao")
-	var valid := seed.get("estacao_ideal") == 1 and seed.get("tempo_crescimento_segundos") == 5.0 and seed.get("produto_colheita") == "tomate_sol" and seed.get("estacoes_permitidas") == [0, 1]
+	var valid: bool = seed.get("estacao_ideal") == 1 and seed.get("tempo_crescimento_segundos") == 5.0 and seed.get("produto_colheita") == "tomate_sol" and seed.get("estacoes_permitidas") == [0, 1]
 	for season in range(4):
 		valid = valid and catalog.call("semente_permite_estacao", seed, season) == (season in [0, 1])
 		valid = valid and catalog.call("semente_permite_estacao", catalog.get("semente_basica"), season) == (season == 0)
