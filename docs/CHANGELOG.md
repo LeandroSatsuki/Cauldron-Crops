@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-04 - Solo Vivo: aprovação do conceito e Fase A documental
+
+- Autor aprovou tratamento durável de um lote para conservar umidade entre ciclos de trigo, primeira rega normal e bônus já regado preservado. Receita/custo/desbloqueio/políticas complementares continuam propostas; implementação ainda não iniciada.
+- Gameplay/engenharia fecharam baseline/plano; receita de duas entradas evita ampliar slots manuais, lote `(2,2)` já existe fora do semeador. Identificados riscos de limpeza compartilhada, bridges de save, ação obsoleta e benefício nos ciclos curtos. Parecer artístico mantém apresentação futura provisória sob o chão.
+- Plano A–E no Farm System, Decisão 126 e estado operacional atualizados. Revisão independente guiada por QA sem achado material; validador dos cinco perfis/seis negativos passou e 36 textos pendentes mantidos. Sem jogo/suíte/build/arte novos ou acesso ao save pessoal; arquivos locais alheios preservados. Fase B aguarda confirmação do conjunto de parâmetros.
+
 ## 2026-10-04 - Equipe de especialistas e proteção da direção artística
 
 - Cinco perfis de projeto em `.codex/agents`: gameplay, arte/UX, narrativa, engenharia e QA. Protocolo único de fontes, consultas delimitadas e integração pelo principal; aprovação criativa permanece com o autor. Sem configuração global/modelo obrigatório ou cinco agentes permanentemente ativos.

@@ -1,5 +1,14 @@
 # Decisions
 
+## Decisão 126 - Solo Vivo durável em lote piloto; parâmetros ainda propostos
+
+- Aprovação humana: após apresentação do recorte, o autor respondeu “Ok, pode iniciar”. Efeito durável de conservação da umidade entre ciclos de trigo em um lote específico, primeira rega normal, sem multiplicador novo e preservando bônus já regado. Não é aprovação irrestrita de todos os solos/variantes.
+- Fase A: baseline e plano em `FARM_SYSTEM_V2.md`; nenhuma implementação. Consultas guiadas de gameplay/engenharia e parecer artístico anterior não substituem aprovação humana nem comprovam carregamento nativo dos perfis.
+- Proposta para confirmação: 1 trigo + 1 mistura → 1 preparo, 2 segundos/0 XP, aprendizado pela Clareira, lote `(2,2)`, aplicação da Mochila vazio/arado e rejeição de repetição sem gasto. Políticas para outro cultivo/morte/limpeza/cancelamento são propostas explícitas, não decisões já homologadas.
+- Justificativa: receita de duas entradas cabe nos slots manuais e Livro; lote já existente fora do semeador/pocket, sem criar mapa ou alterar origem. Tratamento durável evita manutenção de baixo valor; utilidade/balanceamento ainda precisam de observação futura.
+- Risco técnico: colheita/reset compartilham limpeza; estados de solo exigem bridge/save/preflight e ação transitória invalidável. Não gerar água/recompensa no load, reset ou retry. FarmPlot continua autoridade, logística física preservada.
+- Limite: B só após confirmação dos parâmetros; sem loja/moeda/calendário/NPC/mastery/tempo offline, crop nova, IA nova ou arte final. 36 casos manuais anteriores intactos; nenhuma suíte/build/jogo executados nesta A.
+
 ## Decisão 125 - Especialistas com memória documental e direção criativa preservada
 
 - Problema: o crescimento do projeto exige consultas especializadas sem duplicar todo o contexto, criar cinco autoridades criativas ou confundir protótipo com acabamento aprovado.

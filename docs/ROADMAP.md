@@ -1,6 +1,14 @@
 # Evolução do Projeto
 
-## Etapa atual — Equipe de especialistas: organização da produção (2026-10-04)
+## Etapa atual — Solo Vivo Alquímico, Fase A: baseline e plano (2026-10-04)
+
+Autor aprovou o piloto de tratamento durável em um lote específico, primeira rega normal e conservação da umidade entre ciclos de trigo, mantendo bônus existente sem multiplicador novo. Fase A documental concluída; nenhuma receita, item, flag, UI ou efeito implementado. Gameplay/engenharia consultados por leitura explícita de seus perfis; parecer artístico anterior reutilizado, sem arte final ou carregamento nativo alegados.
+
+Conjunto proposto para confirmação: **1 trigo + 1 Mistura Restauradora → 1 preparo**, 2 segundos/0 XP, aprendido após Clareira restaurada; célula existente `(2,2)` fora do semeador, aplicação pessoal em lote vazio/arado, reaplicação recusada sem gasto. Políticas de outro cultivo/morte/limpeza e cancelamento estão explicitadas no [plano do Solo Vivo](FARM_SYSTEM_V2.md#solo-vivo-alquímico--lote-retentor-fase-a-2026-10-04), não aprovadas por parecer técnico. B implementa domínio/receita após confirmação; C persistência, D interação, E fechamento.
+
+Riscos confirmados por leitura: limpeza de colheita compartilhada com reset; bridge/save não preserva novos estados automaticamente; seleção da ação não inclui preparo; mistura manual tem dois slots. Receita proposta usa dois ingredientes sem colisão no catálogo baseline `58592d1`. Fator 0,8 de solo já regado permanece explícito; não prometer economia de água do golem ou conforto/balanceamento homologados. As **36 pendências manuais** permanecem; sem execução de jogo/suíte/nova build ou acesso ao save pessoal nesta etapa. Próximo portão é confirmar parâmetros, não solicitar testes ao autor indisponível.
+
+## Checkpoint anterior — Equipe de especialistas: organização da produção (2026-10-04)
 
 Cinco perfis de projeto criados: gameplay/progressão, arte/UX, narrativa, engenharia e QA/entrega. O autor mantém a direção criativa e a aprovação; o agente principal coordena consultas pertinentes, integra e publica. Documentos versionados são a memória oficial, sem cinco cópias do contexto ou consultas obrigatórias a todos para cada edição. Protocolo e fontes em [Equipe de especialistas](AGENT_TEAM.md).
 

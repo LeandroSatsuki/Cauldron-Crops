@@ -1,5 +1,52 @@
 # Farm System V2
 
+## Solo Vivo Alquímico — lote retentor, Fase A (2026-10-04)
+
+**Estado:** conceito do piloto aprovado pelo autor; baseline/plano documentados, sem implementação. A resposta “Ok, pode iniciar” aprovou o efeito durável em um lote específico, primeira rega normal e preservação do bônus já existente de solo regado, sem multiplicador adicional. Não aprova automaticamente receita, custo, desbloqueio ou todas as variantes futuras de solo. Os parâmetros abaixo aguardam confirmação antes da Fase B.
+
+### Resultado aprovado e limites
+
+Produzir um preparo no caldeirão, carregá-lo na Mochila e aplicar manualmente no lote piloto. Após a primeira rega e uma colheita de trigo efetivamente entregue, o lote conserva a umidade para replantios de trigo. Tratamento durável, sem reaplicação diária, colheita extra, cultura/estação nova ou ativação automática do golem. FarmPlot continua autoridade; nenhuma migração para FarmGrid.
+
+O bônus atual de plantio com `regado=true` é ×0,8 no tempo de crescimento (`Scripts/FarmPlot.gd`, `_try_plant_seed`). Ele continua aplicável aos próximos plantios já úmidos; não há multiplicador novo nem promessa de tempo invariável. Cultivos atuais de 3–6 segundos e rega do golem sem consumo de água limitam a utilidade observável: o benefício é conforto/localização previsível, não economia global de água ou balanceamento homologado.
+
+### Conjunto de parâmetros proposto — não implementado/não aprovado
+
+| Parâmetro | Recomendação para confirmação |
+| --- | --- |
+| Receita | 1 trigo + 1 Mistura Restauradora → 1 preparo; 2 segundos; 0 pontos de alquimia |
+| Aprendizado | Clareira restaurada; `exige_descoberta=true`, reconciliação também para saves já elegíveis, sem novo prêmio ou restauração repetida |
+| Lote | Célula lógica `(2,2)`, FarmPlot existente, centro local `(840,920)`; identidade pelo registro da Main, não pelo nome/posição visual isolados |
+| Aplicação | 1 preparo da Mochila; lote vazio/arado, vila ativa e proximidade revalidada; aplicar não rega, não inicia timer e não altera cultura existente |
+| Repetição | Recusar em lote já tratado ou outro alvo, sem gasto; não empilhar bônus |
+| Outros cultivos | Não proibir culturas já válidas; plantar não-trigo descarta somente umidade herdada, segue regras normais e não recebe o efeito; tratamento permanece |
+| Morte/limpeza | Tratamento permanece, umidade herdada/rega são limpas; exigir rega normal para reiniciar o ciclo; sem água, item ou refund gerados |
+| Interface | Seleção transitória do preparo na Mochila, exclusiva com sementes/ferramenta; novo clique/Escape/ferramenta/load/viagem cancela sem gasto; nenhuma ferramenta/HUD permanente nova |
+
+“Preparo” é nome funcional provisório, não lore final. Receita usa duas entradas, compatíveis com os dois slots manuais e com o Livro/lote. `2 trigos + 1 mistura` exigiria três entradas e não cabe na mistura manual atual; não ampliar os slots para este piloto. A combinação recomendada não colide com as 14 receitas resource-first nem com o fallback legado no baseline `58592d1`.
+
+A célula proposta pertence à grade inicial 4×4, fora das quatro células do semeador `(0,0)/(1,0)/(0,1)/(1,1)` e do pocket das colunas 6–7. Mantém FarmOrigin `(680,760)`, espaçamento 80 e os 34 lotes/ordem legados. Não é limite global configurável ou nova área. Confirmado estruturalmente por leitura, não por teste físico de navegação/composição.
+
+### Baseline e contrato técnico proposto
+
+- Consultas guiadas por `cc_gameplay`, `cc_engineering` e parecer artístico anterior; nenhum carregamento nativo do perfil foi comprovado. Principal conferiu os pontos de código abaixo; revisão independente guiada por `cc_qa` não encontrou achado material nos cinco documentos, sem autorizar design. Checklist mantém 36 textos pendentes idênticos ao HEAD; validador dos cinco perfis e seis controles negativos passou. Essas verificações documentais não são testes do Solo Vivo implementado.
+- `FarmPlot._concluir_colheita` hoje limpa `regado` e também é usado por reset/load inválido. Preservação de umidade deve ocorrer só no commit da colheita entregue, nunca em toda limpeza. Capacidade recusada mantém cultura, tratamento, rega e `pending_harvest_rewards`; retry não rerrola nem duplica efeito. Golem conserva custódia antes de publicar lote vazio.
+- Separar tratamento durável, umidade herdada disponível e rega atual. Plantio recusado não consome condição/seed; aceito utiliza o cálculo existente, sem recomeçar timer ou adicionar bônus. Flags propostas são booleanas, não objetos/rotas/timers.
+- `FarmTileData`, Main (`_converter_farm_plot_para_tile_data`) e SaveManager (`_converter_farm_tile_para_plot_save_data`) hoje não conservam flags novas. Campos opcionais devem sobreviver inclusive no lote vazio, GRID v4 prioritário, vila cacheada e reabertura. Defaults completos v3/v4 antigos são solo comum; payload parcial preserva ausente; load substitui sem aplicar item ou entregar prêmio.
+- Preflight puro antes de mudar região/recursos/lotes: recusar tipos/estados contraditórios, tratamento fora da célula piloto e umidade herdada incompatível. Não corrigir payload inválido silenciosamente. Um reset real de jogo novo começa comum; não preservar tratamento de outro snapshot.
+- Main identifica ação por ferramenta/semente; preparo requer identidade e geração próprias para invalidar callback após troca de seleção/Escape/load/viagem. Commit revalida contexto, alvo e saldo; consumo pessoal síncrono sem retirada remota do Storage. Fabricação mantém baú prioritário, complemento pessoal, resultado na Mochila e recibos/refund existentes.
+- Representação provisória discreta no estrato do chão, sem cobrir avatar/golem, mudar hitbox ou roubar clique. Estado também explicado em tooltip/feedback; não apenas cor. Sem paleta/arte final produzida nesta fase.
+
+### Sequência e portões
+
+1. **Fase A — baseline/plano:** concluída documentalmente; confirmar o conjunto proposto acima antes de codificar essas regras.
+2. **Fase B — domínio/receita:** após confirmação, implementação pequena da aplicação/ciclo, catálogo/Resource/eligibilidade e testes unitários; sem reescrita de cultivo, economia, calendário ou IA.
+3. **Fase C — persistência:** bridge/grid/save, preflight completo/legado/parcial/replay/cache e reabertura em novo processo; não confundir JSON em memória com save integrado.
+4. **Fase D — interação/apresentação:** seleção transitória, aproximação, cancelamento/modal e feedback do lote; ferramentas/baú/caldeirão/pesca sem regressão.
+5. **Fase E — fechamento:** regressão proporcional/integrada, reaberturas no exportador, pacote auditado e novos casos de checklist; conservar os 36 anteriores palavra por palavra.
+
+QA futuro cobre vários ciclos, primeira rega, reaplicação/recusa, colheita bloqueada/retry, golem, outro cultivo, morte/limpeza, callbacks obsoletos, modais, outros lotes/agricultura livre inalterados, v3/v4/GRID prioritário/parcial/payload inválido, viagem/cache e reabertura. Execuções somente em QA isolado; não acessar/editar save pessoal ou aumentar timers no jogo real para fabricar valor. Arte, picking físico, conforto e balanceamento continuam para observação manual posterior, sem exigir teste imediato. Não houve execução de jogo/suíte/build nesta A.
+
 ## Vila em Reconstrução — Poço da Vila, piloto aprovado (2026-10-04)
 
 Autor aprovou um recorte opcional: poço físico funcional antes/depois da melhoria, projeto disponível após a Clareira restaurada. Custo **8 trigos + 1 mistura restauradora**, com Village Storage prioritário e complemento da Mochila. Benefício **capacidade 10 → 20**, sem encher a reserva instantaneamente, acelerar regeneração ou implementar tempo offline. Capacidade legada acima de 20 é preservada.
