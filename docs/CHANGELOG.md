@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-04 - Vila em Reconstrução: Poço físico e painel
+
+- Poço fora dos canteiros/trilhas atuais, com formas nativas antes/depois, corpo/área clicável/obstáculo e classificação de construção. Aproximação existente para destino seguro, abertura/confirmação por proximidade real sem desselecionar ferramenta.
+- Painel compacto opaco/arrastável com reserva/capacidade, custo por ícone/quantidade, estados e confirmação. Shield/modal protege cultivo/movimento; Escape/load/viagem/cache/distância fecham. Resize em cache não acessa viewport e centralização aguarda containers; benefício antigo não cobra materiais. Sem HUD/água manual/F10 ou alteração de custos/schema/regeneração.
+- Teste novo com 104 verificações headless/OpenGL, reabertura física (4), suíte 54/54 e modos anteriores. Capturas em três resoluções inspecionadas. Arbitragem/collider/GUI simulados não equivalem a picking manual. Save pessoal idêntico por hash/tamanho/data; arquivos locais alheios preservados fora do commit.
+- Incrementos 1–2 concluídos tecnicamente; pacote/checklist no 3, sem exportação ou aceite manual nesta etapa. As 30 pendências anteriores permanecem, sem exigir teste imediato.
+
 ## 2026-10-04 - Vila em Reconstrução: contratos/persistência do Poço
 
 - Primeiro incremento do recorte aprovado: custo 8 trigos + 1 mistura após Clareira, baú prioritário/complemento pessoal e capacidade mínima 20. Habilidade antiga de 1 ponto é alternativa não acumulável; preservar capacidade legada maior, água/XP e regeneração existentes.

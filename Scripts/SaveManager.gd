@@ -404,6 +404,9 @@ func _apply_save_data(data: Dictionary) -> bool:
 	if current_scene != null and current_scene.has_method("_reconstruir_farm_grid_manager"):
 		current_scene.call("_reconstruir_farm_grid_manager")
 	_applying_snapshot = false
+	var well := get_tree().current_scene.get_node_or_null("VillageWell") if get_tree().current_scene != null else null
+	if well != null:
+		well.close_panel()
 	EconomyManager.well_improvement_changed.emit()
 	return true
 

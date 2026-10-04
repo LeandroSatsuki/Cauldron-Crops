@@ -1,5 +1,13 @@
 # Decisions
 
+## Decisão 123 - Poço físico com aproximação e confirmação local
+
+- Incremento 2 aprovado. VillageWell em `(540, 280)` fora dos lotes/trilhas atuais e acima do limite agrícola; arte por formas nativas, sem assets locais/lore nova. Corpo/click area/obstáculo de navegação separados; solo trata como construção. Nenhuma alteração na origem agrícola/culturas/caminhos/lago.
+- Reutilizar aproximação de Main, margem segura fora do corpo e callback na chegada. Abertura/confirmação revalidam distância/vila/transição/load. Ferramenta selecionada permanece. Painel opaco/compacto/arrastável, reserva/custo/estados e confirmação sem extração de água/HUD/F10. Custos e alternativa do incremento 1 permanecem.
+- Shield e consulta modal bloqueiam cliques de fundo/movimento; atalhos da UI não mudam ferramenta. Escape/Fechar, load/viagem/cache ou distância perdida encerram modal. Layout ignora resize fora da árvore; centralizar depois dos containers e conservar arraste nos refreshes. Callback antigo não cobra concluído ou fora de contexto.
+- 104 verificações headless/OpenGL, reabertura real em outro processo (4), suíte 54/54 e todos os modos anteriores. Arbitragem antes do picking/evento do collider e GUI simulados não são cursor físico/end-to-end manual. Janela oculta exige alinhamento de câmera só no fixture; não mudar gameplay para isso. Capturas e contenção em três resoluções inspecionadas.
+- Save pessoal idêntico por hash/tamanho/data; arte local/QA fora da publicação. Incrementos 1–2 concluídos tecnicamente, sem exportação ou aceite manual presumido. Próximo 3 integra exportador, auditoria e checklist mantendo 30 casos anteriores; não ampliar economia/NPC/mapas/mastery.
+
 ## Decisão 122 - Melhoria opcional do Poço com duas aquisições não acumuláveis
 
 - Vila em Reconstrução aprovada: poço físico funcional antes/depois, projeto após Clareira restaurada por 8 trigos + 1 mistura restauradora. Village Storage prioritário, Mochila complementar. Capacidade 10 → 20, sem recarga instantânea, acelerar regeneração ou tempo offline. Preservar capacidades legadas maiores.

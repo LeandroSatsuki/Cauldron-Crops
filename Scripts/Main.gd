@@ -157,6 +157,9 @@ func enter_region_at(entry_id: StringName = &"") -> bool:
 func on_region_became_inactive() -> void:
 	_region_being_cached = true
 	_cancel_pending_player_interaction(true)
+	var well := get_node_or_null("VillageWell")
+	if well != null:
+		well.close_panel()
 
 
 func on_region_became_active() -> void:
@@ -975,7 +978,7 @@ func _obter_bloqueios_solo_na_celula(grid_position: Vector2i) -> Dictionary:
 			blockers["water"] = true
 		elif _node_ou_ancestral_no_grupo(collider, "purification_obstacle"):
 			blockers["corruption"] = true
-		elif _node_ou_ancestral_no_grupo(collider, "cauldrons") or _node_ou_ancestral_no_grupo(collider, "village_chest"):
+		elif _node_ou_ancestral_no_grupo(collider, "cauldrons") or _node_ou_ancestral_no_grupo(collider, "village_chest") or _node_ou_ancestral_no_grupo(collider, "village_well"):
 			blockers["building"] = true
 		else:
 			blockers["obstacle"] = true

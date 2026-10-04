@@ -1,6 +1,14 @@
 # Evolução do Projeto
 
-## Etapa atual — Vila em Reconstrução, Poço: incremento 1 (2026-10-04)
+## Etapa atual — Vila em Reconstrução, Poço: incremento 2 (2026-10-04)
+
+Incrementos 1–2 concluídos tecnicamente. Poço físico em `(540, 280)`, acima do limite agrícola e fora dos lotes/trilhas atuais; collider/corpo/obstáculo separados e política de construção. Aproximação existente com destino fora do corpo e confirmação revalidando proximidade/vila ativa. Painel compacto opaco/arrastável apresenta reserva, custo por ícones/quantidades e estados da melhoria. Fechar/Escape/load/viagem/cache liberam contexto; cliques de fundo e atalhos de ferramentas bloqueados enquanto aberto. Mesmos custos/alternativa/benefício, sem recarga instantânea, retirada de água, F10 ou HUD nova.
+
+Suíte **54/54**, teste físico **104 verificações** headless/OpenGL e reabertura específica em outro processo (**4**). Sete reaberturas e dois fixtures totais preservam os modos anteriores. Teste usa arbitragem antes do picking + evento do collider e eventos GUI, não clique físico do autor; câmera liberada/alinhada só no fixture para não controlar o cursor do Windows. Capturas inspecionadas em 800×600/800×720/1280×720; layout ignora resize em cache. Save pessoal idêntico por hash/tamanho/data, arte local preservada fora do commit.
+
+Próximo **incremento 3 — fechamento**: integrar reaberturas do Poço no exportador, suíte em checkout limpo, pacote auditado e checklist ampliado mantendo **30 pendências** abaixo. **Ainda sem nova exportação**: SustainableFarm-20261004 não contém o Poço físico. Aproximação/contratos testados automaticamente não equivalem a aprovação manual de picking/arte/conforto/balanceamento; não exigir teste imediato ao autor indisponível. Recorte aprovado em [Farm System](FARM_SYSTEM_V2.md#vila-em-reconstrução--poço-da-vila-piloto-aprovado-2026-10-04), sem ampliar sistemas reservados.
+
+## Checkpoint anterior — Vila em Reconstrução, Poço: incremento 1 (2026-10-04)
 
 Recorte aprovado e incremento 1 concluído tecnicamente: projeto opcional após Clareira restaurada, custo 8 trigos + 1 mistura restauradora, baú prioritário/Mochila complementar; capacidade mínima 20 sem recarga instantânea ou regeneração acelerada. Habilidade antiga de 1 ponto é alternativa, não benefício acumulável: nenhuma cobrança adicional se já obtido; capacidades legadas maiores preservadas.
 
