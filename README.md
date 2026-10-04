@@ -12,6 +12,8 @@
 
 ## Sobre o jogo
 
+Organização atual: cinco perfis de especialistas apoiam gameplay/progressão, arte/UX, narrativa, engenharia e QA, sob coordenação do agente principal e aprovação criativa do autor. Fontes, responsabilidades e limites em [Equipe de especialistas](./docs/AGENT_TEAM.md). Os moldes do protótipo não representam arte final; esta organização não acrescenta sistemas ao jogo.
+
 Checkpoint visual atual: camadas de solo estáveis, caldeirão limpo, grama suavizada, HUD opaco, trilhas/vegetação não interativas, golem de pedra, lago com margem e entrada distinta da corrupção. Dois pacotes de polimento; direção artística final e aceite manual ainda pendentes. Escopo e próximos passos em `docs/ROADMAP.md` e Decisões 96–97.
 
 Checkpoint técnico seguinte: origem agrícola fixa no mundo, independente de resolução/câmera; grade abaixo do núcleo e pedra fora do pocket. Save v4/v3 preserva culturas e progresso, mas saves antigos passam ao layout canônico porque não registravam a posição física da origem. Contrato e teste manual em [Mapa da Fazenda](./docs/FARM_LAYOUT_PLAN.md) e Decisão 98.

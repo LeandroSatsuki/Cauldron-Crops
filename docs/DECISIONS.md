@@ -1,5 +1,14 @@
 # Decisions
 
+## Decisão 125 - Especialistas com memória documental e direção criativa preservada
+
+- Problema: o crescimento do projeto exige consultas especializadas sem duplicar todo o contexto, criar cinco autoridades criativas ou confundir protótipo com acabamento aprovado.
+- Decisão: manter cinco perfis de projeto (gameplay, arte/UX, narrativa, engenharia, QA) e protocolo comum em `AGENT_TEAM.md`. O principal coordena consultas por assunto, atribui arquivos, integra, valida e publica; o autor decide direção/escopo. Parecer não equivale a aprovação humana.
+- Limite: quatro revisores declaram somente leitura; engenharia implementa apenas recorte explicitamente delegado, herdando permissões da sessão. Sem recursão, Git pelos especialistas, configuração global ou modelo imposto. Se não houver seleção nativa do perfil na ferramenta, leitura explícita das instruções é fallback declarado, não prova de descoberta/sandbox nativos.
+- Arte: moldes/formas procedurais e outros visuais de apoio são provisórios. Preservar conceito e assets do autor; especificação final não localizada nas fontes consultadas é lacuna documental, não autorização para inventar estilo. Hipóteses de lore continuam hipóteses; decisão humana nova e inequívoca prevalece, sem aprovar automaticamente sistemas adicionais.
+- Validação: cinco TOMLs/referências, seis controles negativos, cinco cenários guiados e revisão independente de arte. Auditoria atualizada do PCK existente passou; exportação futura exclui instruções internas. Nenhuma nova build/gameplay/arte final ou repetição da suíte completa; 36 casos manuais preservados.
+- Próximo: usar consultas pertinentes para propor um recorte delimitado de progressão antes de implementar; cinco perfis reutilizáveis não significam cinco execuções simultâneas ou memória infalível.
+
 ## Decisão 124 - Fechamento do Poço com reaberturas e auditoria isolada
 
 - Incremento 3 autorizado e concluído tecnicamente, fechando o recorte 1–3 sem novo gameplay/schema. Exportador integra reaberturas física/projeto/habilidade imediatamente após seus testes, preserva modos anteriores e exige contagens específicas. Total sete reaberturas (6 + 3 + 8 + 8 + 4 + 8 + 8); dois fixtures (2 + 2) separados, sem inflar a contagem.

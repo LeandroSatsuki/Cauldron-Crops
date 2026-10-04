@@ -1,5 +1,7 @@
 # Cauldron Crops
 
+> Visão geral histórica, não status operacional. Consulte `CAULDRON_CROPS_CONTEXT_MASTER.md`/`ROADMAP.md` para o estado vigente e `AGENT_TEAM.md` para roteamento. As listas antigas abaixo não reativam venda/economia nem colocam o save v4 de volta no backlog. Referências/Estilo Visual/Placeholders orientam o conceito textual, sem aprovar os visuais atuais como arte final.
+
 ## Visão Geral
 **Cauldron Crops** é um jogo de fazenda/cozy farming em 2D feito com **Godot 4.6.2**. A proposta mistura plantio, colheita, inventário e progressão com uma diferença central: o **caldeirão** é o coração do jogo e o principal motor de descoberta.
 

@@ -71,11 +71,11 @@ func _inspect(path: String) -> bool:
 		return _fail("diretório indisponível: " + path)
 	for file in directory.get_files():
 		var full := path.path_join(file)
-		if full.begins_with("res://Scripts/dev/") or full.begins_with("res://Scenes/dev/") or file.begins_with("savegame"):
+		if full.begins_with("res://Scripts/dev/") or full.begins_with("res://Scenes/dev/") or file.begins_with("savegame") or full == "res://AGENTS.md":
 			return _fail("arquivo interno/pessoal no pacote: " + full)
 	for folder in directory.get_directories():
 		var full := path.path_join(folder)
-		if full in ["res://docs", "res://tools", "res://Builds", "res://.git"]:
+		if full in ["res://docs", "res://tools", "res://Builds", "res://.git", "res://.codex"]:
 			return _fail("diretório interno no pacote: " + full)
 		if not _inspect(full):
 			return false

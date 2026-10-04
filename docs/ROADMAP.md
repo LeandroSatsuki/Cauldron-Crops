@@ -1,6 +1,14 @@
 # Evolução do Projeto
 
-## Etapa atual — Vila em Reconstrução, Poço: fechamento técnico 1–3 (2026-10-04)
+## Etapa atual — Equipe de especialistas: organização da produção (2026-10-04)
+
+Cinco perfis de projeto criados: gameplay/progressão, arte/UX, narrativa, engenharia e QA/entrega. O autor mantém a direção criativa e a aprovação; o agente principal coordena consultas pertinentes, integra e publica. Documentos versionados são a memória oficial, sem cinco cópias do contexto ou consultas obrigatórias a todos para cada edição. Protocolo e fontes em [Equipe de especialistas](AGENT_TEAM.md).
+
+Esta etapa não implementa gameplay nem produz arte final. Moldes/formas do Poço e outros visuais de apoio continuam provisórios; a direção aprovada não é substituída pelo estilo do protótipo. Lacunas de especificação visual e fontes históricas foram sinalizadas, sem descartar assets do autor ou canonizar hipóteses narrativas.
+
+Validação: cinco TOMLs e referências locais passaram; seis controles negativos do validador foram recusados; cinco cenários de consulta guiada e revisão independente de arte não encontraram falha crítica. Auditoria atualizada passou no PCK existente VillageWell-20261004. Não houve nova build nem nova execução da suíte 54/54. Descoberta nativa/aplicação efetiva do sandbox dos perfis no app ainda não verificadas; consultas desta etapa usaram leitura explícita dos arquivos. As **36 pendências manuais** abaixo permanecem intactas. Próximo passo: especialistas pertinentes ajudam a apresentar um recorte delimitado de gameplay/progressão, para aprovação antes da implementação.
+
+## Checkpoint anterior — Vila em Reconstrução, Poço: fechamento técnico 1–3 (2026-10-04)
 
 Incremento 3 concluído tecnicamente, sem alterar gameplay/schema. Fonte `03e209d` exportada em checkout limpo para **`Builds/Playtest/VillageWell-20261004`**. Suíte **54/54**, sete reaberturas imediatas em novos processos (**6 + 3 + 8 + 8 + 4 + 8 + 8**) e dois fixtures adicionais (**2 + 2**, não contados como reabertura). Runner exige contagem específica em cada modo. Primeira execução interrompida antes do pacote; refeita integralmente, sem reaproveitar PASS parcial.
 

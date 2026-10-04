@@ -1,5 +1,7 @@
 # Mapa de Texturas de Itens
 
+> Levantamento histórico, a conferir contra catálogo/assets atuais antes de produzir arte; não é aprovação de estilo/licença. O manifesto de `asset-research` citado abaixo não existe neste checkout. Água atualmente é reserva fora dos slots; sua presença na tabela não autoriza transformá-la em item carregável. Direção final e lacunas em `AGENT_TEAM.md`.
+
 Este arquivo lista os itens do catálogo que ainda precisam de textura própria para UI/inventário.
 
 ## Critério usado

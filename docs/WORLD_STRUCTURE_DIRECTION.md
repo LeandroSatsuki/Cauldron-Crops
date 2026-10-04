@@ -1,5 +1,7 @@
 # Direção de Mundo — Fazenda/Vila e Regiões
 
+> A direção de mundo permanece referência; parte de “Aplicação atual” registra checkpoints antigos. Confirmar implementação/persistência da exploração no plano vigente `FIRST_EXTERNAL_REGION_VERTICAL_SLICE.md`, no contexto/ROADMAP e no código. Não confundir cache de sessão, snapshot e reconciliação de tempo jogado com progresso offline. Hipóteses narrativas não são cânone aprovado.
+
 ## Decidido
 
 - Cauldron Crops terá um mundo finito composto por mapas artesanais.

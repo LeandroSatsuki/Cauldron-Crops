@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-04 - Equipe de especialistas e proteção da direção artística
+
+- Cinco perfis de projeto em `.codex/agents`: gameplay, arte/UX, narrativa, engenharia e QA. Protocolo único de fontes, consultas delimitadas e integração pelo principal; aprovação criativa permanece com o autor. Sem configuração global/modelo obrigatório ou cinco agentes permanentemente ativos.
+- Arte atual de apoio explicitamente provisória; direção documentada preservada, sem gerar assets, inventar especificações finais ou descartar trabalho do autor. GDD/estrutura de mundo/backlog receberam avisos de conteúdo histórico e referências ausentes.
+- Validador: cinco TOMLs/referências válidos e seis entradas inválidas recusadas. Cinco cenários guiados e revisão independente de arte sem falha crítica; refinadas regras de decisões humanas recentes e baseline histórico do QA. Não comprovam descoberta nativa/sandbox no app.
+- Exportação futura exclui `.codex`/AGENTS; auditoria atualizada passou no pacote VillageWell-20261004 existente. Sem nova build, suíte completa ou mudança de gameplay/schema; 36 testes manuais mantidos, save pessoal e arquivos locais alheios preservados.
+
 ## 2026-10-04 - Vila em Reconstrução: Poço, fechamento técnico 1–3
 
 - Exportador integra reaberturas física/projeto/habilidade com contagens específicas e preserva modos anteriores; sete reaberturas e dois fixtures distintos. Auditoria isolada valida recursos/contratos/preflight/instância do Poço; pacote anterior sem Poço é recusado, sem fallback local.
