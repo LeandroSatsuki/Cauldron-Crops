@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-04 - Proposta de uso agrícola do Adubo Flamejante
+
+- Gameplay/engenharia compararam uso do tomate/Adubo, nova restauração e calendário/solo sazonal. Recomendada uma cultura/uma colheita com +2 tomates garantidos, sem repetir a semeadura concluída ou alongar timers; números/regra novos ainda não aprovados.
+- Receita experimental atual preservada; aplicação pessoal em tomate crescendo/maduro sem recompensas materializadas, cancelamento/recusa sem gasto, proteção da geração da cultura durante aproximação, bônus/custódia únicos e morte/reset sem refund propostos. Pontes GRID/legado/preflight necessárias; não é só adicionar Aplicar.
+- Contrato/alternativas/B–E em FARM_SYSTEM_V2/Decisão137, aguardando confirmação integral. Só documentação: fonte `f587fe4`, pacote SelectiveSower-20261004 e65 textos manuais pendentes preservados; nenhum jogo/suíte/build/runtime/save pessoal/arte novo nesta consulta. Não registrar proposta como entrega visual no ART_HANDOFF.
+
 ## 2026-10-04 - Semeadura seletiva aprovada e implementada
 
 - Autor confirmou o contrato integral após `034edec`, Decisão 136. Trigo OU Tomate no mesmo piloto físico de quatro lotes/gate/ON-OFF/prioridades; busca de uma semente exclusivamente no Village Storage, ID custodiado até plantar/devolver, sem fallback/fila/aragem/fabricação automática.

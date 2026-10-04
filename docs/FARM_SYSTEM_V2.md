@@ -1,5 +1,56 @@
 # Farm System V2
 
+## Proposta de Adubo Flamejante para a colheita de tomate
+
+**Status em 2026-10-04: formulação autorizada, aguardando aprovação integral do contrato.** O autor respondeu “pode continuar” após `0d48d8b`. Esta etapa propõe um uso novo para um item existente; não implementa nem considera aprovado esse efeito. Baseline jogável: fonte `f587fe4`, pacote `Builds/Playtest/SelectiveSower-20261004`. Suas 61/61 regressões são evidência anterior, não execução desta consulta. Os **65 testes manuais permanecem pendentes e intactos**.
+
+### Resultado recomendado
+
+Fechar o ciclo tomate → caldeirão → melhoria de colheita. Um Adubo Flamejante da Mochila, aplicado pessoalmente a uma cultura de tomate, acrescentaria **dois tomates garantidos à próxima colheita dessa cultura**. A colheita base passaria de um para três tomates, sem multiplicar sementes, raridades ou outros bônus. É uma escolha opcional de produção, não requisito de restauração ou melhoria permanente do solo.
+
+A receita atual já transforma **um tomate + um trigo → um adubo em dois segundos**. Preservar ingredientes, quantidade, descoberta experimental e XP vigente: a mistura manual do par aprende a receita deterministicamente; o ponto de alquimia está ligado à primeira descoberta, não à aplicação. O resultado continua na Mochila. Não tornar a receita conhecida automaticamente ou criar outro método de aquisição nesta etapa.
+
+O custo importa: dois tomates adicionais representam **um tomate líquido a mais e um trigo a menos** frente à colheita normal, descontando o tomate gasto no craft. Isso não prova vantagem econômica global; produzir sementes e outras receitas são usos alternativos dos mesmos recursos. Apenas +1 tomate não daria ganho líquido de tomate. +3, múltiplas doses e tratamento durável são alternativas maiores ou mais intensas, não parâmetros aprovados. O piloto recomendado fixa +2, uma aplicação e um ciclo, sujeito à confirmação humana e ao balanceamento posterior.
+
+### Alternativas comparadas
+
+| Recorte | Valor para o jogador | Limite da recomendação |
+| --- | --- | --- |
+| Adubo no tomate | Quantidade adicional visível; reutiliza cultura, receita e aplicação pelo mouse | Menor frente recomendada; efeito e intensidade ainda precisam de aprovação |
+| Próxima restauração | Novo marco de reconstrução | Segunda corrupção/ruína são reservas, não projeto funcional pronto; faltam contrato de descoberta, custo e recompensa |
+| Calendário ou canteiro sazonal local | Acesso a culturas de Outono/Inverno | Calendário afeta a direção real-time reservada; solo local exigiria novas regras agrícolas. Nenhum dos dois vem por consequência |
+
+Cultivos de 3–6 segundos tornam outra redução de tempo pouco legível. Permitir também tomate maduro reduz o atrito de aplicar durante os cinco segundos de crescimento, mas o golem pode colher antes da chegada do personagem. Não pausar o mundo, atrasar a colheita ou alongar timers para garantir a aplicação. Recusar sem gasto quando a cultura-alvo deixou de existir.
+
+### Contrato candidato para confirmação
+
+1. **Fonte e aquisição:** um `adubo_flamejante` da Mochila por aplicação válida. Fabricação mantém a transação vigente do caldeirão, com Baú prioritário/complemento pessoal; aplicação não consome remotamente do Baú. Sem novo item, receita, gate, marco ou recompensa de XP.
+2. **Alvo:** uma cultura `semente_verao`/`tomate_sol`, crescendo OU madura, num lote válido já existente da vila ativa, visível e desbloqueado. Sem novas células, área livre automática, aplicação externa ou alteração do semeador. Recusar lote vazio, outra cultura, cultura já adubada e qualquer colheita com recompensas já materializadas.
+3. **Uso pelo mouse:** consultar item → Aplicar → clicar no tomate → personagem aproxima-se → commit. Consultar não muda ferramenta/semente pessoal. Aplicar usa a exclusividade atual com ferramentas/sementes; cancelar por botão, Escape, clique direito, outro comando, load ou viagem não gasta antes do commit. Uma aplicação encerra a intenção, sem repetição automática ou seleção obrigatória.
+4. **Concorrência:** revalidar contexto, proximidade, saldo, identidade do lote E identidade transitória da cultura na chegada. O mesmo nó pode ter perdido o tomate e recebido outro durante a caminhada; não aplicar silenciosamente ao novo. Crescer → amadurecer na mesma cultura não invalida a intenção. Nenhuma reserva de item ou pausa do golem.
+5. **Efeito:** somar exatamente +2 `tomate_sol` na primeira geração de recompensas daquela colheita, além dos resultados normais vigentes. Não alterar crescimento, rega, mortalidade, estação, semente devolvida, chance de drops, XP ou bônus da Aceleradora. O adubo não rega nem impede morte por sede.
+6. **Custódia:** uma aplicação por cultura, sem empilhamento. Falta de espaço conserva a cultura adubada e as recompensas exatas já geradas; retry/load não sorteia nem soma novamente. Colheita pessoal entregue limpa a marca; coleta física bem-sucedida pelo golem limpa a marca no lote e transfere o total real ao cargo existente, que continua até o depósito. Não guardar uma segunda promessa de bônus no golem.
+7. **Fim do ciclo:** nova plantação não herda o tratamento. Morte por sede, remoção ou reset real da cultura limpam a marca sem refund de um adubo já aplicado. Load/cache não são reset: restauram ou preservam o snapshot conforme as políticas atuais. Recusas/cancelamento antes do commit não gastam nem marcam.
+8. **Persistência candidata:** campo booleano opcional por cultura, validado no FarmPlot, bridge GRID/legado e preflight de leitura/gravação antes de mutação/I/O. Marca ativa exige tomate vivo; recompensa materializada com marca exige ao menos três tomates, sem rejeitar os extras normais válidos. Snapshot agrícola substituído sem campo resolve não adubado; parcial sem domínio agrícola preserva o estado vigente. Não inferir tratamento pelo total de tomates de um save antigo. Candidato mantém save v4, sem promessa de downgrade para runtime antigo que perderia a marca.
+9. **Superfície e arte:** reutilizar cartão/faixa de aplicação e tooltip/status do lote com indicação funcional “+2 tomates na próxima colheita”. Sem novo HUD permanente, janela, estilo, asset ou lore por Codex. Somente após implementação aprovada registrar estados/caminhos no ART_HANDOFF para Antigravity.
+
+### Evidência e plano mínimo após aprovação
+
+`Data/recipes/tomate_sol_trigo.tres` e `RecipeResolver` confirmam craft experimental acessível, não efeito agrícola. `Database` ainda descreve uso futuro. `ItemUsePanel`/`Main` só aplicam Crescimento e Solo Vivo, com dispatch binário que precisa de ramo explícito para Adubo. FarmPlot compartilha geração de recompensas entre colheita pessoal/golem e mantém `pending_harvest_rewards`; adicionar apenas um botão ou alterar a quantidade no depósito seria incorreto.
+
+Engenharia confirmou que FarmPlot deve continuar autoridade. Main converte o snapshot para FarmTileData; SaveManager converte de volta e escolhe GRID v4 ou legado. A marca precisa atravessar ambas as pontes e ser validada no writer, inclusive no runtime antes de eventual normalização. Geração transitória da cultura protege a aproximação; não é novo campo persistente. Cargo de colheita já representa totais, sem alteração de `golem_work`/save de semente por consequência.
+
+- **B — domínio:** elegibilidade, consumo síncrono, marca por cultura, bônus aditivo na geração única, proteção contra reaplicação e limpeza correta em coleta/morte/reset. Sem alterar receita, calendário, timers ou regras de rega.
+- **C — persistência:** campo opcional estrito, pontes GRID/legado, preflight de load/writer, completos/parciais/replay e save externo/cache. Preservar a recompensa materializada e custódia do golem; sem migração geral do grid.
+- **D — integração funcional:** terceiro ramo explícito no fluxo de aplicação, identidade transitória da cultura, mensagens de recusa/efeito, exclusividade/cancelamento pelo mouse. Assets existentes; passagem funcional ao Antigravity após implementação.
+- **E — QA e entrega:** testar manual/golem, soma aditiva, reaplicação, alvo maduro, mudança de cultura no mesmo nó, saldo/alvo perdido em caminhada, capacidade cheia, recompensa pendente, morte/reset, JSON/replay/legados/parciais/cache/viagem e callbacks obsoletos. Depois suíte integral/pacote limpo/QA independente e novos casos manuais, sem solicitar playtest imediato ou acessar save pessoal.
+
+### Portão de implementação
+
+QA independente revisou as cinco fontes documentais e o contrato em somente leitura, sem bloqueador material. Conferiu receita/XP no código e a separação entre proposta, baseline anterior e os 65 manuais pendentes; não executou testes, pacote ou save pessoal, nem aprovou design/balanceamento.
+
+Confirmar integralmente **receita atual, +2 tomates garantidos, uma aplicação por cultura, alvos crescendo/maduros sem recompensa materializada, consumo pessoal na chegada, morte/reset sem refund e persistência/custódia descritas**. Nenhum código autorizado por esta formulação. Não ativar economia/lojas/F10, Elixir, calendário, novos solos/culturas/animais/golems/mapas/mastery/offline ou lore por consequência. Consultas guiadas por leitura explícita dos perfis, sem alegar carregamento nativo; parecer técnico não aprova design ou balanceamento.
+
 ## Semeadura seletiva — B–E fechadas tecnicamente, manual pendente
 
 **Data:** 2026-10-04. Autor respondeu “aprovado” ao contrato integral publicado em `034edec`, autorizando B–E/Decisão 136. Trigo OU Tomate, quatro lotes/gate atuais, custódia física por ID e troca bloqueada durante tarefa/cargo. A aprovação substitui o portão documental abaixo; não homologa arte, conforto, produtividade ou balanceamento. Regras/alternativas da formulação ficam no histórico. Os 60 manuais anteriores continuam pendentes.

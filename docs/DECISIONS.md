@@ -1,5 +1,13 @@
 # Decisions
 
+## Decisão 137 - Formulação do uso agrícola do Adubo Flamejante
+
+- Autor respondeu “pode continuar” após `0d48d8b`. Autoriza analisar/formular o próximo recorte; não aprova efeito novo por existir o item no catálogo. Sem código/runtime/save/assets alterados nesta etapa.
+- Gameplay/engenharia recomendam piloto opcional: receita atual um tomate + um trigo → um adubo/2s, descoberta experimental/XP vigentes; aplicar um adubo da Mochila numa cultura de tomate crescendo OU madura, ainda sem recompensas materializadas, para +2 tomates garantidos na próxima colheita. Não alterar sementes/drops/bônus/timers/rega/mortalidade/estação ou semeadura; uma aplicação/cultura, sem efeito permanente ou automático.
+- Custo direto: +1 tomate líquido e −1 trigo frente à colheita normal após descontar ingredientes; não é vantagem econômica global homologada. Alvo maduro evita janela exclusiva de cinco segundos, mas golem pode colher antes da chegada. Recusa não gasta; não pausar mundo/golem para garantir aplicação.
+- Commit pessoal revalida contexto/proximidade/saldo/lote e geração transitória da cultura; replantar no mesmo nó não autoriza mudar o alvo silenciosamente. Marca/recompensa persistem nas tentativas bloqueadas por capacidade; coleta pelo golem transfere os totais uma vez. Colheita concluída/morte/reset real limpa a marca, sem refund pós-aplicação; cache/load não são reset.
+- Contrato completo e B–E em FARM_SYSTEM_V2, **aguardando confirmação humana integral**, incluindo +2, receita, alvos e política de perda/custódia. Campo agrícola opcional estrito/GRID-legado/preflight propostos, sem runtime novo ou downgrade garantido. Fonte `f587fe4`/pacote SelectiveSower-20261004 preservados;61/61 é baseline anterior,65 manuais intactos/pendentes, sem nova suíte/build ou save pessoal acessado. Antigravity mantém arte; proposta não entra como conteúdo implementado no ART_HANDOFF.
+
 ## Decisão 136 - Semeadura seletiva aprovada
 
 - Autor respondeu “aprovado” ao contrato integral apresentado após `034edec`. Autoriza B–E do FARM_SYSTEM_V2: Trigo OU Tomate, mesmos quatro lotes/gate/ON-OFF/prioridades, sem fallback/fila/rodízio ou novo calendário.
