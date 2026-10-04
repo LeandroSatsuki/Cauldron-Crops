@@ -6,7 +6,7 @@ func _initialize() -> void:
 		return
 	if not _inspect("res://"):
 		return
-	for path in ["res://Scenes/Main.tscn", "res://Scenes/ForagingGroveRegion.tscn", "res://Scenes/PrototypeExternalRegion.tscn", "res://Data/recipes/semente_basica_tomate_sol.tres"]:
+	for path in ["res://Scenes/Main.tscn", "res://Scenes/UI.tscn", "res://Scenes/ForagingGroveRegion.tscn", "res://Scenes/PrototypeExternalRegion.tscn", "res://Data/recipes/semente_basica_tomate_sol.tres", "res://Scripts/Golem.gd", "res://Scripts/GolemPanel.gd", "res://Scripts/data/GolemSeedCargo.gd", "res://Scripts/data/GolemWorkState.gd", "res://Assets/Tools/tool_seed.png"]:
 		if not ResourceLoader.exists(path) or ResourceLoader.load(path) == null:
 			_fail("recurso necessário ausente: " + path)
 			return

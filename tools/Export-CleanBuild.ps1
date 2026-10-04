@@ -121,6 +121,7 @@ $worktreePath = Join-Path $repoRoot "Builds/.clean-export-$PID"
 $worktreeAdded = $false
 $originalAppData = $env:APPDATA
 $qaAppData = Join-Path $worktreePath "Builds/QA/GodotSandboxCleanExport"
+$reopenCount = 0
 
 if (Test-Path -LiteralPath $worktreePath) {
     throw "Temporary export directory already exists: $worktreePath"
@@ -182,6 +183,23 @@ try {
                 throw "$($test.Name) did not report PASS."
             }
             Write-Host "PASS $($test.Name)"
+            # Reopen immediately, before another fixture can replace the QA save.
+            $reopenMode = switch ($test.BaseName) {
+                "GolemWorkPersistenceSmokeTest" { "--verify-sower-reopen" }
+                "GolemSowerUISmokeTest" { "--verify-seeding-ui-reopen" }
+                default { $null }
+            }
+            if ($reopenMode) {
+                $reopenLog = Join-Path $godotCacheDirectory ($test.BaseName + "-reopen.log")
+                Invoke-GodotCommand -Executable $godotExecutable `
+                    -Arguments @("--path", $worktreePath, "--headless", ("res://Scenes/dev/" + $test.Name), "--", $reopenMode) `
+                    -LogPath $reopenLog -FailureMessage "$($test.Name) process reopen" -RejectLoggedErrors
+                if (-not (Select-String -LiteralPath $reopenLog -Pattern ": PASS")) {
+                    throw "$($test.Name) process reopen did not report PASS."
+                }
+                $reopenCount++
+                Write-Host "PASS $($test.Name) process reopen"
+            }
         }
         Write-Host "Regression suite: $($tests.Count)/$($tests.Count)."
     }
@@ -223,6 +241,21 @@ try {
         }
 
         Write-Host "Smoke test passed."
+        if ($Playtest) {
+            $graphicsOutput = Join-Path $godotCacheDirectory "clean-export-opengl.stdout.log"
+            $graphicsError = Join-Path $godotCacheDirectory "clean-export-opengl.stderr.log"
+            $graphicsProcess = Start-Process -FilePath $outputAbsolute `
+                -ArgumentList "--rendering-method", "gl_compatibility", "--quit-after", "120" `
+                -WorkingDirectory $outputDirectory -WindowStyle Hidden `
+                -RedirectStandardOutput $graphicsOutput -RedirectStandardError $graphicsError -Wait -PassThru
+            if ($graphicsProcess.ExitCode -ne 0) {
+                throw "Exported OpenGL startup failed (exit code $($graphicsProcess.ExitCode))."
+            }
+            if (Select-String -LiteralPath $graphicsOutput, $graphicsError -Pattern "(^|\s)(SCRIPT ERROR:|ERROR:)") {
+                throw "Exported OpenGL startup logged errors."
+            }
+            Write-Host "OpenGL startup passed (not manual gameplay acceptance)."
+        }
     }
 
     if ($Playtest) {
@@ -237,15 +270,21 @@ try {
             preset = $Preset
             export_only_user_directory = "CauldronCropsPlaytest"
             regression_count = $(if ($RunRegressionSuite) { $tests.Count } else { 0 })
+            process_reopen_count = $reopenCount
+            headless_startup_passed = [bool]$SmokeTest
+            opengl_startup_passed = [bool]$SmokeTest
+            pack_audit_passed = $true
             executable_sha256 = (Get-FileHash -LiteralPath $outputAbsolute -Algorithm SHA256).Hash
             pack_sha256 = (Get-FileHash -LiteralPath $packPath -Algorithm SHA256).Hash
             manual_status = "pending"
         }
-        $manifest | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $outputDirectory "build-manifest.json") -Encoding UTF8
         Copy-Item -LiteralPath (Join-Path $worktreePath "tools/StartPlaytest.cmd") -Destination (Join-Path $outputDirectory "StartPlaytest.cmd")
         $roadmap = [System.IO.File]::ReadAllText((Join-Path $worktreePath "docs/ROADMAP.md"))
         $checklist = [regex]::Match($roadmap, '(?s)### Checklist integrado.*?(?=\r?\n### Riscos técnicos)')
         if (-not $checklist.Success) { throw "Integrated checklist was not found." }
+        $manualCaseCount = [regex]::Matches($checklist.Value, '(?m)^- \[ \] \*\*[A-Z]+-\d+').Count
+        $manifest["manual_case_count"] = $manualCaseCount
+        $manifest | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $outputDirectory "build-manifest.json") -Encoding UTF8
         [System.IO.File]::WriteAllText((Join-Path $outputDirectory "CHECKLIST.md"), $checklist.Value)
         Copy-Item -LiteralPath (Join-Path $worktreePath "tools/Playtest-Readme.txt") -Destination (Join-Path $outputDirectory "LEIA-ME.txt")
         $logsDirectory = Join-Path $outputDirectory "Logs"
