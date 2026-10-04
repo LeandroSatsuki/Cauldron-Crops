@@ -24,8 +24,64 @@ func _initialize() -> void:
 		return
 	if not _check_tomato_contract():
 		return
-	print("PlaytestPackAudit: PASS - recursos, receitas sustentáveis, Poço, Solo Vivo, Aceleradora, Raiz renovável, tomate Primavera/Verão, aplicação, exclusões e save separado.")
+	if not _check_selective_sower_contract():
+		return
+	print("PlaytestPackAudit: PASS - recursos, receitas sustentáveis, Poço, Solo Vivo, Aceleradora, Raiz renovável, tomate Primavera/Verão, semeadura seletiva, aplicação, exclusões e save separado.")
 	quit(0)
+
+func _check_selective_sower_contract() -> bool:
+	# Scripts carregados exclusivamente do PCK, sem instanciar mundo/ready/save.
+	var cargo: GDScript = ResourceLoader.load("res://Scripts/data/GolemSeedCargo.gd")
+	var work: GDScript = ResourceLoader.load("res://Scripts/data/GolemWorkState.gd")
+	var golem: GDScript = ResourceLoader.load("res://Scripts/Golem.gd")
+	var cells: Array = cargo.get_script_constant_map().get("PILOT_CELLS", [])
+	if cells != [Vector2i(0, 0), Vector2i(1, 0), Vector2i(0, 1), Vector2i(1, 1)]:
+		return _fail("lotes do semeador alterados")
+	var names: Array = []
+	for method in golem.get_script_method_list():
+		names.append(str(method["name"]))
+	for method in ["set_selected_seed_id", "get_selected_seed_id", "get_seed_selection_status"]:
+		if method not in names:
+			return _fail("API da semeadura seletiva ausente: " + method)
+	var defaults: Dictionary = work.call("default_data")
+	if defaults.get("selected_seed_id") != "semente_basica" or defaults.get("seeding_enabled", true) or not work.call("is_valid", defaults, false):
+		return _fail("padrão do semeador fora do contrato")
+	for id in ["semente_basica", "semente_verao", "semente_outono", "semente_inverno", "tomate_sol", ""]:
+		var allowed: bool = id in ["semente_basica", "semente_verao"]
+		var candidate: Dictionary = defaults.duplicate(true)
+		candidate["selected_seed_id"] = id
+		if bool(work.call("is_valid", candidate, true)) != allowed:
+			return _fail("whitelist de escolha inválida: " + id)
+		var payload := {"item_id": id, "quantity": 1, "target_cell": {"x": 0, "y": 0}, "intent": "transport"}
+		if bool(cargo.call("is_save_data_valid", payload)) != allowed:
+			return _fail("whitelist de cargo inválida: " + id)
+		candidate["seeding_enabled"] = true
+		candidate["seed_cargo"] = payload
+		candidate.erase("selected_seed_id")
+		if bool(work.call("is_valid", candidate, true)) != allowed:
+			return _fail("cargo sem escolha não conserva identidade/validade: " + id)
+		if allowed and work.call("is_valid", candidate, false):
+			return _fail("cargo/ON aceitos sem Clareira restaurada")
+	var mismatch: Dictionary = defaults.duplicate(true)
+	mismatch["seeding_enabled"] = true
+	mismatch["seed_cargo"] = {"item_id": "semente_verao", "quantity": 1, "target_cell": {"x": 0, "y": 0}, "intent": "transport"}
+	if not work.call("is_valid", mismatch, true):
+		return _fail("escolha futura Trigo rejeita cargo válido de tomate")
+	for invalid in [null, false, 0, [], {}]:
+		var candidate: Dictionary = defaults.duplicate(true)
+		candidate["selected_seed_id"] = invalid
+		if work.call("is_valid", candidate, true):
+			return _fail("escolha aceita tipo inválido")
+	var scene: PackedScene = ResourceLoader.load("res://Scenes/UI.tscn")
+	var state := scene.get_state()
+	var controls: Dictionary = {}
+	for index in state.get_node_count():
+		var name: String = str(state.get_node_name(index))
+		if name in ["SeedSelection", "WheatButton", "TomatoButton", "SeedSelectionStatus"]:
+			controls[name] = str(state.get_node_type(index))
+	if controls != {"SeedSelection": "HBoxContainer", "WheatButton": "Button", "TomatoButton": "Button", "SeedSelectionStatus": "Label"}:
+		return _fail("seletor funcional do semeador ausente")
+	return true
 
 func _check_tomato_contract() -> bool:
 	var path := "res://Data/recipes/semente_tomate_recuperacao.tres"

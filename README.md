@@ -41,7 +41,7 @@ plantar → regar → colher → combinar ingredientes → descobrir receitas �
 - Solo Vivo durável no lote piloto, aprendido após a Clareira: preparo de trigo + mistura conserva umidade entre colheitas de trigo regado;
 - uso explícito pelo mouse: cartão opaco → Aplicar → alvo/chegada, com cancelamento sem gasto; crescimento mantém três doses por frasco e preserva cargas antigas;
 - reposição determinística de sementes de trigo pelo Livro: carvão + água → 1 semente, ou 2 trigos → 3 sementes, sem desbloqueio/RNG;
-- tomate opcional na Primavera/Verão, com primeira semente e recuperação pelo Livro: 1 trigo + 1 água → 1 semente, 2 segundos/sem XP; sem ampliar o semeador de trigo;
+- tomate opcional na Primavera/Verão, com primeira semente e recuperação pelo Livro: 1 trigo + 1 água → 1 semente, 2 segundos/sem XP;
 - pesca com minigame de sincronia;
 - coleção de pesca, eventos e descobertas opcionais;
 - personagem físico com navegação por clique e exploração do bosque;
@@ -51,7 +51,7 @@ plantar → regar → colher → combinar ingredientes → descobrir receitas �
 - purificação de áreas e expansão da fazenda;
 - golem coletor com prioridades de trabalho e talento de irrigação;
 - Poção Aceleradora pelo painel Golem: preparar/cancelar sem gasto inicial, um frasco da Mochila por nova entrega de colheita, deslocamento +50%; preparo/benefício conservados em pausa, viagem e save, sem repetição automática;
-- piloto de semeadura opcional de trigo em quatro lotes, liberado pela Clareira restaurada, com retirada/transporte/plantio/devolução físicos e cargo persistido.
+- piloto de semeadura opcional de Trigo OU Tomate em quatro lotes, liberado pela Clareira restaurada; escolha persistente, retirada/transporte/plantio/devolução físicos pelo ID original, sem fallback ou autorligar. Troca bloqueada durante tarefa/carga, inclusive pausa; OFF conserva devolução física. Não fabrica sementes ou usa a Mochila.
 
 Loja, venda, requests legados e F10 permanecem desativados. A Mochila ganha +4 slots ao restaurar o Herbário e +4 na primeira coleta do Bosque, uma vez por marco, em qualquer ordem. A barra usa páginas de até 12 e o painel do baú mostra o progresso. Recusas preservam a origem/recompensa, e saves acima da capacidade atual carregam todas as quantidades sem truncamento. Marcos, capturas pendentes e produção do caldeirão integram o save v4. Validação manual integrada ainda pendente.
 

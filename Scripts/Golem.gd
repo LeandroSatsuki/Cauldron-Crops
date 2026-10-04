@@ -26,6 +26,7 @@ var state: String = "IDLE"
 var carried_rewards: Array = []
 var seed_cargo := GolemSeedCargo.new()
 var seeding_enabled := false
+var selected_seed_id := GolemSeedCargo.SEED_ITEM_ID
 var accelerator_prepared := false
 var accelerator_active := false
 var harvest_delivery_started := false
@@ -58,6 +59,7 @@ const SEED_ARRIVAL_DISTANCE := 14.0
 var _seed_target_cell := Vector2i(-1, -1)
 var _seed_route_elapsed := 0.0
 var _seed_cargo_visual: Sprite2D
+var _seed_visual_item_id := ""
 
 func _ready() -> void:
 	_think_timer = Timer.new()
@@ -105,8 +107,17 @@ func _process(_delta: float) -> void:
 	_atualizar_visual_vida()
 	if _seed_cargo_visual:
 		_seed_cargo_visual.visible = seed_cargo.has_seed()
+		var cargo_id := seed_cargo.get_item_id()
+		if cargo_id != _seed_visual_item_id:
+			_seed_visual_item_id = cargo_id
+			var cargo_texture := Database.obter_textura_item(cargo_id)
+			_seed_cargo_visual.texture = cargo_texture if cargo_texture != null else preload("res://Assets/Tools/tool_seed.png")
 
 func _physics_process(delta: float) -> void:
+	if (seed_cargo.has_seed() or state in SEED_MOVEMENT_STATES or state in ["PLANTING_SEED", "RETURNING_SEED"]) and not _accelerator_context_valid():
+		if state != "IDLE" or life_state != "IDLE" or velocity != Vector2.ZERO:
+			_parar_execucao_atual()
+		return # Suspender rota/espera sem converter, plantar ou devolver remotamente.
 	if (accelerator_prepared or accelerator_active) and not _accelerator_context_valid():
 		if state != "IDLE" or life_state != "IDLE" or velocity != Vector2.ZERO:
 			_parar_execucao_atual()
@@ -377,7 +388,7 @@ func get_work_save_data() -> Dictionary:
 	var harvest: Variant = GolemWorkState.harvest_totals(carried_rewards)
 	if harvest == null:
 		return {} # O preflight de gravação recusa carga runtime inválida.
-	return {"version": GolemWorkState.VERSION, "seeding_enabled": seeding_enabled,
+	return {"version": GolemWorkState.VERSION, "seeding_enabled": seeding_enabled, "selected_seed_id": selected_seed_id,
 		"work_priority": work_priority, "harvest_cargo": harvest,
 		"seed_cargo": seed_cargo.get_save_data(), "accelerator_prepared": accelerator_prepared,
 		"accelerator_active": accelerator_active, "harvest_delivery_started": harvest_delivery_started}
@@ -388,6 +399,7 @@ func load_work_save_data(data: Dictionary, grove_restored: bool) -> bool:
 	_parar_execucao_atual()
 	work_priority = int(data["work_priority"])
 	seeding_enabled = data["seeding_enabled"]
+	selected_seed_id = data.get("selected_seed_id", GolemSeedCargo.SEED_ITEM_ID)
 	carried_rewards = GolemWorkState.harvest_rewards(data["harvest_cargo"])
 	seed_cargo = GolemSeedCargo.new()
 	seed_cargo.apply_save_data(data["seed_cargo"])
@@ -1115,7 +1127,36 @@ func _on_crop_sensor_area_area_entered(area: Area2D) -> void:
 
 
 # Piloto físico: nenhum consumidor agregado/Mochila e nenhuma reserva em trânsito.
+func get_selected_seed_id() -> String:
+	return selected_seed_id
+
+
+func get_seed_selection_status() -> Dictionary:
+	var reason := ""
+	if not _accelerator_context_valid():
+		reason = "inactive_context"
+	elif not GroveExpedition.restored:
+		reason = "locked"
+	elif seed_cargo.has_seed():
+		reason = "seed_cargo"
+	elif state in SEED_MOVEMENT_STATES or state in ["PLANTING_SEED", "RETURNING_SEED"]:
+		reason = "seed_job"
+	return {"can_change": reason == "", "reason": reason, "selected_seed_id": selected_seed_id}
+
+
+func set_selected_seed_id(seed_id: String) -> Dictionary:
+	if not GolemSeedCargo.is_selectable_seed_id(seed_id):
+		return {"ok": false, "reason": "invalid_seed"}
+	var status := get_seed_selection_status()
+	if not status["can_change"]:
+		return {"ok": false, "reason": status["reason"]}
+	selected_seed_id = seed_id
+	return {"ok": true, "reason": ""}
+
+
 func set_seeding_enabled(enabled: bool) -> bool:
+	if not _accelerator_context_valid():
+		return false
 	if enabled and not GroveExpedition.restored:
 		return false
 	seeding_enabled = enabled
@@ -1129,8 +1170,8 @@ func set_seeding_enabled(enabled: bool) -> bool:
 
 func get_seeding_status() -> Dictionary:
 	# Consulta de apresentação: não liga habilidade, muda prioridade ou reserva itens.
-	var result := {"unlocked": GroveExpedition.restored, "enabled": seeding_enabled, "code": "off", "text": "Desligado. Ative quando quiser."}
-	if not is_inside_tree():
+	var result := {"unlocked": GroveExpedition.restored, "enabled": seeding_enabled, "selected_seed_id": selected_seed_id, "code": "off", "text": "Desligado. Ative quando quiser."}
+	if not _accelerator_context_valid():
 		return _seed_status(result, "inactive", "Vila ausente. O trabalho físico está suspenso.")
 	if not GroveExpedition.restored:
 		return _seed_status(result, "locked", "Restaure a Clareira do Bosque para liberar.")
@@ -1142,9 +1183,9 @@ func get_seeding_status() -> Dictionary:
 				return _seed_status(result, "returning", "Devolvendo 1 semente ao Baú da Vila.")
 			return _seed_status(result, "return_pending", "Devolução pendente. A semente permanece com o golem.")
 		if state == "PLANTING_SEED":
-			return _seed_status(result, "planting", "Plantando trigo no canteiro inicial.")
+			return _seed_status(result, "planting", "Plantando %s no canteiro inicial." % _seed_crop_label(seed_cargo.get_item_id()))
 		if state == "MOVING_TO_SEED_PLOT":
-			return _seed_status(result, "transporting", "Transportando 1 semente de trigo.")
+			return _seed_status(result, "transporting", "Transportando 1 semente de %s." % _seed_crop_label(seed_cargo.get_item_id()))
 		return _seed_status(result, "cargo_waiting", "Transporte aguardando caminho. Semente preservada.")
 	if not seeding_enabled:
 		return result
@@ -1162,14 +1203,14 @@ func get_seeding_status() -> Dictionary:
 		var plot := _obter_farm_plot_por_grid_position(cell)
 		if not is_instance_valid(plot):
 			continue
-		var validation: Dictionary = plot.call("validate_seed_planting", GolemSeedCargo.SEED_ITEM_ID)
+		var validation: Dictionary = plot.call("validate_seed_planting", selected_seed_id)
 		if validation["success"]:
 			prepared += 1
 		else:
 			reasons[validation["reason"]] = true
 	if prepared == 0:
 		if reasons.has("wrong_season"):
-			return _seed_status(result, "season", "Trigo só é semeado na Primavera.")
+			return _seed_status(result, "season", "Tomate só é semeado na Primavera/Verão." if selected_seed_id == "semente_verao" else "Trigo só é semeado na Primavera.")
 		if reasons.has("untilled"):
 			return _seed_status(result, "soil", "Are um dos 4 lotes iniciais para preparar o canteiro.")
 		if reasons.has("occupied"):
@@ -1178,9 +1219,9 @@ func get_seeding_status() -> Dictionary:
 	var chest := _encontrar_bau() as VillageChest
 	if not is_instance_valid(chest) or chest.is_queued_for_deletion():
 		return _seed_status(result, "no_chest", "Baú da Vila indisponível. Nenhuma semente retirada.")
-	var stock := chest.get_item_quantity(GolemSeedCargo.SEED_ITEM_ID)
+	var stock := chest.get_item_quantity(selected_seed_id)
 	if stock < 1:
-		return _seed_status(result, "no_seeds", "Produza sementes no Livro do caldeirão e deposite no Baú da Vila. Não usa a Mochila.")
+		return _seed_status(result, "no_seeds", "Sem semente de %s no baú. Produza no Livro e deposite no Baú da Vila. Não usa a Mochila." % _seed_crop_label(selected_seed_id))
 	return _seed_status(result, "ready", "Pronto · %d lote(s) · %d semente(s) no baú." % [prepared, stock])
 
 
@@ -1191,18 +1232,23 @@ func _seed_status(result: Dictionary, code: String, text: String) -> Dictionary:
 
 
 func _can_seed_now() -> bool:
-	return seeding_enabled and GroveExpedition.restored and work_priority in [PRIORITY_HARVEST_FIRST, PRIORITY_WATER_FIRST] and carried_rewards.is_empty()
+	return _accelerator_context_valid() and seeding_enabled and GroveExpedition.restored and work_priority in [PRIORITY_HARVEST_FIRST, PRIORITY_WATER_FIRST] and carried_rewards.is_empty()
 
 
-func _valid_seed_plot(plot: Node2D) -> bool:
-	return is_instance_valid(plot) and plot.is_inside_tree() and not plot.is_queued_for_deletion() and plot.has_method("validate_seed_planting") and bool(plot.call("validate_seed_planting", GolemSeedCargo.SEED_ITEM_ID)["success"])
+func _valid_seed_plot(plot: Node2D, seed_id: String = "") -> bool:
+	var id := selected_seed_id if seed_id == "" else seed_id
+	return is_instance_valid(plot) and plot.is_inside_tree() and not plot.is_queued_for_deletion() and plot.has_method("validate_seed_planting") and bool(plot.call("validate_seed_planting", id)["success"])
+
+
+func _seed_crop_label(seed_id: String) -> String:
+	return "tomate" if seed_id == "semente_verao" else "trigo"
 
 
 func _start_seeding() -> bool:
 	if not _can_seed_now() or seed_cargo.has_seed():
 		return false
 	var chest := _encontrar_bau() as VillageChest
-	if chest == null or chest.get_item_quantity(GolemSeedCargo.SEED_ITEM_ID) < 1:
+	if chest == null or chest.get_item_quantity(selected_seed_id) < 1:
 		_registrar_acao("sem sementes no baú")
 		return false
 	var nearest: Node2D = null
@@ -1217,7 +1263,7 @@ func _start_seeding() -> bool:
 			distance = candidate_distance
 			_seed_target_cell = cell
 	if nearest == null:
-		_registrar_acao("sem lote preparado para trigo")
+		_registrar_acao("sem lote preparado para " + _seed_crop_label(selected_seed_id))
 		return false
 	target_plot = nearest
 	target_chest = chest
@@ -1281,19 +1327,19 @@ func _arrive_seed_chest() -> void:
 	if not _can_seed_now() or not _seed_chest_in_reach() or live != target_plot or not _valid_seed_plot(live):
 		_finish_seed_job("retirada recusada; estoque preservado")
 		return
-	if not seed_cargo.take_from_chest(target_chest as VillageChest, _seed_target_cell):
+	if not seed_cargo.take_from_chest(target_chest as VillageChest, _seed_target_cell, selected_seed_id):
 		_finish_seed_job("sem sementes no baú")
 		return
 	_resume_seed_cargo()
 
 
 func _resume_seed_cargo() -> void:
-	if not seed_cargo.has_seed() or work_priority == PRIORITY_PAUSED:
+	if not seed_cargo.has_seed() or work_priority == PRIORITY_PAUSED or not _accelerator_context_valid():
 		return
 	_cancelar_vida_ociosa()
 	var cell := seed_cargo.get_target_cell()
 	var plot := _obter_farm_plot_por_grid_position(cell)
-	if not _can_seed_now() or not _valid_seed_plot(plot):
+	if not _can_seed_now() or not _valid_seed_plot(plot, seed_cargo.get_item_id()):
 		seed_cargo.mark_return_pending()
 	if seed_cargo.is_return_pending():
 		target_plot = null
@@ -1314,7 +1360,7 @@ func _resume_seed_cargo() -> void:
 
 
 func _arrive_seed_plot() -> void:
-	if state != "MOVING_TO_SEED_PLOT":
+	if state != "MOVING_TO_SEED_PLOT" or not _accelerator_context_valid():
 		return
 	if not _seed_plot_in_reach():
 		_finish_seed_job("semente aguardando caminho")
@@ -1324,24 +1370,28 @@ func _arrive_seed_plot() -> void:
 	await get_tree().create_timer(harvest_duration).timeout
 	if not _task_is_current(generation) or state != "PLANTING_SEED" or work_priority == PRIORITY_PAUSED:
 		return
+	if not _accelerator_context_valid():
+		_parar_execucao_atual()
+		return
 	var live := _obter_farm_plot_por_grid_position(seed_cargo.get_target_cell())
-	if not _can_seed_now() or live != target_plot or not _valid_seed_plot(live) or not _seed_plot_in_reach():
+	if not _can_seed_now() or live != target_plot or not _valid_seed_plot(live, seed_cargo.get_item_id()) or not _seed_plot_in_reach():
 		seed_cargo.mark_return_pending()
 		_resume_seed_cargo()
 		return
+	var planted_seed_id := seed_cargo.get_item_id()
 	var result: Dictionary = live.call("try_plant_from_golem_cargo", seed_cargo)
 	# O sinal do lote pode carregar outro snapshot: não tocar a nova tarefa.
 	if not _task_is_current(generation):
 		return
 	if result["success"]:
-		_finish_seed_job("plantou trigo")
+		_finish_seed_job("plantou " + _seed_crop_label(planted_seed_id))
 	else:
 		seed_cargo.mark_return_pending()
 		_resume_seed_cargo()
 
 
 func _arrive_seed_return() -> void:
-	if state != "MOVING_TO_SEED_RETURN":
+	if state != "MOVING_TO_SEED_RETURN" or not _accelerator_context_valid():
 		return
 	if not _seed_chest_in_reach():
 		_finish_seed_job("devolução aguardando caminho")
@@ -1350,6 +1400,9 @@ func _arrive_seed_return() -> void:
 	var generation := _task_generation
 	await get_tree().create_timer(deposit_duration).timeout
 	if not _task_is_current(generation) or state != "RETURNING_SEED" or work_priority == PRIORITY_PAUSED:
+		return
+	if not _accelerator_context_valid():
+		_parar_execucao_atual()
 		return
 	if _seed_chest_in_reach() and seed_cargo.return_to_chest(target_chest as VillageChest):
 		_finish_seed_job("semente devolvida")

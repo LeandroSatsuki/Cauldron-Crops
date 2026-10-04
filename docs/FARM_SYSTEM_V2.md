@@ -1,6 +1,14 @@
 # Farm System V2
 
-## Próximo recorte — semeadura seletiva, proposta aguardando aprovação
+## Semeadura seletiva — B–D verificadas, entrega E em andamento
+
+**Data:** 2026-10-04. Autor respondeu “aprovado” ao contrato integral publicado em `034edec`, autorizando B–E/Decisão 136. Trigo OU Tomate, quatro lotes/gate atuais, custódia física por ID e troca bloqueada durante tarefa/cargo. A aprovação substitui o portão documental abaixo; não homologa arte, conforto, produtividade ou balanceamento. Regras/alternativas da formulação ficam no histórico; evidência da implementação será registrada separadamente. Os 60 manuais anteriores continuam pendentes.
+
+Implementação verificada no workspace isolado: domínio79, física129 e persistência28 por backend headless/OpenGL; fixture2/reabertura8 em processo novo. UI333 por backend/reabertura8, regressão da UI anterior351/reabertura3 e tomate125. Capturas funcionais conferidas em 800×600/800×720/1280×720; incluem arte concorrente do workspace, não certificam a arte do pacote limpo. Exportação/suíte integral ainda não concluídas. Os 60 roteiros anteriores permanecem intactos, mais cinco SS: **65 manuais pendentes**.
+
+Negativas preservadas: import inicial recusado pelo acesso ao armazenamento de certificados; fixtures iniciais de UI e física recusados por comparação de números JSON e preparação da seleção pessoal. Somente os fixtures foram corrigidos, mantendo validação de IDs/quantidades e política vigente de load. Interleavings de plantio/devolução após load/cache verificam geração/contexto com velocidade elevada só no teste; não homologam conforto, mouse físico, viagem real em toda janela assíncrona ou produtividade. Nenhum save pessoal acessado ou nova arte integrada.
+
+## Histórico da proposta de semeadura seletiva
 
 **Data:** 2026-10-04. O autor autorizou continuar após o fechamento do tomate. Esta etapa formula o próximo contrato; **não amplia a Decisão 134 nem implementa automação multicultura**. Baseline jogável: fonte `e5846b1`, pacote `Builds/Playtest/TomatoCrop-20261004`, fechamento documental `b0a393e`. Suas 59/59 regressões são evidência anterior, não execução desta consulta. Os **60 casos manuais permanecem pendentes**, sem exigir teste imediato.
 

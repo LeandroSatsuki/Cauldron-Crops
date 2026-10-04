@@ -136,6 +136,7 @@ func _run() -> void:
 	_check(not toggle.button_pressed and not toggle.disabled and not _cargo().has_seed() and toggles == before_toggles, "legado elegível OFF sem cargo inventado")
 	_reset()
 	_prepare(plot)
+	ui.call("abrir_golem_panel") # Load fecha o modal; geometria deve exercitar painel aberto.
 	ui.call("_atualizar_painel_golem")
 	for resolution in RESOLUTIONS:
 		get_tree().root.size = resolution
@@ -179,6 +180,7 @@ func _run() -> void:
 		if main.is_inside_tree() and not RegionTravelCoordinator.is_transition_in_progress():
 			break
 	await _settle()
+	ui.call("abrir_golem_panel") # Retorno do cache conserva estado, não janela aberta.
 	ui.call("_atualizar_painel_golem")
 	_check(get_tree().current_scene == main and toggle.button_pressed and not toggle.disabled and toggles == toggles_before_travel, "cache/resize conserva ON sem emitir toggle")
 	await _test_geometry()
@@ -209,7 +211,7 @@ func _test_geometry() -> void:
 	_check(screen.encloses(panel.get_global_rect()), "painel contido em " + str(screen.size) + "; rect=" + str(panel.get_global_rect()))
 	_check((panel.get_theme_stylebox("panel") as StyleBoxFlat).bg_color.a == 1.0, "fundo opaco")
 	var scroll: ScrollContainer = panel.get_node("MarginContainer/VBoxGolem/ScrollContainer")
-	for path in ["TitleLabel", "StatusLabel", "TalentLabel", "TaskLabel", "PriorityLabel", "SeedingToggle", "SeedingStatus", "SeedingHint", "GridPriorities", "BtnFechar"]:
+	for path in ["TitleLabel", "StatusLabel", "TalentLabel", "TaskLabel", "PriorityLabel", "SeedingToggle", "SeedSelection", "SeedSelectionStatus", "SeedingStatus", "SeedingHint", "GridPriorities", "BtnFechar"]:
 		var fixed: bool = path in ["TitleLabel", "BtnFechar"]
 		var control: Control = panel.get_node("MarginContainer/VBoxGolem/" + ("" if fixed else "ScrollContainer/Content/") + path)
 		if not fixed and control.visible:

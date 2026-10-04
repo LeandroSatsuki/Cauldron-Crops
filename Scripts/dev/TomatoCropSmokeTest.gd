@@ -270,7 +270,7 @@ func _soil_and_golem() -> void:
 	_check(cargo.take_from_chest(chest, Vector2i.ZERO) and chest.get_item_quantity(SEED) == 4, "cargo semeador retira só trigo")
 	_check(plot.call("try_plant_from_golem_cargo", cargo)["success"] and plot.get("semente_id_plantada") == "semente_basica" and not cargo.has_seed(), "semeador mantém cultura trigo no piloto")
 	var forged := {"item_id": SEED, "quantity": 1, "target_cell": {"x": 0, "y": 0}, "intent": "transport"}
-	_check(not cargo.apply_save_data(forged) and GolemSeedCargo.PILOT_CELLS.size() == 4 and Vector2i(2, 2) not in GolemSeedCargo.PILOT_CELLS, "cargo tomate inválido e território original intacto")
+	_check(cargo.apply_save_data(forged) and cargo.get_item_id() == SEED and GolemSeedCargo.PILOT_CELLS.size() == 4 and Vector2i(2, 2) not in GolemSeedCargo.PILOT_CELLS, "cargo tomate válido no recorte seletivo; default trigo e território original intactos")
 
 func _snapshots() -> void:
 	_reset({"agua": 3, SEED: 2}, {CROP: 4})

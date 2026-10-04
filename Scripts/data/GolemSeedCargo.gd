@@ -4,6 +4,7 @@ class_name GolemSeedCargo
 # Domínio do piloto. Persistido pelo golem, com scheduler físico separado.
 # O chamador físico deve validar chegada/alvo antes de retirada/devolução.
 const SEED_ITEM_ID := "semente_basica"
+const SELECTABLE_SEED_IDS := [SEED_ITEM_ID, "semente_verao"]
 const INTENT_TRANSPORT := "transport"
 const INTENT_RETURN := "return"
 const PILOT_CELLS: Array[Vector2i] = [Vector2i(0, 0), Vector2i(1, 0), Vector2i(0, 1), Vector2i(1, 1)]
@@ -13,6 +14,14 @@ var _payload: Dictionary = {}
 
 func has_seed() -> bool:
 	return not _payload.is_empty()
+
+
+func get_item_id() -> String:
+	return str(_payload["item_id"]) if has_seed() else ""
+
+
+static func is_selectable_seed_id(value: Variant) -> bool:
+	return typeof(value) == TYPE_STRING and value in SELECTABLE_SEED_IDS
 
 
 func get_target_cell() -> Vector2i:
@@ -26,14 +35,14 @@ func is_return_pending() -> bool:
 	return has_seed() and _payload["intent"] == INTENT_RETURN
 
 
-func take_from_chest(chest: VillageChest, target_cell: Vector2i) -> bool:
-	if has_seed() or target_cell not in PILOT_CELLS or not _chest_is_available(chest):
+func take_from_chest(chest: VillageChest, target_cell: Vector2i, seed_id: String = SEED_ITEM_ID) -> bool:
+	if has_seed() or not is_selectable_seed_id(seed_id) or target_cell not in PILOT_CELLS or not _chest_is_available(chest):
 		return false
 	# VillageChest.withdraw_item não emite sinais nem aguarda: custódia síncrona.
-	if not chest.withdraw_item(SEED_ITEM_ID, 1):
+	if not chest.withdraw_item(seed_id, 1):
 		return false
 	_payload = {
-		"item_id": SEED_ITEM_ID,
+		"item_id": seed_id,
 		"quantity": 1,
 		"target_cell": {"x": target_cell.x, "y": target_cell.y},
 		"intent": INTENT_TRANSPORT,
@@ -42,7 +51,7 @@ func take_from_chest(chest: VillageChest, target_cell: Vector2i) -> bool:
 
 
 func can_consume_for_plant(seed_id: String, target_cell: Vector2i) -> bool:
-	return has_seed() and not is_return_pending() and seed_id == SEED_ITEM_ID and target_cell == get_target_cell()
+	return has_seed() and not is_return_pending() and seed_id == get_item_id() and target_cell == get_target_cell()
 
 
 func consume_for_plant(seed_id: String, target_cell: Vector2i) -> bool:
@@ -64,7 +73,7 @@ func return_to_chest(chest: VillageChest) -> bool:
 		return false
 	# Destino atual ilimitado: deposit_item é síncrono e não pode recusar 1 semente.
 	# Se Storage ganhar capacidade, este contrato deve mudar antes da integração.
-	chest.deposit_item(SEED_ITEM_ID, 1)
+	chest.deposit_item(get_item_id(), 1)
 	_payload.clear()
 	return true
 
@@ -92,7 +101,7 @@ static func is_save_data_valid(value: Variant) -> bool:
 	var data: Dictionary = value
 	if data.size() != 4 or not data.has_all(["item_id", "quantity", "target_cell", "intent"]):
 		return false
-	if typeof(data["item_id"]) != TYPE_STRING or data["item_id"] != SEED_ITEM_ID:
+	if not is_selectable_seed_id(data["item_id"]):
 		return false
 	if not _is_exact_number(data["quantity"], 1):
 		return false

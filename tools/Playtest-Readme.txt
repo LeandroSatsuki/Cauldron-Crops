@@ -13,12 +13,12 @@ Nao copie saves antigos para este ambiente sem planejar uma copia segura.
 
 F5 salva; F9 carrega. F10 permanece desativado.
 CHECKLIST.md contem os casos pendentes e os aceites anteriores.
-Inclui 60 casos: 55 anteriores preservados e 5 de tomate inicial (TC).
+Inclui 65 casos: 60 anteriores preservados e 5 de semeadura seletiva (SS).
 Tomate do Sol pode ser plantado na Primavera ou no Verao, sem mudar estacao.
 No Livro: 1 trigo + 1 agua -> 1 Semente de Tomate, 2 segundos/zero XP,
 receita conhecida desde o inicio e repetivel, mesmo sem tomate anterior.
 Resultado na Mochila; plantar exige semente pessoal e rega normal.
-O golem continua semeando apenas trigo. Nao ha calendario publico novo,
+O golem pode semear Trigo OU Tomate por escolha no painel. Nao ha calendario publico novo,
 efeito novo de Adubo/Elixir ou beneficio de Solo Vivo para tomate.
 No Bosque, fonte de Raiz Gelida perto da bifurcacao inicial (960,630).
 Entrega 1 na Mochila e renova em 45 segundos de jogo aberto, inclusive
@@ -28,9 +28,17 @@ Trigo + raiz gera Crescimento; peixe comum + raiz gera Infusao Purificadora.
 Receitas existentes, dois segundos, descoberta pela mistura normal.
 Coleta nao concede receita, XP, marco ou slots. Visual provisorio; arte
 com Antigravity. Carvao continua 2 unidades/45s e independente da Raiz.
-Clareira restaurada libera Semear trigo no painel do golem, sem ativar.
-O piloto usa trigo, Primavera, quatro lotes iniciais arados e sementes
-depositadas no Bau da Vila. Nao ara sozinho nem usa a Mochila.
+Clareira restaurada libera a semeadura no painel, sem ativar.
+Escolha Trigo (Primavera) OU Tomate (Primavera/Verao), sem ligar a habilidade
+automaticamente ou mudar sua ferramenta/semente pessoal. Usa quatro lotes
+iniciais arados e sementes no Bau da Vila. Nao ara nem usa a Mochila.
+Se faltar a semente escolhida, nao usa outra como fallback. Sementes precisam
+ser fabricadas e depositadas pelo jogador; nao e um ciclo autossuficiente.
+Troca bloqueada durante ida ao bau/tarefa/carga de sementes, inclusive pausa
+e devolucao. Desligar permite devolver fisicamente a unidade original;
+retome prioridade mista se pausado. Escolha e carga conservadas no save.
+Nos roteiros antigos de semeadura, usar Trigo como comportamento padrao;
+SS-01 a SS-05 verificam a nova escolha explicita e o plantio de tomate.
 No Livro: 1 carvao + 1 agua gera 1 Semente de Trigo; 2 trigos geram 3.
 Carvao vem do Bosque e agua da reserva regenerada pelo poco, fora dos slots.
 As receitas estao disponiveis por padrao, levam 2 segundos por craft

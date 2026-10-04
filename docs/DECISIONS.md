@@ -1,5 +1,12 @@
 # Decisions
 
+## Decisão 136 - Semeadura seletiva aprovada
+
+- Autor respondeu “aprovado” ao contrato integral apresentado após `034edec`. Autoriza B–E do FARM_SYSTEM_V2: Trigo OU Tomate, mesmos quatro lotes/gate/ON-OFF/prioridades, sem fallback/fila/rodízio ou novo calendário.
+- Uma semente do Village Storage conserva seu ID durante retirada, transporte, plantio ou devolução física. Troca bloqueada durante tarefa de semente, inclusive ida ao baú, ou cargo, inclusive pausa/devolução; OFF permanece seguro. Escolha só para nova retirada, sem autorligar ou alterar ferramenta/semente pessoal.
+- Persistência opcional `selected_seed_id`, whitelist dos dois IDs/default Trigo, work v1/save v4 se validado; políticas completas/parciais e cargas independentes da escolha futura. Não converter/depositar/plantar novamente no load ou prometer downgrade para runtime anterior.
+- Rega/colheita/Aceleradora, Solo Vivo para trigo e regras sazonais atuais intactos. Codex integra controle funcional sem produzir arte; nova nota em ART_HANDOFF após implementação. Aprovação do contrato não homologa conforto, produtividade, balanceamento, picking físico ou arte; 60 roteiros anteriores seguem pendentes.
+
 ## Decisão 135 - Autorização de formular semeadura seletiva
 
 - Autor respondeu “pode continuar” ao próximo passo de apresentar um recorte delimitado após tomate `b0a393e`. Autoriza formulação documental, não ampliação do semeador implementada por consequência.

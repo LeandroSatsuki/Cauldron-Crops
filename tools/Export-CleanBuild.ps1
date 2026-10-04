@@ -123,6 +123,7 @@ $originalAppData = $env:APPDATA
 $qaAppData = Join-Path $worktreePath "Builds/QA/GodotSandboxCleanExport"
 $reopenCount = 0
 $additionalFixtureCount = 0
+$additionalScenarioCount = 0
 $buildSucceeded = $false
 
 if (Test-Path -LiteralPath $worktreePath) {
@@ -189,6 +190,15 @@ try {
             Write-Host "PASS $($test.Name)"
             # Reopen immediately, before another fixture can replace the QA save.
             $steps = @(switch ($test.BaseName) {
+                "SelectiveSowerSmokeTest" {
+                    @{ Name = "selective-physical"; Mode = "--selective-sower-physical"; Checks = 129; Reopen = $false; Scenario = $true }
+                    @{ Name = "selective-persistence"; Mode = "--selective-sower-persistence"; Checks = 28; Reopen = $false; Scenario = $true }
+                    @{ Name = "selective-fixture"; Mode = "--write-selective-sower-fixture"; Checks = 2; Reopen = $false }
+                    @{ Name = "selective-reopen"; Mode = "--verify-selective-sower-reopen"; Checks = 8; Reopen = $true }
+                }
+                "SelectiveSowerUISmokeTest" {
+                    @{ Name = "selective-ui-reopen"; Mode = "--verify-selective-ui-reopen"; Checks = 8; Reopen = $true }
+                }
                 "TomatoCropSmokeTest" {
                     @{ Name = "tomato-fixture"; Mode = "--write-tomato-crop-fixture"; Checks = 2; Reopen = $false }
                     @{ Name = "tomato-reopen"; Mode = "--verify-tomato-crop-reopen"; Checks = 8; Reopen = $true }
@@ -234,7 +244,9 @@ try {
                 if (-not (Select-String -LiteralPath $stepLog -Pattern (": PASS - " + $step.Checks + " verific"))) {
                     throw "$($test.Name) $($step.Name) did not report the expected $($step.Checks) checks."
                 }
-                if ($step.Reopen) { $reopenCount++ } else { $additionalFixtureCount++ }
+                if ($step.Reopen) { $reopenCount++ }
+                elseif ($step.ContainsKey("Scenario") -and $step.Scenario) { $additionalScenarioCount++ }
+                else { $additionalFixtureCount++ }
                 Write-Host "PASS $($test.Name) $($step.Name) ($($step.Checks) checks)"
             }
         }
@@ -309,6 +321,7 @@ try {
             regression_count = $(if ($RunRegressionSuite) { $tests.Count } else { 0 })
             process_reopen_count = $reopenCount
             additional_fixture_count = $additionalFixtureCount
+            additional_scenario_count = $additionalScenarioCount
             headless_startup_passed = [bool]$SmokeTest
             opengl_startup_passed = [bool]$SmokeTest
             pack_audit_passed = $true

@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-10-04 - Semeadura seletiva aprovada e implementada
+
+- Autor confirmou o contrato integral após `034edec`, Decisão 136. Trigo OU Tomate no mesmo piloto físico de quatro lotes/gate/ON-OFF/prioridades; busca de uma semente exclusivamente no Village Storage, ID custodiado até plantar/devolver, sem fallback/fila/aragem/fabricação automática.
+- Seleção para novas retiradas não autorliga nem altera ferramenta/semente pessoal. Troca bloqueada durante tarefa de semente inclusive ida ao baú, ou cargo inclusive pausa/devolução; OFF conserva retorno físico. Contexto/geração/alvo revalidados em rotas/esperas, sem execução remota no cache.
+- Campo opcional estrito/default Trigo em work v1/save v4; cargas independentes da escolha futura, legados/parciais/replay/writer preservados. SaveManager existente já passa o domínio integral e preflight; não foi alterado. Rega/colheita/Aceleradora/Solo Vivo só trigo/calendário intactos.
+- Dois botões funcionais no painel atual, cabeçalho/Fechar fixos, scroll e opacidade; passageiro visual reaproveita textura existente do cargo/fallback, sem asset novo. Nota em ART_HANDOFF; arte concorrente fora da entrega.
+- B–D verificadas: domínio79/física129/persistência28 por backend headless/OpenGL, fixture2/reabertura8; UI333 por backend/reabertura8, UI anterior351/3 e tomate125. Negativas de import/preparação dos fixtures preservadas, sem runtime alterado por elas. Entrega E/suíte integral em execução, sem aceite manual ou artístico. 60 textos anteriores intactos + cinco SS = 65 manuais pendentes, sem teste imediato ou save pessoal acessado.
+
 ## 2026-10-04 - Proposta de semeadura seletiva
 
 - Gameplay/engenharia compararam ampliação local do semeador com controle sazonal público. Recomendado Trigo OU Tomate nos quatro lotes/gate atuais, reforçando logística física sem substituir a direção real-time reservada em TIME_SYSTEM.

@@ -255,11 +255,12 @@ func try_plant_from_golem_cargo(cargo: GolemSeedCargo) -> Dictionary:
 		return _planting_result(false, "target_mismatch")
 	if scene.call("obter_farm_plot_por_grid_position", cell) != self:
 		return _planting_result(false, "target_mismatch")
-	if not cargo.can_consume_for_plant(GolemSeedCargo.SEED_ITEM_ID, cell):
+	var seed_id := cargo.get_item_id()
+	if not cargo.can_consume_for_plant(seed_id, cell):
 		return _planting_result(false, "return_pending")
 	return _try_plant_seed(
-		GolemSeedCargo.SEED_ITEM_ID,
-		Callable(cargo, "consume_for_plant").bind(GolemSeedCargo.SEED_ITEM_ID, cell)
+		seed_id,
+		Callable(cargo, "consume_for_plant").bind(seed_id, cell)
 	)
 
 

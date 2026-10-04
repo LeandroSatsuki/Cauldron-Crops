@@ -4,9 +4,10 @@ class_name GolemWorkState
 const VERSION := 1
 const REQUIRED_KEYS := ["version", "seeding_enabled", "work_priority", "harvest_cargo", "seed_cargo"]
 const ACCELERATOR_KEYS := ["accelerator_prepared", "accelerator_active", "harvest_delivery_started"]
+const SELECTION_KEY := "selected_seed_id"
 
 static func default_data() -> Dictionary:
-	return {"version": VERSION, "seeding_enabled": false, "work_priority": 0, "harvest_cargo": {}, "seed_cargo": null,
+	return {"version": VERSION, "seeding_enabled": false, SELECTION_KEY: GolemSeedCargo.SEED_ITEM_ID, "work_priority": 0, "harvest_cargo": {}, "seed_cargo": null,
 		"accelerator_prepared": false, "accelerator_active": false, "harvest_delivery_started": false}
 
 static func accelerator_flags(data: Dictionary) -> Dictionary:
@@ -23,8 +24,10 @@ static func is_valid(value: Variant, grove_restored: bool) -> bool:
 	if not data.has_all(REQUIRED_KEYS):
 		return false
 	for key in data:
-		if key not in REQUIRED_KEYS and key not in ACCELERATOR_KEYS:
+		if key not in REQUIRED_KEYS and key not in ACCELERATOR_KEYS and key != SELECTION_KEY:
 			return false
+	if data.has(SELECTION_KEY) and not GolemSeedCargo.is_selectable_seed_id(data[SELECTION_KEY]):
+		return false
 	for key in ACCELERATOR_KEYS:
 		if data.has(key) and not data[key] is bool:
 			return false

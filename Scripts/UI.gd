@@ -294,6 +294,10 @@ var skill_tree: Panel
 @onready var golem_accelerator_action: Button = $GolemPanel/MarginContainer/VBoxGolem/ScrollContainer/Content/AcceleratorAction
 @onready var golem_seeding_toggle: CheckButton = $GolemPanel/MarginContainer/VBoxGolem/ScrollContainer/Content/SeedingToggle
 @onready var golem_seeding_status: Label = $GolemPanel/MarginContainer/VBoxGolem/ScrollContainer/Content/SeedingStatus
+@onready var golem_seed_wheat_button: Button = $GolemPanel/MarginContainer/VBoxGolem/ScrollContainer/Content/SeedSelection/WheatButton
+@onready var golem_seed_tomato_button: Button = $GolemPanel/MarginContainer/VBoxGolem/ScrollContainer/Content/SeedSelection/TomatoButton
+@onready var golem_seed_selection_status: Label = $GolemPanel/MarginContainer/VBoxGolem/ScrollContainer/Content/SeedSelectionStatus
+@onready var golem_seeding_hint: Label = $GolemPanel/MarginContainer/VBoxGolem/ScrollContainer/Content/SeedingHint
 
 
 
@@ -2407,6 +2411,8 @@ func _ready() -> void:
 
 
 func _input(event: InputEvent) -> void:
+	if golem_panel != null and golem_panel.visible:
+		_atualizar_semeador_golem()
 	if golem_panel != null and golem_panel.visible and event is InputEventMouseButton and event.pressed and not golem_panel.get_global_rect().has_point(event.position):
 		get_viewport().set_input_as_handled()
 		return # O modal não permite clicar ferramentas/itens no fundo.
@@ -2796,6 +2802,9 @@ func abrir_pesca_sincronia(origem_global: Vector2, pesca_favorecida: bool = fals
 
 
 func _process(delta: float) -> void:
+	# O mundo continua rodando: refletir ocupação/contexto antes de cada frame de UI.
+	if golem_panel != null and golem_panel.visible:
+		_atualizar_semeador_golem()
 
 
 
@@ -9772,6 +9781,8 @@ func _obter_bau_da_vila_debug() -> VillageChest:
 
 
 func abrir_golem_panel() -> void:
+	if not _golem_panel_context_active():
+		return
 	_atualizar_modal_blocker.call_deferred()
 
 
@@ -10267,28 +10278,109 @@ func _on_golem_accelerator_pressed() -> void:
 func _atualizar_semeador_golem() -> void:
 	if golem_seeding_toggle == null or golem_seeding_status == null:
 		return
+	if not QuestManager.quest_atualizada.is_connected(_on_golem_context_refresh):
+		QuestManager.quest_atualizada.connect(_on_golem_context_refresh)
 	if not golem_seeding_toggle.toggled.is_connected(_on_golem_seeding_toggled):
 		golem_seeding_toggle.toggled.connect(_on_golem_seeding_toggled)
+	if not golem_seed_wheat_button.pressed.is_connected(_on_golem_wheat_pressed):
+		golem_seed_wheat_button.pressed.connect(_on_golem_wheat_pressed)
+	if not golem_seed_tomato_button.pressed.is_connected(_on_golem_tomato_pressed):
+		golem_seed_tomato_button.pressed.connect(_on_golem_tomato_pressed)
+	if not _golem_panel_context_active():
+		golem_seeding_toggle.disabled = true
+		golem_seed_wheat_button.disabled = true
+		golem_seed_tomato_button.disabled = true
+		golem_seed_selection_status.text = _golem_seed_selection_reason("inactive_context")
+		if golem_panel.visible:
+			fechar_golem_panel()
+		return
 	var golem := _obter_golem_atual()
 	if not is_instance_valid(golem) or not golem.has_method("get_seeding_status"):
 		golem_seeding_toggle.set_pressed_no_signal(false)
 		golem_seeding_toggle.disabled = true
 		golem_seeding_status.text = "Golem indisponível."
+		golem_seed_wheat_button.disabled = true
+		golem_seed_tomato_button.disabled = true
+		golem_seed_selection_status.text = "Golem indisponível."
 		return
 	var status: Dictionary = golem.call("get_seeding_status")
+	var selection: Dictionary = golem.call("get_seed_selection_status")
+	var seed_id: String = golem.call("get_selected_seed_id")
+	golem_seed_wheat_button.set_pressed_no_signal(seed_id == "semente_basica")
+	golem_seed_tomato_button.set_pressed_no_signal(seed_id == "semente_verao")
+	golem_seed_wheat_button.disabled = not bool(selection.get("can_change", false))
+	golem_seed_tomato_button.disabled = not bool(selection.get("can_change", false))
+	var reason := _golem_seed_selection_reason(str(selection.get("reason", "")))
+	golem_seed_wheat_button.tooltip_text = reason if reason != "" else "Escolher Trigo. Não liga a semeadura."
+	golem_seed_tomato_button.tooltip_text = reason if reason != "" else "Escolher Tomate. Não liga a semeadura."
+	golem_seed_selection_status.text = reason if reason != "" else "Escolha: %s · só para novas retiradas." % ("Tomate" if seed_id == "semente_verao" else "Trigo")
+	golem_seeding_hint.text = "4 lotes iniciais · terra arada · %s\nSomente a semente escolhida no Baú da Vila. Sem troca automática." % ("Primavera/Verão" if seed_id == "semente_verao" else "Primavera")
 	if golem_task_label:
 		# O estado da carga já explica a tarefa: não repetir a mesma ação duas vezes.
 		golem_task_label.visible = status["code"] not in ["fetching", "transporting", "planting", "returning", "return_pending", "cargo_waiting", "paused_cargo"]
 	golem_seeding_toggle.set_pressed_no_signal(bool(status["enabled"]))
 	golem_seeding_toggle.disabled = not bool(status["unlocked"])
-	golem_seeding_toggle.tooltip_text = "Semear trigo nos 4 lotes iniciais, após colheita/rega. Produza sementes no Livro do caldeirão e deposite no Baú da Vila." if status["unlocked"] else "Liberado ao restaurar a Clareira do Bosque."
+	golem_seeding_toggle.tooltip_text = "Semear a cultura escolhida nos 4 lotes iniciais, após colheita/rega. Produza sementes no Livro do caldeirão e deposite no Baú da Vila. OFF continua permitido durante a carga." if status["unlocked"] else "Liberado ao restaurar a Clareira do Bosque."
 	golem_seeding_status.text = str(status["text"])
 
 
 func _on_golem_seeding_toggled(enabled: bool) -> void:
+	_atualizar_semeador_golem()
+	if not _golem_panel_context_active():
+		return
 	var golem := _obter_golem_atual()
 	if is_instance_valid(golem) and golem.has_method("set_seeding_enabled"):
 		golem.call("set_seeding_enabled", enabled)
+	_atualizar_semeador_golem()
+
+
+func _golem_panel_context_active() -> bool:
+	if not is_inside_tree() or SaveManager.is_applying_snapshot() or RegionTravelCoordinator.is_transition_in_progress():
+		return false
+	var scene := _obter_current_scene()
+	if scene == null or get_parent() != scene or not scene.is_inside_tree() or bool(scene.get("_region_being_cached")) or not scene.has_method("get_current_region_identity"):
+		return false
+	var identity: Dictionary = scene.call("get_current_region_identity")
+	return identity.get("region_id", "") == "farm_village" and scene.get_node_or_null("Golem") != null
+
+
+func _on_golem_context_refresh() -> void:
+	# O sinal de quests também ocorre durante load, antes de liberar o snapshot.
+	if not _golem_panel_context_active() and golem_panel != null and golem_panel.visible:
+		fechar_golem_panel()
+
+
+func _exit_tree() -> void:
+	if golem_panel != null:
+		golem_panel.visible = false
+		golem_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	if modal_blocker != null:
+		modal_blocker.visible = false
+
+
+func _golem_seed_selection_reason(reason: String) -> String:
+	return str({"inactive_context": "Disponível somente na vila ativa, fora de viagem/carregamento.", "locked": "Restaure a Clareira do Bosque para escolher a cultura.", "seed_job": "Troca bloqueada durante a tarefa de semente, inclusive a ida ao baú.", "seed_cargo": "Troca bloqueada enquanto houver semente carregada, inclusive em pausa/devolução.", "invalid_seed": "Escolha somente Trigo ou Tomate."}.get(reason, ""))
+
+
+func _on_golem_wheat_pressed() -> void:
+	_on_golem_seed_selected("semente_basica")
+
+
+func _on_golem_tomato_pressed() -> void:
+	_on_golem_seed_selected("semente_verao")
+
+
+func _on_golem_seed_selected(seed_id: String) -> void:
+	_atualizar_semeador_golem()
+	if not _golem_panel_context_active():
+		return
+	var golem := _obter_golem_atual()
+	if not is_instance_valid(golem) or not golem.has_method("set_selected_seed_id"):
+		return
+	# Consulta atual antes do comando; o domínio revalida novamente no setter.
+	var selection: Dictionary = golem.call("get_seed_selection_status")
+	if bool(selection.get("can_change", false)):
+		golem.call("set_selected_seed_id", seed_id)
 	_atualizar_semeador_golem()
 
 

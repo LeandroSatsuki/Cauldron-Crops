@@ -434,8 +434,33 @@ autowrap_mode = 3
 [node name="SeedingToggle" type="CheckButton" parent="GolemPanel/MarginContainer/VBoxGolem/ScrollContainer/Content"]
 layout_mode = 2
 custom_minimum_size = Vector2(0, 40)
-text = "Semear trigo"
+text = "Semear cultura escolhida"
 disabled = true
+
+[node name="SeedSelection" type="HBoxContainer" parent="GolemPanel/MarginContainer/VBoxGolem/ScrollContainer/Content"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="WheatButton" type="Button" parent="GolemPanel/MarginContainer/VBoxGolem/ScrollContainer/Content/SeedSelection"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 40)
+size_flags_horizontal = 3
+text = "Trigo"
+toggle_mode = true
+disabled = true
+
+[node name="TomatoButton" type="Button" parent="GolemPanel/MarginContainer/VBoxGolem/ScrollContainer/Content/SeedSelection"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 40)
+size_flags_horizontal = 3
+text = "Tomate"
+toggle_mode = true
+disabled = true
+
+[node name="SeedSelectionStatus" type="Label" parent="GolemPanel/MarginContainer/VBoxGolem/ScrollContainer/Content"]
+layout_mode = 2
+text = "Restaure a Clareira do Bosque para escolher a cultura."
+autowrap_mode = 3
 
 [node name="SeedingStatus" type="Label" parent="GolemPanel/MarginContainer/VBoxGolem/ScrollContainer/Content"]
 layout_mode = 2
@@ -445,7 +470,7 @@ autowrap_mode = 3
 [node name="SeedingHint" type="Label" parent="GolemPanel/MarginContainer/VBoxGolem/ScrollContainer/Content"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
-text = "4 lotes iniciais · terra arada · Primavera\nSementes de trigo no Baú da Vila."
+text = "4 lotes iniciais · terra arada · Primavera\nSomente a semente escolhida no Baú da Vila. Sem troca automática."
 autowrap_mode = 3
 mouse_filter = 2
 
