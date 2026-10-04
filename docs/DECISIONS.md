@@ -1,5 +1,13 @@
 # Decisions
 
+## Decisão 135 - Autorização de formular semeadura seletiva
+
+- Autor respondeu “pode continuar” ao próximo passo de apresentar um recorte delimitado após tomate `b0a393e`. Autoriza formulação documental, não ampliação do semeador implementada por consequência.
+- Gameplay/engenharia recomendam Trigo OU Tomate no mesmo piloto de quatro lotes/gate da Clareira; sem fallback, fila ou rodízio, retirada de uma semente somente do Village Storage e custódia física pelo ID original até plantar/devolver. ON/OFF, prioridades, rega/colheita/Aceleradora e Solo Vivo preservados.
+- Candidato bloqueia troca durante tarefa de semente, inclusive ida ao baú, ou cargo, inclusive pausado/em devolução; OFF conserva devolução física. Seleção não autorliga nem interfere na ferramenta/semente pessoal. Campo opcional no work, domínio presente sem campo resolve Trigo; parcial sem domínio segue política atual. Cargo validado independentemente da escolha futura, sem conversão/replay de gasto. Compatibilidade com antigos no novo runtime, não downgrade prometido.
+- Controle sazonal público fica fora: direção real-time reservada em TIME_SYSTEM não é substituída por avanço voluntário; Outono/Inverno e bootstrap determinístico de inverno exigem contrato próprio. Sem calendário, economia, novos efeitos de Adubo/Elixir, áreas/espécies/golems ou arte por consequência.
+- Contrato e plano B–E em FARM_SYSTEM_V2, **aguardando aprovação humana integral**; Decisão 134 ainda conserva semeador exclusivo de trigo. Fonte `e5846b1`/pacote TomatoCrop-20261004 preservados, 60 manuais pendentes/intactos. Somente documentação, sem jogo/suíte/build/save pessoal ou nova nota de implementação no ART_HANDOFF; arte concorrente fora da publicação.
+
 ## Decisão 134 - Segunda cultura inicial aprovada
 
 - Autor respondeu “aprovado” ao contrato final da Decisão 133/FARM_SYSTEM_V2, após proposta `3153e5d`. Autoriza integrar tomate opcional Primavera/Verão e receita padrão repetível 1 trigo + 1 água → 1 semente_verao, 2s/0XP, sem gate/moeda/marco.

@@ -1,5 +1,44 @@
 # Farm System V2
 
+## Próximo recorte — semeadura seletiva, proposta aguardando aprovação
+
+**Data:** 2026-10-04. O autor autorizou continuar após o fechamento do tomate. Esta etapa formula o próximo contrato; **não amplia a Decisão 134 nem implementa automação multicultura**. Baseline jogável: fonte `e5846b1`, pacote `Builds/Playtest/TomatoCrop-20261004`, fechamento documental `b0a393e`. Suas 59/59 regressões são evidência anterior, não execução desta consulta. Os **60 casos manuais permanecem pendentes**, sem exigir teste imediato.
+
+### Resultado recomendado e alternativas
+
+Permitir escolher **Trigo OU Tomate** para o mesmo semeador e os mesmos quatro lotes. Fecha o elo de plantio delegado do tomate já acessível, reforçando transporte físico e escolha de produção sem criar espécie, calendário ou nova área. As culturas disputam os mesmos lotes: não são duas fazendas paralelas.
+
+Gameplay e engenharia convergiram nesse recorte após comparar controle sazonal público. `TIME_SYSTEM.md` reserva a direção de um dia real por dia do jogo e sete dias por estação; o TimeManager permanece isolado. Avanço voluntário público mudaria essa experiência e exigiria regras de culturas vivas, bônus, recuperação de inverno e persistência. Outono ainda depende de acesso sazonal; semente de inverno possui fontes RNG, mas nenhum bootstrap público determinístico confirmado. Esses problemas são reais, **não serão resolvidos por esta proposta**.
+
+Lote sazonal alquímico, efeitos de Adubo/Elixir, rotação automática e novas espécies são alternativas maiores, não consequências do tomate. Não reativar Dormir, F10, lojas ou quests ocultas para contornar o contrato.
+
+### Contrato candidato para confirmação integral
+
+1. **Escopo físico:** golem atual, gate da Clareira restaurada, quatro células existentes `(0,0)`, `(1,0)`, `(0,1)`, `(1,1)`, ON/OFF e prioridades atuais. Não arar, ampliar área ou sobrescrever cultura. Rega, colheita, durações, navegação e Aceleradora permanecem iguais.
+2. **Escolha exclusiva:** Trigo (`semente_basica`) OU Tomate (`semente_verao`), somente esses dois IDs. Escolher não liga a habilidade, muda prioridade ou interfere na ferramenta/semente pessoal. Sem fallback se faltar a semente escolhida, fila, rodízio ou mistura automática. A escolha só governa novas retiradas, nunca culturas já plantadas.
+3. **Custódia:** buscar exclusivamente no Village Storage; retirar uma semente, carregar visivelmente e plantar após revalidar alvo/contexto/estação. A unidade conserva seu próprio `item_id` até ser consumida ou devolvida fisicamente. Sem acesso à Mochila, teleporte, fabricação de sementes ou depósito automático do resultado do caldeirão.
+4. **Troca segura:** recusar mudança de cultura durante qualquer tarefa de semente, inclusive ida ao baú antes da retirada, ou enquanto existir cargo de semente, inclusive pausado/em devolução. Bloqueio no domínio e no painel com motivo consultável; não guardar troca futura. OFF continua permitido e conserva a devolução física atual da unidade original. Pausar ou encontrar obstáculo não autoriza apagar, converter ou refundar remotamente a carga.
+5. **Validade agrícola:** trigo continua Primavera; tomate, Primavera/Verão. Recusa não gasta semente. Sem modificar bônus sazonais, mortalidade, timers ou estação global. Solo Vivo permanece benefício de trigo; seu lote `(2,2)` continua fora do piloto. Não prometer ciclo autossuficiente: sementes precisam de preparo/reposição pelo jogador, e rega depende do contrato manual/habilidade vigente.
+6. **Persistência candidata:** campo opcional `selected_seed_id` no `golem_work`, validado estritamente. Snapshot com esse domínio presente e campo ausente resolve Trigo; completo antigo sem o domínio usa o padrão atual OFF/Trigo; parcial sem o domínio preserva o estado conforme política atual. ON/OFF, prioridades, cargas e gate existentes permanecem. Seleção e cargo são validados independentemente: cargo de tomate com campo ausente continua tomate, mesmo com futura escolha Trigo. Load substitui estado/invalida callbacks, não retira, planta ou deposita novamente. Candidato mantém work v1/save v4 se os testes confirmarem; **compatibilidade do runtime novo com saves antigos, não promessa de downgrade** para runtime que rejeita chave/cargo novos.
+7. **Superfície:** seletor no painel atual do golem, sem novo HUD permanente, janela ou estética criada por Codex. Manter painel opaco/rolável, cabeçalho/Fechar fixos e mundo não pausado ao fechar. Comando apenas na vila ativa, fora de viagem/load/cache. Gate continua de habilidade, não recompensa automática por seleção. Antigravity recebe passagem funcional somente se a implementação aprovada afetar apresentação.
+
+### Baseline técnico e plano mínimo após aprovação
+
+Hoje `GolemSeedCargo` fixa trigo na validação, retirada, consumo e devolução; `Golem` fixa estoque, alvo e mensagens; `FarmPlot.try_plant_from_golem_cargo` força trigo. Portanto a mudança **não é apenas um seletor visual**. `GolemWorkState` rejeita campos desconhecidos; a extensão precisa preservar preflight e regras completas/parciais do SaveManager.
+
+- **B, domínio/custódia:** whitelist de dois IDs e escolha para nova retirada; cargo como autoridade de plantio/devolução. Bloquear troca durante tarefa/cargo, manter OFF seguro e revalidar contexto/alvo antes do gasto. Responsável único pelos arquivos Cargo/Golem/FarmPlot; sem refatoração agrícola geral.
+- **C, persistência:** campo opcional/default e validação estrita de snapshot/writer; preservar cargos válidos independentemente da escolha futura, legados/parciais/replay/cache e invalidação de callbacks. Nenhuma recompensa de load ou alteração em FarmTileData/GRID por consequência.
+- **D, integração funcional:** seletor/status no painel existente, independente das seleções pessoais, sem autorligar. Mensagens para gate, falta de estoque, estação e troca bloqueada. Passagem em ART_HANDOFF descreve apenas o que efetivamente entrar; assets concorrentes não são incorporados automaticamente.
+- **E, QA/entrega:** testar ambos os IDs em retirada/plantio/devolução, especialmente tomate não devolvido como trigo; troca antes da retirada, durante transporte/plantio/pausa/devolução; OFF durante espera, baú ausente, alvo ocupado, estoque perdido, estação recusada, whitelist inválida, legados/completo/parcial/replay/reabertura/cache e interação com colheita/Aceleradora. Regressões/pacote limpo só após implementação, com QA independente; acrescentar casos manuais então, sem pedir execução imediata ao autor indisponível.
+
+### Portão de execução
+
+Confirmar integralmente exclusividade Trigo OU Tomate, quatro lotes/gate atuais, ausência de fallback, bloqueio de troca com tarefa/cargo, custódia original e persistência/default acima. **A Decisão 134 conserva o semeador de trigo; esta ampliação precisa de nova aprovação humana antes de B.** Parecer técnico não aprova design, conforto, produtividade ou balanceamento.
+
+Somente documentação: nenhum jogo/suíte/exportação novo, runtime/save/assets alterados ou save pessoal acessado. Não registrar a proposta como conteúdo implementado no ART_HANDOFF. Arte externa e seus trechos concorrentes permanecem intactos e fora da publicação própria.
+
+Fechamento documental: QA independente em leitura guiada não encontrou bloqueador material; não aprovou design nem certificou novamente o pacote anterior. Coordenador conferiu diff sem erros e os 60 textos/ordem do checklist idênticos ao HEAD. Publicação seleciona somente cinco documentos próprios, excluindo o hunk artístico do §71 e demais arquivos externos; próximo portão continua confirmação humana integral.
+
 ## Segunda cultura inicial — fechamento técnico, manual pendente
 
 **Data:** 2026-10-04. Autor respondeu “aprovado” ao contrato apresentado após `3153e5d`, incluindo tomate opcional Primavera/Verão e bootstrap padrão 1 trigo + 1 água → 1 semente/2s/0XP. A confirmação autoriza B–D delimitadas; não homologa arte, conforto ou balanceamento.

@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-04 - Proposta de semeadura seletiva
+
+- Gameplay/engenharia compararam ampliação local do semeador com controle sazonal público. Recomendado Trigo OU Tomate nos quatro lotes/gate atuais, reforçando logística física sem substituir a direção real-time reservada em TIME_SYSTEM.
+- FARM_SYSTEM_V2/Decisão 135 registram candidato de escolha exclusiva sem fallback/fila, Village Storage e cargo pelo ID original, troca bloqueada durante tarefa/cargo inclusive pausa, OFF com devolução física e persistência opcional/default Trigo. Não autorliga ou muda seleções pessoais; rega/colheita/Aceleradora/Solo Vivo intactos.
+- Só documentação, aguardando aprovação integral antes de B–E. Fonte `e5846b1`/pacote TomatoCrop-20261004 preservados; nenhum jogo/suíte/exportação/save pessoal nesta consulta, 60 casos manuais pendentes e sem teste imediato obrigatório. Arte/trechos concorrentes preservados fora da publicação; proposta não consta como implementação no ART_HANDOFF.
+- QA documental independente sem bloqueador material, sem aprovar design ou recertificar build; coordenador conferiu diff sem erros e 60 textos/ordem do checklist iguais ao HEAD. Somente cinco documentos próprios selecionados, excluindo hunk artístico concorrente do contexto.
+
 ## 2026-10-04 - Tomate inicial: fechamento técnico
 
 - Contrato da Decisão 134 confirmado: tomate opcional na Primavera/Verão, IDs e 5s/base preservados; receita padrão repetível 1 trigo + 1 água → 1 semente_verao/2s/0XP. Sem calendário, gate, semeador multicultura ou benefício de Solo Vivo para tomate.
