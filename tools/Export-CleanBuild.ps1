@@ -130,7 +130,9 @@ if (Test-Path -LiteralPath $worktreePath) {
 
 New-Item -ItemType Directory -Path $outputDirectory -Force | Out-Null
 
-$head = (& git -C $repoRoot rev-parse --short HEAD).Trim()
+$sourceCommit = (& git -C $repoRoot rev-parse HEAD).Trim()
+if ($LASTEXITCODE -ne 0) { throw "Could not identify the source commit." }
+$head = $sourceCommit.Substring(0, 7)
 $localChanges = & git -C $repoRoot status --porcelain
 if ($localChanges) {
     Write-Host "Local changes detected; they will not be included in this build."
@@ -140,7 +142,7 @@ Write-Host "Exporting commit $head with preset '$Preset'."
 
 try {
     Invoke-NativeCommand -FailureMessage "Could not create the clean export worktree" -Command {
-        & git -C $repoRoot worktree add --detach $worktreePath HEAD
+        & git -C $repoRoot worktree add --detach $worktreePath $sourceCommit
     }
     $worktreeAdded = $true
 
@@ -287,7 +289,7 @@ try {
             -LogPath (Join-Path $godotCacheDirectory "pack-audit.log") `
             -FailureMessage "Playtest pack audit failed" -RejectLoggedErrors
         $manifest = [ordered]@{
-            commit = (& git -C $repoRoot rev-parse HEAD).Trim()
+            commit = $sourceCommit
             preset = $Preset
             export_only_user_directory = "CauldronCropsPlaytest"
             regression_count = $(if ($RunRegressionSuite) { $tests.Count } else { 0 })
