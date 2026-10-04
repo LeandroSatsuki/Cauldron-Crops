@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="RecipeData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://Scripts/data/RecipeData.gd" id="1_recipe"]
+
+[resource]
+script = ExtResource("1_recipe")
+id = "semente_trigo_replantio"
+nome = "Sementes de Trigo · Replantio"
+descricao = "Reserve parte da colheita: combine 2 trigos para produzir 3 sementes de trigo. O caldeirão usa o Baú da Vila primeiro e completa pela Mochila; o resultado vai para a Mochila. Valores de piloto, não balanceamento final."
+categoria = "semente"
+ingredientes = Array[String](["trigo", "trigo"])
+resultado_item = "semente_basica"
+resultado_quantidade = 3
+tempo_producao = 2.0
+desbloqueada_por_padrao = true
+exige_descoberta = false
+recompensa_pontos_alquimia = 0
+tags = Array[String](["semente", "trigo", "replantio"])

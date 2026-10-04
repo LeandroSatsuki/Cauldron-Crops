@@ -117,10 +117,11 @@ func _assert_order_contract(resolver) -> bool:
 
 
 func _assert_legacy_fallback(resolver) -> bool:
-	const LEGACY_TEST_ID := "trigo_trigo"
+	# Trigo + trigo agora possui Resource real; água + água fica só neste fixture.
+	const LEGACY_TEST_ID := "agua_agua"
 	const LEGACY_TEST_RESULT := "resultado_legado_teste"
 	Database.receitas_alquimia[LEGACY_TEST_ID] = LEGACY_TEST_RESULT
-	var recipe: Dictionary = resolver.find_recipe_for_ingredients(["trigo", "trigo"])
+	var recipe: Dictionary = resolver.find_recipe_for_ingredients(["agua", "agua"])
 	Database.receitas_alquimia.erase(LEGACY_TEST_ID)
 
 	if str(recipe.get("id", "")) != LEGACY_TEST_ID or str(recipe.get("source", "")) != "legacy":

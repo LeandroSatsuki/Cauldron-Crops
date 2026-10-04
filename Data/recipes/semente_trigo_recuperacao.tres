@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="RecipeData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://Scripts/data/RecipeData.gd" id="1_recipe"]
+
+[resource]
+script = ExtResource("1_recipe")
+id = "semente_trigo_recuperacao"
+nome = "Semente de Trigo · Recuperação"
+descricao = "Combine 1 carvão e 1 água para produzir 1 semente de trigo, mesmo sem trigo ou sementes. Use o Livro de Receitas: a água vem da reserva do poço e não ocupa slots. O resultado vai para a Mochila."
+categoria = "semente"
+ingredientes = Array[String](["carvao", "agua"])
+resultado_item = "semente_basica"
+resultado_quantidade = 1
+tempo_producao = 2.0
+desbloqueada_por_padrao = true
+exige_descoberta = false
+recompensa_pontos_alquimia = 0
+tags = Array[String](["semente", "trigo", "recuperacao"])

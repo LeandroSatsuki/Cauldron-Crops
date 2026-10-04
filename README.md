@@ -34,6 +34,7 @@ plantar → regar → colher → combinar ingredientes → descobrir receitas �
 - catálogo de itens e Mochila com 12 slots iniciais, expansível até 20 por marcos, com stacks padrão de 99;
 - caldeirão com receitas, produção em lote e persistência de produção/reservas;
 - livro de receitas descobertas;
+- reposição determinística de sementes de trigo pelo Livro: carvão + água → 1 semente, ou 2 trigos → 3 sementes, sem desbloqueio/RNG;
 - pesca com minigame de sincronia;
 - coleção de pesca, eventos e descobertas opcionais;
 - personagem físico com navegação por clique e exploração do bosque;
@@ -90,7 +91,9 @@ Para gerar uma build, instale os templates de exportação compatíveis com sua 
 
 ## Estado do desenvolvimento
 
-Checkpoint atual (2026-10-03): Golem Semeador A–F concluído tecnicamente. Fonte `226bb72` exportada em cópia limpa, suíte **50/50**, mais duas reaberturas em processos separados (6 + 3 verificações), auditoria do PCK/dependências/save separado e startup do EXE headless/OpenGL sem erros. Pacote em `Builds/Playtest/GolemSower-20261003`, com StartPlaytest.cmd, manifesto/hashes, logs e checklist **24 casos** (16 anteriores + 8 semeador). Binários locais fora do Git; pacote anterior e save pessoal preservados. Ambiente `%APPDATA%/CauldronCropsPlaytest` não copia progresso pessoal, mas pode conter progresso de playtest anterior. Semear trigo fica OFF por padrão/legado e só usa sementes do baú, lotes vazios/arados e Primavera. Manual/arte/ritmo continuam pendentes; próximo recorte deve ser proposto antes de ampliar conteúdo.
+Checkpoint mais recente (2026-10-03): **Ciclo Sustentável da Fazenda, incremento 1** de contratos/receitas concluído tecnicamente. Duas receitas padrão sem XP, produção manual/Livro/lote, baú prioritário e resultado na Mochila; tempo provisório de 2 segundos. Importação sem erros, suíte 51/51 e 86 verificações específicas, mais reaberturas existentes do golem (6 + 3). Save pessoal intacto. Próximo incremento integra orientação, aquisição e plantio com save/viagem; fechamento/exportação no incremento 3. Os 24 testes manuais permanecem pendentes. **A build GolemSower-20261003 ainda não contém estas receitas.** Plano em [Sistema agrícola](./docs/FARM_SYSTEM_V2.md). O fechamento do semeador abaixo é o checkpoint anterior.
+
+Checkpoint anterior (2026-10-03): Golem Semeador A–F concluído tecnicamente. Fonte `226bb72` exportada em cópia limpa, suíte **50/50**, mais duas reaberturas em processos separados (6 + 3 verificações), auditoria do PCK/dependências/save separado e startup do EXE headless/OpenGL sem erros. Pacote em `Builds/Playtest/GolemSower-20261003`, com StartPlaytest.cmd, manifesto/hashes, logs e checklist **24 casos** (16 anteriores + 8 semeador). Binários locais fora do Git; pacote anterior e save pessoal preservados. Ambiente `%APPDATA%/CauldronCropsPlaytest` não copia progresso pessoal, mas pode conter progresso de playtest anterior. Semear trigo fica OFF por padrão/legado e só usa sementes do baú, lotes vazios/arados e Primavera. Manual/arte/ritmo continuam pendentes; próximo recorte deve ser proposto antes de ampliar conteúdo.
 
 ### Histórico de checkpoints
 

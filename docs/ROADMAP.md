@@ -1,6 +1,14 @@
 # Evolução do Projeto
 
-## Etapa atual — Golem Semeador, fechamento técnico A–F (2026-10-03)
+## Etapa atual — Ciclo Sustentável da Fazenda, incremento 1 (2026-10-03)
+
+Contratos/receitas concluídos tecnicamente: **1 carvão + 1 água → 1 Semente de Trigo** e **2 trigos → 3 Sementes de Trigo**, padrão no Livro, sem RNG/marco/XP. Reusam manual/lote, baú prioritário/complemento pessoal, resultado na Mochila, reservas/refund e snapshot existentes. Água não ocupa slots. Tempo de piloto: 2 segundos por craft; economia, fontes, estações, colheita e golem preservados.
+
+Importação sem erros e suíte **51/51**, com 86 verificações novas de receitas/produção/Livro/origens/cancelamento/capacidade/JSON/timer real. Reaberturas existentes do golem passaram (6 + 3). QA isolado e save pessoal intacto por hash/tamanho/data. Sem nova build: GolemSower-20261003 permanece histórica, ainda sem estas receitas. Os **24 casos manuais** continuam pendentes, sem exigir teste imediato.
+
+Próximo: **incremento 2 — orientação/integração**, comunicação discreta e recursos acessíveis → caldeirão → plantio manual/golem, com save/load/viagem reais em QA. Incremento 3 fecha regressão, exportação auditada e checklist ampliado sem apagar pendências. Plano em [Farm System — Ciclo Sustentável](FARM_SYSTEM_V2.md#ciclo-sustentável-da-fazenda--recorte-aprovado-2026-10-03). Não confundir JSON em memória com reabertura integrada ou aprovação manual.
+
+## Checkpoint anterior — Golem Semeador, fechamento técnico A–F (2026-10-03)
 
 Fase F concluída tecnicamente, sem mudança de gameplay/schema: fonte `226bb72` exportada em checkout limpo, suíte **50/50**, mais duas reaberturas em novos processos (6 + 3 verificações). Startup do EXE headless/OpenGL passou; auditoria do PCK confirmou dependências do semeador, exclusão de conteúdo interno/saves e diretório de save próprio. Não significa aprovação manual de navegação/arte/conforto.
 

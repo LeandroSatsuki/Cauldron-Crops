@@ -1,5 +1,13 @@
 # Decisions
 
+## Decisão 119 - Reposição determinística de sementes de trigo pelo caldeirão
+
+- Ciclo Sustentável da Fazenda aprovado: 1 carvão + 1 água → 1 semente de trigo para recuperação sem trigo/sementes, e 2 trigos → 3 sementes para reinvestimento. Baseline confirmou 10 sementes iniciais e bônus aleatório de colheita; esgotamento é risco, não bloqueio reproduzido no save pessoal. Estoque inicial, RNG, estações, semeador e fontes existentes do Bosque/poço permanecem.
+- Incremento 1 adiciona dois RecipeData Resources padrão de categoria semente, sem descoberta obrigatória, marco ou pontos de alquimia. Tempo provisório de 2 segundos por craft; quantidades aprovadas não são balanceamento final. Recuperação pelo Livro usa água da reserva não slotada, sem exigir arraste da Mochila.
+- Reutilizar Resolver, manual/lote, VillageResourceAccess e snapshot existentes. Baú prioritário/complemento pessoal, resultado na Mochila e depósito explícito para o golem. Cancelamento devolve só crafts pendentes às origens; capacidade bloqueada conserva resultado integral. Sem scheduler/SaveManager/schema/economia/NPC/mapa/mastery novo.
+- SustainableSeedsSmokeTest: 86 verificações de catálogo, padrão/reconciliação legada sem XP/duplicação, ingrediente repetido, manual e botão/quantidade do Livro, lotes, origens/refund, recursos insuficientes, capacidade, replay JSON/nova instância e timer real. Fallback legado do teste de Resolver usa água + água para não colidir com Resource real; nenhuma receita de água + água no catálogo do jogo.
+- Importação sem erros, suíte 51/51 e reaberturas existentes do golem em processos separados (6 + 3), QA isolado e save pessoal idêntico por hash/tamanho/data. Sem nova exportação; GolemSower-20261003 ainda não contém este incremento. Os 24 casos manuais permanecem pendentes. Próximos incrementos: orientação/integração coleta → produção → plantio com save/viagem, depois build auditada/checklist; contratos não equivalem a playthrough ou aceite manual.
+
 ## Decisão 118 - Fechamento técnico do semeador sem presumir aceite manual
 
 - Fase F fecha A–F tecnicamente, sem novo gameplay/schema/economia/NPC/mapa. Exportação somente da fonte versionada `226bb72`, em checkout limpo; pacote local GolemSower-20261003 preserva a build anterior e permanece fora do Git. Save exclusivo CauldronCropsPlaytest, sem copiar o pessoal; versões de playtest compartilham esse ambiente separado e não apagam progresso anterior.

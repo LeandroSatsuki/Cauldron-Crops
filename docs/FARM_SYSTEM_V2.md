@@ -1,5 +1,27 @@
 # Farm System V2
 
+## Ciclo Sustentável da Fazenda — recorte aprovado (2026-10-03)
+
+Autor aprovou duas receitas determinísticas para repor trigo pelo caldeirão: **1 carvão + 1 água → 1 Semente de Trigo**, e **2 trigos → 3 Sementes de Trigo**. Baseline de leitura confirmou 10 sementes iniciais, retorno aleatório de 20% na Primavera e ausência de receita com resultado semente_basica; risco de esgotamento, não bloqueio reproduzido no save pessoal. Não mudar o bônus de colheita, estoque inicial, estações ou semeador.
+
+### Contratos e limites
+
+- Recuperação independe de trigo, semente prévia, restauração, moeda e RNG. Usa carvão dos caminhos existentes do Bosque e água da reserva regenerável do poço. Não alterar renovação nem implementar tempo offline. Acesso ao Livro desde o início evita exigir experimentação com água, que não aparece na grade da Mochila.
+- Replantio reinveste dois trigos em três sementes; preserva outra utilização da colheita. Quantidades são as aprovadas, tempo de piloto de 2 segundos por craft (contrato usual de RecipeData), nomes funcionais sem lore definitiva. Ambas disponíveis por padrão, sem pontos de alquimia/recompensa nova ao abrir ou produzir.
+- Reutilizar RecipeData/Resolver, produção manual/lote e reservas por origem. Baú prioritário, complemento pessoal, água continua fora dos slots. Sementes produzidas chegam à Mochila; jogador deposita para o golem. Nenhuma entrega automática ao baú, produção pelo golem ou alteração do cargo/scheduler.
+- Capacidade insuficiente preserva resultado/reservas no caldeirão. Cancelamento devolve somente crafts não entregues às origens. Save/load substitui o snapshot existente sem novo consumo/refund; não alterar schema para duas receitas declarativas.
+- Fora: lojas, moeda/venda, NPCs, mapas/culturas novos, mastery, aragem automática, sazonalidade/tempo real e framework de aquisição. Este recorte não resolve os sistemas futuros nem homologa balanceamento/experiência.
+
+### Ordem de execução
+
+1. **Incremento 1 — contratos/receitas:** adicionar dois Resources, testar disponibilidade sem marco/RNG, quantidades, ingrediente duplicado, produção manual/Livro/lote, origens/refund, recusa/capacidade e reconstrução JSON. Registrar decisão e publicar checkpoint.
+2. **Incremento 2 — orientação/integração:** comunicação discreta de como repor/depositar sementes, testar recuperação a partir dos recursos realmente acessíveis, consumo/plantio manual e ciclo físico com golem, save/load/viagem. Sem HUD extra ou alterar automação.
+3. **Incremento 3 — fechamento:** regressões, pacote novo auditado, ampliar checklist sem apagar os 24 casos existentes; aceite manual adiado. Build anterior permanece histórica.
+
+Estado: **incremento 1 concluído tecnicamente**; 2–3 ainda não implementados. Importação sem erros, suíte completa 51/51 e 86 verificações do SustainableSeedsSmokeTest em QA isolado. Testados disponibilidade padrão sem XP, ingredientes duplicados, produção manual, seleção/quantidade/botão do Livro, lote, reservas por origem, cancelamento parcial, recusa por recursos, capacidade sem entrega parcial, reconstrução JSON em nova instância e timer real de 2 segundos. Reaberturas existentes do golem passaram em processos separados (6 + 3 verificações).
+
+Save pessoal idêntico por hash/tamanho/data. Sem nova exportação: GolemSower-20261003 ainda não contém estas receitas. Os 24 casos manuais anteriores permanecem pendentes; novos casos integrados serão acrescentados no incremento 3. Não equiparar contratos/JSON em memória a playthrough, reabertura do save destas receitas ou aceite manual. Próximo incremento 2: orientação discreta e coleta → produção → plantio manual/golem, com save/load e viagem reais em QA.
+
 <a id="golem-semeador--piloto-aprovado-fase-d-concluída-2026-10-03"></a>
 <a id="golem-semeador--piloto-aprovado-fase-e-concluída-2026-10-03"></a>
 

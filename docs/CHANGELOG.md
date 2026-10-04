@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-03 - Ciclo Sustentável da Fazenda: incremento 1 de receitas
+
+- Duas receitas padrão sem RNG/marco/XP: carvão + água produz uma semente de trigo; dois trigos produzem três. Resources reutilizam manual/Livro/lote, fontes/refund/capacidade e snapshot existentes; 2 segundos por craft como tempo provisório. Sem mudança de schema, golem, economia, estoques iniciais ou bônus de colheita.
+- SustainableSeedsSmokeTest com 86 verificações, incluindo botão/quantidade do Livro, recuperação sem trigo/sementes, ingredientes repetidos, reservas/cancelamento parcial, entrega integral bloqueada, reconstrução JSON e timer real. Fallback legado movido para combinação sintética sem conflito com o catálogo real.
+- Importação sem erros, suíte 51/51 e reaberturas existentes de persistência/UI do golem (6 + 3). QA isolado e save pessoal idêntico por hash/tamanho/data; arte local e arquivos alheios fora do checkpoint. Os 24 casos manuais continuam pendentes.
+- Sem nova exportação: build anterior não contém estas receitas. Próximo incremento integra orientação/coleta/produção/plantio com save/viagem; fechamento/exportação/checklist no incremento 3.
+
 ## 2026-10-03 - Golem Semeador: Fase F de fechamento técnico
 
 - Suíte limpa 50/50 e duas reaberturas imediatas em processos separados (6 + 3 verificações), sem outro fixture substituir o save QA. Runner registra startups headless/OpenGL, auditoria e contagem de casos no manifesto.
