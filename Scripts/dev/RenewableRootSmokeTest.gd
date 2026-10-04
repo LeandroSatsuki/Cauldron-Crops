@@ -307,7 +307,12 @@ func _verify_reopen() -> void:
 	_check(SaveManager.load_game(), "novo processo lê snapshot real")
 	_check(_remaining(GroveExpedition.ROOT_SOURCE) == 30.0 and _remaining(GroveExpedition.RENEWABLE_SOURCE) == 20.0 and GroveExpedition.get_forage_state(GroveExpedition.ROOT_SOURCE)["collected"], "intervalos carregados sem tempo offline")
 	_check(GlobalInventory.get_item_quantity(ROOT) == 1 and GlobalInventory.get_item_quantity("carvao") == 2 and chest.get_item_quantity(ROOT) == 7 and chest.get_item_quantity("carvao") == 9, "fontes pessoais/baú distintas sem duplicação")
-	_check(not GroveExpedition.discovered and not GroveExpedition.restored and GlobalInventory.get_slot_capacity() == 12 and GlobalInventory.pontos_alquimia == 0 and GlobalInventory.receitas_descobertas.is_empty(), "nenhum gate/XP/slots criado pela fonte")
+	# Load reconcilia receitas padrão do catálogo; isso não é prêmio da coleta.
+	var defaults: Array = Resolver.new().get_default_unlocked_recipe_ids()
+	var learned := GlobalInventory.receitas_descobertas.duplicate()
+	defaults.sort()
+	learned.sort()
+	_check(not GroveExpedition.discovered and not GroveExpedition.restored and GlobalInventory.get_slot_capacity() == 12 and GlobalInventory.pontos_alquimia == 0 and learned == defaults, "nenhum gate/XP/slots ou receita extra criado pela fonte; somente padrões reconciliados")
 	var before := _domain()
 	_check(SaveManager.load_game() and _domain() == before, "replay no novo processo não concede item/desconta intervalo")
 	GroveExpedition._process(29.0)

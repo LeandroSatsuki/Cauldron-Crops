@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-04 - Tomate inicial: checkpoint de implementação
+
+- Contrato da Decisão 134 confirmado: tomate opcional na Primavera/Verão, IDs e 5s/base preservados; receita padrão repetível 1 trigo + 1 água → 1 semente_verao/2s/0XP. Sem calendário, gate, semeador multicultura ou benefício de Solo Vivo para tomate.
+- FarmPlot usa validação sazonal pura antes de gastar; load reconcilia receitas padrão sem recompensas ou schema novo. Orientação no catálogo/Mochila/Livro, fontes/capacidade/cancelamento vigentes preservados. Engenharia guiada por perfil; QA independente. Arte externa não integrada por este recorte.
+- Dedicado final125 por backend headless/OpenGL, fixture2/reabertura8; regressão Raiz86/2/8. Negativas preservadas de refresh congelado e RNG legado de Colheita Dourada; corrigida apenas preparação do fixture, mantendo asserts estritos e runtime intacto. Suíte completa/exportação/auditoria ainda pendentes neste checkpoint.
+- 55 roteiros anteriores intactos + cinco TC = 60 manuais pendentes; sem save pessoal acessado. Publicação seleciona apenas código/QA/documentação próprios, não spritesheets/cena/respostas artísticas em produção paralela.
+
 ## 2026-10-04 - Proposta da segunda cultura inicial
 
 - Análise guiada por gameplay/engenharia confirmou bootstrap circular do tomate e Dormir oculto/monetário; nome histórico de agua_tomate_sol não corresponde aos ingredientes reais. Distinguido bloqueio downstream de Outono e ausência de aquisição determinística da semente de inverno.

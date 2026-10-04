@@ -41,6 +41,7 @@ plantar → regar → colher → combinar ingredientes → descobrir receitas �
 - Solo Vivo durável no lote piloto, aprendido após a Clareira: preparo de trigo + mistura conserva umidade entre colheitas de trigo regado;
 - uso explícito pelo mouse: cartão opaco → Aplicar → alvo/chegada, com cancelamento sem gasto; crescimento mantém três doses por frasco e preserva cargas antigas;
 - reposição determinística de sementes de trigo pelo Livro: carvão + água → 1 semente, ou 2 trigos → 3 sementes, sem desbloqueio/RNG;
+- tomate opcional na Primavera/Verão, com primeira semente e recuperação pelo Livro: 1 trigo + 1 água → 1 semente, 2 segundos/sem XP; sem ampliar o semeador de trigo;
 - pesca com minigame de sincronia;
 - coleção de pesca, eventos e descobertas opcionais;
 - personagem físico com navegação por clique e exploração do bosque;

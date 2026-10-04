@@ -106,7 +106,7 @@ var itens: Dictionary = {
 		"pode_usar_em_receita": true,
 		"tags": ["crop", "vegetal", "ingrediente", "verao"],
 		"origem": "cultivo",
-		"descricao": "Colheita luminosa, boa para receitas simples e futuras misturas.",
+		"descricao": "Cultive na Primavera ou no Verão. No caldeirão, combine com Semente de Trigo para duas sementes de tomate; trigo + água fornece uma semente para iniciar ou recuperar o cultivo.",
 		"icone": "🍅"
 	},
 	"abobora_sombria": {
@@ -190,7 +190,7 @@ var itens: Dictionary = {
 		"pode_usar_em_receita": false,
 		"tags": ["semente", "crop", "verao"],
 		"origem": "cultivo",
-		"descricao": "Semente calorosa para plantações de verão.",
+		"descricao": "Plante da Mochila na Primavera ou no Verão.\nNo Livro: 1 trigo + 1 água → 1 semente.\nRegue normalmente. O semeador continua só com trigo.",
 		"icone": "☀️"
 	},
 	"semente_outono": {
@@ -346,7 +346,8 @@ var semente_verao: Dictionary = {
 	"tempo_crescimento_segundos": 5.0,
 	"produto_colheita": "tomate_sol",
 	"valor_venda": 25,
-	"estacao_ideal": SeasonManager.Estacao.VERAO
+	"estacao_ideal": SeasonManager.Estacao.VERAO,
+	"estacoes_permitidas": [SeasonManager.Estacao.PRIMAVERA, SeasonManager.Estacao.VERAO]
 }
 
 var semente_outono: Dictionary = {
@@ -392,6 +393,14 @@ var quests_exemplos: Dictionary = {
 	"q2": {"estacao": 0, "pedido_item": "agua", "pedido_qtd": 5, "recompensa_tipo": "pontos_alquimia", "recompensa_qtd": 1, "texto": "Pesquisa de Primavera: Traga água limpa."},
 	"q3": {"estacao": 2, "pedido_item": "abobora_sombria", "pedido_qtd": 3, "recompensa_tipo": "semente_inverno", "recompensa_qtd": 2, "texto": "Festival de Outono! Precisamos de Abóboras."}
 }
+
+func semente_permite_estacao(semente_dados: Dictionary, estacao: int) -> bool:
+	# Lista opcional governa só o plantio. Metadados e bônus globais não mudam.
+	var permitidas: Variant = semente_dados.get("estacoes_permitidas", null)
+	if typeof(permitidas) == TYPE_ARRAY and not (permitidas as Array).is_empty():
+		return estacao in (permitidas as Array)
+	return semente_dados.get("estacao_ideal", -1) == estacao
+
 
 func fabricar_pocao(ingrediente1: String, ingrediente2: String) -> String:
 	var lista = [ingrediente1, ingrediente2]

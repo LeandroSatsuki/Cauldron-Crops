@@ -6,7 +6,7 @@
 script = ExtResource("1_recipe_data")
 id = "semente_basica_tomate_sol"
 nome = "Saquinho de Semente Mista"
-descricao = "Mistura uma semente básica com tomate do sol para gerar sementes de verão em lote."
+descricao = "Reinvista uma semente básica e um Tomate do Sol em duas Sementes de Tomate. Plante na Primavera ou no Verão. Para começar sem tomate, use a receita Semente de Tomate · Recuperação no Livro."
 categoria = "semente"
 ingredientes = Array[String](["semente_basica", "tomate_sol"])
 resultado_item = "semente_verao"

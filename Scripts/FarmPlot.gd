@@ -234,7 +234,7 @@ func validate_seed_planting(seed_id: String) -> Dictionary:
 	var seed_data := _obter_dados_semente_por_id(seed_id)
 	if seed_data.is_empty():
 		return _planting_result(false, "invalid_seed")
-	if seed_data.get("estacao_ideal") != SeasonManager.estacao_atual:
+	if not Database.semente_permite_estacao(seed_data, SeasonManager.estacao_atual):
 		return _planting_result(false, "wrong_season")
 	if not arado:
 		return _planting_result(false, "untilled")

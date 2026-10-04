@@ -88,6 +88,9 @@ func _atualizar_visual() -> void:
 	var item_ativo := item_id != ""
 	var icone: String = str(Database.obter_icone_item(item_id)) if item_ativo else ""
 	var nome: String = str(Database.obter_nome_item(item_id)) if item_ativo else ""
+	var orientation := nome
+	if item_id == "semente_verao":
+		orientation += "\n" + Database.obter_descricao_item(item_id)
 	var textura_item: Texture2D = Database.obter_textura_item(item_id) if item_ativo else null
 
 	if item_texture_rect:
@@ -97,11 +100,11 @@ func _atualizar_visual() -> void:
 	if icon_label:
 		icon_label.text = "%s" % icone
 		icon_label.visible = item_ativo and textura_item == null
-		icon_label.tooltip_text = nome
+		icon_label.tooltip_text = orientation
 	if qtd_label:
 		qtd_label.text = str(quantidade)
 		qtd_label.visible = quantidade > 0
-	tooltip_text = nome
+	tooltip_text = orientation
 
 func configurar_slot(id: String, qtd: int, texto_exibicao: String) -> void:
 	item_id = id

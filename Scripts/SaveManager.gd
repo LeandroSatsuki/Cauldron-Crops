@@ -4,6 +4,7 @@ const SAVE_PATH := "user://savegame.json"
 const SAVE_VERSION := 4
 const LEGACY_SAVE_VERSION := 3
 const ProtectedSaveFileScript := preload("res://Scripts/data/ProtectedSaveFile.gd")
+const DefaultRecipeResolverScript := preload("res://Scripts/data/RecipeResolver.gd")
 var last_file_error := ""
 var _applying_snapshot := false
 
@@ -341,6 +342,7 @@ func _apply_save_data(data: Dictionary) -> bool:
 	else:
 		# Payload parcial pode substituir a lista do Livro, mas não os marcos.
 		GroveExpedition.reconcile_recipe_discoveries()
+	_reconcile_default_recipe_discoveries()
 	GlobalInventory.pontos_alquimia = int(inventory_data.get("pontos_alquimia", GlobalInventory.pontos_alquimia))
 	GlobalInventory.skills_desbloqueadas = _safe_array(inventory_data.get("skills_desbloqueadas", GlobalInventory.skills_desbloqueadas)).duplicate(true)
 	GlobalInventory.aplicar_colecao_pesca_save(
@@ -436,6 +438,15 @@ func _apply_save_data(data: Dictionary) -> bool:
 		well.close_panel()
 	EconomyManager.well_improvement_changed.emit()
 	return true
+
+func _reconcile_default_recipe_discoveries() -> void:
+	# Aprendizado padrão é política do catálogo, não recompensa de load.
+	# Independe do Livro estar aberto e não concede itens, XP ou marcos.
+	var resolver := DefaultRecipeResolverScript.new()
+	for recipe_id in resolver.get_default_unlocked_recipe_ids():
+		if not GlobalInventory.receitas_descobertas.has(recipe_id):
+			GlobalInventory.receitas_descobertas.append(recipe_id)
+
 
 func _resolve_well_snapshot(data: Dictionary) -> Dictionary:
 	return VillageWellState.resolve_snapshot(data, EconomyManager.poco_capacidade_maxima, EconomyManager.well_improved_by_project, GlobalInventory.skills_desbloqueadas, GroveExpedition.restored)

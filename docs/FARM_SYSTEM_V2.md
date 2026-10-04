@@ -1,8 +1,18 @@
 # Farm System V2
 
-## Segunda cultura inicial proposta em 2026-10-04
+## Segunda cultura inicial aprovada e em validação
 
-**Status: formulação concluída; contrato aguardando aprovação humana.** O autor autorizou seguir com a proposta agrícola após o fechamento da Raiz, não implementar novas regras por consequência. Esta etapa só altera documentação. Baseline jogável: fonte `8d4df8c`, pacote `Builds/Playtest/RenewableRoot-20261004`, fechamento documental `909b159`; suas 58/58 regressões são evidência anterior, não execução desta proposta. Os 55 casos manuais permanecem pendentes e intactos.
+**Data:** 2026-10-04. Autor respondeu “aprovado” ao contrato apresentado após `3153e5d`, incluindo tomate opcional Primavera/Verão e bootstrap padrão 1 trigo + 1 água → 1 semente/2s/0XP. A confirmação autoriza B–D delimitadas; não homologa arte, conforto ou balanceamento.
+
+Domínio implementado: `Database.semente_verao.estacoes_permitidas` inclui Primavera/Verão, preservando `estacao_ideal = Verão` e 5s/base. Helper puro compartilhado governa validação do FarmPlot antes de gastar. Outras culturas mantêm fallback sazonal e o semeador continua trigo. Nova receita `semente_tomate_recuperacao` é padrão/repetível, sem XP/gate, resultado na Mochila; fontes/recibos/capacidade/cancelamento existentes intactos. SaveManager reconcilia receitas padrão depois de aplicar descobertas, sem Livro aberto e sem itens/XP/marcos novos; schema/IDs agrícolas não mudam.
+
+Orientação funcional em descrição da semente, tooltip da Mochila/seleção e receitas do Livro; nenhum painel/HUD/collider/layout ou arte novo. Reinvestimento conserva ingredientes/quantidade/tempo/XP/descoberta. Solo Vivo não concede retenção ao tomate; bônus globais atuais não são alterados ou importados do Verão para Primavera. Não destruir culturas já existentes por estação de plantio.
+
+**Checkpoint de implementação; pacote ainda em validação.** Dedicado final: 125 verificações por backend headless/OpenGL, fixture2/reabertura8; regressão da Raiz86/fixture2/reabertura8. Fixtures isolam eventos RNG legados e executam o refresh visual que o mundo congelado não faria; primeiras falhas de preparação preservadas, não contadas como PASS. Suíte limpa completa e auditoria do pacote ainda pendentes. Preservados 55 roteiros anteriores, acrescentados cinco TC: **60 manuais pendentes**, sem execução imediata obrigatória. Nenhum save pessoal acessado. Conteúdo visual registrado em ART_HANDOFF para Antigravity, não produção artística.
+
+## Histórico da proposta de segunda cultura inicial
+
+**Status histórico de `3153e5d`: formulação concluída, contrato ainda aguardava aprovação.** Posteriormente aprovado conforme seção atual acima. O autor autorizara somente a proposta após a Raiz; naquela formulação só mudou documentação. Baseline jogável da proposta: fonte `8d4df8c`, pacote `Builds/Playtest/RenewableRoot-20261004`, fechamento `909b159`; suas 58/58 regressões são evidência anterior, não execução da formulação. Os 55 casos manuais permaneceram pendentes e intactos.
 
 ### Resultado recomendado
 

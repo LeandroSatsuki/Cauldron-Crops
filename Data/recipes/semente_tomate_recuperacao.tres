@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="RecipeData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://Scripts/data/RecipeData.gd" id="1_recipe"]
+
+[resource]
+script = ExtResource("1_recipe")
+id = "semente_tomate_recuperacao"
+nome = "Semente de Tomate · Recuperação"
+descricao = "Inicie ou recupere o tomate com trigo e água da reserva do poço (não ocupa slots). Receita repetível no Livro, sem descoberta ou restauração. Resultado na Mochila: plante e regue na Primavera ou no Verão. O semeador continua exclusivo de trigo."
+categoria = "semente"
+ingredientes = Array[String](["trigo", "agua"])
+resultado_item = "semente_verao"
+resultado_quantidade = 1
+tempo_producao = 2.0
+desbloqueada_por_padrao = true
+exige_descoberta = false
+recompensa_pontos_alquimia = 0
+tags = Array[String](["semente", "tomate", "recuperacao", "primavera", "verao"])

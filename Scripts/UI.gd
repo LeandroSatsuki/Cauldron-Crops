@@ -2972,6 +2972,7 @@ func _process(delta: float) -> void:
 
 
 		semente_label.text = "Semente Atual: " + nome
+		semente_label.tooltip_text = Database.obter_descricao_item("semente_verao") if GlobalInventory.semente_selecionada == "semente_verao" else ""
 
 
 
@@ -3870,7 +3871,7 @@ func atualizar_inventario_visual() -> void:
 			if stack_count > 1:
 				stack_detail = "\nPilha %d/%d" % [stack_index + 1, stack_count]
 			slot.tooltip_text = "%s%s\nQuantidade: %d" % [Database.obter_nome_item(item_key), stack_detail, qtd]
-			if item_key == "semente_basica":
+			if item_key in ["semente_basica", "semente_verao"]:
 				slot.tooltip_text += "\n" + Database.obter_descricao_item(item_key)
 
 
@@ -5009,7 +5010,7 @@ func _on_comprar_verao_button_mouse_entered() -> void:
 
 
 
-		tooltip_texto.text = "Semente de Tomate\nCusto: 10 Moedas\nEstação: Verão\nUso: Adubo Flamejante"
+		tooltip_texto.text = Database.obter_nome_item("semente_verao") + "\n" + Database.obter_descricao_item("semente_verao")
 
 
 

@@ -22,8 +22,30 @@ func _initialize() -> void:
 		return
 	if not _check_root_contract():
 		return
-	print("PlaytestPackAudit: PASS - recursos, receitas sustentáveis, Poço, Solo Vivo, Aceleradora, Raiz renovável, aplicação, exclusões e save separado.")
+	if not _check_tomato_contract():
+		return
+	print("PlaytestPackAudit: PASS - recursos, receitas sustentáveis, Poço, Solo Vivo, Aceleradora, Raiz renovável, tomate Primavera/Verão, aplicação, exclusões e save separado.")
 	quit(0)
+
+func _check_tomato_contract() -> bool:
+	var path := "res://Data/recipes/semente_tomate_recuperacao.tres"
+	if not ResourceLoader.exists(path):
+		return _fail("bootstrap de tomate ausente")
+	var recipe: Resource = ResourceLoader.load(path)
+	if recipe == null or recipe.get("id") != "semente_tomate_recuperacao" or recipe.get("ingredientes") != ["trigo", "agua"] or recipe.get("resultado_item") != "semente_verao" or recipe.get("resultado_quantidade") != 1 or recipe.get("tempo_producao") != 2.0 or recipe.get("recompensa_pontos_alquimia") != 0 or not recipe.get("desbloqueada_por_padrao") or recipe.get("exige_descoberta"):
+		return _fail("bootstrap de tomate fora do contrato")
+	# Catálogo do próprio PCK, fora da árvore: não executar ready ou progresso.
+	var script: GDScript = ResourceLoader.load("res://Scripts/Database.gd")
+	var catalog: Node = script.new()
+	var seed: Dictionary = catalog.get("semente_verao")
+	var valid := seed.get("estacao_ideal") == 1 and seed.get("tempo_crescimento_segundos") == 5.0 and seed.get("produto_colheita") == "tomate_sol" and seed.get("estacoes_permitidas") == [0, 1]
+	for season in range(4):
+		valid = valid and catalog.call("semente_permite_estacao", seed, season) == (season in [0, 1])
+		valid = valid and catalog.call("semente_permite_estacao", catalog.get("semente_basica"), season) == (season == 0)
+	catalog.free()
+	if not valid:
+		return _fail("política de estações do tomate/trigo alterada")
+	return true
 
 func _check_root_contract() -> bool:
 	var expedition: GDScript = ResourceLoader.load("res://Scripts/GroveExpedition.gd")

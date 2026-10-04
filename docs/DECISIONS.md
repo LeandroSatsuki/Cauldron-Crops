@@ -1,5 +1,12 @@
 # Decisions
 
+## Decisão 134 - Segunda cultura inicial aprovada
+
+- Autor respondeu “aprovado” ao contrato final da Decisão 133/FARM_SYSTEM_V2, após proposta `3153e5d`. Autoriza integrar tomate opcional Primavera/Verão e receita padrão repetível 1 trigo + 1 água → 1 semente_verao, 2s/0XP, sem gate/moeda/marco.
+- Manter IDs, 5s/base, rega/bônus sazonais atuais, fontes/recibos/capacidade do caldeirão e plantio pessoal. Lista opcional de estações com fallback da restrição atual para outras culturas; Verão não é removido. Não mudar calendário/quests/economia, semeador exclusivo de trigo ou retenção do Solo Vivo.
+- Receita conhecida no Livro desde o começo/reconciliada no load, sem recompensa extra; orientação funcional no catálogo/Mochila/Livro, assets e geometria atuais. Novos efeitos de Adubo/Elixir e acesso público a Outono/Inverno continuam fora do recorte. Antigravity cuida de arte, nota funcional no ART_HANDOFF.
+- Implementação em validação; evidências automáticas e pacote serão registrados no fechamento. 55 textos manuais preservados + cinco TC = 60 pendentes, sem exigir teste imediato ou acessar save pessoal. Aprovação de contrato não é aceite manual/artístico ou balanceamento final.
+
 ## Decisão 133 - Autorização de formular a segunda cultura inicial
 
 - Autor respondeu “Ok, pode seguir” ao próximo passo de formular expansão agrícola com aquisição/estações antes de adicionar culturas. Autoriza análise e proposta documental, não novas regras implementadas ou parâmetros aprovados por consequência.

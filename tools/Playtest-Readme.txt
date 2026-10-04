@@ -13,7 +13,13 @@ Nao copie saves antigos para este ambiente sem planejar uma copia segura.
 
 F5 salva; F9 carrega. F10 permanece desativado.
 CHECKLIST.md contem os casos pendentes e os aceites anteriores.
-Inclui 55 casos: 50 anteriores preservados e 5 de Raiz renovavel (RG).
+Inclui 60 casos: 55 anteriores preservados e 5 de tomate inicial (TC).
+Tomate do Sol pode ser plantado na Primavera ou no Verao, sem mudar estacao.
+No Livro: 1 trigo + 1 agua -> 1 Semente de Tomate, 2 segundos/zero XP,
+receita conhecida desde o inicio e repetivel, mesmo sem tomate anterior.
+Resultado na Mochila; plantar exige semente pessoal e rega normal.
+O golem continua semeando apenas trigo. Nao ha calendario publico novo,
+efeito novo de Adubo/Elixir ou beneficio de Solo Vivo para tomate.
 No Bosque, fonte de Raiz Gelida perto da bifurcacao inicial (960,630).
 Entrega 1 na Mochila e renova em 45 segundos de jogo aberto, inclusive
 durante tempo na vila. Sem espaco, preserva o recurso e nao inicia espera.

@@ -79,3 +79,16 @@ Resposta Antigravity: pendente. Plano de substituição: pendente. Aceite artís
 - Arte em andamento no workspace por outro agente permanece separada desta entrega de código. O PNG local de item, se presente, não é certificado ou publicado como arte aprovada por este incremento; o pacote limpo usa os recursos versionados.
 - Fechamento funcional: Root86 por backend headless/OpenGL, fixture2/reabertura8 e suíte limpa58/58,11reaberturas/5fixtures, startups/PCK/hashes/logs conferidos pelo QA independente. Fonte acessível por caminhada de API e estados de recusa/renovação testados; picking de mouse, legibilidade/conforto, ritmo e arte continuam pendentes nos cinco RG, sem aceite artístico inferido.
 - Resposta Antigravity: pendente. Nova arte integrada por Codex: pendente. Aceite artístico do autor: pendente.
+
+### Tomate como segunda cultura inicial
+
+**Registro:** 2026-10-04. Contrato aprovado pelo autor, domínio/orientação implementados e QA em andamento; ainda não é fechamento de pacote ou aceite artístico.
+
+- IDs preservados: `semente_verao` e `tomate_sol`; receita nova `Data/recipes/semente_tomate_recuperacao.tres`, sem item/espécie novo. Scripts funcionais: Database, FarmPlot, InventorySlot, UI e SaveManager.
+- Função: fabricar 1 trigo + 1 água → 1 semente/2s/0XP pelo Livro ou mistura; plantar da Mochila na Primavera/Verão e regar. Golem continua semeando somente trigo, Solo Vivo não retém água para tomate. Não há novo calendário ou lore.
+- Estados observáveis: semente selecionada/desselecionada, cultivo crescendo/maduro/regado, colheita e estoque; são estados já existentes do tomate. Receita conhecida no Livro, disponibilidade conforme recursos e resultado bloqueado por capacidade usam interfaces vigentes. Tooltip orienta duas estações e aquisição sem primeiro tomate.
+- Representação: assets e visual de cultivo existentes reutilizados, sem desenho ou animação novo por Codex. Os PNGs locais produzidos pelo trabalho artístico separado não são publicados ou certificados nesta etapa; pacote limpo usa recursos versionados.
+- Demanda: considerar o tomate/semente no conjunto visual e na legibilidade dos estados existentes. Nenhum pedido de paleta/conceito novo, cultura sazonal em lote especial ou janela adicional.
+- Restrições: manter IDs, raiz/posição/grid/picking/alcance, plantio pessoal, consumo somente após validação, renderização abaixo dos objetos e controles opacos sem atravessar input. Arte não altera 5s/base, rega/bônus ou políticas de estação. Reorganização de hierarquia/viewport/grid exige coordenação técnica.
+- Evidência e pendência: teste automático e pacote ainda em validação; cinco TC no checklist, todos pendentes. Não inferir picking físico, conforto, ritmo ou arte aprovados.
+- Resposta Antigravity: pendente. Nova arte integrada por Codex: pendente. Aceite artístico do autor: pendente.
