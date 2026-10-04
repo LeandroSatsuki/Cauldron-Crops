@@ -1,5 +1,27 @@
 # Farm System V2
 
+## Vila em Reconstrução — Poço da Vila, piloto aprovado (2026-10-04)
+
+Autor aprovou um recorte opcional: poço físico funcional antes/depois da melhoria, projeto disponível após a Clareira restaurada. Custo **8 trigos + 1 mistura restauradora**, com Village Storage prioritário e complemento da Mochila. Benefício **capacidade 10 → 20**, sem encher a reserva instantaneamente, acelerar regeneração ou implementar tempo offline. Capacidade legada acima de 20 é preservada.
+
+A habilidade existente `skill_agua` continua como caminho alternativo de **1 ponto de alquimia** para o mesmo benefício, sem exigir Clareira. Não acumular capacidade nem cobrar materiais/ponto novamente de quem já tem capacidade 20 ou maior. Projeto não concede XP/habilidade; habilidade não marca projeto pago. Fora: loja, moeda, NPC, mapas, estações, mastery, outras melhorias e infraestrutura genérica de aquisição.
+
+### Ordem de execução aprovada
+
+1. **Incremento 1 — contratos/persistência:** custo, fontes, elegibilidade, cobrança única, compatibilidade e testes isolados; sem objeto novo no mapa.
+2. **Incremento 2 — objeto físico/integração:** localização livre de cultivo/trilhas, aproximação real, clique/picking e painel compacto opaco; apresentar reserva/capacidade/projeto sem HUD permanente extra ou F10. Preservar baú/caldeirão/ferramentas/navegação.
+3. **Incremento 3 — fechamento:** regressão integrada, reaberturas no exportador, pacote auditado e checklist ampliado mantendo as 30 pendências anteriores.
+
+### Incremento 1 — concluído tecnicamente
+
+VillageWellState concentra constantes e preflight puro; EconomyManager mantém capacidade/flag e duas APIs de aquisição. Consulta não gasta; projeto exige vila ativa e baú live, recusando consumo remoto no Bosque/cache/transição. VillageResourceAccess valida o custo integral, consome baú primeiro e conserva origens em rollback. Guardas recusam reentrada, habilidade e save/load durante consumo incompleto; sinal só depois do estado consistente. SkillTree usa a mesma regra, desabilitando cobrança de benefício já obtido.
+
+Save v4 recebe campo opcional `poco.melhoria_projeto`. Snapshot completo antigo v3/v4 sem flag assume false; parcial conserva estado ausente. Projeto e habilidade derivam capacidade mínima 20, sem reduzir valores maiores ou conceder água/XP/itens no load. Projeto true exige Clareira restaurada no snapshot recebido. Tipos/quantidades inválidos são recusados antes de mudar região/recursos; escritor também recusa estado contraditório preservando arquivo anterior. Aplicação substitui estado, replay não cobra/concede de novo. Excesso de água legado é preservado.
+
+Importação sem erros, suíte **53/53** em APPDATA isolado. VillageWellProgressSmokeTest: **89 verificações** de custos, origens, elegibilidade, alternativas, capacidade legada, rollback/reentrada sintéticos, JSON/replay/legado, preflight e arquivo protegido, viagem/cache/save externo. Regeneração usa delta explícito de QA e a regra existente, não medição de tempo real/offline. Dois processos adicionais reabrem projeto e habilidade (**8 + 8**); preparação do save de habilidade (**2**) é fixture, não reabertura. Também passaram as quatro reaberturas anteriores (**6 + 3 + 8 + 8**) e fixture de replantio (**2**).
+
+Save pessoal idêntico por hash/tamanho/data, arquivos alheios preservados fora do commit. **Sem objeto físico ou nova exportação neste incremento**: SustainableFarm-20261004 permanece o pacote anterior, sem estes contratos. Os **30 casos manuais continuam pendentes**, sem exigir teste imediato nem presumir aprovação. Próximo incremento 2 está dentro do recorte aprovado; validação de clique/proximidade/arte ainda não foi realizada para o poço.
+
 ## Ciclo Sustentável da Fazenda — recorte aprovado (2026-10-03)
 
 Autor aprovou duas receitas determinísticas para repor trigo pelo caldeirão: **1 carvão + 1 água → 1 Semente de Trigo**, e **2 trigos → 3 Sementes de Trigo**. Baseline de leitura confirmou 10 sementes iniciais, retorno aleatório de 20% na Primavera e ausência de receita com resultado semente_basica; risco de esgotamento, não bloqueio reproduzido no save pessoal. Não mudar o bônus de colheita, estoque inicial, estações ou semeador.

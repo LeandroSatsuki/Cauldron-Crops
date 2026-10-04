@@ -1,5 +1,13 @@
 # Decisions
 
+## Decisão 122 - Melhoria opcional do Poço com duas aquisições não acumuláveis
+
+- Vila em Reconstrução aprovada: poço físico funcional antes/depois, projeto após Clareira restaurada por 8 trigos + 1 mistura restauradora. Village Storage prioritário, Mochila complementar. Capacidade 10 → 20, sem recarga instantânea, acelerar regeneração ou tempo offline. Preservar capacidades legadas maiores.
+- `skill_agua` antiga continua alternativa de 1 ponto, sem exigir Clareira. Ambas levam ao mesmo benefício: não acumular capacidade, gastar novamente ou inventar XP/habilidade/projeto pago. Capacidade já ≥20 recusa ambas as cobranças.
+- Incremento 1 implementa contratos/preflight puro, APIs no EconomyManager, SkillTree unificado e campo opcional `poco.melhoria_projeto` no v4, com legado v3/v4 e replay sem novos gastos/prêmios. Projeto depende do marco recebido, não da sessão antiga. Payload inválido é recusado antes de mutação; escrita inconsistente preserva arquivo anterior. Guards impedem reentrada/save/load durante retirada incompleta; rollback conserva fontes.
+- Suíte 53/53, 89 verificações do teste novo e reaberturas reais em dois processos (8 + 8), fixture da habilidade (2); reaberturas/fixture anteriores também passaram. QA isolado e save pessoal idêntico por hash/tamanho/data. Falha/reentrada de estoque é fixture sintético, não problema reproduzido no save pessoal.
+- Sem objeto físico novo/exportação neste incremento; não afirmar picking/proximidade homologados. Incremento 2 integra objeto/painel/navegação; 3 fecha exportador/pacote/checklist. As 30 pendências manuais permanecem. Não ampliar loja/economia/NPC/mapas/mastery ou criar framework geral de projetos.
+
 ## Decisão 121 - Fechamento do ciclo sustentável com auditoria de pacote isolada
 
 - Incremento 3 autorizado e concluído tecnicamente. Exportador executa recuperação/reabertura, fixture de replantio/reabertura imediatamente após o ciclo, antes de outra cena substituir o arquivo QA. Exige PASS com contagem específica dos modos; quatro reaberturas totais (6 + 3 + 8 + 8), fixture adicional (2) separado no manifesto.

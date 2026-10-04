@@ -1,6 +1,14 @@
 # Evolução do Projeto
 
-## Etapa atual — Ciclo Sustentável da Fazenda, fechamento técnico 1–3 (2026-10-04)
+## Etapa atual — Vila em Reconstrução, Poço: incremento 1 (2026-10-04)
+
+Recorte aprovado e incremento 1 concluído tecnicamente: projeto opcional após Clareira restaurada, custo 8 trigos + 1 mistura restauradora, baú prioritário/Mochila complementar; capacidade mínima 20 sem recarga instantânea ou regeneração acelerada. Habilidade antiga de 1 ponto é alternativa, não benefício acumulável: nenhuma cobrança adicional se já obtido; capacidades legadas maiores preservadas.
+
+Contratos, APIs e campo opcional no save v4, compatibilidade v3/v4, preflight antes de mutação e guarda de transação. Suíte **53/53**, teste novo **89 verificações**, reaberturas de projeto/habilidade em processos separados (**8 + 8**) e fixture de habilidade (**2**); quatro reaberturas anteriores e fixture de replantio também passaram. QA isolado, save pessoal idêntico por hash/tamanho/data. Ainda **sem poço físico novo, teste de clique/proximidade ou nova exportação**; build SustainableFarm-20261004 não contém este incremento.
+
+Próximo **incremento 2 — objeto físico/integração**, dentro do recorte aprovado: posicionar fora do cultivo/trilhas, aproximação real, picking, painel compacto opaco e estados antes/depois. **Incremento 3** integra regressão/exportador, pacote auditado e novos casos de checklist. Preservar as **30 pendências manuais** abaixo; autor indisponível não precisa testar agora. Sem loja/moeda/NPC/mapa/mastery/tempo offline. Plano em [Farm System](FARM_SYSTEM_V2.md#vila-em-reconstrução--poço-da-vila-piloto-aprovado-2026-10-04).
+
+## Checkpoint anterior — Ciclo Sustentável da Fazenda, fechamento técnico 1–3 (2026-10-04)
 
 Incremento 3 concluído tecnicamente, sem alterar gameplay/schema. Exportação definitiva da fonte `8a1bc4a` em checkout limpo: suíte **52/52**, quatro reaberturas em novos processos (**6 + 3 + 8 + 8 verificações**) e fixture adicional de replantio (**2**, não contado como reabertura). Runner exige a contagem específica de cada modo antes de aceitar PASS.
 

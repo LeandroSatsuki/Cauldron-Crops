@@ -7,6 +7,9 @@ const ProtectedSaveFileScript := preload("res://Scripts/data/ProtectedSaveFile.g
 var last_file_error := ""
 var _applying_snapshot := false
 
+func is_applying_snapshot() -> bool:
+	return _applying_snapshot
+
 enum FarmSaveSource {
 	NONE,
 	LEGACY_PLOTS,
@@ -33,7 +36,7 @@ func delete_save() -> bool:
 
 func save_game() -> bool:
 	last_file_error = ""
-	if _applying_snapshot:
+	if _applying_snapshot or EconomyManager.is_well_transaction_in_progress():
 		last_file_error = "Aguarde o fim do carregamento antes de salvar."
 		return false
 	var home: Node = _get_save_scene()
@@ -48,6 +51,10 @@ func save_game() -> bool:
 		last_file_error = "Golem indisponível. O save anterior não foi alterado."
 		return false
 	var data := _build_save_data()
+	if not _resolve_well_snapshot(data).get("valid", false):
+		last_file_error = "Estado do poço inválido. O save anterior não foi alterado."
+		_show_file_error("Não foi possível salvar", last_file_error)
+		return false
 	if not _is_golem_save_payload_valid(data):
 		last_file_error = "Carga do golem inválida. O save anterior não foi alterado."
 		_show_file_error("Não foi possível salvar", last_file_error)
@@ -191,7 +198,8 @@ func _build_save_data() -> Dictionary:
 		},
 		"poco": {
 			"agua_atual": inventory_copy.get("agua", 0),
-			"capacidade_maxima": EconomyManager.poco_capacidade_maxima
+			"capacidade_maxima": EconomyManager.poco_capacidade_maxima,
+			"melhoria_projeto": EconomyManager.well_improved_by_project
 		},
 		"quests": {
 			"quests_ativas": QuestManager.quests_ativas.duplicate(true),
@@ -212,7 +220,11 @@ func _build_save_data() -> Dictionary:
 	return save_data
 
 func _apply_save_data(data: Dictionary) -> bool:
-	if _applying_snapshot:
+	if _applying_snapshot or EconomyManager.is_well_transaction_in_progress():
+		return false
+	var well_snapshot := _resolve_well_snapshot(data)
+	if not bool(well_snapshot.get("valid", false)):
+		push_warning("SaveManager: estado do poço invalido; save nao aplicado.")
 		return false
 	# Pré-validar os campos opcionais antes de mudar região, recursos ou flags.
 	if data.has("grove_expedition") and not GroveExpedition.is_save_data_valid(data["grove_expedition"]):
@@ -323,12 +335,10 @@ func _apply_save_data(data: Dictionary) -> bool:
 	SeasonManager.estacao_atual = _safe_estacao(int(season_data.get("estacao_atual", SeasonManager.estacao_atual)))
 	SeasonManager.ano = int(season_data.get("ano", SeasonManager.ano))
 
-	var poco_data: Dictionary = _safe_dictionary(data.get("poco", {}))
-	var agua_atual = int(poco_data.get("agua_atual", GlobalInventory.inventario.get("agua", 0)))
-	if agua_atual < 0:
-		agua_atual = 0
+	var agua_atual := int(well_snapshot["water"]) if well_snapshot["has_water"] else int(GlobalInventory.inventario.get("agua", 0))
 	GlobalInventory.inventario["agua"] = agua_atual
-	EconomyManager.poco_capacidade_maxima = int(poco_data.get("capacidade_maxima", EconomyManager.poco_capacidade_maxima))
+	EconomyManager.poco_capacidade_maxima = int(well_snapshot["capacity"])
+	EconomyManager.well_improved_by_project = bool(well_snapshot["project"])
 
 	var quests_data: Dictionary = _safe_dictionary(data.get("quests", {}))
 	QuestManager.quests_ativas = _safe_array(quests_data.get("quests_ativas", QuestManager.quests_ativas)).duplicate(true)
@@ -394,7 +404,11 @@ func _apply_save_data(data: Dictionary) -> bool:
 	if current_scene != null and current_scene.has_method("_reconstruir_farm_grid_manager"):
 		current_scene.call("_reconstruir_farm_grid_manager")
 	_applying_snapshot = false
+	EconomyManager.well_improvement_changed.emit()
 	return true
+
+func _resolve_well_snapshot(data: Dictionary) -> Dictionary:
+	return VillageWellState.resolve_snapshot(data, EconomyManager.poco_capacidade_maxima, EconomyManager.well_improved_by_project, GlobalInventory.skills_desbloqueadas, GroveExpedition.restored)
 
 
 func _get_save_golem() -> Node:

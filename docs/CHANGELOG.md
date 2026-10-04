@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-04 - Vila em Reconstrução: contratos/persistência do Poço
+
+- Primeiro incremento do recorte aprovado: custo 8 trigos + 1 mistura após Clareira, baú prioritário/complemento pessoal e capacidade mínima 20. Habilidade antiga de 1 ponto é alternativa não acumulável; preservar capacidade legada maior, água/XP e regeneração existentes.
+- VillageWellState/EconomyManager validam elegibilidade/custo integral, consumo/rollback por origem e reentrada. SkillTree não cobra benefício já obtido. Campo opcional `poco.melhoria_projeto` no save v4; compatibilidade v3/v4, preflight/replay e escrita protegida sem recompensa no load.
+- Importação sem erros, suíte 53/53, teste novo com 89 verificações e reaberturas de projeto/habilidade (8 + 8), fixture da habilidade (2), além dos modos anteriores. QA isolado; save pessoal idêntico por hash/tamanho/data. Arte local/arquivos alheios fora da publicação.
+- Sem novo objeto no mapa/exportação; próxima integração física é incremento 2, pacote/checklist no 3. Os 30 casos manuais continuam pendentes; sem aceite de clique/arte/ritmo presumido ou novos sistemas reservados.
+
 ## 2026-10-04 - Ciclo Sustentável da Fazenda: fechamento técnico 1–3
 
 - Exportador integra reaberturas específicas de recuperação/replantio, separa fixture adicional e exige contagens esperadas de PASS. Corrigidas auditoria vulnerável a recursos locais e identificação do commit por HEAD mutável; checkout/manifesto agora usam a mesma fonte capturada.

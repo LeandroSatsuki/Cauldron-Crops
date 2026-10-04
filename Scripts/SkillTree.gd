@@ -12,7 +12,7 @@ const SKILL_GOLEM_IRRIGADOR_CUSTO := 2
 
 func _ready() -> void:
 	if btn_skill_agua:
-		btn_skill_agua.tooltip_text = "Nascente Infinita\nCusto: 1 Ponto\nEfeito: Expande a capacidade máxima do poço para 20 de água."
+		btn_skill_agua.tooltip_text = "Nascente Infinita\nCusto: 1 Ponto\nEfeito: Expande a capacidade máxima do poço para 20 de água.\nAlternativa à melhoria por materiais; benefício não acumula."
 	if btn_skill_dormir:
 		btn_skill_dormir.tooltip_text = "Sono Saudável\nCusto: 1 Ponto\nEfeito: Reduz o custo base do sono para 2 moedas e suaviza o multiplicador de spam."
 	if btn_skill_golem:
@@ -40,7 +40,7 @@ func _process(_delta: float) -> void:
 	if btn_skill_golem_irrigador:
 		btn_skill_golem_irrigador.disabled = (GlobalInventory.pontos_alquimia < SKILL_GOLEM_IRRIGADOR_CUSTO) or (SKILL_GOLEM_IRRIGADOR_ID in GlobalInventory.skills_desbloqueadas)
 	if btn_skill_agua:
-		btn_skill_agua.disabled = (GlobalInventory.pontos_alquimia < 1) or ("skill_agua" in GlobalInventory.skills_desbloqueadas)
+		btn_skill_agua.disabled = (GlobalInventory.pontos_alquimia < 1) or ("skill_agua" in GlobalInventory.skills_desbloqueadas) or EconomyManager.is_well_improved()
 	if btn_skill_dormir:
 		btn_skill_dormir.disabled = (GlobalInventory.pontos_alquimia < 1) or ("skill_dormir" in GlobalInventory.skills_desbloqueadas)
 
@@ -58,10 +58,7 @@ func _on_btn_skill_golem_irrigador_pressed() -> void:
 		print("Habilidade Golem Irrigador desbloqueada!")
 
 func _on_btn_skill_agua_pressed() -> void:
-	if GlobalInventory.pontos_alquimia >= 1 and not ("skill_agua" in GlobalInventory.skills_desbloqueadas):
-		GlobalInventory.pontos_alquimia -= 1
-		GlobalInventory.skills_desbloqueadas.append("skill_agua")
-		EconomyManager.poco_capacidade_maxima = 20
+	if EconomyManager.try_unlock_water_skill():
 		print("Habilidade Poço desbloqueada! Capacidade máxima de água: ", EconomyManager.poco_capacidade_maxima)
 
 func _on_btn_skill_dormir_pressed() -> void:
