@@ -122,6 +122,7 @@ $worktreeAdded = $false
 $originalAppData = $env:APPDATA
 $qaAppData = Join-Path $worktreePath "Builds/QA/GodotSandboxCleanExport"
 $reopenCount = 0
+$additionalFixtureCount = 0
 
 if (Test-Path -LiteralPath $worktreePath) {
     throw "Temporary export directory already exists: $worktreePath"
@@ -190,15 +191,35 @@ try {
                 default { $null }
             }
             if ($reopenMode) {
+                $expectedChecks = if ($test.BaseName -eq "GolemWorkPersistenceSmokeTest") { 6 } else { 3 }
                 $reopenLog = Join-Path $godotCacheDirectory ($test.BaseName + "-reopen.log")
                 Invoke-GodotCommand -Executable $godotExecutable `
                     -Arguments @("--path", $worktreePath, "--headless", ("res://Scenes/dev/" + $test.Name), "--", $reopenMode) `
                     -LogPath $reopenLog -FailureMessage "$($test.Name) process reopen" -RejectLoggedErrors
-                if (-not (Select-String -LiteralPath $reopenLog -Pattern ": PASS")) {
-                    throw "$($test.Name) process reopen did not report PASS."
+                if (-not (Select-String -LiteralPath $reopenLog -Pattern (": PASS - " + $expectedChecks + " verific"))) {
+                    throw "$($test.Name) process reopen did not report the expected $expectedChecks checks."
                 }
                 $reopenCount++
                 Write-Host "PASS $($test.Name) process reopen"
+            }
+            if ($test.BaseName -eq "SustainableFarmCycleSmokeTest") {
+                # The default run leaves recovery in progress. Verify it before
+                # preparing a separate replant persistence fixture in the same QA profile.
+                foreach ($step in @(
+                    @{ Name = "recovery-reopen"; Mode = "--verify-seed-cycle-reopen"; Checks = 8; Reopen = $true },
+                    @{ Name = "replant-fixture"; Mode = "--prepare-seed-replant-save"; Checks = 2; Reopen = $false },
+                    @{ Name = "replant-reopen"; Mode = "--verify-seed-cycle-reopen"; Checks = 8; Reopen = $true }
+                )) {
+                    $stepLog = Join-Path $godotCacheDirectory ($test.BaseName + "-" + $step.Name + ".log")
+                    Invoke-GodotCommand -Executable $godotExecutable `
+                        -Arguments @("--path", $worktreePath, "--headless", ("res://Scenes/dev/" + $test.Name), "--", $step.Mode) `
+                        -LogPath $stepLog -FailureMessage "$($test.Name) $($step.Name)" -RejectLoggedErrors
+                    if (-not (Select-String -LiteralPath $stepLog -Pattern (": PASS - " + $step.Checks + " verific"))) {
+                        throw "$($test.Name) $($step.Name) did not report the expected $($step.Checks) checks."
+                    }
+                    if ($step.Reopen) { $reopenCount++ } else { $additionalFixtureCount++ }
+                    Write-Host "PASS $($test.Name) $($step.Name) ($($step.Checks) checks)"
+                }
             }
         }
         Write-Host "Regression suite: $($tests.Count)/$($tests.Count)."
@@ -271,6 +292,7 @@ try {
             export_only_user_directory = "CauldronCropsPlaytest"
             regression_count = $(if ($RunRegressionSuite) { $tests.Count } else { 0 })
             process_reopen_count = $reopenCount
+            additional_fixture_count = $additionalFixtureCount
             headless_startup_passed = [bool]$SmokeTest
             opengl_startup_passed = [bool]$SmokeTest
             pack_audit_passed = $true
