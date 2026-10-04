@@ -283,7 +283,7 @@ try {
         $env:APPDATA = $qaAppData
         $packPath = [System.IO.Path]::ChangeExtension($outputAbsolute, ".pck")
         Invoke-GodotCommand -Executable $godotExecutable `
-            -Arguments @("--headless", "--main-pack", $packPath, "--script", (Join-Path $worktreePath "tools/Inspect-PlaytestPack.gd")) `
+            -Arguments @("--headless", "--path", $outputDirectory, "--main-pack", $packPath, "--script", (Join-Path $worktreePath "tools/Inspect-PlaytestPack.gd")) `
             -LogPath (Join-Path $godotCacheDirectory "pack-audit.log") `
             -FailureMessage "Playtest pack audit failed" -RejectLoggedErrors
         $manifest = [ordered]@{
