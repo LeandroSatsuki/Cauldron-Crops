@@ -1,8 +1,12 @@
 # Evolução do Projeto
 
-## Etapa atual — Aceleradora, P3 de integração autorizada (2026-10-04)
+## Etapa atual — Aceleradora, P3 fechada tecnicamente (2026-10-04)
 
-Autor confirmou o contrato P2 completo, incluindo preparo remoto pelo painel na vila ativa e ordem persistente. Integração em andamento, delimitada em FARM_SYSTEM_V2/Decisão 130: um frasco pessoal, uma nova entrega lógica, deslocamento 1,5×; sem alterar receitas/timers ou demais tarefas. Ainda não é resultado de QA/novo pacote ou aceite manual. Os 45 casos anteriores permanecem pendentes.
+Contrato P2 confirmado integralmente pelo autor, incluindo preparo remoto pelo painel na vila ativa e ordem persistente. Integração implementada em FARM_SYSTEM_V2/Decisão 130: um frasco pessoal por nova entrega lógica, deslocamento 1,5× somente transporte de colheita. Cancelar antes gratuito; fechar não cancela, retry/load/cache não cobram novamente ou tornam cargo antigo elegível. Sem alterar receitas/timers/outras tarefas, fila ou repetição. Painel opaco/rolável, cabeçalho/Fechar fixos, seleções preservadas e cartão consultivo sem Aplicar livre.
+
+Fonte `f0f68ab`, pacote **`Builds/Playtest/AcceleratorDelivery-20261004`**: suíte limpa **57/57**, dez reaberturas (**8 + 8 + 3 + 6 + 8 + 8 + 8 + 4 + 8 + 8**) e quatro fixtures (**2 + 2 + 2 + 2**, não reaberturas). Domínio **191**, UI **154** por backend headless/OpenGL e Sower UI **325**; colheita/custódia/depósito único, pausa durante depósito, contexto pré-off-tree, legado/partial/replay/writer e desvio com collider ativo conferidos. Depósito normal interrompido por contexto volta IDLE para retry. Primeira execução com erro de diálogos do fixture preservada como negativa; finais sem ERROR. EXE headless/OpenGL e auditoria isolada do PCK passaram, controle negativo rejeita pacote antigo sem Aceleradora. Manifesto/hashes/logs/instruções/checklist/launcher presentes; checkout temporário removido.
+
+Arte/UX e QA independentes sem bloqueador material, por leitura explícita dos perfis; sem descoberta nativa ou aceite artístico alegados. **50 pendências manuais**: 45 textos antigos intactos + cinco AC, autor indisponível sem exigir teste imediato. Nenhum save pessoal acessado; oito arquivos alheios fora da entrega. Picking/gesto físico/conforto/ritmo/valor econômico seguem pendentes, sem garantia universal de navegação. Próximo passo: formular recorte delimitado de gameplay/progressão antes de ampliar sistemas reservados.
 
 ## Checkpoint anterior — Aceleradora, P2 de contrato/UX formulada (2026-10-04)
 

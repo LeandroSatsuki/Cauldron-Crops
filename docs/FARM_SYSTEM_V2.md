@@ -1,8 +1,14 @@
 # Farm System V2
 
-## Poção Aceleradora — P3, integração autorizada (2026-10-04)
+## Poção Aceleradora — P3, integração fechada tecnicamente (2026-10-04)
 
-Autor confirmou o contrato completo da P2 com “sim”, incluindo preparo pelo painel sem aproximação e persistência no save. Integração em andamento: um frasco pessoal por nova entrega lógica, deslocamento 1,5× somente até o baú; sem alteração de receita/timers/benefícios. A aprovação substitui o portão documental abaixo, não o transforma em resultado de teste. Validação automática/exportação e revisão independente serão registradas no fechamento; 45 casos manuais anteriores continuam pendentes.
+Autor confirmou o contrato completo da P2 com “sim”, incluindo preparo pelo painel sem aproximação e persistência no save. **Integração implementada e fechada tecnicamente:** um frasco pessoal por nova entrega lógica, deslocamento 1,5× somente até o baú; sem alteração de receita/timers/benefícios. A aprovação substitui o portão documental abaixo, não homologa arte, conforto ou valor econômico.
+
+Fonte `f0f68ab`, pacote limpo **`Builds/Playtest/AcceleratorDelivery-20261004`**: suíte **57/57**, dez reaberturas em novos processos (**8 + 8 + 3 + 6 + 8 + 8 + 8 + 4 + 8 + 8**) e quatro fixtures (**2 + 2 + 2 + 2**, separados). Novos modos preparada/ativa exigem oito checks cada; seus produtores exigem dois cada. Domínio passou **191 verificações por backend headless/OpenGL**; UI **154 por backend**, Sower UI **325**. Desvio de produção com collider ativo: percurso 542,951 px, distância mínima por segmento 45,023 ≥ 45,015 px, passo máximo 3,2 px e fallback observado, sem teleporte ou prêmio/custo extra. Timer/callback/guardas antes de off-tree, pausa DEPOSITING, estoque/baú perdidos, snapshots negativos/legados/parciais/replay/cache e arquivo anterior preservado conferidos. Depósito normal recusado por contexto volta IDLE para retry; não fica preso após transição interrompida.
+
+EXE headless/OpenGL e auditoria isolada do PCK passaram; controle negativo recusa LivingSoil-20261004 pela Aceleradora ausente, sem fallback do workspace. Manifesto/hashes/logs/instruções/checklist/launcher acompanham o pacote; checkout temporário removido. Arte/UX revisou nove capturas nas três resoluções; QA independente conferiu fonte/artefato/contagens/hashes sem bloqueador material, por leitura explícita dos perfis. Cinco perfis/seis controles negativos passaram, sem descoberta nativa alegada. Primeira execução de domínio com dois diálogos exclusivos do fixture foi rejeitada apesar do PASS 181; log preservado como negativo, limpeza corrigida apenas no teste, finais 191 sem ERROR. Falhas intermediárias de compilação/resolução de fixture UI não são evidência final.
+
+**50 casos manuais pendentes:** 45 textos anteriores idênticos + cinco AC, sem exigir teste imediato ao autor. APPDATA QA isolado, nenhum save pessoal acessado e oito arquivos locais alheios intactos. Picking/gesto físico completo/arte/conforto/ritmo/balanceamento seguem pendentes; uma rota validada não garante avoidance universal. Sem loja/moeda/NPC/mapa/mastery/tempo offline ou novo benefício por consequência. Próximo recorte de progressão requer proposta delimitada e aprovação.
 
 ## Poção Aceleradora — P2, proposta de uso pelo painel (2026-10-04)
 
