@@ -207,6 +207,9 @@ try {
                     @{ Name = "water-skill-fixture"; Mode = "--prepare-water-skill-save"; Checks = 2; Reopen = $false }
                     @{ Name = "water-skill-reopen"; Mode = "--verify-well-reopen"; Checks = 8; Reopen = $true }
                 }
+                "LivingSoilSmokeTest" {
+                    @{ Name = "living-soil-reopen"; Mode = "--verify-living-soil-reopen"; Checks = 8; Reopen = $true }
+                }
             })
             foreach ($step in $steps) {
                 $stepLog = Join-Path $godotCacheDirectory ($test.BaseName + "-" + $step.Name + ".log")

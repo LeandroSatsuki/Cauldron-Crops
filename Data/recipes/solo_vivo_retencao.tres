@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="RecipeData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://Scripts/data/RecipeData.gd" id="1_recipe"]
+
+[resource]
+script = ExtResource("1_recipe")
+id = "solo_vivo_retencao"
+nome = "Preparo de Solo Vivo"
+descricao = "Aprendido após restaurar a Clareira. Leve o preparo na Mochila e aplique no lote piloto vazio e arado. A primeira rega é normal; colheitas de trigo entregues preservam a umidade para replantar trigo. Não empilha."
+categoria = "solo"
+ingredientes = Array[String](["trigo", "mistura_restauradora"])
+resultado_item = "preparo_solo_vivo"
+resultado_quantidade = 1
+tempo_producao = 2.0
+exige_descoberta = true
+recompensa_pontos_alquimia = 0
+tags = Array[String](["solo", "trigo", "retencao", "clareira"])

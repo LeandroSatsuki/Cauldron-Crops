@@ -12,6 +12,7 @@ enum ToolType {
 var active_tool: ToolType = ToolType.NONE
 
 func select_tool(tool: ToolType) -> void:
+	_cancel_item_application()
 	if active_tool == tool:
 		clear_tool()
 		return
@@ -37,6 +38,7 @@ func select_fishing_rod() -> void:
 	select_tool(ToolType.FISHING_ROD)
 
 func force_select_tool(tool: ToolType) -> void:
+	_cancel_item_application()
 	if active_tool == tool:
 		return
 
@@ -49,6 +51,7 @@ func force_select_fishing_rod() -> void:
 	force_select_tool(ToolType.FISHING_ROD)
 
 func clear_tool() -> void:
+	_cancel_item_application()
 	if active_tool == ToolType.NONE:
 		return
 
@@ -57,6 +60,14 @@ func clear_tool() -> void:
 
 func get_active_tool() -> ToolType:
 	return active_tool
+
+func _cancel_item_application() -> void:
+	var scene := get_tree().current_scene
+	if scene != null and scene.has_method("cancel_consumable_application"):
+		scene.cancel_consumable_application()
+	var panel := scene.get_node_or_null("UI/ItemUsePanel") if scene != null else null
+	if panel != null:
+		panel.close_card()
 
 func is_hoe_selected() -> bool:
 	return active_tool == ToolType.HOE

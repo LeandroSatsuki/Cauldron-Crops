@@ -13,7 +13,7 @@ Nao copie saves antigos para este ambiente sem planejar uma copia segura.
 
 F5 salva; F9 carrega. F10 permanece desativado.
 CHECKLIST.md contem os casos pendentes e os aceites anteriores.
-Inclui 36 casos: 30 anteriores preservados e 6 do Poco (WL-01 a WL-06).
+Inclui 45 casos: 36 anteriores preservados e 9 de Solo Vivo/aplicacao (SV/UP).
 Clareira restaurada libera Semear trigo no painel do golem, sem ativar.
 O piloto usa trigo, Primavera, quatro lotes iniciais arados e sementes
 depositadas no Bau da Vila. Nao ara sozinho nem usa a Mochila.
@@ -30,6 +30,21 @@ Consome bau primeiro e complementa pela Mochila; capacidade 10 para 20.
 Nao enche agua instantaneamente nem acelera regeneracao. Sem tempo offline.
 Talento antigo de 1 ponto continua alternativa sem acumular/pagar duas vezes.
 O painel mostra a reserva; nao retira agua manualmente para a Mochila.
+Clareira restaurada ensina Solo Vivo: 1 trigo + 1 Mistura -> 1 preparo,
+2 segundos/zero XP. Consulte na Mochila, clique Aplicar e escolha o lote
+marcado vazio/arado. O personagem se aproxima; so aplica/gasta ao chegar.
+Tratamento permanente: primeira rega normal; depois de colher trigo regado,
+o lote conserva umidade para replantar trigo. Outros cultivos sao permitidos,
+mas nao recebem essa umidade; reaplicacao/outro lote recusam sem gasto.
+Pocao de Crescimento: consulte o frasco ou Aplicar crescimento no Caderno.
+Escolha Aplicar e uma planta crescendo. Primeiro alvo valido abre um frasco,
+usa uma das tres doses e deixa duas; doses antigas sao usadas primeiro.
+Clique normal nao gasta doses. Cancelar/botao direito/Escape preservam doses.
+Ferramenta, semente, outro controle da UI, modal/viagem/load cancelam o modo.
+Depois de aplicar, o modo termina; para aplicar outra dose, escolha novamente.
+Mistura e purificacao continuam ingredientes/projetos, nao uso livre no mapa.
+No bau, clicar num item continua abrindo transferencia por quantidade.
+Cartao/faixa/contorno sao visuais provisorios, nao arte final aprovada.
 Registre ID, aprovado/falhou/nao executado, resolucao e observado.
 Nao force estados indisponiveis nem provoque falhas de gravacao.
 Aprovacao tecnica de startup nao significa aprovacao manual do gameplay.

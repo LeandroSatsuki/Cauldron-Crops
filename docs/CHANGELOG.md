@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-04 - Solo Vivo e aplicação explícita: implementação B–D
+
+- Parâmetros e UX pelo mouse aprovados. Receita/aprendizado/piloto durável implementados; colheita entregue conserva umidade para trigo, primeira rega normal e fator existente preservados. Nenhuma expansão do semeador, cultura nova ou economia.
+- Cartão opaco de consulta e orientação transitória/Cancelar; aplicação na chegada válida, exclusividade e cancelamentos. Poção de Crescimento deixa de gastar cargas por clique comum; frasco aberto somente no primeiro uso válido, mantendo três doses e cargas legadas. Mistura/purificação continuam contextuais; baú não muda para uso de item.
+- Flags opcionais em GRID/save v4 com preflight, legado/parcial/replay/cache e recusa de piloto duplicado. QA automático/independente e fechamento E em execução; sem aprovação manual ou produção de arte final. Save pessoal não acessado; arte local preservada.
+
 ## 2026-10-04 - Solo Vivo: aprovação do conceito e Fase A documental
 
 - Autor aprovou tratamento durável de um lote para conservar umidade entre ciclos de trigo, primeira rega normal e bônus já regado preservado. Receita/custo/desbloqueio/políticas complementares continuam propostas; implementação ainda não iniciada.

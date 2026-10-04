@@ -1,5 +1,8 @@
 extends CanvasLayer
 
+const ItemUsePanelScript = preload("res://Scripts/ItemUsePanel.gd")
+var item_use_panel: Control
+
 
 
 
@@ -956,6 +959,8 @@ var quest_board_visivel: bool:
 
 
 func _ready() -> void:
+	item_use_panel = ItemUsePanelScript.new()
+	add_child(item_use_panel)
 
 
 
@@ -2396,6 +2401,13 @@ func _ready() -> void:
 
 
 func _input(event: InputEvent) -> void:
+	if item_use_panel != null and item_use_panel.handle_cancel_input(event):
+		get_viewport().set_input_as_handled()
+		return
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		var hovered := get_viewport().gui_get_hovered_control()
+		if hovered != null and is_ancestor_of(hovered) and item_use_panel != null and not item_use_panel.is_ancestor_of(hovered):
+			item_use_panel.cancel_application()
 	var current_well := _obter_current_scene().get_node_or_null("VillageWell") if _obter_current_scene() != null else null
 	if current_well != null and current_well.is_panel_open():
 		return
@@ -4063,6 +4075,9 @@ func _on_slot_clicado(item_id: String, is_right_click: bool, slot_node: Control)
 	# Venda e loja ficam fora da V0 ate a economia receber contexto narrativo.
 	if is_right_click or item_id == "" or GlobalInventory.get_item_quantity(item_id) <= 0:
 		return
+	if item_use_panel != null:
+		item_use_panel.cancel_application()
+		item_use_panel.close_card()
 	if item_id.begins_with("semente_"):
 		if GlobalInventory.semente_selecionada == item_id:
 			GlobalInventory.semente_selecionada = ""
@@ -4077,6 +4092,8 @@ func _on_slot_clicado(item_id: String, is_right_click: bool, slot_node: Control)
 		return
 	item_focado_id = ""
 	atualizar_destaques()
+	if item_use_panel != null:
+		item_use_panel.show_item(item_id, true)
 	return
 
 
@@ -4606,22 +4623,8 @@ func obter_emoji_item(item_id: String) -> String:
 
 
 func _on_usar_pocao_button_pressed() -> void:
-
-
-
-
-
-
-
-	if GlobalInventory.remover_item("pocao_crescimento", 1):
-
-
-
-
-
-
-
-		GlobalInventory.cargas_crescimento += 3
+	if item_use_panel != null:
+		item_use_panel.show_item("pocao_crescimento")
 
 
 
@@ -13476,7 +13479,9 @@ func _garantir_modal_blocker() -> void:
 		move_child(modal_blocker, 0)
 
 
-func _tem_popup_modal_aberto() -> bool:
+func _tem_popup_modal_aberto(include_item_card: bool = true) -> bool:
+	if include_item_card and item_use_panel != null and item_use_panel.is_card_open():
+		return true
 	var well := _obter_current_scene().get_node_or_null("VillageWell") if _obter_current_scene() != null else null
 	if well != null and well.is_panel_open():
 		return true

@@ -32,6 +32,8 @@ enum SoilType {
 @export var remaining_growth_time: float = 0.0
 @export var total_growth_time: float = 0.0
 @export var pending_harvest_rewards: Dictionary = {}
+@export var living_soil_treated: bool = false
+@export var living_soil_moisture: bool = false
 
 static func is_pending_harvest_valid(value: Variant) -> bool:
 	if not value is Dictionary:
@@ -56,6 +58,7 @@ func can_plant() -> bool:
 	return (tile_state == TileState.ARADO or tile_state == TileState.MOLHADO) and crop_id == "" and occupant_id == ""
 
 func clear_crop() -> void:
+	living_soil_moisture = false
 	crop_id = ""
 	pending_harvest_rewards.clear()
 	remaining_growth_time = 0.0
@@ -85,17 +88,25 @@ func to_save_data() -> Dictionary:
 		"occupant_id": occupant_id,
 		"remaining_growth_time": remaining_growth_time,
 		"total_growth_time": total_growth_time,
-		"pending_harvest_rewards": pending_harvest_rewards.duplicate(true)
+		"pending_harvest_rewards": pending_harvest_rewards.duplicate(true),
+		"living_soil_treated": living_soil_treated,
+		"living_soil_moisture": living_soil_moisture
 	}
 
 func load_save_data(data: Dictionary) -> void:
 	if data.is_empty():
+		return
+	var incoming_cell := _ler_vector2i_de_grid_position(data.get("grid_position", grid_position))
+	if not LivingSoilState.validate_flags(data, incoming_cell):
+		push_warning("FarmTileData: Solo Vivo invalido; tile nao alterado.")
 		return
 	if not is_pending_harvest_valid(data.get("pending_harvest_rewards", {})):
 		push_warning("FarmTileData: recompensa pendente invalida; tile nao alterado.")
 		return
 
 	grid_position = _ler_vector2i_de_grid_position(data.get("grid_position", grid_position))
+	living_soil_treated = data.get("living_soil_treated", false)
+	living_soil_moisture = data.get("living_soil_moisture", false)
 	tile_state = _normalizar_tile_state(int(data.get("tile_state", int(tile_state))))
 	soil_type = _normalizar_soil_type(int(data.get("soil_type", int(soil_type))))
 	crop_id = str(data.get("crop_id", crop_id))

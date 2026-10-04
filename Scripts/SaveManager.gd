@@ -36,6 +36,9 @@ func delete_save() -> bool:
 
 func save_game() -> bool:
 	last_file_error = ""
+	if not _is_growth_charges_valid(GlobalInventory.cargas_crescimento):
+		last_file_error = "Doses de crescimento inválidas. O save anterior não foi alterado."
+		return false
 	if _applying_snapshot or EconomyManager.is_well_transaction_in_progress():
 		last_file_error = "Aguarde o fim do carregamento antes de salvar."
 		return false
@@ -50,7 +53,14 @@ func save_game() -> bool:
 	if _get_save_golem() == null:
 		last_file_error = "Golem indisponível. O save anterior não foi alterado."
 		return false
+	for plot in _get_save_group_nodes("lotes_terra"):
+		if plot.has_method("get_save_data") and not LivingSoilState.validate_flags(plot.get_save_data(), _living_soil_plot_cell(plot)):
+			last_file_error = "Estado de Solo Vivo inválido. O save anterior não foi alterado."
+			return false
 	var data := _build_save_data()
+	if not _is_living_soil_save_valid(data, _resolve_farm_save_source(data, SAVE_VERSION)):
+		last_file_error = "Estado de Solo Vivo inválido. O save anterior não foi alterado."
+		return false
 	if not _resolve_well_snapshot(data).get("valid", false):
 		last_file_error = "Estado do poço inválido. O save anterior não foi alterado."
 		_show_file_error("Não foi possível salvar", last_file_error)
@@ -248,6 +258,10 @@ func _apply_save_data(data: Dictionary) -> bool:
 		push_error("SaveManager: versao de save invalida.")
 		return false
 	var farm_save_source: FarmSaveSource = _resolve_farm_save_source(data, save_version)
+	data = _with_living_soil_partial_defaults(data, farm_save_source)
+	if not _is_living_soil_save_valid(data, farm_save_source):
+		push_warning("SaveManager: Solo Vivo invalido; save nao aplicado.")
+		return false
 	if not _is_farm_save_payload_valid(data, farm_save_source):
 		push_error("SaveManager: dados agricolas invalidos para o contrato do save.")
 		return false
@@ -263,6 +277,11 @@ func _apply_save_data(data: Dictionary) -> bool:
 		return false
 
 	var inventory_data: Dictionary = _safe_dictionary(data.get("inventory", {}))
+	if inventory_data.has("cargas_crescimento"):
+		var charges: Variant = inventory_data["cargas_crescimento"]
+		if not _is_growth_charges_valid(charges):
+			push_warning("SaveManager: doses de crescimento invalidas; save nao aplicado.")
+			return false
 	var backpack_progress: Variant = _resolve_backpack_progress(data, inventory_data)
 	if not GlobalInventory.is_backpack_progress_valid(backpack_progress):
 		push_warning("SaveManager: marcos da Mochila invalidos; save nao aplicado.")
@@ -282,6 +301,11 @@ func _apply_save_data(data: Dictionary) -> bool:
 
 	var home: Node = _get_save_scene()
 	_applying_snapshot = true
+	if home != null and home.has_method("cancel_consumable_application"):
+		home.cancel_consumable_application()
+	var item_panel := home.get_node_or_null("UI/ItemUsePanel") if home != null else null
+	if item_panel != null:
+		item_panel.close_card()
 	if home != null and home != get_tree().current_scene and home.has_method("obter_farm_grid_save_data"):
 		if not RegionTravelCoordinator.return_home_for_load():
 			_applying_snapshot = false
@@ -563,6 +587,79 @@ func _is_pending_harvest_save_valid(data: Dictionary, source: FarmSaveSource) ->
 				return false
 	return true
 
+
+func _living_soil_cell(entry: Dictionary) -> Vector2i:
+	var position: Variant = entry.get("grid_position", {})
+	if position is Vector2i:
+		return position
+	if position is Dictionary:
+		var x: Variant = position.get("x")
+		var y: Variant = position.get("y")
+		if typeof(x) in [TYPE_INT, TYPE_FLOAT] and typeof(y) in [TYPE_INT, TYPE_FLOAT] \
+			and is_finite(float(x)) and is_finite(float(y)) and float(x) == float(int(x)) and float(y) == float(int(y)):
+			return Vector2i(int(x), int(y))
+	return Vector2i(-1, -1)
+
+
+func _is_growth_charges_valid(value: Variant) -> bool:
+	return typeof(value) in [TYPE_INT, TYPE_FLOAT] and is_finite(float(value)) and float(value) >= 0.0 and float(value) == float(int(value))
+
+
+func _living_soil_plot_cell(plot: Node) -> Vector2i:
+	var home := _get_save_scene()
+	return Vector2i(2, 2) if home != null and home.has_method("is_living_soil_pilot_plot") and home.is_living_soil_pilot_plot(plot) else Vector2i(-1, -1)
+
+
+func _is_living_soil_save_valid(data: Dictionary, source: FarmSaveSource) -> bool:
+	var entries: Variant = _safe_dictionary(data.get("farm_grid", {})).get("tiles", []) if source == FarmSaveSource.GRID_V4 else data.get("farm_plots", [])
+	if source == FarmSaveSource.NONE:
+		return true
+	if not entries is Array:
+		return false
+	var plots := _get_save_group_nodes("lotes_terra")
+	var seen_treated := false
+	var seen_pilot := false
+	for index in range(entries.size()):
+		var entry: Variant = entries[index]
+		if not entry is Dictionary:
+			continue
+		var cell := _living_soil_cell(entry) if source == FarmSaveSource.GRID_V4 else (_living_soil_plot_cell(plots[index]) if index < plots.size() else Vector2i(-1, -1))
+		if source == FarmSaveSource.GRID_V4 and cell == Vector2i(2, 2):
+			if seen_pilot:
+				return false
+			seen_pilot = true
+		if not LivingSoilState.validate_flags(entry, cell):
+			return false
+		if entry.get("living_soil_treated", false):
+			if seen_treated:
+				return false
+			seen_treated = true
+	return true
+
+
+func _with_living_soil_partial_defaults(data: Dictionary, source: FarmSaveSource) -> Dictionary:
+	# Completo legado começa comum; payload parcial preserva flags ausentes.
+	if _safe_dictionary(data.get("inventory", {})).get("inventario") is Dictionary or source == FarmSaveSource.NONE:
+		return data
+	var result := data.duplicate(true)
+	var entries: Variant = _safe_dictionary(result.get("farm_grid", {})).get("tiles", []) if source == FarmSaveSource.GRID_V4 else result.get("farm_plots", [])
+	if not entries is Array:
+		return result
+	var plots := _get_save_group_nodes("lotes_terra")
+	var home := _get_save_scene()
+	for index in range(entries.size()):
+		if not entries[index] is Dictionary:
+			continue
+		var entry: Dictionary = entries[index]
+		var plot: Node = home.call("obter_farm_plot_por_grid_position", _living_soil_cell(entry)) if source == FarmSaveSource.GRID_V4 and home != null and home.has_method("obter_farm_plot_por_grid_position") else (plots[index] if source == FarmSaveSource.LEGACY_PLOTS and index < plots.size() else null)
+		if plot == null or not plot.has_method("get_save_data"):
+			continue
+		var current: Dictionary = plot.get_save_data()
+		for flag in ["living_soil_treated", "living_soil_moisture"]:
+			if not entry.has(flag):
+				entry[flag] = current.get(flag, false)
+	return result
+
 func _refresh_ui_after_load() -> void:
 	var scene := get_tree().current_scene
 	if scene == null:
@@ -704,17 +801,16 @@ func _converter_farm_tile_para_plot_save_data(tile: FarmTileData) -> Dictionary:
 
 	var regado: bool = tile.is_watered or tile.tile_state == FarmTileData.TileState.MOLHADO
 	if tile.crop_id == "":
-		if tile.tile_state == FarmTileData.TileState.GRAMA:
-			return {}
-
 		return {
 			"estado_atual": 0,
 			"semente_id_plantada": "",
 			"regado": regado,
-			"arado": true,
+			"arado": tile.tile_state != FarmTileData.TileState.GRAMA,
 			"tempo_restante": 0.0,
 			"tempo_total_crescimento": 0.0,
-			"pronto_para_colher": false
+			"pronto_para_colher": false,
+			"living_soil_treated": tile.living_soil_treated,
+			"living_soil_moisture": tile.living_soil_moisture
 		}
 
 	var tempo_restante: float = maxf(tile.remaining_growth_time, 0.0)
@@ -727,7 +823,9 @@ func _converter_farm_tile_para_plot_save_data(tile: FarmTileData) -> Dictionary:
 		"tempo_restante": tempo_restante,
 		"tempo_total_crescimento": maxf(tile.total_growth_time, tempo_restante),
 		"pronto_para_colher": tempo_restante <= 0.0,
-		"pending_harvest_rewards": tile.pending_harvest_rewards.duplicate(true)
+		"pending_harvest_rewards": tile.pending_harvest_rewards.duplicate(true),
+		"living_soil_treated": tile.living_soil_treated,
+		"living_soil_moisture": tile.living_soil_moisture
 	}
 
 func _safe_dictionary(value: Variant) -> Dictionary:

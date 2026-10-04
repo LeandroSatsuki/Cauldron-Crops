@@ -85,6 +85,10 @@ var _camera_dragging: bool = false
 var _camera_follow_enabled: bool = true
 var _pending_player_interaction: Dictionary = {}
 var _region_being_cached: bool = false
+var selected_consumable: String = ""
+var _consumable_generation: int = 0
+var consumable_feedback: String = ""
+var _living_soil_marker: Line2D
 
 func _ready() -> void:
 	_configurar_contexto_regiao()
@@ -119,6 +123,17 @@ func _ready() -> void:
 	_garantir_primeira_descoberta_lore()
 	_garantir_primeiro_projeto_restauracao()
 	_reconstruir_farm_grid_manager()
+	var pilot := farm_plot_registry.get(Vector2i(2, 2)) as Node2D
+	if pilot != null:
+		_living_soil_marker = Line2D.new()
+		_living_soil_marker.name = "LivingSoilMarker"
+		_living_soil_marker.points = PackedVector2Array([Vector2(-37,-37), Vector2(37,-37), Vector2(37,37), Vector2(-37,37), Vector2(-37,-37)])
+		_living_soil_marker.width = 2.0
+		_living_soil_marker.default_color = Color(0.85, 0.90, 0.50, 1.0)
+		_living_soil_marker.z_as_relative = false
+		_living_soil_marker.z_index = -17
+		_living_soil_marker.visible = false
+		pilot.add_child(_living_soil_marker)
 
 	_criar_marcador_agricultura_livre()
 	_configurar_camera_inicial(start_x, start_y)
@@ -137,6 +152,7 @@ func _configurar_contexto_regiao() -> void:
 
 
 func enter_region_at(entry_id: StringName = &"") -> bool:
+	cancel_consumable_application()
 	if world_region == null or player_avatar == null or not is_instance_valid(player_avatar):
 		return false
 	world_region.refresh_entry_points()
@@ -155,6 +171,10 @@ func enter_region_at(entry_id: StringName = &"") -> bool:
 
 
 func on_region_became_inactive() -> void:
+	cancel_consumable_application()
+	var item_ui := get_node_or_null("UI/ItemUsePanel")
+	if item_ui != null:
+		item_ui.close_card()
 	_region_being_cached = true
 	_cancel_pending_player_interaction(true)
 	var well := get_node_or_null("VillageWell")
@@ -231,6 +251,11 @@ func _on_region_transition_requested(request: Dictionary) -> void:
 
 
 func _process(delta: float) -> void:
+	if is_instance_valid(_living_soil_marker):
+		var pilot := farm_plot_registry.get(Vector2i(2, 2)) as Node
+		_living_soil_marker.visible = selected_consumable == "preparo_solo_vivo" or (pilot != null and bool(pilot.living_soil_treated))
+	if selected_consumable != "" and (not _consumable_context_valid() or ToolManager.get_active_tool() != ToolManager.ToolType.NONE or GlobalInventory.semente_selecionada != ""):
+		cancel_consumable_application()
 	if player_avatar == null or not is_instance_valid(player_avatar):
 		return
 	_process_camera_follow(delta)
@@ -345,6 +370,8 @@ func _converter_farm_plot_para_tile_data(grid_position: Vector2i, plot: Node2D) 
 	var regado: bool = bool(save_data.get("regado", false))
 	var semente_id: String = str(save_data.get("semente_id_plantada", ""))
 	tile.is_watered = regado
+	tile.living_soil_treated = bool(save_data.get("living_soil_treated", false))
+	tile.living_soil_moisture = bool(save_data.get("living_soil_moisture", false))
 	tile.crop_id = semente_id
 	tile.remaining_growth_time = maxf(float(save_data.get("tempo_restante", 0.0)), 0.0)
 	tile.total_growth_time = maxf(float(save_data.get("tempo_total_crescimento", 0.0)), 0.0)
@@ -409,6 +436,11 @@ func try_move_player_to(world_position: Vector2, check_interaction_colliders: bo
 
 
 func request_player_interaction(target: Node, target_position: Vector2, interaction_distance: float, callback: Callable) -> bool:
+	if selected_consumable != "" and callback.get_method() != "_commit_consumable_application":
+		cancel_consumable_application()
+	var item_panel := get_node_or_null("UI/ItemUsePanel")
+	if item_panel != null and callback.get_method() != "_commit_consumable_application":
+		item_panel.close_card()
 	if player_avatar == null or not is_instance_valid(player_avatar):
 		return false
 	if target == null or not is_instance_valid(target) or not callback.is_valid():
@@ -541,7 +573,107 @@ func _get_player_action_signature() -> String:
 	var tool_manager: Node = get_tree().root.get_node_or_null("ToolManager")
 	if tool_manager != null and tool_manager.has_method("get_active_tool"):
 		active_tool = int(tool_manager.call("get_active_tool"))
-	return "%d|%s" % [active_tool, GlobalInventory.semente_selecionada]
+	return "%d|%s|%s|%d" % [active_tool, GlobalInventory.semente_selecionada, selected_consumable, _consumable_generation]
+
+
+func is_living_soil_pilot_plot(plot: Node) -> bool:
+	return plot != null and is_instance_valid(plot) and farm_plot_registry.get(Vector2i(2, 2)) == plot
+
+
+func _consumable_context_valid() -> bool:
+	return is_inside_tree() and get_tree().current_scene == self and not _region_being_cached \
+		and not RegionTravelCoordinator.is_transition_in_progress() and not SaveManager.is_applying_snapshot() \
+		and not _player_movement_is_blocked_by_context()
+
+
+func begin_consumable_application(item_id: String) -> bool:
+	if item_id not in ["preparo_solo_vivo", "pocao_crescimento"] or not _consumable_context_valid():
+		return false
+	if item_id == "pocao_crescimento":
+		if GlobalInventory.cargas_crescimento <= 0 and GlobalInventory.get_item_quantity(item_id) <= 0:
+			return false
+	elif GlobalInventory.get_item_quantity(item_id) <= 0:
+		return false
+	cancel_consumable_application()
+	ToolManager.clear_tool()
+	GlobalInventory.semente_selecionada = ""
+	selected_consumable = item_id
+	consumable_feedback = "Clique no lote piloto vazio e arado." if item_id == "preparo_solo_vivo" else "Clique numa planta ainda crescendo."
+	return true
+
+
+func cancel_consumable_application() -> void:
+	_consumable_cancel_pending()
+	selected_consumable = ""
+	consumable_feedback = ""
+	_consumable_generation += 1
+
+
+func _consumable_cancel_pending() -> void:
+	# Cancelar somente a aplicação; não parar interações normais de ferramentas.
+	if selected_consumable != "":
+		_cancel_pending_player_interaction(true)
+
+
+func try_apply_selected_consumable_to_plot(plot: Node2D) -> bool:
+	if selected_consumable == "":
+		return false
+	if not _consumable_context_valid():
+		cancel_consumable_application()
+		return true
+	_cancel_pending_player_interaction(true)
+	_consumable_generation += 1
+	var method := "can_apply_living_soil" if selected_consumable == "preparo_solo_vivo" else "can_apply_growth_dose"
+	if plot == null or not is_instance_valid(plot) or not plot.has_method(method) or not bool(plot.call(method)):
+		consumable_feedback = "Use no lote piloto vazio/arado, ainda não tratado, com um preparo na Mochila." if selected_consumable == "preparo_solo_vivo" else "É preciso uma planta crescendo e uma dose ou frasco na Mochila."
+		return true
+	var generation := _consumable_generation
+	var item_id := selected_consumable
+	consumable_feedback = "Indo aplicar… Cancelar não gasta recursos."
+	if not request_player_interaction(plot, plot.global_position, 46.0, Callable(self, "_commit_consumable_application").bind(weakref(plot), item_id, generation)):
+		consumable_feedback = "Não foi possível alcançar o lote. Nada foi gasto."
+	return true
+
+
+func _commit_consumable_application(plot_ref: WeakRef, item_id: String, generation: int) -> void:
+	if generation != _consumable_generation or selected_consumable != item_id or not _consumable_context_valid():
+		return
+	if ToolManager.get_active_tool() != ToolManager.ToolType.NONE or GlobalInventory.semente_selecionada != "":
+		cancel_consumable_application()
+		return
+	var plot := plot_ref.get_ref() as Node2D
+	if plot == null or not is_instance_valid(plot) or not is_ancestor_of(plot) or player_avatar == null \
+		or player_avatar.global_position.distance_to(plot.global_position) > 46.0:
+		consumable_feedback = "Alvo indisponível. Nada foi gasto."
+		return
+	var method := "apply_living_soil" if item_id == "preparo_solo_vivo" else "apply_growth_dose"
+	# Encerrar antes dos sinais do commit impede reentrada/duplo clique.
+	selected_consumable = ""
+	_consumable_generation += 1
+	if not bool(plot.call(method)):
+		selected_consumable = item_id
+		consumable_feedback = "O alvo ou estoque mudou. Nada foi gasto; escolha outro alvo ou cancele."
+	else:
+		consumable_feedback = ""
+
+
+func _consumable_plot_at(world_position: Vector2) -> Node2D:
+	var query := PhysicsPointQueryParameters2D.new()
+	query.position = world_position
+	query.collide_with_areas = true
+	query.collide_with_bodies = false
+	var plots: Array = farm_plot_registry.values()
+	var candidate: Node2D = null
+	for hit in get_world_2d().direct_space_state.intersect_point(query, 32):
+		var node := hit.collider as Node
+		while node != null and node != self and not node in plots:
+			node = node.get_parent()
+		if node in plots:
+			candidate = node as Node2D
+		else:
+			# Nunca aplicar através de outro objeto interativo.
+			return null
+	return candidate
 
 
 func _world_position_has_interaction_collider(world_position: Vector2) -> bool:
@@ -2126,6 +2258,13 @@ func _criar_bobber_destaque() -> Polygon2D:
 
 
 func _input(event: InputEvent) -> void:
+	if event is InputEventMouseButton:
+		var ui := get_node_or_null("UI")
+		var hovered := get_viewport().gui_get_hovered_control()
+		if ui != null and hovered != null and ui.is_ancestor_of(hovered):
+			return
+	if selected_consumable != "":
+		return
 
 	if event is InputEventMouseButton:
 		if _esta_modal_aberto():
@@ -2164,10 +2303,24 @@ func _input(event: InputEvent) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if selected_consumable != "" and event is InputEventMouseButton and event.pressed:
+		if event.button_index == MOUSE_BUTTON_RIGHT:
+			cancel_consumable_application()
+			get_viewport().set_input_as_handled()
+			return
+		if event.button_index == MOUSE_BUTTON_LEFT and not _esta_modal_aberto():
+			try_apply_selected_consumable_to_plot(_consumable_plot_at(get_global_mouse_position()))
+			get_viewport().set_input_as_handled()
+			return
+	if selected_consumable != "" and event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
+		cancel_consumable_application()
+		get_viewport().set_input_as_handled()
+		return
 
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_MIDDLE:
 			if event.pressed and not _esta_modal_aberto():
+				cancel_consumable_application()
 				_camera_dragging = true
 				set_camera_follow_enabled(false)
 				_cancel_pending_player_interaction(true)

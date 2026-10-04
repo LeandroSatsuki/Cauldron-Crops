@@ -14,6 +14,7 @@ const TOOL_SEED := 2
 const TOOL_WATERING_CAN := 3
 const TOOL_HARVEST := 4
 const FEEDBACK_COR: Color = Color(1.0, 0.95, 0.6, 1.0)
+const LivingSoil = preload("res://Scripts/LivingSoilState.gd")
 
 # Máquina de estados simples
 enum State {
@@ -44,6 +45,8 @@ var regado: bool = false
 @onready var collision_shape: CollisionShape2D = $CollisionShape2D
 var expansion_blocked: bool = false
 var _pending_manual_harvest_rewards: Array = []
+var living_soil_treated: bool = false
+var living_soil_moisture: bool = false
 
 func _ready() -> void:
 	add_to_group("lotes_terra")
@@ -85,6 +88,9 @@ func _process(_delta: float) -> void:
 			var progresso: float = (wait_t - left_t) / wait_t if wait_t > 0.0 else 0.0
 			var estagio: int = 1 if progresso >= 0.5 else 0
 			atualizar_visual_planta(semente_id_plantada, estagio)
+	if living_soil_treated:
+		tooltip_area.tooltip_text += "\nSolo Vivo · tratamento durável"
+		tooltip_area.tooltip_text += "\nUmidade preservada para trigo" if living_soil_moisture else "\nTrigo regado conserva umidade após colher"
 
 # Função para capturar cliques do mouse (usando _input_event)
 func _input_event(_viewport: Viewport, event: InputEvent, _shape_idx: int) -> void:
@@ -96,6 +102,9 @@ func _input_event(_viewport: Viewport, event: InputEvent, _shape_idx: int) -> vo
 		if ui_node != null and ui_node.has_method("_tem_popup_modal_aberto") and ui_node.call("_tem_popup_modal_aberto"):
 			return
 		var main: Node = get_tree().current_scene
+		if main != null and main.has_method("try_apply_selected_consumable_to_plot") and bool(main.call("try_apply_selected_consumable_to_plot", self)):
+			_viewport.set_input_as_handled()
+			return
 		if main != null and main.has_method("request_player_interaction"):
 			if bool(main.call("request_player_interaction", self, global_position, 46.0, Callable(self, "_on_plot_clicked"))):
 				_viewport.set_input_as_handled()
@@ -113,6 +122,9 @@ func is_expansion_blocked() -> bool:
 
 func _on_plot_clicked() -> void:
 	if expansion_blocked:
+		return
+	var main: Node = get_tree().current_scene
+	if main != null and main.has_method("try_apply_selected_consumable_to_plot") and bool(main.call("try_apply_selected_consumable_to_plot", self)):
 		return
 
 	var ferramenta_ativa: int = _obter_ferramenta_ativa()
@@ -148,13 +160,63 @@ func _on_plot_clicked() -> void:
 				return
 
 		State.CRESCENDO:
-			if GlobalInventory.cargas_crescimento > 0:
-				GlobalInventory.cargas_crescimento -= 1
-				timer.start(timer.time_left / 2.0)
-				_notificar_estado_alterado()
-				print("Poção aplicada! Tempo reduzido pela metade.")
-			else:
-				_mostrar_feedback("A planta ainda está crescendo.")
+			_mostrar_feedback("A planta ainda está crescendo.")
+
+
+func _is_application_runtime_available() -> bool:
+	if not is_inside_tree() or is_queued_for_deletion() or not is_visible_in_tree() or expansion_blocked:
+		return false
+	if SaveManager.is_applying_snapshot() or RegionTravelCoordinator.is_transition_in_progress():
+		return false
+	var scene: Node = get_tree().current_scene
+	if scene == null or not scene.is_ancestor_of(self):
+		return false
+	if scene.has_method("get_current_region_identity") and scene.call("get_current_region_identity").get("region_id", "") != "farm_village":
+		return false
+	return true
+
+
+func can_apply_growth_dose() -> bool:
+	return _is_application_runtime_available() and estado_atual == State.CRESCENDO and is_instance_valid(timer) and not timer.is_stopped() and timer.time_left > 0.0 and (GlobalInventory.cargas_crescimento > 0 or GlobalInventory.can_remove_item("pocao_crescimento", 1))
+
+
+func apply_growth_dose() -> bool:
+	# A Main revalida intenção/proximidade; o domínio consome somente no alvo válido.
+	if not can_apply_growth_dose():
+		return false
+	var remaining: float = timer.time_left
+	if GlobalInventory.cargas_crescimento <= 0:
+		if not GlobalInventory.remover_item("pocao_crescimento", 1):
+			return false
+		GlobalInventory.cargas_crescimento += 3
+	GlobalInventory.cargas_crescimento -= 1
+	timer.start(remaining / 2.0)
+	_notificar_estado_alterado()
+	return true
+
+
+func _is_living_soil_pilot_plot() -> bool:
+	if not is_inside_tree():
+		return false
+	var scene: Node = get_tree().current_scene
+	return scene != null and scene.has_method("is_living_soil_pilot_plot") and bool(scene.call("is_living_soil_pilot_plot", self))
+
+
+func can_apply_living_soil() -> bool:
+	return _is_application_runtime_available() and _is_living_soil_pilot_plot() and not living_soil_treated and estado_atual == State.VAZIO and arado and GlobalInventory.can_remove_item(LivingSoil.ITEM_ID, 1)
+
+
+func apply_living_soil() -> bool:
+	if not can_apply_living_soil():
+		return false
+	# remover_item é síncrono e não publica sinais de um estado intermediário.
+	if not GlobalInventory.remover_item(LivingSoil.ITEM_ID, 1):
+		return false
+	living_soil_treated = true
+	living_soil_moisture = false
+	_atualizar_visual()
+	_notificar_estado_alterado()
+	return true
 
 
 func validate_seed_planting(seed_id: String) -> Dictionary:
@@ -209,6 +271,10 @@ func _try_plant_seed(seed_id: String, consume_seed: Callable) -> Dictionary:
 	# Não aceitar fontes agregadas nem callbacks externos que publiquem estado parcial.
 	if not consume_seed.is_valid() or not bool(consume_seed.call()):
 		return _planting_result(false, "no_stock")
+	# Outro cultivo descarta só água herdada; rega manual comum segue inalterada.
+	if living_soil_moisture and seed_id != LivingSoil.WHEAT_SEED_ID:
+		regado = false
+	living_soil_moisture = false
 
 	semente_atual = _obter_dados_semente_por_id(seed_id)
 	semente_id_plantada = seed_id
@@ -352,7 +418,7 @@ func harvest_by_golem(receive_rewards: Callable = Callable()) -> Array:
 		return []
 
 	# Transferência física: nenhum sinal publica lote vazio sem carga no golem.
-	_concluir_colheita(true, false)
+	_complete_successful_harvest(true, false)
 	if receive_rewards.is_valid():
 		receive_rewards.call(recompensas)
 	EventDirector.notify_harvest(global_position)
@@ -381,8 +447,8 @@ func _colher_manualmente(mostrar_textos: bool = true) -> bool:
 	if not _aplicar_recompensas_colheita(recompensas, ui, global_position, mostrar_textos):
 		_mostrar_feedback("Mochila sem espaço para a colheita.")
 		return false
+	_complete_successful_harvest()
 	EventDirector.notify_harvest(global_position)
-	_concluir_colheita()
 	_mostrar_feedback("Colhido!")
 	return true
 
@@ -415,6 +481,7 @@ func debug_apply_daily_decay() -> bool:
 
 	estado_atual = State.VAZIO
 	regado = false
+	living_soil_moisture = false
 	pronto_para_colher = false
 	semente_atual = {}
 	semente_id_plantada = ""
@@ -461,16 +528,24 @@ func get_save_data() -> Dictionary:
 		"tempo_restante": tempo_restante,
 		"tempo_total_crescimento": tempo_total,
 		"pronto_para_colher": pronto_para_colher,
-		"pending_harvest_rewards": _get_pending_harvest_totals()
+		"pending_harvest_rewards": _get_pending_harvest_totals(),
+		"living_soil_treated": living_soil_treated,
+		"living_soil_moisture": living_soil_moisture
 	}
 
 func load_save_data(data: Dictionary) -> void:
+	var soil_cell: Vector2i = LivingSoil.PILOT_CELL if _is_living_soil_pilot_plot() else Vector2i(-1, -1)
+	if not LivingSoil.validate_flags(data, soil_cell):
+		push_warning("FarmPlot: estado de Solo Vivo invalido; lote nao alterado.")
+		return
 	if not FarmTileData.is_pending_harvest_valid(data.get("pending_harvest_rewards", {})):
 		push_warning("FarmPlot: recompensa pendente invalida; lote nao alterado.")
 		return
 	if timer:
 		timer.stop()
 	_pending_manual_harvest_rewards.clear()
+	living_soil_treated = data.get("living_soil_treated", false)
+	living_soil_moisture = data.get("living_soil_moisture", false)
 
 	if data.is_empty():
 		_concluir_colheita(false)
@@ -755,10 +830,23 @@ func _obter_nome_exibicao_item(item_id: String) -> String:
 		_:
 			return item_id.replace("_", " ").capitalize()
 
+func _complete_successful_harvest(preservar_arado: bool = true, notify_change: bool = true) -> void:
+	# Só os commits manual/golem chamam este caminho. Reset nunca cria umidade.
+	var retain: bool = living_soil_treated and regado and semente_id_plantada == LivingSoil.WHEAT_SEED_ID
+	_concluir_colheita(preservar_arado, false)
+	if retain:
+		living_soil_moisture = true
+		regado = true
+		_atualizar_visual()
+	if notify_change:
+		_notificar_estado_alterado()
+
+
 func _concluir_colheita(preservar_arado: bool = true, notify_change: bool = true) -> void:
 	_pending_manual_harvest_rewards.clear()
 	estado_atual = State.VAZIO
 	regado = false
+	living_soil_moisture = false
 	pronto_para_colher = false
 	semente_atual = {}
 	semente_id_plantada = ""
@@ -778,6 +866,8 @@ func _on_timer_timeout() -> void:
 	if estado_atual == State.CRESCENDO:
 		if not regado and SeasonManager.estacao_atual != SeasonManager.Estacao.INVERNO:
 			if randf() <= 0.20:
+				living_soil_moisture = false
+				regado = false
 				semente_atual = {}
 				semente_id_plantada = ""
 				tempo_total_crescimento = 0.0

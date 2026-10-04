@@ -6,9 +6,9 @@
 >
 > Este documento **não é uma especificação imutável**. O jogo ainda está sendo descoberto durante o desenvolvimento. Quando houver conflito entre este documento e uma decisão humana mais recente, a decisão humana prevalece.
 
-Estado operacional mais recente (2026-10-04): Solo Vivo Alquímico, conceito do lote durável aprovado; Fase A documental concluída (§72), sem gameplay/arte final novos. Receita, custo, aprendizado e políticas complementares estão propostos em `FARM_SYSTEM_V2.md`, aguardando confirmação antes da Fase B. Equipe organizada (§71); principal integra consultas pertinentes e autor mantém direção criativa. Perfis foram lidos explicitamente nas delegações; carregamento nativo no app não confirmado.
+Estado operacional mais recente (2026-10-04): parâmetros do Solo Vivo e uso explícito pelo mouse confirmados/aprovados; B–D implementadas, fechamento E em validação (§73). Plano FARM_SYSTEM_V2/Decisão 127 governam o recorte; receita1trigo+1mistura/2s/0XP, célula(2,2), tratamento durável e Crescimento com custo no primeiro alvo válido. Equipe organizada (§71), delegação guiada por leitura explícita; principal integra/publica, autor mantém direção criativa. Sem carregamento nativo alegado.
 
-Baseline técnico anterior: Poço fechado (§70), pacote VillageWell-20261004 auditado, suíte limpa 54/54/sete reaberturas/dois fixtures daquele checkpoint, não reexecutados nesta A. **36 casos manuais pendentes**, autor indisponível sem exigir teste imediato; aceites parciais da segunda expedição (§46) e builds anteriores preservados. Arte/conforto/balanceamento não presumidos aprovados; sem loja/moeda/NPC/mapa/mastery/tempo offline ou migração de FarmPlot por consequência. Consultar ROADMAP/plano para portão atual.
+Baseline técnico anterior: Poço fechado (§70), pacote VillageWell-20261004 auditado, suíte limpa 54/54/sete reaberturas/dois fixtures daquele checkpoint. Seus 36 casos manuais permanecem no checklist, agora com **45 pendências** após nove SV/UP; autor indisponível sem exigir teste imediato. Aceites parciais da segunda expedição (§46) e builds anteriores preservados. Arte/conforto/balanceamento não presumidos aprovados; sem loja/moeda/NPC/mapa/mastery/tempo offline ou migração de FarmPlot por consequência. Consultar ROADMAP/plano/§73 para evidência vigente, separada dos números históricos.
 
 ---
 
@@ -1794,4 +1794,22 @@ Consultas guiadas por leitura explícita de `cc_gameplay`/`cc_engineering`, reap
 
 Revisão independente guiada por `cc_qa` conferiu os cinco documentos e fontes relacionadas, sem achado material. É revisão documental, não teste de um efeito implementado ou aprovação humana dos parâmetros.
 
-Próximo portão: confirmar conjunto de parâmetros do plano. Depois B domínio/receita, C persistência, D seleção/interação/feedback e E fechamento com pacote/checklist. FarmPlot continua autoridade; sem novo scheduler/rega do golem, aragem automática, economia/calendário/NPC/mapa/mastery/tempo offline. Não exigir testes imediatos ao autor indisponível. Apontadores: Farm System, ROADMAP e Decisão 126.
+Próximo portão histórico da A: confirmar conjunto de parâmetros do plano. Posteriormente confirmado; estado vigente no §73. FarmPlot continua autoridade; sem novo scheduler/rega do golem, aragem automática, economia/calendário/NPC/mapa/mastery/tempo offline. Não exigir testes imediatos ao autor indisponível. Apontadores: Farm System, ROADMAP e Decisões 126–127.
+
+---
+
+# 73. ESTADO ATUAL — SOLO VIVO E USO EXPLÍCITO PELO MOUSE
+
+**Data:** 2026-10-04. Autor confirmou parâmetros e aprovou formular/aplicar a interação pelo mouse; proposta apresentada e explicitamente aprovada antes da implementação. B–D implementadas; E em validação. Contratos completos em FARM_SYSTEM_V2, Decisão 127 e checklist do ROADMAP.
+
+Receita 1 trigo + 1 Mistura → 1 preparo, 2 segundos/0 XP, aprendizado após Clareira com reconciliação. Lote existente `(2,2)`/`(840,920)`, fora do semeador, vazio/arado/não tratado; aplicação pessoal não rega nem inicia cultura. Tratamento durável, umidade herdada separada; trigo regado efetivamente entregue conserva água para replantar trigo com fator atual 0,8. Outros cultivos não proibidos, morte/limpeza sem novo efeito/refund. Colheita recusada conserva cultura/recompensas/flags; golem mantém custódia/logística existente.
+
+Cartão opaco consulta item sem armar; Aplicar exclusivo com ferramenta/semente, faixa transitória e Cancelar/RMB/Escape. Mundo é bloqueado na consulta, não na mira. GUI/arrasto não ativam efeito; nova intenção, câmera, modais, load/viagem invalidam callback/rota. Sucesso one-shot; recusa sem fallback. Baú mantém transferência própria. Mistura e purificação são contextuais, sem Usar fictício para itens somente catalogados.
+
+Crescimento usa doses antigas primeiro; sem doses, primeiro alvo válido abre frasco→três doses→uma usada/duas restantes. Clique comum não gasta mais cargas; consulta/armar/cancelar não abrem frasco nem descartam doses. Planta madura/timer parado/estoque/contexto inválido recusam. Sem alteração de duração dos cultivos só para fabricar valor; utilidade/balanceamento continuam pendentes.
+
+Flags opcionais FarmPlot/GRID/save v4, preflight de tipos/umidade/identidade/duplicado piloto antes de mutação. Completo legado começa comum, parcial preserva ausentes sem aceitar contradição; replay/cache/load não consomem/aplicam novamente. Intenção não persiste. Gravação confere runtime inclusive campo ocultado por tile bloqueado. Save pessoal não acessado/copied/alterado; testes em APPDATA isolado sob Builds/QA.
+
+Consultas guiadas por perfis: pareceres anteriores gameplay/arte/engenharia reaproveitados; arte revisou integração local e engenharia implementou domínio/teste em arquivos atribuídos. QA independente identificou duplicado GRID e cancelamento GUI incompleto; corrigidos, com testes negativos/callbacks perto do alvo. Regressão também exige fechamento de cartão fora da árvore sem consultar UI cacheada; corrigido. Não alegar carregamento nativo de perfis.
+
+Apresentação é provisória (contorno no chão/cartão/faixa), sem assets finais ou lore nova. **45 casos manuais pendentes**, 36 antigos preservados palavra por palavra + 9 SV/UP. Não exigir teste imediato nem inferir aceite de mouse/arte/conforto/ritmo pelos testes. Pacote/contagens finais serão registrados ao fechar E; VillageWell-20261004 é histórico até a nova exportação.

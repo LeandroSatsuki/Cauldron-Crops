@@ -1,6 +1,12 @@
 # Evolução do Projeto
 
-## Etapa atual — Solo Vivo Alquímico, Fase A: baseline e plano (2026-10-04)
+## Etapa atual — Solo Vivo e uso explícito pelo mouse, B–D implementadas (2026-10-04)
+
+Parâmetros do lote/receita e UX consulta opaca → Aplicar → alvo/chegada aprovados pelo autor. Solo Vivo durável, aplicação transitória/cancelamento e Crescimento com três doses/frasco aberto no primeiro uso válido implementados. Ingredientes e purificação continuam contextuais; baú conserva transferência. FarmPlot autoridade, flags opcionais GRID/save v4/preflight e cargas legadas preservadas. Plano em FARM_SYSTEM_V2, Decisão 127.
+
+Fase E em validação automática/independente e preparação de entrega. Não confundir execução técnica com aceite manual; **45 casos pendentes**, com 36 textos antigos intactos e nove SV/UP acrescentados, sem exigir teste agora. Sem acessar save pessoal, criar arte final/economia/NPC/mapa/mastery/tempo offline ou alongar cultivos para justificar poção. Pacote VillageWell-20261004 permanece anterior até exportação auditada deste recorte.
+
+## Checkpoint anterior — Solo Vivo Alquímico, Fase A: baseline e plano (2026-10-04)
 
 Autor aprovou o piloto de tratamento durável em um lote específico, primeira rega normal e conservação da umidade entre ciclos de trigo, mantendo bônus existente sem multiplicador novo. Fase A documental concluída; nenhuma receita, item, flag, UI ou efeito implementado. Gameplay/engenharia consultados por leitura explícita de seus perfis; parecer artístico anterior reutilizado, sem arte final ou carregamento nativo alegados.
 
@@ -250,7 +256,21 @@ Usar a nova build de playtest com save separado, preservando progresso já exist
 - [ ] **WL-05 — Persistência e viagem:** após melhoria, F5, fechar/reabrir/F9 e conferir visual/capacidade/estoques/água do snapshot. Recarregar não soma benefício nem repete cobrança. Viajar ao Bosque fecha painel e não permite consumo remoto; F5 fora/F9 retorna à vila e conserva estado. Tempo posterior ao snapshot pode ser revertido normalmente; sem esperar regeneração offline.
 - [ ] **WL-06 — Painel e regressões:** em 800×720 e 1280×720, abrir/arrastar/atualizar/redimensionar/fechar por botão e Escape. Esperado: controles contidos, fundo opaco, atualização conserva arraste e clique de fundo/atalhos não alteram mundo/ferramenta enquanto aberto. Depois, com enxada, abrir baú/caldeirão, fechar e arar um lote válido; viajar/voltar não deixa modal travado. Registrar conforto/posição/arte separadamente da integridade dos recursos.
 
-Total integrado: **36 casos pendentes** (30 anteriores preservados + 6 do Poço). Aprovações anteriores permanecem registradas acima; esses casos não foram executados manualmente nesta etapa.
+#### Bloco H — Solo Vivo e aplicação pelo mouse (nove casos novos, todos pendentes)
+
+Usar a build nova com save separado quando houver disponibilidade. Não apagar progresso, editar timers ou encher a Mochila artificialmente para obter pré-condições. Registrar saldos antes/depois; estes casos não exigem execução imediata.
+
+- [ ] **SV-01 — Aprendizado e preparo:** antes da restauração, conferir receita bloqueada; depois da Clareira restaurada, disponível no Livro inclusive em save já elegível. Produzir 1 trigo + 1 Mistura → 1 preparo em dois segundos, manualmente ou pelo Livro/lote. Esperado: resultado na Mochila, baú prioritário/complemento pessoal para fabricação, zero XP e sem repetir recompensa da Clareira.
+- [ ] **SV-02 — Consulta e aplicação:** clicar no preparo da Mochila, ler cartão opaco/ícone/quantidade, fechar e reabrir. Aplicar deve limpar ferramenta/semente e indicar o lote marcado; clicar nele vazio/arado e observar aproximação/aplicação. Esperado: consulta/seleção não gastam, chegada válida gasta um preparo pessoal, não rega/planta automaticamente e encerra a intenção.
+- [ ] **SV-03 — Ciclos de trigo:** no lote tratado, plantar/regar/colher trigo pelos controles normais. Replantar trigo e conferir umidade preservada e bônus já existente de solo regado, sem aplicar outro preparo. Esperado: primeira rega normal, efeito somente após colheita entregue, sem trigo/água extra. Observar colheita pelo golem se houver condição, sem ativar semeadura fora dos quatro lotes.
+- [ ] **SV-04 — Recusas e outros cultivos:** tentar reaplicar e selecionar outro lote/solo não arado. Esperado: recusa sem gasto/fallback/empilhamento. Em época e recursos adequados, plantar outro cultivo no piloto: permitido, sem umidade herdada nem efeito do trigo, tratamento durável preservado. Morte/limpeza só se ocorrer naturalmente; não fabricar estado no save.
+- [ ] **SV-05 — Persistência e viagem:** salvar com tratamento e, quando possível, lote vazio ainda úmido após colher; reabrir/carregar e viajar/retornar, incluindo F5 fora/F9. Esperado: mesmo tratamento/umidade/estoques, sem reaplicação ou consumo remoto, intenção/rota de aplicação não retomadas. Recarregar substitui, não soma benefício.
+- [ ] **UP-01 — Crescimento explícito:** consultar frasco, Aplicar e clicar numa planta crescendo. Esperado: primeiro alvo válido abre um frasco, usa uma das três doses e deixa duas; cada aplicação seguinte exige intenção explícita e usa uma dose. Clique normal não gasta doses. Se a planta amadurecer durante aproximação, recusa sem gasto; não alongar timer para testar.
+- [ ] **UP-02 — Cancelamentos:** armar aplicação e cancelar por botão, botão direito/Escape, ferramenta, semente, outro item/controle UI ou abertura de baú/caldeirão; observar também viagem/load. Esperado: rota/intenção canceladas, nenhum gasto posterior/callback antigo, doses disponíveis preservadas e movimento normal liberado depois. Botão direito cancela, não movimenta.
+- [ ] **UP-03 — Arrasto, baú e layout:** arrastar ingrediente da Mochila ao caldeirão; conferir que não arma uso. Baú mantém dois painéis e popup de quantidade, sem botão Aplicar. Conferir cartões/faixa em 800×600 e 1280×720, Cancelar acessível, fundo opaco e sem clique atravessando o mundo. Depois, com enxada, abrir baú/caldeirão, fechar e arar; conferir pesca/rega/colheita. Arte/conforto registrados separadamente.
+- [ ] **UP-04 — Doses anteriores e usos contextuais:** se houver save seguro com cargas antigas, carregar separadamente e aplicar pelo Caderno/Aplicar crescimento sem exigir novo frasco; cancelar/recarregar não perde nem duplica doses. Mistura explica receitas/projetos e purificação continua pelo obstáculo, sem aplicação livre. Sem save legado/pré-condição, manter caso não executado, nunca resetar progresso habitual.
+
+Total integrado: **45 casos pendentes** (36 anteriores preservados + 9 SV/UP). Aprovações anteriores permanecem registradas acima; esses casos não foram executados manualmente nesta etapa.
 
 Registro de retorno por ID: **aprovado / falhou / não executado**, resolução, pré-condição, ação, esperado e observado. Um caso aprovado não encerra os outros; informar perda/duplicação/travamento separadamente de preferência estética. Aceite completo de experiência depende destes retornos, não da suíte automática.
 

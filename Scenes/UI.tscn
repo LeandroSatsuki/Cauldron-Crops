@@ -173,7 +173,7 @@ text = "Dormir (Mudar Estação)"
 
 [node name="UsarPocaoButton" type="Button" parent="LeftPanel" unique_id=131889047]
 layout_mode = 2
-text = "Usar Poção (3 Cargas)"
+text = "Aplicar crescimento"
 
 [node name="AbrirSkillTreeButton" type="Button" parent="LeftPanel" unique_id=1432251359]
 visible = false

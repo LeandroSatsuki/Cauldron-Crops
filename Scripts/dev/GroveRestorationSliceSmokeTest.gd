@@ -181,6 +181,12 @@ func _run() -> void:
 	var ui: Node = _farm.get_node("UI")
 	GlobalInventory.cargas_crescimento = 0
 	ui.call("_on_usar_pocao_button_pressed")
+	if not _expect(GlobalInventory.get_item_quantity("pocao_crescimento") == 1 and GlobalInventory.cargas_crescimento == 0, "consulta abriu frasco antes de aplicação válida"):
+		return
+	var item_panel: Control = ui.get("item_use_panel")
+	item_panel.call("_apply_pressed")
+	_farm.get_node("PlayerAvatar").call("stop_moving")
+	_farm.get_node("PlayerAvatar").global_position = control_plot.global_position + Vector2(0, 35)
 	control_plot.call("load_save_data", {"estado_atual": 1, "semente_id_plantada": "semente_basica", "arado": true, "regado": true, "tempo_restante": 8.0, "tempo_total_crescimento": 8.0})
 	control_plot.call("_on_plot_clicked")
 	if not _expect(GlobalInventory.get_item_quantity("pocao_crescimento") == 0 and GlobalInventory.cargas_crescimento == 2 and is_equal_approx(control_plot.get_node("Timer").time_left, 4.0), "recompensa agrícola não reduziu tempo real do cultivo"):

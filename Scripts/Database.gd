@@ -37,6 +37,18 @@ const ITEM_FALLBACK_DATA: Dictionary = {
 }
 
 var itens: Dictionary = {
+	"preparo_solo_vivo": {
+		"nome": "Preparo de Solo Vivo",
+		"categoria": "consumivel",
+		"raridade": "comum",
+		"valor_base": 0,
+		"pode_vender": false,
+		"pode_usar_em_receita": false,
+		"tags": ["solo", "trigo", "retencao"],
+		"origem": "alquimia",
+		"descricao": "Use da Mochila no lote piloto (2,2), vazio e arado. Não rega imediatamente. Depois da primeira rega, colheitas de trigo entregues conservam a umidade para replantar trigo. Tratamento durável, sem empilhar.",
+		"icone": "✦"
+	},
 	"mistura_restauradora": {
 		"nome": "Mistura Restauradora",
 		"categoria": "ingrediente",
@@ -46,7 +58,7 @@ var itens: Dictionary = {
 		"pode_usar_em_receita": true,
 		"tags": ["restauracao", "ingrediente", "bosque"],
 		"origem": "alquimia",
-		"descricao": "Leve duas na Mochila para restaurar a clareira. Após restaurar, combine uma com carvão para produzir Poção de Crescimento.",
+		"descricao": "Ingrediente de receitas e projetos. Leve duas na Mochila para restaurar a Clareira. Depois, combine com carvão para Poção de Crescimento ou com trigo para Preparo de Solo Vivo. Não se aplica livremente no cenário.",
 		"icone": "✦"
 	},
 	"agua": {

@@ -6,6 +6,7 @@ signal forage_state_changed(source_id: String)
 
 const PREPARATION_RECIPE := "mistura_restauradora_bosque"
 const REWARD_RECIPE := "infusao_clareira"
+const LIVING_SOIL_RECIPE := "solo_vivo_retencao"
 const MIXTURE_ITEM := "mistura_restauradora"
 const REQUIRED_MIXTURES := 2
 const RENEWABLE_SOURCE := "clearing_charcoal"
@@ -126,7 +127,7 @@ func reset_progress() -> void:
 
 
 func reconcile_recipe_discoveries() -> void:
-	for recipe_id in [PREPARATION_RECIPE, REWARD_RECIPE]:
+	for recipe_id in [PREPARATION_RECIPE, REWARD_RECIPE, LIVING_SOIL_RECIPE]:
 		var learned: bool = discovered if recipe_id == PREPARATION_RECIPE else restored
 		while recipe_id in GlobalInventory.receitas_descobertas:
 			GlobalInventory.receitas_descobertas.erase(recipe_id)

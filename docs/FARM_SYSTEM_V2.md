@@ -1,8 +1,24 @@
 # Farm System V2
 
+## Solo Vivo e aplicação pelo mouse — implementação autorizada (2026-10-04)
+
+Autor confirmou receita/parâmetros do piloto e aprovou o fluxo consulta opaca → Aplicar → alvo válido → aproximação → consumo na chegada. B–D implementadas; validação/fechamento E em execução. Não é aceite manual nem arte final.
+
+- Mistura Restauradora é ingrediente/projeto; Poção Purificadora Fraca usa o painel do obstáculo. Não recebem aplicação livre ou efeitos inventados.
+- Clicar em item não-semente da Mochila consulta nome/ícone/quantidade/função. Somente Crescimento e Solo Vivo oferecem Aplicar. Sementes conservam seleção de plantio existente. Arrasto não arma/consome; baú conserva seu fluxo exclusivo de transferência.
+- Aplicar limpa ferramenta/semente e arma intenção transitória. Consulta é modal; orientação/mira não bloqueiam o mundo inteiro. Cancelar visível, botão direito/Escape, outro item/ferramenta/semente, clique em outro controle da UI, outro modal, câmera/viagem/load invalidam intenção/rota. Intenção não é salva. Sucesso encerra; recusa mantém opção de escolher alvo/cancelar, sem fallback de plantio/colheita.
+- FarmPlot valida alvo/estado/estoque; Main revalida vila ativa, geração, identidade e distância. Consumo e efeito são síncronos antes dos sinais. Não reservar enquanto caminha nem retirar preparo/frasco remotamente do Village Storage.
+- Crescimento: carga legada disponível é usada primeiro. Sem doses, o primeiro alvo válido abre um frasco, gera três e usa uma (restam duas). Consultar/armar/cancelar não abre frasco; planta madura/timer parado/estoque ausente recusam. Clique normal na cultura não gasta mais cargas. Cancelamento conserva doses; campos de save existentes mantidos e quantidades inválidas recusadas antes de mutação.
+- Solo Vivo: receita 1 trigo + 1 Mistura → 1 preparo, 2 segundos/0 XP, aprendida após Clareira (reconciliação de saves elegíveis). Lote lógico existente `(2,2)`, centro local `(840,920)`, fora do semeador; somente vazio/arado/não tratado. Aplicar gasta um preparo pessoal, não rega/inicia cultura/timer. Reaplicação/outro alvo sem gasto.
+- Tratamento durável separado da umidade herdada e da rega atual. Colheita de trigo regado efetivamente entregue preserva umidade no lote vazio; replantar trigo usa fator existente 0,8, sem multiplicador novo. Outros cultivos continuam válidos, descartam apenas umidade herdada e não recebem o efeito. Morte/limpeza conserva tratamento, limpa água herdada/rega. Recusa de colheita preserva cultura/recompensas/flags; retry não rerrola nem repete entrega. Logística/scheduler do golem não mudam.
+- Duas flags booleanas opcionais atravessam FarmPlot → GRID → save v4, inclusive lote vazio/grama após limpeza. Legado completo começa comum; parcial preserva ausentes, recusando contradições. Preflight puro recusa tipos, estado/umidade incompatíveis, tratamento fora do piloto e entradas GRID piloto duplicadas. Load substitui sem aplicação/consumo/recompensa. Vila cacheada conserva estado; aplicação remota recusada.
+- Contorno do lote no chão, cartão e faixa transitória são protótipo funcional, não nova direção artística. Sem assets novos, lore/economia/mapas/mastery/tempo offline ou alongamento de timers. Cultivos curtos limitam a utilidade de Crescimento; balanceamento permanece pendente.
+
+As 36 pendências anteriores permanecem intactas; nove SV/UP acrescentados (45 pendentes). Testes somente em APPDATA isolado sob Builds/QA, sem acessar/copiar/editar save pessoal. Pacote anterior VillageWell-20261004 continua histórico até nova exportação auditada.
+
 ## Solo Vivo Alquímico — lote retentor, Fase A (2026-10-04)
 
-**Estado:** conceito do piloto aprovado pelo autor; baseline/plano documentados, sem implementação. A resposta “Ok, pode iniciar” aprovou o efeito durável em um lote específico, primeira rega normal e preservação do bônus já existente de solo regado, sem multiplicador adicional. Não aprova automaticamente receita, custo, desbloqueio ou todas as variantes futuras de solo. Os parâmetros abaixo aguardam confirmação antes da Fase B.
+**Baseline histórico da Fase A:** conceito do piloto aprovado e plano então somente documental. Posteriormente o autor confirmou parâmetros e aprovou a UX pelo mouse/implementação; consultar o checkpoint acima. Essa aprovação não ativa todas as variantes futuras de solo.
 
 ### Resultado aprovado e limites
 
@@ -10,9 +26,9 @@ Produzir um preparo no caldeirão, carregá-lo na Mochila e aplicar manualmente 
 
 O bônus atual de plantio com `regado=true` é ×0,8 no tempo de crescimento (`Scripts/FarmPlot.gd`, `_try_plant_seed`). Ele continua aplicável aos próximos plantios já úmidos; não há multiplicador novo nem promessa de tempo invariável. Cultivos atuais de 3–6 segundos e rega do golem sem consumo de água limitam a utilidade observável: o benefício é conforto/localização previsível, não economia global de água ou balanceamento homologado.
 
-### Conjunto de parâmetros proposto — não implementado/não aprovado
+### Parâmetros do piloto — confirmados e contratos técnicos adotados
 
-| Parâmetro | Recomendação para confirmação |
+| Parâmetro | Contrato do recorte |
 | --- | --- |
 | Receita | 1 trigo + 1 Mistura Restauradora → 1 preparo; 2 segundos; 0 pontos de alquimia |
 | Aprendizado | Clareira restaurada; `exige_descoberta=true`, reconciliação também para saves já elegíveis, sem novo prêmio ou restauração repetida |
@@ -21,7 +37,7 @@ O bônus atual de plantio com `regado=true` é ×0,8 no tempo de crescimento (`S
 | Repetição | Recusar em lote já tratado ou outro alvo, sem gasto; não empilhar bônus |
 | Outros cultivos | Não proibir culturas já válidas; plantar não-trigo descarta somente umidade herdada, segue regras normais e não recebe o efeito; tratamento permanece |
 | Morte/limpeza | Tratamento permanece, umidade herdada/rega são limpas; exigir rega normal para reiniciar o ciclo; sem água, item ou refund gerados |
-| Interface | Seleção transitória do preparo na Mochila, exclusiva com sementes/ferramenta; novo clique/Escape/ferramenta/load/viagem cancela sem gasto; nenhuma ferramenta/HUD permanente nova |
+| Interface | Cartão opaco de consulta → Aplicar → alvo/chegada; intenção transitória exclusiva com sementes/ferramenta, cancelamento visível/RMB/Escape/UI/load/viagem, sem gasto; nenhuma ferramenta/HUD permanente nova |
 
 “Preparo” é nome funcional provisório, não lore final. Receita usa duas entradas, compatíveis com os dois slots manuais e com o Livro/lote. `2 trigos + 1 mistura` exigiria três entradas e não cabe na mistura manual atual; não ampliar os slots para este piloto. A combinação recomendada não colide com as 14 receitas resource-first nem com o fallback legado no baseline `58592d1`.
 

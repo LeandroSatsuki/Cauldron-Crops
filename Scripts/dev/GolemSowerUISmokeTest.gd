@@ -61,13 +61,13 @@ func _run() -> void:
 	GroveExpedition.load_save_data({"discovered": true, "restored": true, "forage_sources": {}})
 	_expect_code("off")
 	var expected_recipes := recipes.duplicate()
-	for existing_reward in [GroveExpedition.PREPARATION_RECIPE, GroveExpedition.REWARD_RECIPE]:
+	for existing_reward in [GroveExpedition.PREPARATION_RECIPE, GroveExpedition.REWARD_RECIPE, GroveExpedition.LIVING_SOIL_RECIPE]:
 		if existing_reward not in expected_recipes:
 			expected_recipes.append(existing_reward)
 	expected_recipes.sort()
 	var restored_recipes := GlobalInventory.receitas_descobertas.duplicate()
 	restored_recipes.sort()
-	_check(not toggle.disabled and not toggle.button_pressed and stock == GlobalInventory.inventario and expected_recipes == restored_recipes, "marco libera OFF sem item/receita além das recompensas já existentes da Clareira")
+	_check(not toggle.disabled and not toggle.button_pressed and stock == GlobalInventory.inventario and expected_recipes == restored_recipes, "marco libera OFF sem item extra, mantendo as três receitas aprovadas da Clareira")
 	await _click(toggle)
 	_check(toggle.button_pressed and golem.get("seeding_enabled") and toggles == 1, "clique real no toggle ativa API")
 	_expect_code("soil")

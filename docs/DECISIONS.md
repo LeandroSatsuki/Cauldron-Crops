@@ -1,5 +1,14 @@
 # Decisions
 
+## Decisão 127 - Aplicação explícita pelo mouse e implementação do Solo Vivo
+
+- Autor confirmou parâmetros do piloto e aprovou a proposta consulta opaca → Aplicar → alvo/aproximação → custo na chegada; depois autorizou executar a fase. Mistura e purificação conservam usos contextuais, sem efeitos livres inventados.
+- Consulta não arma ação. Aplicação exclusiva com ferramentas/sementes, cancelamento visível/RMB/Escape, sucesso one-shot. Novo alvo invalida callback anterior inclusive quando recusado; GUI/arrasto não atravessam para o mundo. Modais/load/viagem/câmera cancelam intenção; intenção não persiste. Baú continua os dois painéis/popup de quantidade aprovado.
+- Crescimento usa uma dose existente ou abre um frasco somente na primeira aplicação válida (três doses, uma usada, duas restantes). Clique normal não gasta doses; cancelamento não descarta as antigas. Cultura madura/timer zero/estoque/contexto inválido não cobram. Sem novos efeitos para produtos apenas catalogados.
+- Receita Solo Vivo 1 trigo + 1 mistura, 2 segundos/0 XP, Clareira restaurada; célula `(2,2)` existente. Tratamento durável, primeira rega normal, umidade retida após trigo regado entregue; sem bônus adicional, reaplicação ou semeadura nova. Outros cultivos/reset seguem contratos em FARM_SYSTEM_V2.
+- Flags opcionais/grid/save v4 com preflight puro, compatibilidade completa/parcial, replay/cache sem consumo; recusar GRID duplicado do piloto antes de mutação. FarmPlot segue autoridade.
+- B–D implementadas, E em validação. Somente QA isolado; sem acesso ao save pessoal. Documentação de fechamento registrará evidências, pacote e casos SV/UP; 36 pendências antigas intactas. Arte/conforto/ritmo/balanceamento não aprovados automaticamente; não aumentar tempos só para justificar poções, nem ativar sistemas reservados.
+
 ## Decisão 126 - Solo Vivo durável em lote piloto; parâmetros ainda propostos
 
 - Aprovação humana: após apresentação do recorte, o autor respondeu “Ok, pode iniciar”. Efeito durável de conservação da umidade entre ciclos de trigo em um lote específico, primeira rega normal, sem multiplicador novo e preservando bônus já regado. Não é aprovação irrestrita de todos os solos/variantes.

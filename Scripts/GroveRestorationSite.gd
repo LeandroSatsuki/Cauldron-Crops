@@ -17,7 +17,7 @@ func _ready() -> void:
 
 func interact() -> bool:
 	if GroveExpedition.restored:
-		_show_feedback("Clareira restaurada.\nInfusão da Clareira aprendida!", Color("d2eb9c"))
+		_show_feedback("Clareira restaurada.\nInfusão da Clareira e Solo Vivo no Livro!", Color("d2eb9c"))
 		return false
 	if GroveExpedition.discover():
 		_show_feedback("Clareira descoberta!\nReceita: 2 carvões → Mistura Restauradora.\nPrepare 2 na vila e traga na Mochila.", Color("ecd99b"))
@@ -31,7 +31,7 @@ func interact() -> bool:
 	if not GroveExpedition.complete_restoration():
 		access.refund(receipt)
 		return false
-	_show_feedback("Clareira restaurada! Receita aprendida:\nInfusão da Clareira · carvão + mistura\n→ Poção de Crescimento (3 aplicações).", Color("d2eb9c"))
+	_show_feedback("Clareira restaurada! Receitas no Livro:\nInfusão · carvão + mistura → Crescimento\nSolo Vivo · trigo + mistura → preparo durável.", Color("d2eb9c"))
 	return true
 
 

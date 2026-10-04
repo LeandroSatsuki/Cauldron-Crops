@@ -36,6 +36,8 @@ plantar → regar → colher → combinar ingredientes → descobrir receitas �
 - catálogo de itens e Mochila com 12 slots iniciais, expansível até 20 por marcos, com stacks padrão de 99;
 - caldeirão com receitas, produção em lote e persistência de produção/reservas;
 - livro de receitas descobertas;
+- Solo Vivo durável no lote piloto, aprendido após a Clareira: preparo de trigo + mistura conserva umidade entre colheitas de trigo regado;
+- uso explícito pelo mouse: cartão opaco → Aplicar → alvo/chegada, com cancelamento sem gasto; crescimento mantém três doses por frasco e preserva cargas antigas;
 - reposição determinística de sementes de trigo pelo Livro: carvão + água → 1 semente, ou 2 trigos → 3 sementes, sem desbloqueio/RNG;
 - pesca com minigame de sincronia;
 - coleção de pesca, eventos e descobertas opcionais;

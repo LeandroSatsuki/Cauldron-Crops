@@ -16,8 +16,28 @@ func _initialize() -> void:
 		return
 	if not _check_well_contract():
 		return
-	print("PlaytestPackAudit: PASS - recursos, receitas sustentáveis, Poço, exclusões e save separado.")
+	if not _check_living_soil_contract():
+		return
+	print("PlaytestPackAudit: PASS - recursos, receitas sustentáveis, Poço, Solo Vivo, aplicação, exclusões e save separado.")
 	quit(0)
+
+func _check_living_soil_contract() -> bool:
+	for path in ["res://Scripts/LivingSoilState.gd", "res://Scripts/ItemUsePanel.gd", "res://Data/recipes/solo_vivo_retencao.tres"]:
+		if not ResourceLoader.exists(path) or ResourceLoader.load(path) == null:
+			return _fail("Solo Vivo/aplicação ausente: " + path)
+	var recipe: Resource = ResourceLoader.load("res://Data/recipes/solo_vivo_retencao.tres")
+	if recipe.get("id") != "solo_vivo_retencao" or recipe.get("ingredientes") != ["trigo", "mistura_restauradora"] or recipe.get("resultado_item") != "preparo_solo_vivo" or recipe.get("resultado_quantidade") != 1 or recipe.get("recompensa_pontos_alquimia") != 0 or recipe.get("tempo_producao") != 2.0 or not recipe.get("exige_descoberta") or recipe.get("desbloqueada_por_padrao"):
+		return _fail("receita do Solo Vivo diverge do contrato")
+	var contract: GDScript = ResourceLoader.load("res://Scripts/LivingSoilState.gd")
+	if contract.get_script_constant_map().get("PILOT_CELL") != Vector2i(2, 2):
+		return _fail("célula piloto alterada")
+	var data := {"living_soil_treated": true, "living_soil_moisture": true, "crop_id": "", "is_watered": true, "tile_state": 2}
+	if not contract.call("validate_flags", data, Vector2i(2, 2)) or contract.call("validate_flags", data, Vector2i(0, 0)):
+		return _fail("preflight aceita tratamento fora do piloto ou recusa estado válido")
+	data["crop_id"] = "semente_basica"
+	if contract.call("validate_flags", data, Vector2i(2, 2)):
+		return _fail("umidade herdada aceita cultura ocupada")
+	return true
 
 func _check_well_contract() -> bool:
 	# Carregar do PCK, sem preload que mascare a ausência numa build antiga.
