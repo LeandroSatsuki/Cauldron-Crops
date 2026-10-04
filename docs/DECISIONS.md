@@ -5,7 +5,8 @@
 - Autor confirmou “OK, pode seguir. Aprovado.” à proposta integral: uma Raiz por coleta, renovação de 45s com jogo aberto inclusive vila, primeira visita sem purificação/restauração, resultado pessoal e sem offline.
 - Implementar um ForageNode no Bosque existente, `(960,630)`, ID `grove_root`, sem marco/slots/XP ou aprendizado automático. Preservar carvão dois/45s, cultivo de inverno e receitas/custos/tempos/descoberta atuais. Não reativar estação/economia ou criar mapa/cultura/animal/golem.
 - Estado no domínio da expedição/save v4, legado sem o ID começa disponível, replay não entrega recursos. Relógio global sem segundo desconto no retorno; fonte sem capacidade permanece disponível. Guardas de coleta por contexto e preflight do writer acompanham a integração.
-- Arte com Antigravity; reutilizar apenas geometria de protótipo e registrar nova nota em ART_HANDOFF. Contrato aprovado não é aceite de picking/arte/ritmo/balanceamento. Implementação/QA/pacote serão registrados no fechamento; 50 manuais anteriores preservados + cinco RG = 55 pendentes, sem teste imediato obrigatório.
+- Arte com Antigravity; geometria de protótipo reutilizada e nova nota registrada em ART_HANDOFF. Contrato aprovado não é aceite de picking/arte/ritmo/balanceamento. 50 manuais anteriores preservados + cinco RG = 55 pendentes, sem teste imediato obrigatório.
+- Fechamento técnico: gameplay `b126f34`, auditoria/diagnósticos `8d4df8c`, pacote RenewableRoot-20261004 limpo de `8d4df8c`,58/58,11reaberturas/5fixtures. Root86 por backend/fixture2/reabertura8, EXE headless/OpenGL e PCK passaram; fonte e artefato revisados independentemente sem bloqueador. Erro de formatação do teste e rejeição inicial da auditoria por default herdado corrigidos, sem runtime ampliado; entrega certificada é repetição final com manifesto/hashes/82logs. Sem save pessoal/arte concorrente ou aceite manual.
 
 ## Decisão 131 - Arte no Antigravity e passagem permanente
 

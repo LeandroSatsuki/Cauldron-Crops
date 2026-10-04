@@ -1,10 +1,12 @@
 # Changelog
 
-## 2026-10-04 - Raiz Gélida renovável autorizada
+## 2026-10-04 - Raiz Gélida renovável: fechamento técnico
 
 - Contrato confirmado pelo autor: uma Raiz/45s sessão, primeira visita e Mochila; fonte `grove_root` em `(960,630)` no Bosque, sem nova receita/XP/marco/slot/estação. Carvão/cultivo/consumíveis atuais preservados.
-- Implementação e QA em andamento com engenharia guiada por perfil e revisão independente, sem consulta artística. Fonte geométrica reutilizada para teste; demandas serão registradas ao Antigravity em ART_HANDOFF.
-- Preflight do domínio de expedição antes da gravação e guarda de contexto da coleta integram o recorte. QA dedicado headless corrigido 86, fixture 2/reabertura 8 em processo novo passaram; capacidade18/restauração73 preservadas. Primeiro PASS69 com SCRIPT ERROR de teste rejeitado; versão corrigida exige conclusão das duas receitas. Pacote/suíte completa ainda pendentes; 50 textos antigos intactos + cinco RG = 55 manuais pendentes, nenhum save pessoal.
+- Implementado com engenharia guiada por perfil e revisão QA independente, sem consulta artística. Fonte geométrica reutilizada para teste; nova nota funcional no ART_HANDOFF para Antigravity, sem produção de arte ou inclusão de arquivos concorrentes.
+- Preflight do domínio da expedição antes da gravação e guarda de contexto da coleta integrados. QA dedicado86 por backend headless/OpenGL, fixture2/reabertura8 em processo novo; capacidade18/restauração73 preservadas. Receitas aguardam2s reais e Crescimento fabricado aplica efeito vigente. Primeiro PASS69 com SCRIPT ERROR de teste rejeitado; versão corrigida exige conclusão das duas receitas.
+- Gameplay `b126f34`, auditoria/diagnóstico `8d4df8c`; pacote RenewableRoot-20261004 de `8d4df8c`:58/58,11 reaberturas/5fixtures, startups headless/OpenGL e PCK auditado. QA independente conferiu manifesto/hashes/82logs/launcher/checklist; checkout temporário removido. Primeiro export rejeitado por default herdado omitido; repetição limpa passou, controle negativo rejeita build antiga sem Raiz. Exportador conserva diagnósticos de futuras falhas antes da limpeza.
+- 50 textos antigos intactos + cinco RG = 55 manuais pendentes, nenhum save pessoal acessado. Picking físico, ritmo/balanceamento e arte não homologados; próxima expansão agrícola exige contrato próprio.
 
 ## 2026-10-04 - Passagem para Antigravity e proposta de aquisição
 

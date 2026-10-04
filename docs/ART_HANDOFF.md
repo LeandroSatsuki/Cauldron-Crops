@@ -68,7 +68,7 @@ Resposta Antigravity: pendente. Plano de substituição: pendente. Aceite artís
 
 ### Fonte renovável de Raiz Gélida no Bosque
 
-**Registro:** 2026-10-04. Contrato aprovado pelo autor, implementação funcional neste incremento; resultados de QA/pacote serão consolidados no fechamento. Não é uma nova cultura ou uma mudança do conceito artístico da Raiz.
+**Registro:** 2026-10-04. Contrato aprovado pelo autor, implementação funcional neste incremento. Gameplay `b126f34`, entrega `8d4df8c`, pacote `Builds/Playtest/RenewableRoot-20261004`. Não é uma nova cultura ou uma mudança do conceito artístico da Raiz.
 
 - Item `raiz_gelida`, ID persistente da fonte `grove_root`; cena `Scenes/ForagingGroveRegion.tscn`, nó `ForageNodes/RenewableRoot`, posição de mundo `(960,630)`. Código em `Scripts/ForageNode.gd`, `Scripts/GroveExpedition.gd` e descrição em `Scripts/Database.gd`.
 - Função: aproximação física por clique, uma unidade na Mochila, renovação em 45s de jogo aberto inclusive na vila. Primeira visita disponível sem purificação/restauração, sem receita/XP/marco/slots concedidos pela coleta. Raiz cultivada no inverno continua o mesmo item.
@@ -77,4 +77,5 @@ Resposta Antigravity: pendente. Plano de substituição: pendente. Aceite artís
 - Demanda visual: representação própria da fonte disponível/esgotada e legibilidade dos dois estados no Bosque, usando o item existente; esta nota não pede paleta, lore, nova planta, bioma ou coleta automática.
 - Restrições: preservar posição lógica e ponto alcançável, `AvailableVisual`/`DepletedVisual`, `CollisionShape2D` de picking (raio atual 34) e alcance 62; área não é novo obstáculo físico de navegação. Não ampliar colisões por trocar o sprite. Rótulos/feedback não capturam mouse. Sprite/efeito não concede recursos antes da chegada.
 - Arte em andamento no workspace por outro agente permanece separada desta entrega de código. O PNG local de item, se presente, não é certificado ou publicado como arte aprovada por este incremento; o pacote limpo usa os recursos versionados.
+- Fechamento funcional: Root86 por backend headless/OpenGL, fixture2/reabertura8 e suíte limpa58/58,11reaberturas/5fixtures, startups/PCK/hashes/logs conferidos pelo QA independente. Fonte acessível por caminhada de API e estados de recusa/renovação testados; picking de mouse, legibilidade/conforto, ritmo e arte continuam pendentes nos cinco RG, sem aceite artístico inferido.
 - Resposta Antigravity: pendente. Nova arte integrada por Codex: pendente. Aceite artístico do autor: pendente.
