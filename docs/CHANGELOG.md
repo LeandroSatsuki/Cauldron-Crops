@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-04 - Proposta da segunda cultura inicial
+
+- Análise guiada por gameplay/engenharia confirmou bootstrap circular do tomate e Dormir oculto/monetário; nome histórico de agua_tomate_sol não corresponde aos ingredientes reais. Distinguido bloqueio downstream de Outono e ausência de aquisição determinística da semente de inverno.
+- FARM_SYSTEM_V2/Decisão 133 propõem tomate opcional Primavera/Verão e receita padrão repetível 1 trigo + 1 água → 1 semente/2s/0XP. Parâmetros e alteração sazonal ainda precisam de aprovação; sem calendário, quests, efeitos novos de Adubo/Elixir, cultura/arte/automação ampliadas.
+- Só documentação; fonte/pacote RenewableRoot-20261004 preservados, sem jogo/suíte/exportação/save pessoal. 55 casos manuais intactos/pendentes, sem teste imediato; mudanças concorrentes de arte fora da entrega. Próximo portão: autor confirmar contrato antes de B.
+- QA documental independente sem bloqueador material; coordenador confirmou os 55 textos/ordem contra HEAD e diff sem erros. Validador no workspace: cinco perfis/referências e seis controles negativos, sem comprovar descoberta nativa ou executar gameplay. Apenas cinco documentos do recorte para publicação, excluindo hunk artístico concorrente do contexto.
+
 ## 2026-10-04 - Raiz Gélida renovável: fechamento técnico
 
 - Contrato confirmado pelo autor: uma Raiz/45s sessão, primeira visita e Mochila; fonte `grove_root` em `(960,630)` no Bosque, sem nova receita/XP/marco/slot/estação. Carvão/cultivo/consumíveis atuais preservados.

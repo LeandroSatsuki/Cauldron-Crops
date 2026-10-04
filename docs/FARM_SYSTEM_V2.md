@@ -1,5 +1,65 @@
 # Farm System V2
 
+## Segunda cultura inicial proposta em 2026-10-04
+
+**Status: formulação concluída; contrato aguardando aprovação humana.** O autor autorizou seguir com a proposta agrícola após o fechamento da Raiz, não implementar novas regras por consequência. Esta etapa só altera documentação. Baseline jogável: fonte `8d4df8c`, pacote `Builds/Playtest/RenewableRoot-20261004`, fechamento documental `909b159`; suas 58/58 regressões são evidência anterior, não execução desta proposta. Os 55 casos manuais permanecem pendentes e intactos.
+
+### Resultado recomendado
+
+Ativar o **Tomate do Sol já existente como segunda cultura inicial opcional**, com aquisição determinística da primeira semente e plantio permitido na **Primavera e no Verão**. Não criar espécie, estação automática ou novo tipo de solo. Esta é uma alteração deliberada da exclusividade sazonal atual do tomate e requer confirmação do autor; não está implementada.
+
+Fluxo candidato: colher trigo → fabricar semente no caldeirão → plantar/regar tomate pelos controles atuais → colher → reinvestir quando desejar. Trigo e semeador continuam disponíveis na Primavera; nenhum objetivo de restauração passa a exigir tomate. Não prometer utilidade econômica, ritmo ou conforto já homologados.
+
+### Baseline de aquisição e estação
+
+| Conteúdo | Caminho ativo confirmado | Limite atual |
+| --- | --- | --- |
+| Trigo | Dez sementes iniciais; carvão + água → uma semente; dois trigos → três sementes | Plantio somente na Primavera; regar evita a morte por sede existente |
+| Tomate | Semente básica + tomate → duas sementes de verão | Primeira semente exige o próprio produto; plantio somente no Verão |
+| Abóbora | Tomate + Raiz Gélida → uma semente de outono | Dependência do primeiro tomate e de acesso ao Outono, não circularidade independente |
+| Raiz Gélida | Coleta renovável no Bosque, uma unidade/45s de sessão | Produto acessível; isso não fornece semente de inverno |
+| Semente de inverno | Drop de colheita de 15% e recompensa de quest aleatória | Nenhum caminho determinístico inicial confirmado; mural oculto não é aquisição pública |
+| Estação global | Começa na Primavera; Dormir contém avanço legado com moeda | Botão oculto; não há calendário automático nem avanço no fluxo normal atual |
+
+Fontes: `GlobalInventory.gd`, `Database.gd`, `FarmPlot.gd`, `SeasonManager.gd`, `UI.gd`, `Scenes/UI.tscn`, `QuestManager.gd`, `EventDirector.gd` e Resources em `Data/recipes`. Loja, mural oculto, debug/F10 e chamadas diretas de teste não contam como aquisição pública. Eventos atuais concedem XP, escama ou fragmento, não o primeiro tomate. **`agua_tomate_sol.tres` tem nome histórico enganoso: seu conteúdo real é tomate + raiz → semente de outono**, ID `tomate_sol_raiz_gelida`; não resolve o primeiro tomate.
+
+### Contrato candidato para confirmação integral
+
+1. **Identidade:** manter `semente_verao` e `tomate_sol`, nomes de itens e assets existentes. Não migrar IDs ou inventar lore. Atualizar apenas orientação funcional sobre as duas estações.
+2. **Primeira semente e recuperação:** nova receita conhecida desde o início no Livro, **1 trigo + 1 água → 1 Semente de Tomate, 2 segundos, 0 XP**, sem descoberta aleatória, marco, moeda ou gate de restauração. Nome/ID técnico da receita será definido na integração; não é lore nova. Receita repetível, inclusive se todas as sementes/tomates forem usados. Se também acabar o trigo, suas rotas atuais de recuperação/replantio continuam base do ciclo. Estes números são parâmetros candidatos, não balanceamento aprovado.
+3. **Fontes e capacidade:** produção manual/Livro preserva o contrato atual: Village Storage prioritário, Mochila completa, água na reserva regenerável existente, recibos/cancelamento sem duplicação e resultado pessoal. Sem coleta automática de água além do fluxo vigente. Resultado sem capacidade permanece pronto no caldeirão; não desviar para o baú. Plantio exige uma semente na Mochila, nunca consumo remoto do Village Storage.
+4. **Plantio:** permitir Primavera/Verão somente para tomate. Preservar Verão, não substituí-lo por Primavera. Trigo/outono/inverno mantêm restrições. Aragem, ocupação, bloqueio, distância, seleção exclusiva e guardas de viagem/load continuam válidos; recusa não consome semente. Não alterar estação global ou expor Dormir.
+5. **Ciclo:** crescimento base do tomate permanece 5s; rega conserva o fator vigente 0,8. Bônus global atual de Verão só atua no Verão, não é importado para a Primavera. Na Primavera o bônus genérico existente de 20% de devolução da semente passa a alcançar tomate, sem virar requisito para reposição. Sem novo sorteio, rendimento ou mortalidade. Regar evita a morte por sede de 20% existente fora do Inverno; aquisição determinística não promete sucesso de cultura abandonada sem água.
+6. **Automação e solo:** semeador exclusivo de trigo e dos quatro lotes atuais, OFF/ON e prioridades inalterados. Rega/colheita de tomate usam somente políticas já existentes do golem. Solo Vivo conserva tratamento, mas tomate descarta umidade herdada e não recebe a retenção destinada ao trigo. Sem novo modificador/solo sazonal.
+7. **Reposição e usos:** preservar semente básica + tomate → duas sementes de verão como caminho adicional, com descoberta vigente. Bootstrap conhecido no Livro não depende dessa descoberta. Tomate + trigo → Adubo e tomate + raiz → semente de outono já existem, mas **não ganham novos efeitos ou acesso sazonal**. Não apresentar Adubo/Elixir como funcionalidades operacionais apenas por estarem catalogados. Venda universal permanece direção futura, não loja reativada.
+8. **Compatibilidade:** nenhum estado transitório novo, migração de cultura ou benefício no load. Preservar IDs, culturas/timers vivos, rewards pendentes e carga do golem. A princípio não é necessário campo novo no save; conferir por testes antes de concluir. Saves completos/legados devem aprender a receita padrão pelo reconciliador existente sem ganhar itens/XP/marcos; snapshot parcial mantém regras atuais. Tomates já existentes fora das estações de plantio não serão destruídos retroativamente.
+
+### Alternativas não escolhidas para este piloto
+
+| Alternativa | Vantagem | Por que não é o menor recorte agora |
+| --- | --- | --- |
+| Controle voluntário de estação | Preserva exclusividade e abre estações futuras | Não resolve a primeira semente sozinho; afeta semeador, culturas vivas, quests e save sazonal |
+| Lote condicionado alquímico | Mantém simultaneidade e reforça solo/caldeirão | Exige regra local, preparo, aplicação e persistência nova; aquisição ainda precisa ser resolvida |
+| Nova cultura de Primavera | Evita mudar identidade sazonal do tomate | Precisa novos IDs, função própria, catálogo e integração artística externa |
+
+Troca global não é um botão isolado: `SeasonManager.avancar_estacao()` limpa/gera quests RNG; FarmPlot calcula duração no plantio, mas consulta estação atual para morte por sede e bônus ao gerar recompensas. Semear trigo só funciona na Primavera. `SaveManager` usa coerção/fallback permissivo para estação/ano, sem preflight sazonal estrito. Calendário futuro exige contrato separado, não reaproveitar Dormir sem análise. Solo/favored_season no tile não prova autoridade local pronta: FarmPlot governa o estado vivo.
+
+### Plano mínimo após aprovação
+
+- **B, domínio e dados:** Resource de bootstrap sem colisão de par/ID, reconciliador de receita padrão, lista opcional de estações permitidas no catálogo com fallback da restrição atual. FarmPlot revalida antes de gastar; manter `estacao_ideal` do tomate como Verão e outras culturas intactas. Sem editar SeasonManager/quests/economia ou ampliar semeadura.
+- **C, orientação e integração:** Livro e descrição/seleção de sementes explicam Primavera/Verão e recuperação, sem novo HUD/janela ou uso livre de poção. Reusar controles, assets e crafting existentes; não misturar apresentação com collider/grid. Antigravity recebe nota em ART_HANDOFF somente após implementação com impacto visual; proposta não cria demanda como se estivesse entregue.
+- **D, QA e entrega:** testar ciclo desde zero tomate/semente, recuperação sem RNG, manual/Livro, origens/reserva/cancelamento/resultado bloqueado, estações aceitas/recusadas, seleção/input, Solo Vivo não-trigo, golem com crop/cargo/semear trigo, GRID/v3/v4/legado/parcial/replay/cache e reabertura. Pacote limpo depois da implementação e regressões proporcionais, com QA independente. Testes que gravam apenas em QA isolado; nunca save pessoal.
+
+Fora do piloto: calendário, acesso público a Outono/Inverno, aquisição determinística da semente de inverno, novas espécies/animais/golems, mastery, economia, NPCs, mapas, tempo offline, efeitos de Adubo/Elixir e novos solos. **Resolve aquisição e estação do tomate, não a sazonalidade inteira.**
+
+### Revisão e portão de execução
+
+Gameplay e engenharia consultados em leitura explícita dos perfis, sem carregamento nativo alegado, edição pelos especialistas ou consulta artística. Convergiram no recorte local; evitar acoplamento global não homologa valor de gameplay. Documentação separa fato atual, parâmetro candidato e validação futura.
+
+Confirmar com o autor **tomate na Primavera/Verão, receita padrão 1 trigo + 1 água → 1 semente/2s/0XP, bônus sazonais vigentes e exclusões acima** antes de B. Não foi executado jogo/suíte/exportação; build e 55 textos manuais anteriores intactos.
+
+Fechamento documental: QA independente guiado por `cc_qa` não encontrou bloqueador material nos cinco documentos; não aprovou design/arte. Coordenador conferiu diff sem erros e os 55 casos do ROADMAP idênticos ao HEAD, inclusive ordem; QA conferiu roteiros/status sem usar Git. Validador no workspace passou cinco perfis/referências e seis controles negativos, sem descoberta nativa comprovada. Somente documentação própria é selecionada para publicação; hunk artístico concorrente no §71, perfis/equipe e assets externos permanecem fora do incremento. Fonte jogável e pacote não mudam.
+
 ## Poção Aceleradora — P3, integração fechada tecnicamente (2026-10-04)
 
 Autor confirmou o contrato completo da P2 com “sim”, incluindo preparo pelo painel sem aproximação e persistência no save. **Integração implementada e fechada tecnicamente:** um frasco pessoal por nova entrega lógica, deslocamento 1,5× somente até o baú; sem alteração de receita/timers/benefícios. A aprovação substitui o portão documental abaixo, não homologa arte, conforto ou valor econômico.

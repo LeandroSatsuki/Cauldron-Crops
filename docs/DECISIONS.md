@@ -1,5 +1,13 @@
 # Decisions
 
+## Decisão 133 - Autorização de formular a segunda cultura inicial
+
+- Autor respondeu “Ok, pode seguir” ao próximo passo de formular expansão agrícola com aquisição/estações antes de adicionar culturas. Autoriza análise e proposta documental, não novas regras implementadas ou parâmetros aprovados por consequência.
+- Gameplay/engenharia confirmaram a circularidade da primeira semente de tomate e ausência de troca pública de estação: Dormir oculto exige moeda; tomate só aceita Verão. `agua_tomate_sol.tres` é tomate + raiz → semente de outono, não bootstrap de tomate. Outono é dependência downstream, não círculo independente; inverno não tem aquisição inicial determinística confirmada.
+- Candidato: tomate opcional Primavera/Verão; receita padrão repetível no Livro 1 trigo + 1 água → 1 semente_verao, 2s/0XP, sem gate/XP/marco/moeda. Reinvestimento atual preservado; semeador só trigo, Solo Vivo só benefício de trigo, bônus sazonais atuais mantidos. Alteração de exclusividade e todos os números exigem confirmação humana.
+- Contrato/alternativas/plano B–D em FARM_SYSTEM_V2. Não liberar calendário/Outono/Inverno, modificar quests ou inventar uso de Adubo/Elixir. Arte permanece Antigravity; proposta não é conteúdo implementado no ART_HANDOFF.
+- Fonte jogável `8d4df8c`, pacote RenewableRoot-20261004 e fechamento `909b159` preservados; 55 manuais pendentes/intactos. Nenhum runtime, save pessoal, jogo/suíte ou build novo nesta formulação. Aprovação integral do contrato é o próximo portão.
+
 ## Decisão 132 - Coleta renovável de Raiz Gélida aprovada
 
 - Autor confirmou “OK, pode seguir. Aprovado.” à proposta integral: uma Raiz por coleta, renovação de 45s com jogo aberto inclusive vila, primeira visita sem purificação/restauração, resultado pessoal e sem offline.
