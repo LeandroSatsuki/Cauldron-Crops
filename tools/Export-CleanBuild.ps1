@@ -123,6 +123,7 @@ $originalAppData = $env:APPDATA
 $qaAppData = Join-Path $worktreePath "Builds/QA/GodotSandboxCleanExport"
 $reopenCount = 0
 $additionalFixtureCount = 0
+$buildSucceeded = $false
 
 if (Test-Path -LiteralPath $worktreePath) {
     throw "Temporary export directory already exists: $worktreePath"
@@ -327,6 +328,7 @@ try {
 
     $outputFile = Get-Item -LiteralPath $outputAbsolute
     Write-Host "Build created: $($outputFile.FullName) ($($outputFile.Length) bytes)"
+    $buildSucceeded = $true
 } finally {
     $env:APPDATA = $originalAppData
     if ($worktreeAdded) {
@@ -334,6 +336,13 @@ try {
         $expectedParent = [System.IO.Path]::GetFullPath((Join-Path $repoRoot "Builds")) + [System.IO.Path]::DirectorySeparatorChar
         if (-not $resolvedWorktree.StartsWith($expectedParent, [System.StringComparison]::OrdinalIgnoreCase)) {
             throw "Refusing cleanup outside Builds: $resolvedWorktree"
+        }
+        if (-not $buildSucceeded) {
+            $failedLogs = Join-Path $outputDirectory ("FailedLogs-" + $head + "-" + (Get-Date -Format "yyyyMMdd-HHmmss"))
+            New-Item -ItemType Directory -Path $failedLogs -Force | Out-Null
+            Get-ChildItem -LiteralPath (Join-Path $resolvedWorktree ".godot") -Filter "*.log" -File -ErrorAction SilentlyContinue |
+                Copy-Item -Destination $failedLogs
+            Write-Warning "Export failed; diagnostic logs retained at $failedLogs"
         }
         & git -C $repoRoot worktree remove --force $worktreePath
         if ($LASTEXITCODE -ne 0) {

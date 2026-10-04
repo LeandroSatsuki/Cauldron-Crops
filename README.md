@@ -14,7 +14,7 @@ Direção e produção de arte: Antigravity, com aprovação criativa do autor. 
 
 ## Sobre o jogo
 
-Organização atual: cinco perfis de especialistas apoiam gameplay/progressão, arte/UX, narrativa, engenharia e QA, sob coordenação do agente principal e aprovação criativa do autor. Fontes, responsabilidades e limites em [Equipe de especialistas](./docs/AGENT_TEAM.md). Os moldes do protótipo não representam arte final; esta organização não acrescenta sistemas ao jogo.
+Organização atual: especialistas de gameplay/progressão, narrativa, engenharia e QA apoiam o agente principal conforme o assunto, sob aprovação criativa do autor. O perfil artístico permanece como referência histórica; direção e produção de arte estão no Antigravity externo. Fontes, responsabilidades e limites em [Equipe de especialistas](./docs/AGENT_TEAM.md). Os moldes do protótipo não representam arte final; esta organização não acrescenta sistemas ao jogo.
 
 Checkpoint visual atual: camadas de solo estáveis, caldeirão limpo, grama suavizada, HUD opaco, trilhas/vegetação não interativas, golem de pedra, lago com margem e entrada distinta da corrupção. Dois pacotes de polimento; direção artística final e aceite manual ainda pendentes. Escopo e próximos passos em `docs/ROADMAP.md` e Decisões 96–97.
 

@@ -41,7 +41,16 @@ func _check_root_contract() -> bool:
 		var properties := {}
 		for property_index in state.get_node_property_count(index):
 			properties[str(state.get_node_property_name(index, property_index))] = state.get_node_property_value(index, property_index)
-		if properties.get("position") != Vector2(960, 630) or properties.get("resource_id") != "raiz_gelida" or properties.get("quantity") != 1 or properties.get("expedition_source_id") != "grove_root" or properties.get("backpack_milestone_id", "") != "":
+		# O export omite overrides iguais ao padrão. Ler a instância base do
+		# próprio PCK, fora da árvore, sem executar ready/coleta/progresso.
+		var template_scene := state.get_node_instance(index)
+		if template_scene == null:
+			return _fail("cena base da fonte de Raiz ausente no pacote")
+		var template := template_scene.instantiate()
+		var quantity: Variant = properties.get("quantity", template.get("quantity"))
+		var milestone: Variant = properties.get("backpack_milestone_id", template.get("backpack_milestone_id"))
+		template.free()
+		if properties.get("position") != Vector2(960, 630) or properties.get("resource_id") != "raiz_gelida" or quantity != 1 or properties.get("expedition_source_id") != "grove_root" or milestone != "":
 			return _fail("fonte de Raiz fora do contrato de posição/quantidade/ID/sem marco")
 		found = true
 	if not found:
