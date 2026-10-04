@@ -1,10 +1,11 @@
 # Changelog
 
-## 2026-10-04 - Solo Vivo e aplicação explícita: implementação B–D
+## 2026-10-04 - Solo Vivo e aplicação explícita: fechamento técnico B–E
 
 - Parâmetros e UX pelo mouse aprovados. Receita/aprendizado/piloto durável implementados; colheita entregue conserva umidade para trigo, primeira rega normal e fator existente preservados. Nenhuma expansão do semeador, cultura nova ou economia.
 - Cartão opaco de consulta e orientação transitória/Cancelar; aplicação na chegada válida, exclusividade e cancelamentos. Poção de Crescimento deixa de gastar cargas por clique comum; frasco aberto somente no primeiro uso válido, mantendo três doses e cargas legadas. Mistura/purificação continuam contextuais; baú não muda para uso de item.
-- Flags opcionais em GRID/save v4 com preflight, legado/parcial/replay/cache e recusa de piloto duplicado. QA automático/independente e fechamento E em execução; sem aprovação manual ou produção de arte final. Save pessoal não acessado; arte local preservada.
+- Flags opcionais em GRID/save v4 com preflight, legado/parcial/replay/cache e recusa de piloto duplicado. Cancelamento GUI/drag, callback obsoleto, UI cacheada e writer de doses inválidas cobertos. Revisão independente sem bloqueador material; save pessoal não acessado, arte local preservada.
+- Fonte `549aa60`, pacote LivingSoil-20261004: suíte limpa 55/55, oito reaberturas e dois fixtures separados; Solo Vivo 173 + 8, também gráfico. EXE headless/OpenGL e auditoria PCK sem erros; controle negativo recusa pacote antigo sem Solo Vivo. Manifesto/hashes/logs/instruções/checklist/launcher incluídos; checkout temporário removido. Cinco perfis/seis negativos passaram. As 36 pendências antigas permanecem idênticas + nove SV/UP = 45; cursor físico, arraste completo, arte/conforto/balanceamento aguardam validação humana, sem exigir testes agora. Binários/QA/saves/oito arquivos alheios ficam fora do Git.
 
 ## 2026-10-04 - Solo Vivo: aprovação do conceito e Fase A documental
 

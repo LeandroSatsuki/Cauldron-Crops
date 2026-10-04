@@ -1,10 +1,12 @@
 # Evolução do Projeto
 
-## Etapa atual — Solo Vivo e uso explícito pelo mouse, B–D implementadas (2026-10-04)
+## Etapa atual — Solo Vivo e uso explícito pelo mouse, B–E fechadas tecnicamente (2026-10-04)
 
 Parâmetros do lote/receita e UX consulta opaca → Aplicar → alvo/chegada aprovados pelo autor. Solo Vivo durável, aplicação transitória/cancelamento e Crescimento com três doses/frasco aberto no primeiro uso válido implementados. Ingredientes e purificação continuam contextuais; baú conserva transferência. FarmPlot autoridade, flags opcionais GRID/save v4/preflight e cargas legadas preservadas. Plano em FARM_SYSTEM_V2, Decisão 127.
 
-Fase E em validação automática/independente e preparação de entrega. Não confundir execução técnica com aceite manual; **45 casos pendentes**, com 36 textos antigos intactos e nove SV/UP acrescentados, sem exigir teste agora. Sem acessar save pessoal, criar arte final/economia/NPC/mapa/mastery/tempo offline ou alongar cultivos para justificar poção. Pacote VillageWell-20261004 permanece anterior até exportação auditada deste recorte.
+Fase E concluída tecnicamente. Fonte `549aa60`, pacote **`Builds/Playtest/LivingSoil-20261004`**: suíte limpa **55/55**, oito reaberturas (**6 + 3 + 8 + 8 + 4 + 8 + 8 + 8**) e dois fixtures (**2 + 2**, separados). Solo Vivo passou **173 verificações + 8 de reabertura**, também em execução gráfica dedicada; cartões/faixa inspecionados em 800×600 e 1280×720. EXE headless/OpenGL e auditoria isolada do PCK passaram sem erros; controle negativo recusa pacote anterior sem Solo Vivo. Manifesto/hashes/logs/instruções/checklist/StartPlaytest.cmd acompanham a entrega. Revisão independente sem bloqueador material; perfis/controles negativos passaram; checkout temporário removido.
+
+Não confundir execução técnica com aceite manual; **45 casos pendentes**, com 36 textos antigos intactos e nove SV/UP acrescentados, sem exigir teste agora. Eventos sintéticos e force_drag não homologam cursor físico/gesto completo de arraste. Sem acessar save pessoal, criar arte final/economia/NPC/mapa/mastery/tempo offline ou alongar cultivos para justificar poção. Oito arquivos locais alheios preservados fora do commit; VillageWell-20261004 é histórico. Próximo recorte de conteúdo/progressão requer proposta delimitada e aprovação, sem ativar automaticamente variantes futuras de solo.
 
 ## Checkpoint anterior — Solo Vivo Alquímico, Fase A: baseline e plano (2026-10-04)
 

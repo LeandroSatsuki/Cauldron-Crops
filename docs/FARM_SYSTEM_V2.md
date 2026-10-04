@@ -1,8 +1,8 @@
 # Farm System V2
 
-## Solo Vivo e aplicação pelo mouse — implementação autorizada (2026-10-04)
+## Solo Vivo e aplicação pelo mouse — B–E fechadas tecnicamente (2026-10-04)
 
-Autor confirmou receita/parâmetros do piloto e aprovou o fluxo consulta opaca → Aplicar → alvo válido → aproximação → consumo na chegada. B–D implementadas; validação/fechamento E em execução. Não é aceite manual nem arte final.
+Autor confirmou receita/parâmetros do piloto e aprovou o fluxo consulta opaca → Aplicar → alvo válido → aproximação → consumo na chegada. B–D implementadas e E concluída tecnicamente. Não é aceite manual nem arte final.
 
 - Mistura Restauradora é ingrediente/projeto; Poção Purificadora Fraca usa o painel do obstáculo. Não recebem aplicação livre ou efeitos inventados.
 - Clicar em item não-semente da Mochila consulta nome/ícone/quantidade/função. Somente Crescimento e Solo Vivo oferecem Aplicar. Sementes conservam seleção de plantio existente. Arrasto não arma/consome; baú conserva seu fluxo exclusivo de transferência.
@@ -14,7 +14,9 @@ Autor confirmou receita/parâmetros do piloto e aprovou o fluxo consulta opaca �
 - Duas flags booleanas opcionais atravessam FarmPlot → GRID → save v4, inclusive lote vazio/grama após limpeza. Legado completo começa comum; parcial preserva ausentes, recusando contradições. Preflight puro recusa tipos, estado/umidade incompatíveis, tratamento fora do piloto e entradas GRID piloto duplicadas. Load substitui sem aplicação/consumo/recompensa. Vila cacheada conserva estado; aplicação remota recusada.
 - Contorno do lote no chão, cartão e faixa transitória são protótipo funcional, não nova direção artística. Sem assets novos, lore/economia/mapas/mastery/tempo offline ou alongamento de timers. Cultivos curtos limitam a utilidade de Crescimento; balanceamento permanece pendente.
 
-As 36 pendências anteriores permanecem intactas; nove SV/UP acrescentados (45 pendentes). Testes somente em APPDATA isolado sob Builds/QA, sem acessar/copiar/editar save pessoal. Pacote anterior VillageWell-20261004 continua histórico até nova exportação auditada.
+Fonte `549aa60` exportada em checkout limpo para `Builds/Playtest/LivingSoil-20261004`: suíte **55/55**, oito reaberturas imediatas em novos processos (**6 + 3 + 8 + 8 + 4 + 8 + 8 + 8**) e dois fixtures adicionais (**2 + 2**, não reaberturas). LivingSoilSmokeTest: **173 verificações**, reabertura **8**; também passou a execução gráfica dedicada com 173/8 e inspeção dos cartões/faixa em 800×600 e 1280×720. Importação, startups do EXE headless/OpenGL e auditoria do PCK sem erros. Controle negativo recusa VillageWell-20261004 por ausência do contrato de Solo Vivo, sem fallback do workspace. Manifesto identifica fonte, hashes e contagens; logs, instruções, checklist e StartPlaytest.cmd acompanham o pacote.
+
+As 36 pendências anteriores permanecem intactas; nove SV/UP acrescentados (**45 pendentes**). Testes somente em APPDATA isolado sob Builds/QA, sem acessar/copiar/editar save pessoal. Revisão independente guiada por QA sem bloqueador material após correções de GRID duplicado, cancelamento GUI/drag, UI cacheada e proteção de doses na gravação. Validador de cinco perfis/seis controles negativos passou; checkout temporário removido e oito arquivos locais alheios preservados fora do commit. Eventos sintéticos/force_drag não homologam cursor físico, gesto de arraste completo, conforto ou balanceamento. Não exigir testes imediatos ao autor indisponível; VillageWell-20261004 permanece histórico.
 
 ## Solo Vivo Alquímico — lote retentor, Fase A (2026-10-04)
 
