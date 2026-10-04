@@ -18,8 +18,41 @@ func _initialize() -> void:
 		return
 	if not _check_living_soil_contract():
 		return
-	print("PlaytestPackAudit: PASS - recursos, receitas sustentáveis, Poço, Solo Vivo, aplicação, exclusões e save separado.")
+	if not _check_accelerator_contract():
+		return
+	print("PlaytestPackAudit: PASS - recursos, receitas sustentáveis, Poço, Solo Vivo, Aceleradora, aplicação, exclusões e save separado.")
 	quit(0)
+
+func _check_accelerator_contract() -> bool:
+	var golem: GDScript = ResourceLoader.load("res://Scripts/Golem.gd")
+	if golem.get_script_constant_map().get("ACCELERATOR_FACTOR") != 1.5:
+		return _fail("Aceleradora ausente/fator diferente do contrato")
+	var names: Array = []
+	for method in golem.get_script_method_list():
+		names.append(str(method["name"]))
+	for method in ["prepare_accelerator_delivery", "cancel_accelerator_preparation", "get_accelerator_status", "get_delivery_move_speed"]:
+		if method not in names:
+			return _fail("API da Aceleradora ausente: " + method)
+	var work: GDScript = ResourceLoader.load("res://Scripts/data/GolemWorkState.gd")
+	var payload: Dictionary = work.call("default_data")
+	if not payload.has_all(["accelerator_prepared", "accelerator_active", "harvest_delivery_started"]) or not work.call("is_valid", payload, false):
+		return _fail("schema da Aceleradora ausente/inválido")
+	payload["accelerator_active"] = true
+	if work.call("is_valid", payload, false):
+		return _fail("schema aceita benefício sem carga")
+	var scene: PackedScene = ResourceLoader.load("res://Scenes/UI.tscn")
+	var state := scene.get_state()
+	var found := false
+	for index in state.get_node_count():
+		if state.get_node_name(index) == &"AcceleratorAction":
+			found = true
+	if not found:
+		return _fail("comando contextual da Aceleradora ausente")
+	for pair in [["carvao_trigo", ["carvao", "trigo"]], ["peixe_comum_trigo", ["peixe_comum", "trigo"]]]:
+		var recipe: Resource = ResourceLoader.load("res://Data/recipes/%s.tres" % pair[0])
+		if recipe == null or recipe.get("ingredientes") != pair[1] or recipe.get("resultado_item") != "pocao_aceleradora" or recipe.get("resultado_quantidade") != 1 or recipe.get("tempo_producao") != 2.0 or recipe.get("recompensa_pontos_alquimia") != 1:
+			return _fail("receita da Aceleradora alterada: " + str(pair[0]))
+	return true
 
 func _check_living_soil_contract() -> bool:
 	for path in ["res://Scripts/LivingSoilState.gd", "res://Scripts/ItemUsePanel.gd", "res://Data/recipes/solo_vivo_retencao.tres"]:

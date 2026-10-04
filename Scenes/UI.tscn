@@ -382,97 +382,161 @@ layout_mode = 2
 text = "Golem"
 horizontal_alignment = 1
 
-[node name="StatusLabel" type="Label" parent="GolemPanel/MarginContainer/VBoxGolem" unique_id=1900000104]
+[node name="ScrollContainer" type="ScrollContainer" parent="GolemPanel/MarginContainer/VBoxGolem"]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+follow_focus = true
+
+[node name="Content" type="VBoxContainer" parent="GolemPanel/MarginContainer/VBoxGolem/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="StatusLabel" type="Label" parent="GolemPanel/MarginContainer/VBoxGolem/ScrollContainer/Content" unique_id=1900000104]
 layout_mode = 2
 text = "Golem: --"
 autowrap_mode = 3
 
-[node name="TalentLabel" type="Label" parent="GolemPanel/MarginContainer/VBoxGolem" unique_id=1900000105]
+[node name="TalentLabel" type="Label" parent="GolemPanel/MarginContainer/VBoxGolem/ScrollContainer/Content" unique_id=1900000105]
 layout_mode = 2
 text = "Talento Golem Irrigador: --"
 autowrap_mode = 3
 
-[node name="TaskLabel" type="Label" parent="GolemPanel/MarginContainer/VBoxGolem" unique_id=1900000106]
+[node name="TaskLabel" type="Label" parent="GolemPanel/MarginContainer/VBoxGolem/ScrollContainer/Content" unique_id=1900000106]
 layout_mode = 2
 text = "Tarefa atual: --"
 autowrap_mode = 3
 
-[node name="PriorityLabel" type="Label" parent="GolemPanel/MarginContainer/VBoxGolem" unique_id=1900000107]
+[node name="PriorityLabel" type="Label" parent="GolemPanel/MarginContainer/VBoxGolem/ScrollContainer/Content" unique_id=1900000107]
 layout_mode = 2
 text = "Prioridade atual: --"
 autowrap_mode = 3
 
-[node name="TargetLabel" type="Label" parent="GolemPanel/MarginContainer/VBoxGolem" unique_id=1900000115]
+[node name="TargetLabel" type="Label" parent="GolemPanel/MarginContainer/VBoxGolem/ScrollContainer/Content" unique_id=1900000115]
 visible = false
 layout_mode = 2
 text = "Último alvo: --"
 autowrap_mode = 3
 
-[node name="ActionLabel" type="Label" parent="GolemPanel/MarginContainer/VBoxGolem" unique_id=1900000116]
+[node name="ActionLabel" type="Label" parent="GolemPanel/MarginContainer/VBoxGolem/ScrollContainer/Content" unique_id=1900000116]
 visible = false
 layout_mode = 2
 text = "Última ação: --"
 autowrap_mode = 3
 
-[node name="CountsLabel" type="Label" parent="GolemPanel/MarginContainer/VBoxGolem" unique_id=1900000117]
+[node name="CountsLabel" type="Label" parent="GolemPanel/MarginContainer/VBoxGolem/ScrollContainer/Content" unique_id=1900000117]
 visible = false
 layout_mode = 2
 text = "Contagem: maduros 0 | secos 0"
 autowrap_mode = 3
 
-[node name="SeedingToggle" type="CheckButton" parent="GolemPanel/MarginContainer/VBoxGolem"]
+[node name="SeedingToggle" type="CheckButton" parent="GolemPanel/MarginContainer/VBoxGolem/ScrollContainer/Content"]
 layout_mode = 2
 custom_minimum_size = Vector2(0, 40)
 text = "Semear trigo"
 disabled = true
 
-[node name="SeedingStatus" type="Label" parent="GolemPanel/MarginContainer/VBoxGolem"]
+[node name="SeedingStatus" type="Label" parent="GolemPanel/MarginContainer/VBoxGolem/ScrollContainer/Content"]
 layout_mode = 2
 text = "Restaure a Clareira do Bosque para liberar."
 autowrap_mode = 3
 
-[node name="SeedingHint" type="Label" parent="GolemPanel/MarginContainer/VBoxGolem"]
+[node name="SeedingHint" type="Label" parent="GolemPanel/MarginContainer/VBoxGolem/ScrollContainer/Content"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
 text = "4 lotes iniciais · terra arada · Primavera\nSementes de trigo no Baú da Vila."
 autowrap_mode = 3
 mouse_filter = 2
 
-[node name="GridPriorities" type="GridContainer" parent="GolemPanel/MarginContainer/VBoxGolem" unique_id=1900000108]
+[node name="AcceleratorSeparator" type="HSeparator" parent="GolemPanel/MarginContainer/VBoxGolem/ScrollContainer/Content"]
+layout_mode = 2
+
+[node name="AcceleratorHeader" type="HBoxContainer" parent="GolemPanel/MarginContainer/VBoxGolem/ScrollContainer/Content"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Icon" type="TextureRect" parent="GolemPanel/MarginContainer/VBoxGolem/ScrollContainer/Content/AcceleratorHeader"]
+layout_mode = 2
+custom_minimum_size = Vector2(32, 32)
+expand_mode = 1
+stretch_mode = 5
+mouse_filter = 2
+
+[node name="IconLabel" type="Label" parent="GolemPanel/MarginContainer/VBoxGolem/ScrollContainer/Content/AcceleratorHeader"]
+layout_mode = 2
+text = "⚡"
+mouse_filter = 2
+
+[node name="StockLabel" type="Label" parent="GolemPanel/MarginContainer/VBoxGolem/ScrollContainer/Content/AcceleratorHeader"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Aceleradora · Mochila: 0"
+autowrap_mode = 3
+mouse_filter = 2
+
+[node name="AcceleratorRule" type="Label" parent="GolemPanel/MarginContainer/VBoxGolem/ScrollContainer/Content"]
+layout_mode = 2
+text = "1 frasco · 1 entrega de colheita\nDeslocamento +50% até o baú."
+autowrap_mode = 3
+mouse_filter = 2
+
+[node name="AcceleratorStatus" type="Label" parent="GolemPanel/MarginContainer/VBoxGolem/ScrollContainer/Content"]
+layout_mode = 2
+text = "Nenhuma preparada."
+autowrap_mode = 3
+mouse_filter = 2
+
+[node name="AcceleratorHint" type="Label" parent="GolemPanel/MarginContainer/VBoxGolem/ScrollContainer/Content"]
+layout_mode = 2
+text = "Não gasta agora. Um frasco será usado ao iniciar a próxima nova entrega. Fechar e salvar conservam a ordem. Não altera entrega já iniciada."
+autowrap_mode = 3
+mouse_filter = 2
+
+[node name="AcceleratorAction" type="Button" parent="GolemPanel/MarginContainer/VBoxGolem/ScrollContainer/Content"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 42)
+text = "Preparar próxima entrega"
+autowrap_mode = 3
+
+[node name="PrioritySeparator" type="HSeparator" parent="GolemPanel/MarginContainer/VBoxGolem/ScrollContainer/Content"]
+layout_mode = 2
+
+[node name="GridPriorities" type="GridContainer" parent="GolemPanel/MarginContainer/VBoxGolem/ScrollContainer/Content" unique_id=1900000108]
 layout_mode = 2
 theme_override_constants/h_separation = 8
 theme_override_constants/v_separation = 8
 columns = 2
 
-[node name="BtnGolemHarvestFirst" type="Button" parent="GolemPanel/MarginContainer/VBoxGolem/GridPriorities" unique_id=1900000109]
+[node name="BtnGolemHarvestFirst" type="Button" parent="GolemPanel/MarginContainer/VBoxGolem/ScrollContainer/Content/GridPriorities" unique_id=1900000109]
 layout_mode = 2
 size_flags_horizontal = 3
 custom_minimum_size = Vector2(0, 42)
 autowrap_mode = 3
 text = "Colher primeiro"
 
-[node name="BtnGolemWaterFirst" type="Button" parent="GolemPanel/MarginContainer/VBoxGolem/GridPriorities" unique_id=1900000110]
+[node name="BtnGolemWaterFirst" type="Button" parent="GolemPanel/MarginContainer/VBoxGolem/ScrollContainer/Content/GridPriorities" unique_id=1900000110]
 layout_mode = 2
 size_flags_horizontal = 3
 custom_minimum_size = Vector2(0, 42)
 autowrap_mode = 3
 text = "Regar primeiro"
 
-[node name="BtnGolemHarvestOnly" type="Button" parent="GolemPanel/MarginContainer/VBoxGolem/GridPriorities" unique_id=1900000111]
+[node name="BtnGolemHarvestOnly" type="Button" parent="GolemPanel/MarginContainer/VBoxGolem/ScrollContainer/Content/GridPriorities" unique_id=1900000111]
 layout_mode = 2
 size_flags_horizontal = 3
 custom_minimum_size = Vector2(0, 42)
 autowrap_mode = 3
 text = "Só colher"
 
-[node name="BtnGolemWaterOnly" type="Button" parent="GolemPanel/MarginContainer/VBoxGolem/GridPriorities" unique_id=1900000112]
+[node name="BtnGolemWaterOnly" type="Button" parent="GolemPanel/MarginContainer/VBoxGolem/ScrollContainer/Content/GridPriorities" unique_id=1900000112]
 layout_mode = 2
 size_flags_horizontal = 3
 custom_minimum_size = Vector2(0, 42)
 autowrap_mode = 3
 text = "Só regar"
 
-[node name="BtnGolemPause" type="Button" parent="GolemPanel/MarginContainer/VBoxGolem/GridPriorities" unique_id=1900000113]
+[node name="BtnGolemPause" type="Button" parent="GolemPanel/MarginContainer/VBoxGolem/ScrollContainer/Content/GridPriorities" unique_id=1900000113]
 layout_mode = 2
 size_flags_horizontal = 3
 custom_minimum_size = Vector2(0, 42)

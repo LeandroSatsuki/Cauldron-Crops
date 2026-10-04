@@ -2,16 +2,32 @@ extends RefCounted
 class_name GolemWorkState
 
 const VERSION := 1
+const REQUIRED_KEYS := ["version", "seeding_enabled", "work_priority", "harvest_cargo", "seed_cargo"]
+const ACCELERATOR_KEYS := ["accelerator_prepared", "accelerator_active", "harvest_delivery_started"]
 
 static func default_data() -> Dictionary:
-	return {"version": VERSION, "seeding_enabled": false, "work_priority": 0, "harvest_cargo": {}, "seed_cargo": null}
+	return {"version": VERSION, "seeding_enabled": false, "work_priority": 0, "harvest_cargo": {}, "seed_cargo": null,
+		"accelerator_prepared": false, "accelerator_active": false, "harvest_delivery_started": false}
+
+static func accelerator_flags(data: Dictionary) -> Dictionary:
+	# Cargo legado é conservadoramente uma entrega já iniciada. Ausentes não
+	# herdam flags runtime, mesmo quando os totais da nova carga são iguais.
+	return {"accelerator_prepared": data.get("accelerator_prepared", false),
+		"accelerator_active": data.get("accelerator_active", false),
+		"harvest_delivery_started": data.get("harvest_delivery_started", not data.get("harvest_cargo", {}).is_empty())}
 
 static func is_valid(value: Variant, grove_restored: bool) -> bool:
 	if not value is Dictionary:
 		return false
 	var data: Dictionary = value
-	if data.size() != 5 or not data.has_all(["version", "seeding_enabled", "work_priority", "harvest_cargo", "seed_cargo"]):
+	if not data.has_all(REQUIRED_KEYS):
 		return false
+	for key in data:
+		if key not in REQUIRED_KEYS and key not in ACCELERATOR_KEYS:
+			return false
+	for key in ACCELERATOR_KEYS:
+		if data.has(key) and not data[key] is bool:
+			return false
 	if typeof(data["version"]) not in [TYPE_INT, TYPE_FLOAT] or data["version"] != VERSION:
 		return false
 	if not data["seeding_enabled"] is bool:
@@ -29,6 +45,13 @@ static func is_valid(value: Variant, grove_restored: bool) -> bool:
 			return false
 		if not data["seeding_enabled"] and data["seed_cargo"]["intent"] != GolemSeedCargo.INTENT_RETURN:
 			return false
+	var flags := accelerator_flags(data)
+	if flags["accelerator_prepared"] and flags["accelerator_active"]:
+		return false
+	if flags["harvest_delivery_started"] and (data["harvest_cargo"].is_empty() or has_seed):
+		return false
+	if flags["accelerator_active"] and not flags["harvest_delivery_started"]:
+		return false
 	return true
 
 static func harvest_totals(rewards: Array) -> Variant:

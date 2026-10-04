@@ -226,7 +226,7 @@ var itens: Dictionary = {
 		"pode_usar_em_receita": false,
 		"tags": ["pocao", "consumivel", "velocidade"],
 		"origem": "alquimia",
-		"descricao": "Apoio simples para acelerar processos da fazenda.",
+		"descricao": "Use pelo painel Golem: um frasco acelera em 50% o deslocamento de uma nova entrega de colheita ao Baú da Vila.",
 		"icone": "⚡"
 	},
 	"essencia_sombria": {

@@ -1,6 +1,6 @@
 extends PanelContainer
 
-# Layout local: conserva os caminhos/controles existentes e a posição arrastada.
+# Cabeçalho/Fechar fixos; só o conteúdo rola, sem reduzir fontes/controles.
 var _queued := false
 var _laying_out := false
 var _positioned := false
@@ -12,6 +12,7 @@ func _ready() -> void:
 	get_viewport().size_changed.connect(_queue_layout)
 	minimum_size_changed.connect(_queue_layout)
 	visibility_changed.connect(_queue_layout)
+	$MarginContainer/VBoxGolem/ScrollContainer/Content.minimum_size_changed.connect(_queue_layout)
 	var background := StyleBoxFlat.new()
 	background.bg_color = Color("263826")
 	background.border_color = Color("9da773")
@@ -36,7 +37,9 @@ func _apply_layout() -> void:
 	var previous_position := position
 	set_anchors_and_offsets_preset(Control.PRESET_TOP_LEFT, Control.PRESET_MODE_KEEP_SIZE)
 	custom_minimum_size = Vector2(width, 0)
-	size = Vector2(width, get_combined_minimum_size().y)
+	var body := $MarginContainer/VBoxGolem/ScrollContainer/Content as Control
+	var fixed_height := get_combined_minimum_size().y
+	size = Vector2(width, minf(maxf(fixed_height, fixed_height + body.get_combined_minimum_size().y), maxf(fixed_height, screen.y - 32.0)))
 	if not _positioned:
 		position = (screen - size) * 0.5
 		_positioned = true

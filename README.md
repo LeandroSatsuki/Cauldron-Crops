@@ -47,6 +47,7 @@ plantar → regar → colher → combinar ingredientes → descobrir receitas �
 - save/load v4 do progresso principal, com compatibilidade legada;
 - purificação de áreas e expansão da fazenda;
 - golem coletor com prioridades de trabalho e talento de irrigação;
+- Poção Aceleradora pelo painel Golem: preparar/cancelar sem gasto inicial, um frasco da Mochila por nova entrega de colheita, deslocamento +50%; preparo/benefício conservados em pausa, viagem e save, sem repetição automática;
 - piloto de semeadura opcional de trigo em quatro lotes, liberado pela Clareira restaurada, com retirada/transporte/plantio/devolução físicos e cargo persistido.
 
 Loja, venda, requests legados e F10 permanecem desativados. A Mochila ganha +4 slots ao restaurar o Herbário e +4 na primeira coleta do Bosque, uma vez por marco, em qualquer ordem. A barra usa páginas de até 12 e o painel do baú mostra o progresso. Recusas preservam a origem/recompensa, e saves acima da capacidade atual carregam todas as quantidades sem truncamento. Marcos, capturas pendentes e produção do caldeirão integram o save v4. Validação manual integrada ainda pendente.

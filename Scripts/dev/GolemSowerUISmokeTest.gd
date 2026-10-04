@@ -147,7 +147,7 @@ func _run() -> void:
 			golem.call("set_seeding_enabled", true)
 			_expect_code(code)
 			await _settle()
-			_test_geometry()
+			await _test_geometry()
 			await _capture("golem_%d_%d_%s" % [resolution.x, resolution.y, code])
 		panel.position = Vector2(25, 20)
 		panel.call("_queue_layout") # Recalcular não pode apagar a posição do arraste.
@@ -181,7 +181,7 @@ func _run() -> void:
 	await _settle()
 	ui.call("_atualizar_painel_golem")
 	_check(get_tree().current_scene == main and toggle.button_pressed and not toggle.disabled and toggles == toggles_before_travel, "cache/resize conserva ON sem emitir toggle")
-	_test_geometry()
+	await _test_geometry()
 	_check(SaveManager.save_game(), "grava ON em arquivo QA para reabertura")
 	_finish()
 
@@ -208,12 +208,19 @@ func _test_geometry() -> void:
 	var screen := Rect2(Vector2.ZERO, get_viewport().get_visible_rect().size)
 	_check(screen.encloses(panel.get_global_rect()), "painel contido em " + str(screen.size) + "; rect=" + str(panel.get_global_rect()))
 	_check((panel.get_theme_stylebox("panel") as StyleBoxFlat).bg_color.a == 1.0, "fundo opaco")
+	var scroll: ScrollContainer = panel.get_node("MarginContainer/VBoxGolem/ScrollContainer")
 	for path in ["TitleLabel", "StatusLabel", "TalentLabel", "TaskLabel", "PriorityLabel", "SeedingToggle", "SeedingStatus", "SeedingHint", "GridPriorities", "BtnFechar"]:
-		var control: Control = panel.get_node("MarginContainer/VBoxGolem/" + path)
-		_check(panel.get_global_rect().encloses(control.get_global_rect()), "controle acessível " + path)
-	for button in panel.get_node("MarginContainer/VBoxGolem/GridPriorities").get_children():
+		var fixed: bool = path in ["TitleLabel", "BtnFechar"]
+		var control: Control = panel.get_node("MarginContainer/VBoxGolem/" + ("" if fixed else "ScrollContainer/Content/") + path)
+		if not fixed and control.visible:
+			scroll.ensure_control_visible(control)
+			await _settle()
+		_check(panel.get_global_rect().encloses(control.get_global_rect()), "controle acessível por rolagem " + path)
+	for button in panel.get_node("MarginContainer/VBoxGolem/ScrollContainer/Content/GridPriorities").get_children():
+		scroll.ensure_control_visible(button)
+		await _settle()
 		_check(panel.get_global_rect().encloses(button.get_global_rect()), "prioridade acessível")
-	_check(not ui.get("debug_panel").visible and not panel.get_node("MarginContainer/VBoxGolem/CountsLabel").visible, "sem F10/HUD/diagnóstico extra")
+	_check(not ui.get("debug_panel").visible and not panel.get_node("MarginContainer/VBoxGolem/ScrollContainer/Content/CountsLabel").visible, "sem F10/HUD/diagnóstico extra")
 
 func _click(button: BaseButton) -> void:
 	await _settle()

@@ -117,7 +117,7 @@ func _application_contracts() -> void:
 	generation = golem.call("prototype_arm_application")
 	_check(not golem.call("prototype_apply", player, generation) and _domain() == before, "reaplicação não empilha nem cobra")
 	var snapshot: Dictionary = golem.call("get_work_save_data")
-	_check(snapshot.size() == 5 and not snapshot.has("prototype_boost_active"), "efeito não integra schema/save de produção")
+	_check(not snapshot.has("prototype_boost_active") and not snapshot["accelerator_active"] and not snapshot["accelerator_prepared"], "efeito dev não integra flags de produção")
 	for state in ["IDLE", "MOVING_TO_PLOT", "MOVING_TO_REST", "MOVING_TO_SEED_PLOT", "WATERING", "HARVESTING", "DEPOSITING"]:
 		golem.set("state", state)
 		_check(is_equal_approx(golem.call("prototype_effective_speed"), 128.0), "sem bônus de velocidade fora da entrega: " + state)

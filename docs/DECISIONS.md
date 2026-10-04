@@ -1,5 +1,12 @@
 # Decisions
 
+## Decisão 130 - Aceleradora: contrato aprovado e integração de produção
+
+- Autor respondeu “sim” à confirmação do contrato P2 inteiro, incluindo preparo sem aproximação e persistência no save. Autoriza integração delimitada em domínio, persistência, painel e QA/exportação.
+- Um frasco da Mochila, não do baú; armar não gasta/reserva. Consumo irreversível na primeira abertura válida de uma nova entrega lógica, 1,5× somente em transporte de colheita. Cancelamento gratuito antes; pausa/retry/cache/load preservam após gasto, sem nova cobrança ou retroatividade em cargo iniciado. Depósito efetivo encerra o benefício; sem fila/empilhamento/repetição.
+- Contrato técnico/UX da P2 em FARM_SYSTEM_V2 permanece integral; receitas, custo, timers, outras tarefas e seleção de ferramenta/semente não mudam. Save v4 estende apenas campos opcionais estritos da custódia, com preflight e legado conservador.
+- Conveniência opcional/situacional: aprovação do piloto não homologa valor econômico, arte final ou conforto. Execução técnica e pacote serão identificados no fechamento; testes manuais anteriores preservados e novos casos ficarão pendentes sem exigir execução imediata.
+
 ## Decisão 129 - Aceleradora: autorização de formular P2, contrato ainda proposto
 
 - Autor aprovou continuar após a oferta de preparar P2. Autoriza formulação/revisão documental, não integração automática, comando remoto ou alteração de save. P1 publicada em `0473814` continua baseline técnico.

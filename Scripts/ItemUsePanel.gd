@@ -141,6 +141,8 @@ func _refresh_card() -> void:
 		description_label.text = "Ingrediente para receitas e projetos de restauração. Use pelo caldeirão ou pelo painel do projeto; não é aplicado livremente no cenário."
 	elif item_id == "pocao_purificadora_fraca":
 		description_label.text = "Reagente de purificação. Clique num obstáculo corrompido e entregue pelo painel."
+	elif item_id == "pocao_aceleradora":
+		description_label.text = "Use pelo painel Golem. Preparar não gasta agora: um frasco da Mochila será usado ao iniciar a próxima nova entrega de colheita, com deslocamento +50%. Não altera uma entrega já iniciada."
 	else:
 		description_label.text = Database.obter_descricao_item(item_id)
 		if description_label.text == "":

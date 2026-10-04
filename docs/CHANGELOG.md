@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-10-04 - Aceleradora: integração de produção P3
+
+- Autor confirmou contrato completo P2, incluindo comando sem aproximação e save persistente (Decisão 130). Golem é autoridade de preparo/custódia/benefício: fonte pessoal, preparo sem gasto/reserva, um frasco por primeira abertura de nova entrega lógica, deslocamento 1,5× somente até o baú. Retry/load/cache não reativam entrega antiga; cancelar antes gratuito, depois conserva até depósito único, sem refund/fila/repetição.
+- Três booleanos opcionais estritos no golem_work, legado conservador, writer/load/preflight existentes. Callbacks/vida/scheduler com ordem respeitam transição/load; depósito normal recusado por contexto volta IDLE para retry sem perder carga. Receitas, timers, velocidade-base e demais tarefas intactos.
+- Painel opaco com cabeçalho/Fechar fixos, conteúdo rolável e ação contextual; estoque da Mochila e estados nenhuma/preparada/ativa. Cartão orienta uso pelo painel, sem Aplicar livre. Ferramenta/semente preservadas e cliques/atalhos do fundo bloqueados.
+- QA dedicado: domínio 191 e UI 154 verificações por backend headless/OpenGL; Sower UI 325. Desvio com collider ativo/segmentos seguros, pausa DEPOSITING, guardas pré-saída, replay/cache e negativos de writer conferidos. Primeiro log domínio com erro de dois diálogos no fixture preservado como negativo; fixture corrigido, finais sem ERROR. Arte/UX e QA independentes sem bloqueador para fonte; perfis/controles negativos passaram. Suíte/pacote/reaberturas de entrega ainda em andamento.
+- 45 textos manuais anteriores intactos + cinco AC, total 50 pendentes; nenhum teste manual fechado ou save pessoal acessado. Oito arquivos locais alheios preservados. Conveniência/arte/conforto/valor econômico não homologados.
+
 ## 2026-10-04 - Aceleradora: P2 de contrato/UX proposta
 
 - Autor autorizou formular a etapa seguinte, não integração. Candidato no Farm System/Decisão 129: painel fixo/preparo one-shot sem gasto/reserva, consumo pessoal no início de entrega lógica elegível, cancelamento antes e conservação após gasto até depósito. Comando sem aproximação e ordem persistente ainda precisam de aprovação humana.

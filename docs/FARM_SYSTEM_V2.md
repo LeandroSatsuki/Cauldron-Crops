@@ -1,8 +1,12 @@
 # Farm System V2
 
+## Poção Aceleradora — P3, integração autorizada (2026-10-04)
+
+Autor confirmou o contrato completo da P2 com “sim”, incluindo preparo pelo painel sem aproximação e persistência no save. Integração em andamento: um frasco pessoal por nova entrega lógica, deslocamento 1,5× somente até o baú; sem alteração de receita/timers/benefícios. A aprovação substitui o portão documental abaixo, não o transforma em resultado de teste. Validação automática/exportação e revisão independente serão registradas no fechamento; 45 casos manuais anteriores continuam pendentes.
+
 ## Poção Aceleradora — P2, proposta de uso pelo painel (2026-10-04)
 
-**Status: formulada, aguardando confirmação do contrato.** Autor aprovou continuar com a proposta P2 após a P1 publicada em `0473814`. Não autorizou, por consequência, integração de produção, consumo remoto ou save novo. Esta etapa é documental; não altera código/cenas/itens/receitas, não executa o jogo e não fecha teste manual. P1 continua evidência técnica, não homologação de utilidade.
+**Status histórico no fechamento da P2: formulada, aguardando confirmação do contrato.** Posteriormente confirmado pelo autor na P3 acima. Autor aprovou continuar com a proposta P2 após a P1 publicada em `0473814`. Não autorizou, por consequência, integração de produção, consumo remoto ou save novo. Esta etapa é documental; não altera código/cenas/itens/receitas, não executa o jogo e não fecha teste manual. P1 continua evidência técnica, não homologação de utilidade.
 
 ### Utilidade e recomendação
 

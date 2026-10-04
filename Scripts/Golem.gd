@@ -1,5 +1,7 @@
 extends CharacterBody2D
 
+signal accelerator_status_changed
+
 @export var move_speed_pixels_per_second: float = 128.0
 @export var think_interval: float = 1.0
 @export var harvest_duration: float = 0.5
@@ -17,11 +19,17 @@ const PRIORITY_WATER_FIRST: int = 1
 const PRIORITY_HARVEST_ONLY: int = 2
 const PRIORITY_WATER_ONLY: int = 3
 const PRIORITY_PAUSED: int = 4
+const ACCELERATOR_ITEM := "pocao_aceleradora"
+const ACCELERATOR_FACTOR := 1.5
 
 var state: String = "IDLE"
 var carried_rewards: Array = []
 var seed_cargo := GolemSeedCargo.new()
 var seeding_enabled := false
+var accelerator_prepared := false
+var accelerator_active := false
+var harvest_delivery_started := false
+var _accelerator_notifying := false
 var _task_generation := 0
 var target_plot: Node2D = null
 var target_chest: Node2D = null
@@ -99,6 +107,13 @@ func _process(_delta: float) -> void:
 		_seed_cargo_visual.visible = seed_cargo.has_seed()
 
 func _physics_process(delta: float) -> void:
+	if (accelerator_prepared or accelerator_active) and not _accelerator_context_valid():
+		if state != "IDLE" or life_state != "IDLE" or velocity != Vector2.ZERO:
+			_parar_execucao_atual()
+		return # Suspender execução física, nunca gastar/refundar ordem/carga.
+	var effective_speed := get_delivery_move_speed()
+	if navigation_agent != null:
+		navigation_agent.max_speed = effective_speed
 	if state in SEED_MOVEMENT_STATES:
 		_process_seed_movement(delta)
 		return
@@ -107,17 +122,17 @@ func _physics_process(delta: float) -> void:
 		if esta_em_movimento:
 			var direcao_emergencial: Vector2 = _final_destination - global_position
 			if direcao_emergencial.length() > 0.0:
-				velocity = direcao_emergencial.normalized() * move_speed_pixels_per_second
+				velocity = direcao_emergencial.normalized() * effective_speed
 			else:
 				velocity = Vector2.ZERO
 		else:
-			velocity = velocity.move_toward(Vector2.ZERO, move_speed_pixels_per_second * 6.0 * delta)
+			velocity = velocity.move_toward(Vector2.ZERO, effective_speed * 6.0 * delta)
 		move_and_slide()
 		_monitorar_travamento(delta)
 		return
 
 	if not esta_em_movimento:
-		velocity = velocity.move_toward(Vector2.ZERO, move_speed_pixels_per_second * 6.0 * delta)
+		velocity = velocity.move_toward(Vector2.ZERO, effective_speed * 6.0 * delta)
 		move_and_slide()
 		_last_position = global_position
 		_stuck_time = 0.0
@@ -143,13 +158,15 @@ func _physics_process(delta: float) -> void:
 		return
 
 	if distancia > 0.0:
-		velocity = vetor / distancia * move_speed_pixels_per_second
+		velocity = vetor / distancia * effective_speed
 	else:
 		velocity = Vector2.ZERO
 	move_and_slide()
 	_monitorar_travamento(delta)
 
 func _on_think_timer_timeout() -> void:
+	if (accelerator_prepared or accelerator_active) and not _accelerator_context_valid():
+		return
 	if state != "IDLE":
 		return
 	if life_state != "IDLE":
@@ -345,6 +362,7 @@ func _parar_execucao_atual() -> void:
 	_stuck_time = 0.0
 	_final_destination = global_position
 	if navigation_agent:
+		navigation_agent.max_speed = move_speed_pixels_per_second
 		navigation_agent.target_position = global_position
 	_limpar_alvo_lote()
 	target_chest = null
@@ -361,7 +379,8 @@ func get_work_save_data() -> Dictionary:
 		return {} # O preflight de gravação recusa carga runtime inválida.
 	return {"version": GolemWorkState.VERSION, "seeding_enabled": seeding_enabled,
 		"work_priority": work_priority, "harvest_cargo": harvest,
-		"seed_cargo": seed_cargo.get_save_data()}
+		"seed_cargo": seed_cargo.get_save_data(), "accelerator_prepared": accelerator_prepared,
+		"accelerator_active": accelerator_active, "harvest_delivery_started": harvest_delivery_started}
 
 func load_work_save_data(data: Dictionary, grove_restored: bool) -> bool:
 	if not GolemWorkState.is_valid(data, grove_restored):
@@ -372,6 +391,10 @@ func load_work_save_data(data: Dictionary, grove_restored: bool) -> bool:
 	carried_rewards = GolemWorkState.harvest_rewards(data["harvest_cargo"])
 	seed_cargo = GolemSeedCargo.new()
 	seed_cargo.apply_save_data(data["seed_cargo"])
+	var flags := GolemWorkState.accelerator_flags(data)
+	accelerator_prepared = flags["accelerator_prepared"]
+	accelerator_active = flags["accelerator_active"]
+	harvest_delivery_started = flags["harvest_delivery_started"]
 	ultima_acao = "pausado" if work_priority == PRIORITY_PAUSED else "aguardando trabalho"
 	return true
 
@@ -380,10 +403,69 @@ func _dispatch_work_callback(callback: Callable, generation: int) -> void:
 		callback.call()
 
 func _task_is_current(generation: int) -> bool:
-	return is_inside_tree() and not is_queued_for_deletion() and generation == _task_generation
+	return is_inside_tree() and not is_queued_for_deletion() and generation == _task_generation \
+		and (not (accelerator_prepared or accelerator_active) or _accelerator_context_valid())
 
 func _receive_harvest_cargo(rewards: Array) -> void:
 	carried_rewards = rewards.duplicate(true)
+	# FarmPlot publica seus sinais depois deste commit de custódia.
+	harvest_delivery_started = false
+	accelerator_active = false
+
+func _accelerator_context_valid() -> bool:
+	if not is_inside_tree() or is_queued_for_deletion() or SaveManager.is_applying_snapshot() or RegionTravelCoordinator.is_transition_in_progress():
+		return false
+	var home := get_tree().current_scene
+	if home == null or home.get_node_or_null("Golem") != self or not home.has_method("get_current_region_identity"):
+		return false
+	var identity: Dictionary = home.call("get_current_region_identity")
+	return identity.get("region_id", "") == "farm_village" and not bool(home.get("_region_being_cached"))
+
+func get_accelerator_status() -> Dictionary:
+	var mode := "active" if accelerator_active else ("prepared" if accelerator_prepared else "none")
+	var stock := GlobalInventory.get_item_quantity(ACCELERATOR_ITEM)
+	var context := _accelerator_context_valid()
+	var reason := ""
+	if not context:
+		reason = "inactive_context"
+	elif accelerator_active:
+		reason = "active"
+	elif accelerator_prepared:
+		reason = "prepared"
+	elif stock < 1:
+		reason = "no_stock"
+	return {"state": mode, "stock": stock, "can_prepare": context and mode == "none" and stock >= 1,
+		"can_cancel": context and accelerator_prepared and not accelerator_active, "reason": reason}
+
+func prepare_accelerator_delivery() -> bool:
+	if _accelerator_notifying or not get_accelerator_status()["can_prepare"]:
+		return false
+	accelerator_prepared = true
+	_publish_accelerator_status()
+	return true
+
+func cancel_accelerator_preparation() -> bool:
+	if _accelerator_notifying or not get_accelerator_status()["can_cancel"]:
+		return false
+	accelerator_prepared = false
+	_publish_accelerator_status()
+	return true
+
+func get_delivery_move_speed() -> float:
+	return move_speed_pixels_per_second * ACCELERATOR_FACTOR if accelerator_active and harvest_delivery_started and not carried_rewards.is_empty() and not seed_cargo.has_seed() and state == "MOVING_TO_CHEST" else move_speed_pixels_per_second
+
+func _publish_accelerator_status() -> void:
+	if _accelerator_notifying:
+		return
+	_accelerator_notifying = true
+	accelerator_status_changed.emit()
+	_accelerator_notifying = false
+
+func _accelerator_missing_stock_feedback() -> void:
+	var home := get_tree().current_scene
+	var ui := home.get_node_or_null("UI") if home != null else null
+	if ui != null and ui.has_method("criar_texto_flutuante"):
+		ui.call("criar_texto_flutuante", "Aceleradora indisponível. Entrega normal.", global_position, Color(1.0, 0.85, 0.4))
 
 func _recalcular_contadores_lotes() -> void:
 	lotes_maduros_encontrados = 0
@@ -566,6 +648,8 @@ func _procurar_lote_para_regar() -> bool:
 	return true
 
 func _procurar_bau() -> void:
+	if state != "IDLE" or work_priority == PRIORITY_PAUSED or carried_rewards.is_empty() or seed_cargo.has_seed() or not _accelerator_context_valid():
+		return
 	_cancelar_vida_ociosa()
 	target_chest = _encontrar_bau()
 	if target_chest == null:
@@ -573,18 +657,46 @@ func _procurar_bau() -> void:
 		state = "IDLE"
 		_registrar_acao("indo ao baú")
 		return
+	if not target_chest.is_inside_tree() or target_chest.is_queued_for_deletion() or not target_chest is VillageChest:
+		target_chest = null
+		return
+	# Somente a primeira abertura desta custódia é elegível; retries/load
+	# preservam o marcador, independentemente da geração de navegação.
+	var accelerator_changed := false
+	var missing_stock := false
+	if not harvest_delivery_started:
+		var totals: Variant = GolemWorkState.harvest_totals(carried_rewards)
+		if totals == null or totals.is_empty():
+			target_chest = null
+			return
+		harvest_delivery_started = true
+		if accelerator_prepared:
+			accelerator_prepared = false
+			accelerator_active = GlobalInventory.remover_item(ACCELERATOR_ITEM, 1)
+			missing_stock = not accelerator_active
+			accelerator_changed = true
 
 	ultimo_alvo_detectado = "Baú da Vila"
 	_registrar_acao("indo ao baú")
 	state = "MOVING_TO_CHEST"
 	_iniciar_deslocamento(target_chest.global_position, Callable(self, "_chegar_ao_bau"))
+	var delivery_generation := _task_generation
+	# Observadores recebem uma rota/custódia/estoque já consistentes. Nada do
+	# domínio é escrito após o sinal (que pode carregar outro snapshot).
+	if accelerator_changed:
+		_publish_accelerator_status()
+	if missing_stock and _task_is_current(delivery_generation) and state == "MOVING_TO_CHEST" and not carried_rewards.is_empty() and _accelerator_context_valid():
+		_accelerator_missing_stock_feedback()
 
 func _encontrar_bau() -> Node2D:
+	if not is_inside_tree():
+		return null
+	var home := get_tree().current_scene
 	var baus = get_tree().get_nodes_in_group("village_chest")
 	for bau in baus:
-		if not is_instance_valid(bau):
+		if not is_instance_valid(bau) or bau.is_queued_for_deletion() or home == null or not home.is_ancestor_of(bau):
 			continue
-		if bau is Node2D:
+		if bau is VillageChest:
 			return bau as Node2D
 	return null
 
@@ -598,7 +710,7 @@ func _iniciar_deslocamento(destino: Vector2, callback: Callable) -> void:
 	_stuck_time = 0.0
 	_last_position = global_position
 	if navigation_agent:
-		navigation_agent.max_speed = move_speed_pixels_per_second
+		navigation_agent.max_speed = get_delivery_move_speed()
 		navigation_agent.target_desired_distance = max(10.0, navigation_agent.target_desired_distance)
 		navigation_agent.path_desired_distance = max(10.0, navigation_agent.path_desired_distance)
 		navigation_agent.target_position = destino
@@ -669,6 +781,8 @@ func _tentar_desvio_caldeirao() -> void:
 
 func _abortar_movimento(mensagem: String) -> void:
 	_task_generation += 1
+	if navigation_agent:
+		navigation_agent.max_speed = move_speed_pixels_per_second
 	push_warning(mensagem)
 	velocity = Vector2.ZERO
 	_movement_callback = Callable()
@@ -885,6 +999,7 @@ func _chegar_ao_lote() -> void:
 
 	_registrar_acao("colheu")
 	_registrar_acao("indo ao baú")
+	state = "IDLE"
 	_procurar_bau()
 
 func _chegar_para_regar() -> void:
@@ -930,13 +1045,29 @@ func _chegar_ao_bau() -> void:
 		return
 
 	state = "DEPOSITING"
+	velocity = Vector2.ZERO
+	if navigation_agent:
+		navigation_agent.max_speed = move_speed_pixels_per_second
 	var generation := _task_generation
 	await get_tree().create_timer(deposit_duration).timeout
 	if not _task_is_current(generation) or work_priority == PRIORITY_PAUSED or state != "DEPOSITING":
 		return
+	if not _accelerator_context_valid():
+		# Entrega normal não participa da guarda física da poção. Se o fade
+		# recusar este depósito sem retirar a vila da árvore, deve poder tentar
+		# novamente: não deixar DEPOSITING sem timer/callback futuro.
+		_parar_execucao_atual()
+		_registrar_acao("entrega aguardando vila ativa")
+		return
+	var totals: Variant = GolemWorkState.harvest_totals(carried_rewards)
+	if totals == null or totals.is_empty() or seed_cargo.has_seed():
+		state = "IDLE"
+		target_chest = null
+		push_warning("Golem: carga inválida para depósito; custódia preservada.")
+		return
 
 	var total_quantidade: int = 0
-	if is_instance_valid(target_chest) and target_chest.has_method("deposit_item"):
+	if is_instance_valid(target_chest) and target_chest.is_inside_tree() and not target_chest.is_queued_for_deletion() and target_chest is VillageChest and get_tree().current_scene.is_ancestor_of(target_chest):
 		for recompensa_variant in carried_rewards:
 			if typeof(recompensa_variant) != TYPE_DICTIONARY:
 				continue
@@ -959,6 +1090,8 @@ func _chegar_ao_bau() -> void:
 
 	var feedback_position := target_chest.global_position
 	carried_rewards = []
+	accelerator_active = false
+	harvest_delivery_started = false
 	target_chest = null
 	state = "IDLE"
 	_registrar_acao("indo ao baú")
@@ -966,6 +1099,7 @@ func _chegar_ao_bau() -> void:
 		var ui = get_tree().current_scene.get_node_or_null("UI")
 		if ui and ui.has_method("criar_texto_flutuante"):
 			ui.criar_texto_flutuante("+%d itens no Baú" % total_quantidade, feedback_position, Color(0.4, 0.9, 1.0))
+	_publish_accelerator_status()
 
 func _limpar_alvo_lote() -> void:
 	target_plot = null

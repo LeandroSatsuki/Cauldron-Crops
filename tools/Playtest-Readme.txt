@@ -13,7 +13,7 @@ Nao copie saves antigos para este ambiente sem planejar uma copia segura.
 
 F5 salva; F9 carrega. F10 permanece desativado.
 CHECKLIST.md contem os casos pendentes e os aceites anteriores.
-Inclui 45 casos: 36 anteriores preservados e 9 de Solo Vivo/aplicacao (SV/UP).
+Inclui 50 casos: 45 anteriores preservados e 5 de Aceleradora (AC).
 Clareira restaurada libera Semear trigo no painel do golem, sem ativar.
 O piloto usa trigo, Primavera, quatro lotes iniciais arados e sementes
 depositadas no Bau da Vila. Nao ara sozinho nem usa a Mochila.
@@ -45,6 +45,13 @@ Depois de aplicar, o modo termina; para aplicar outra dose, escolha novamente.
 Mistura e purificacao continuam ingredientes/projetos, nao uso livre no mapa.
 No bau, clicar num item continua abrindo transferencia por quantidade.
 Cartao/faixa/contorno sao visuais provisorios, nao arte final aprovada.
+Pocao Aceleradora: use Golem -> Preparar proxima entrega, sem aproximar.
+Um frasco da Mochila e usado so ao iniciar uma nova entrega de colheita.
+Deslocamento +50% ate o bau, sem acelerar outras tarefas ou repetir sozinho.
+Preparar nao gasta/reserva; cancelar antes do uso e gratuito. Fechar/Escape
+nao cancelam preparo. Depois de usado, conserva ate deposito unico,
+incluindo pausa/retomada/viagem/save. Entrega normal ja iniciada nao muda.
+Titulo/Fechar fixos; role o conteudo para acessar todos os controles.
 Registre ID, aprovado/falhou/nao executado, resolucao e observado.
 Nao force estados indisponiveis nem provoque falhas de gravacao.
 Aprovacao tecnica de startup nao significa aprovacao manual do gameplay.

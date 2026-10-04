@@ -286,56 +286,62 @@ var skill_tree: Panel
 
 
 @onready var golem_panel: PanelContainer = $GolemPanel
-@onready var golem_seeding_toggle: CheckButton = $GolemPanel/MarginContainer/VBoxGolem/SeedingToggle
-@onready var golem_seeding_status: Label = $GolemPanel/MarginContainer/VBoxGolem/SeedingStatus
+@onready var golem_accelerator_icon: TextureRect = $GolemPanel/MarginContainer/VBoxGolem/ScrollContainer/Content/AcceleratorHeader/Icon
+@onready var golem_accelerator_icon_label: Label = $GolemPanel/MarginContainer/VBoxGolem/ScrollContainer/Content/AcceleratorHeader/IconLabel
+@onready var golem_accelerator_stock: Label = $GolemPanel/MarginContainer/VBoxGolem/ScrollContainer/Content/AcceleratorHeader/StockLabel
+@onready var golem_accelerator_status: Label = $GolemPanel/MarginContainer/VBoxGolem/ScrollContainer/Content/AcceleratorStatus
+@onready var golem_accelerator_hint: Label = $GolemPanel/MarginContainer/VBoxGolem/ScrollContainer/Content/AcceleratorHint
+@onready var golem_accelerator_action: Button = $GolemPanel/MarginContainer/VBoxGolem/ScrollContainer/Content/AcceleratorAction
+@onready var golem_seeding_toggle: CheckButton = $GolemPanel/MarginContainer/VBoxGolem/ScrollContainer/Content/SeedingToggle
+@onready var golem_seeding_status: Label = $GolemPanel/MarginContainer/VBoxGolem/ScrollContainer/Content/SeedingStatus
 
 
 
-@onready var golem_status_label: Label = $GolemPanel/MarginContainer/VBoxGolem/StatusLabel
+@onready var golem_status_label: Label = $GolemPanel/MarginContainer/VBoxGolem/ScrollContainer/Content/StatusLabel
 
 
 
-@onready var golem_talent_label: Label = $GolemPanel/MarginContainer/VBoxGolem/TalentLabel
+@onready var golem_talent_label: Label = $GolemPanel/MarginContainer/VBoxGolem/ScrollContainer/Content/TalentLabel
 
 
 
-@onready var golem_task_label: Label = $GolemPanel/MarginContainer/VBoxGolem/TaskLabel
+@onready var golem_task_label: Label = $GolemPanel/MarginContainer/VBoxGolem/ScrollContainer/Content/TaskLabel
 
 
 
-@onready var golem_priority_label: Label = $GolemPanel/MarginContainer/VBoxGolem/PriorityLabel
+@onready var golem_priority_label: Label = $GolemPanel/MarginContainer/VBoxGolem/ScrollContainer/Content/PriorityLabel
 
 
 
-@onready var golem_target_label: Label = $GolemPanel/MarginContainer/VBoxGolem/TargetLabel
+@onready var golem_target_label: Label = $GolemPanel/MarginContainer/VBoxGolem/ScrollContainer/Content/TargetLabel
 
 
 
-@onready var golem_action_label: Label = $GolemPanel/MarginContainer/VBoxGolem/ActionLabel
+@onready var golem_action_label: Label = $GolemPanel/MarginContainer/VBoxGolem/ScrollContainer/Content/ActionLabel
 
 
 
-@onready var golem_counts_label: Label = $GolemPanel/MarginContainer/VBoxGolem/CountsLabel
+@onready var golem_counts_label: Label = $GolemPanel/MarginContainer/VBoxGolem/ScrollContainer/Content/CountsLabel
 
 
 
-@onready var golem_priority_harvest_first_button: Button = $GolemPanel/MarginContainer/VBoxGolem/GridPriorities/BtnGolemHarvestFirst
+@onready var golem_priority_harvest_first_button: Button = $GolemPanel/MarginContainer/VBoxGolem/ScrollContainer/Content/GridPriorities/BtnGolemHarvestFirst
 
 
 
-@onready var golem_priority_water_first_button: Button = $GolemPanel/MarginContainer/VBoxGolem/GridPriorities/BtnGolemWaterFirst
+@onready var golem_priority_water_first_button: Button = $GolemPanel/MarginContainer/VBoxGolem/ScrollContainer/Content/GridPriorities/BtnGolemWaterFirst
 
 
 
-@onready var golem_priority_harvest_only_button: Button = $GolemPanel/MarginContainer/VBoxGolem/GridPriorities/BtnGolemHarvestOnly
+@onready var golem_priority_harvest_only_button: Button = $GolemPanel/MarginContainer/VBoxGolem/ScrollContainer/Content/GridPriorities/BtnGolemHarvestOnly
 
 
 
-@onready var golem_priority_water_only_button: Button = $GolemPanel/MarginContainer/VBoxGolem/GridPriorities/BtnGolemWaterOnly
+@onready var golem_priority_water_only_button: Button = $GolemPanel/MarginContainer/VBoxGolem/ScrollContainer/Content/GridPriorities/BtnGolemWaterOnly
 
 
 
-@onready var golem_priority_pause_button: Button = $GolemPanel/MarginContainer/VBoxGolem/GridPriorities/BtnGolemPause
+@onready var golem_priority_pause_button: Button = $GolemPanel/MarginContainer/VBoxGolem/ScrollContainer/Content/GridPriorities/BtnGolemPause
 
 
 
@@ -2401,6 +2407,17 @@ func _ready() -> void:
 
 
 func _input(event: InputEvent) -> void:
+	if golem_panel != null and golem_panel.visible and event is InputEventMouseButton and event.pressed and not golem_panel.get_global_rect().has_point(event.position):
+		get_viewport().set_input_as_handled()
+		return # O modal não permite clicar ferramentas/itens no fundo.
+	if golem_panel != null and golem_panel.visible and event is InputEventKey:
+		if event.pressed and not event.echo and event.keycode == KEY_ESCAPE:
+			fechar_golem_panel()
+			get_viewport().set_input_as_handled()
+			return
+		if event.keycode in [KEY_1, KEY_2, KEY_3, KEY_4, KEY_SPACE]:
+			get_viewport().set_input_as_handled()
+			return # Foco/atalho do modal não muda seleção nem dispara pesca.
 	if item_use_panel != null and item_use_panel.handle_cancel_input(event):
 		get_viewport().set_input_as_handled()
 		return
@@ -9754,6 +9771,7 @@ func _obter_bau_da_vila_debug() -> VillageChest:
 
 
 func abrir_golem_panel() -> void:
+	_atualizar_modal_blocker.call_deferred()
 
 
 
@@ -9802,6 +9820,7 @@ func abrir_golem_panel() -> void:
 
 
 func fechar_golem_panel() -> void:
+	_atualizar_modal_blocker.call_deferred()
 
 
 
@@ -9891,6 +9910,7 @@ func _obter_golem_atual() -> Node:
 
 func _atualizar_painel_golem() -> void:
 	_atualizar_semeador_golem()
+	_atualizar_aceleradora_golem()
 
 
 
@@ -10201,6 +10221,47 @@ func _configurar_botao_prioridade_golem(button: Button, texto_base: String, sele
 	button.text = ("▶ " if selecionada else "") + texto_base + (" (talento)" if bloqueada else "")
 	button.tooltip_text = ("Só regar exige o talento Golem Irrigador." if texto_base == "Só regar" else "Rega exige o talento Golem Irrigador; Regar primeiro ainda permite colheita e semeadura.") if bloqueada else texto_base
 
+
+func _atualizar_aceleradora_golem() -> void:
+	if not golem_accelerator_action.pressed.is_connected(_on_golem_accelerator_pressed):
+		golem_accelerator_action.pressed.connect(_on_golem_accelerator_pressed)
+	var golem := _obter_golem_atual()
+	var status := {"state": "none", "stock": GlobalInventory.get_item_quantity("pocao_aceleradora"), "can_prepare": false, "can_cancel": false, "reason": "Disponível somente na vila ativa."}
+	if golem != null and golem.has_method("get_accelerator_status"):
+		status = golem.get_accelerator_status()
+	golem_accelerator_icon.texture = Database.obter_textura_item("pocao_aceleradora")
+	golem_accelerator_icon.visible = golem_accelerator_icon.texture != null
+	golem_accelerator_icon_label.visible = golem_accelerator_icon.texture == null
+	golem_accelerator_stock.text = "Aceleradora · Mochila: %d" % int(status.get("stock", 0))
+	var code := str(status.get("state", "none"))
+	var reason_text: String = str({"inactive_context": "Disponível somente na vila ativa.", "no_stock": "Sem frasco na Mochila.", "prepared": "Preparo aguardando nova entrega.", "active": "Benefício já usado nesta carga."}.get(str(status.get("reason", "")), ""))
+	golem_accelerator_action.visible = code != "active"
+	golem_accelerator_action.text = "Cancelar preparo" if code == "prepared" else "Preparar próxima entrega"
+	golem_accelerator_action.disabled = not bool(status.get("can_cancel", false) if code == "prepared" else status.get("can_prepare", false))
+	match code:
+		"prepared":
+			golem_accelerator_status.text = "Preparada · nada gasto ou reservado."
+			golem_accelerator_hint.text = "Espera a próxima nova entrega. Fechar e salvar conservam a ordem. Cancele antes de o frasco ser usado."
+		"active":
+			golem_accelerator_status.text = "Ativa · 1 frasco usado nesta carga."
+			golem_accelerator_hint.text = "Conservada em pausa, retomada e save até o depósito. Sem novo preparo ou cancelamento do benefício."
+		_:
+			golem_accelerator_status.text = "Nenhuma preparada."
+			golem_accelerator_hint.text = "Não gasta agora. Um frasco será usado ao iniciar a próxima nova entrega. Fechar e salvar conservam a ordem. Não altera entrega já iniciada."
+			if not bool(status.get("can_prepare", false)):
+				golem_accelerator_status.text += " " + str(reason_text)
+	golem_accelerator_action.tooltip_text = str(reason_text)
+
+func _on_golem_accelerator_pressed() -> void:
+	var golem := _obter_golem_atual()
+	if golem == null or not golem.has_method("get_accelerator_status"):
+		return
+	var status: Dictionary = golem.get_accelerator_status()
+	if status.get("state") == "prepared":
+		golem.cancel_accelerator_preparation()
+	elif status.get("state") == "none":
+		golem.prepare_accelerator_delivery()
+	_atualizar_aceleradora_golem()
 
 func _atualizar_semeador_golem() -> void:
 	if golem_seeding_toggle == null or golem_seeding_status == null:
