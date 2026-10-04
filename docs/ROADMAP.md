@@ -1,6 +1,12 @@
 # Evolução do Projeto
 
-## Etapa atual — Solo Vivo e uso explícito pelo mouse, B–E fechadas tecnicamente (2026-10-04)
+## Etapa atual — Aceleradora, P1 de entrega física isolada (2026-10-04)
+
+Autor aprovou ensaiar um frasco para uma entrega de colheita do golem ao baú, deslocamento experimental 1,5×, sem teleporte/produção extra/empilhar ou modificar outros trabalhos. **P1 concluída tecnicamente**, somente em cena/scripts dev. Headless e OpenGL: **183 verificações, 18 entregas/9 pares por execução**, collider ativo/segmentos seguros/desvio real. Medianas headless finais curto 1,483→1,100 s, longo 5,700→3,917 s, desvio 5,767→4,350 s; distâncias comparáveis, não ganho econômico homologado. Plano/evidências/limites em FARM_SYSTEM_V2 e Decisão 128.
+
+Não é integração de produção, novo save ou balanceamento final. Consumo/custódia/entrega única/pausa em movimento/retry/baú ausente conferidos; pausa durante depósito não exercitada, efeito sem persistência. Primeiro fixture desativava collider e ficou FAIL preservado; corrigido sem alterar runtime. QA independente sem bloqueador; quatro regressões (Work 148/Solo 173) e reabertura Work 6 passaram, perfis/negativos também. Não é nova suíte 55/55. APPDATA QA isolado, sem save pessoal; **45 casos manuais intactos**, sem exigir teste agora. Pacote LivingSoil-20261004 permanece jogável vigente. Próximo portão: ganho de 0,4–1,8 s não prova valor por frasco; revisar utilidade/custo e confirmar UX/consumo/elegibilidade/persistência antes de integrar. Painel fixo/preparação é recomendação, não aplicação remota autorizada.
+
+## Checkpoint anterior — Solo Vivo e uso explícito pelo mouse, B–E fechadas tecnicamente (2026-10-04)
 
 Parâmetros do lote/receita e UX consulta opaca → Aplicar → alvo/chegada aprovados pelo autor. Solo Vivo durável, aplicação transitória/cancelamento e Crescimento com três doses/frasco aberto no primeiro uso válido implementados. Ingredientes e purificação continuam contextuais; baú conserva transferência. FarmPlot autoridade, flags opcionais GRID/save v4/preflight e cargas legadas preservadas. Plano em FARM_SYSTEM_V2, Decisão 127.
 

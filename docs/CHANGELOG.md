@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-04 - Aceleradora: P1 isolada de uma entrega do golem
+
+- Protótipo dev autorizado: um frasco pessoal/uma entrega física de colheita, deslocamento experimental 1,5×. Sem mudanças em runtime, receita, save, prioridades ou navegação de produção; efeito não persistido nem ativado no pacote jogável.
+- Headless/OpenGL: 183 verificações e 18 entregas/9 pares por execução. Medianas headless finais curto 1,483→1,100 s, longo 5,700→3,917 s, desvio 5,767→4,350 s. Custo/custódia, entrega única, cancelamento, reaplicação, pausa em movimento e retry/baú ausente conferidos; colisão ativa/mínimo por segmentos/desvio real. Primeira execução FAIL preservada e fixture corrigido, sem alterar runtime ou afrouxar critério. Pausa em depósito, persistência e UX final não validadas.
+- QA independente sem bloqueador material. Quatro regressões passaram (Work 148/Solo 173), reabertura Work 6; cinco perfis/seis negativos passaram. Não é nova suíte completa ou build. Save pessoal/oito arquivos alheios preservados; 45 casos manuais idênticos. Resultados/fixtures locais não entram no Git.
+- Ganho de 0,4–1,8 s ainda não demonstra valor por frasco: próxima etapa exige revisar utilidade/custo e confirmar UX/contrato. Painel fixo/preparação é recomendação contra perseguir/pausar golem, não integração/aplicação remota aprovada. Arte e equilíbrio permanecem pendentes.
+
 ## 2026-10-04 - Solo Vivo e aplicação explícita: fechamento técnico B–E
 
 - Parâmetros e UX pelo mouse aprovados. Receita/aprendizado/piloto durável implementados; colheita entregue conserva umidade para trigo, primeira rega normal e fator existente preservados. Nenhuma expansão do semeador, cultura nova ou economia.

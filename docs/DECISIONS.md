@@ -1,5 +1,14 @@
 # Decisions
 
+## Decisão 128 - Aceleradora: ensaio isolado de uma entrega do golem
+
+- Após proposta, autor respondeu “sim, pode seguir”: autoriza P1 isolada, não ativação imediata no jogo principal. Poção Aceleradora já é fabricável por peixe + trigo ou carvão + trigo, mas não possui consumidor de gameplay; metadados/receitas não aprovam efeito por existência.
+- Ensaiar um frasco pessoal para uma entrega física de colheita, velocidade de deslocamento 1,5×, sem empilhar/teleportar/conceder produção extra ou acelerar outras tarefas. Pausas/obstáculos não desperdiçam condição experimental; nenhum aumento de timers reais para fabricar benefício.
+- Comparar trajetos reais equivalentes e registrar física/distância/conclusão; não prometer redução percentual exata no tempo total. Protótipo somente em dev/QA isolado, sem mudar runtime/save/receitas/logística geral. Sem save pessoal ou nova build jogável. Persistência do efeito e UX final ainda não implementadas.
+- Picking móvel e aproximação são riscos concretos; estudar painel fixo/preparação para evitar perseguir/pausar golem. Momentos de consumo, preparo sem carga, entrega em curso, cancelamento/refund e cache/load da futura integração permanecem para confirmação. Não inferir aplicação remota a partir do parecer de UX.
+- P1 concluída tecnicamente: headless/OpenGL passaram 183 verificações e 18 entregas/9 pares por execução, com collider ativo/distância corporal/desvio real. Medianas headless finais curto 1,483→1,100 s, longo 5,700→3,917 s, desvio 5,767→4,350 s; efeito técnico não demonstra valor líquido do frasco. QA independente sem bloqueador; quatro regressões e reabertura Work 6 passaram. Primeira execução com collider desativado permanece FAIL; corrigido somente fixture. Limites/evidências em FARM_SYSTEM_V2, inclusive pausa em depósito não exercitada e efeito não persistido.
+- Manter as 45 pendências manuais e pacote LivingSoil-20261004. Evidência automática não aprova arte/conforto/balanceamento. Próxima etapa requer revisar utilidade/custo e aprovar contrato delimitado; não ativar uma poção de microgestão apenas porque acelera corretamente.
+
 ## Decisão 127 - Aplicação explícita pelo mouse e implementação do Solo Vivo
 
 - Autor confirmou parâmetros do piloto e aprovou a proposta consulta opaca → Aplicar → alvo/aproximação → custo na chegada; depois autorizou executar a fase. Mistura e purificação conservam usos contextuais, sem efeitos livres inventados.

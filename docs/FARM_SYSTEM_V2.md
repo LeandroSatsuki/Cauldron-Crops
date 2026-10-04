@@ -1,5 +1,39 @@
 # Farm System V2
 
+## Poção Aceleradora — P1, protótipo isolado de entrega (2026-10-04)
+
+Autor aprovou iniciar um ensaio, não ativar a poção no jogo principal. Recorte experimental: um frasco pessoal beneficia uma entrega física de colheita do golem ao Village Storage, com deslocamento 1,5×; sem teleporte, produção extra, empilhamento ou aceleração de cultivo/rega/plantio/depósito. Pausa/obstáculo não devem desperdiçar o benefício. Receitas existentes com peixe + trigo ou carvão + trigo permanecem intactas. Valores do ensaio não são balanceamento final.
+
+P1 cria somente cena/scripts em `Scenes/dev` e `Scripts/dev`, reutilizando golem/baú/cenário reais. Comparar trajetos curto/longo/desvio, mesmas origens/cargas/obstáculos e ordem alternada quando possível. Medir frames/tempo de física e distância percorrida, separando movimento de conclusão/depósito; velocidade +50% não promete reduzir duração total em 50% nem em exatamente 33%. Preservar custódia e conferir entrega única, custo, recusa/reaplicação, cancelamento, pausa e retry. Não alongar timers do jogo real ou simular tempo offline.
+
+Nenhum arquivo runtime, receita, save/schema, prioridade ou navegação geral deve mudar nesta P1. O estado do benefício experimental não é persistido; viagem/load e preparação antes de ter carga precisam de contrato aprovado antes da integração. Execução somente com APPDATA isolado sob Builds/QA, sem acessar/copiar/editar save pessoal. O teste não usa nome `SmokeTest`, portanto não altera a suíte/runner de produção. O pacote LivingSoil-20261004 continua sendo a entrega jogável vigente, sem Aceleradora funcional.
+
+Gameplay recomendou logística em vez de timers curtos; engenharia identificou ausência de picking próprio do golem e aproximação da Main vinculada à posição inicial, inadequada para alvo móvel. Arte/UX recomenda estudar botão fixo Golem → painel existente → preparação de uma entrega, não perseguição/pausa obrigatória. Esse parecer ainda não aprova aplicação remota, consumo/refund ou nova interface: consumo, elegibilidade antes/durante entrega e preservação em save/cache continuam decisões de integração. Na P1 a interface é estudo, não implementação de produção nem arte final.
+
+### P1 — fechamento técnico e resultado observado
+
+Protótipo concluído em `Scenes/dev/AcceleratorDeliveryPrototypeTest.tscn` e dois scripts `Scripts/dev/AcceleratorDeliveryPrototype*.gd`; adapter dev estende o Golem original e restaura velocidade exportada/max_speed após cada tick. Fonte de produção permanece `549aa60`, baseline documental `97d9e30`. Não é integração nem novo pacote jogável.
+
+Execução headless e OpenGL Compatibility: **183 verificações por backend**, **18 entregas/9 pares por execução**, três pares alternados em cada trajeto, física a 60 Hz/time_scale 1. Medianas headless do tempo de estado de transporte + depósito:
+
+| Trajeto | Normal | Experimental 1,5× | Ganho observado | Distância normal / acelerada |
+| --- | ---: | ---: | ---: | ---: |
+| Curto | 1,483 s | 1,100 s | 0,383 s (25,8%) | 151,47 / 150,40 px |
+| Longo | 5,700 s | 3,917 s | 1,783 s (31,3%) | 691,21 / 691,20 px |
+| Desvio pelo caldeirão | 5,767 s | 4,350 s | 1,417 s (24,6%) | 542,99 / 542,95 px |
+
+Tabela usa a execução headless final após explicitar limites no relatório; ganho é a diferença entre medianas, não a mediana das diferenças de cada par. OpenGL registrou medianas normais 1,500/5,717/5,767 s e aceleradas 1,100/3,917/4,367 s, diferença de até um frame frente ao headless, com conclusão/custódia iguais. `walk_seconds` mede o estado MOVING_TO_CHEST, inclusive espera pelo detector de travamento; não é tempo de movimento contínuo. Depósito de 0,3 s e recuperação de rota não são acelerados. Pequena diferença de distância curta decorre do limiar de chegada/discretização, não de outra rota; esses números não são economia por minuto ou balanceamento final.
+
+Collider real confirmado por consulta à física antes das 18 amostras; mínimo medido por segmentos nos seis desvios ≈45,015 px, soma dos raios do caldeirão/golem, sem atravessamento. Todos exercitaram o fallback real de desvio. Custo pessoal exato, recusa sem frasco/carga, cancelamento/reaplicação, callback obsoleto, pausa em movimento, interrupção de rota, baú ausente/reinserido e entrega seguinte sem bônus passaram. Baú ausente usa controle negativo sintético de chegada: não representa capacidade, pois o Storage atual é ilimitado. **Pausa durante DEPOSITING não foi exercitada**; load/cache/persistência do efeito e UX móvel não fazem parte da P1.
+
+A primeira execução ficou **FAIL**: congelar CauldronUI por PROCESS_MODE_DISABLED retirava seu collider. Corrigido somente o fixture, preservando física; acrescentadas consultas/mínimo por segmentos, sem afrouxar o critério de desvio ou mudar navegação runtime. Resultado inicial preservado em `Builds/QA/AcceleratorDeliveryPrototype/results_initial_invalid_geometry.json`/`Accelerator-P1.log`, não valida os desvios. Evidências finais locais: `results_headless.json`, `results_windows.json`, `Accelerator-P1-final.log`, `Accelerator-P1-OpenGL.stdout.log`/`.stderr.log`. Um aviso esperado de baú inválido acompanha o controle negativo; não afirmar ausência de warnings. QA independente conferiu código, logs/JSON e geometria, sem bloqueador material.
+
+Regressão proporcional nesta P1: GolemLife, GolemWorkPersistence (**148**), PlayerNavigationPolish e LivingSoil (**173**) passaram; GolemWork em processo novo passou **6** verificações. Não é nova execução da suíte completa 55/55, nem reabertura do efeito experimental. Cinco perfis/seis controles negativos passaram. Nenhum save pessoal acessado, asset novo ou produção alterada; exportação Playtest exclui dev, runner conserva 55 testes. Sem nova build ou inspeção/aceite de UX final.
+
+Para reproduzir, configurar APPDATA para uma pasta dentro de `Builds/QA` **antes** de iniciar Godot 4.6.2 e executar a cena dev acima; ela recusa outro user_data_dir antes de instanciar Main. Não executar esse ensaio com progresso pessoal. Logs/resultados/fixtures são locais e ficam fora do Git.
+
+As **45 pendências manuais existentes permanecem intactas**, sem exigir testes imediatos. O efeito técnico existe no ensaio; os ganhos absolutos pequenos ainda não demonstram que um frasco/uma entrega compensa ingredientes, fabricação e atenção do jogador. Revisão de gameplay dos resultados recomenda conveniência opcional/situacional, sem promessa de produção sustentada. Fabricação de 2 s supera os ganhos de cada rota ensaiada, mas pode ocorrer antes/em paralelo: não prova saldo negativo de tempo. Fixture fornece frasco/carga; não mede aquisição/fabricação, interação humana, ida ao lote/colheita, frequência das rotas ou rendimento global. Não alterar receita, alongar timers ou ampliar para múltiplas entregas/consumo automático para justificar o item sem aprovação. Portão seguinte: revisar utilidade/custo e confirmar UX/contrato antes de integrar ao jogo principal. Preparação pelo painel é proposta, não autorização de aplicação remota, repetição automática ou persistência nova.
+
 ## Solo Vivo e aplicação pelo mouse — B–E fechadas tecnicamente (2026-10-04)
 
 Autor confirmou receita/parâmetros do piloto e aprovou o fluxo consulta opaca → Aplicar → alvo válido → aproximação → consumo na chegada. B–D implementadas e E concluída tecnicamente. Não é aceite manual nem arte final.
