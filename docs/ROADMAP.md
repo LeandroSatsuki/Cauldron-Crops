@@ -1,6 +1,14 @@
 # Evolução do Projeto
 
-## Etapa ativa — Golem Semeador, Fase E implementada (2026-10-03)
+## Etapa atual — Golem Semeador, fechamento técnico A–F (2026-10-03)
+
+Fase F concluída tecnicamente, sem mudança de gameplay/schema: fonte `226bb72` exportada em checkout limpo, suíte **50/50**, mais duas reaberturas em novos processos (6 + 3 verificações). Startup do EXE headless/OpenGL passou; auditoria do PCK confirmou dependências do semeador, exclusão de conteúdo interno/saves e diretório de save próprio. Não significa aprovação manual de navegação/arte/conforto.
+
+Pacote local: `Builds/Playtest/GolemSower-20261003`, com EXE/PCK, StartPlaytest.cmd, manifesto/hashes, logs, instruções e checklist **24 casos** (16 anteriores + 8 semeador). Fonte versionada e documentos publicados; binários/QA/saves permanecem fora do Git. Pacote anterior preservado. Build usa `%APPDATA%/CauldronCropsPlaytest`, não copia progresso pessoal; save de playtest anterior pode ser retomado nesse ambiente separado. Save pessoal intacto por hash/tamanho/data.
+
+Manual continua adiado, sem exigir teste imediato. Próximo portão de experiência é executar o checklist quando disponível. Para continuar construção antes disso, propor o próximo recorte de gameplay/progressão com resultado, limites e contratos claros; não implementar novos sistemas reservados por consequência do fechamento. Plano em [Farm System — fechamento](FARM_SYSTEM_V2.md#golem-semeador--fechamento-técnico-af-concluído-2026-10-03).
+
+## Checkpoint anterior — Golem Semeador, Fase E implementada (2026-10-03)
 
 Controle Semear trigo integrado ao painel existente, bloqueado até a Clareira restaurada e OFF por padrão/legado. Atualizar/abrir/load não emite toggle nem ativa a habilidade; OFF com semente preserva devolução física da D. Nenhuma nova recompensa/talento/receita, HUD permanente ou F10. Consulta pura descreve estoque exclusivo do baú, terra/estação/canteiro, pausa/prioridades, transporte e devolução sem alterar domínio.
 

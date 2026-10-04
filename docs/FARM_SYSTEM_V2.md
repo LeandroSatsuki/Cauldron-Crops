@@ -1,10 +1,11 @@
 # Farm System V2
 
 <a id="golem-semeador--piloto-aprovado-fase-d-concluída-2026-10-03"></a>
+<a id="golem-semeador--piloto-aprovado-fase-e-concluída-2026-10-03"></a>
 
-## Golem Semeador — piloto aprovado, Fase E concluída (2026-10-03)
+## Golem Semeador — fechamento técnico A–F concluído (2026-10-03)
 
-Esta seção é o plano operacional atual do piloto, não uma migração de Farm System V2. As seções seguintes conservam o histórico/direções do sistema. Fases A–E implementadas: contratos, domínio, persistência, trabalho físico e controle no painel existente. Clareira restaurada libera a opção, sempre OFF por padrão/legado; só o jogador a ativa. Fase F (auditoria/exportação/checklist) e aceite manual separado permanecem pendentes. Âncora antiga preservada para links de checkpoints anteriores.
+Esta seção é o plano operacional atual do piloto, não uma migração de Farm System V2. As seções seguintes conservam o histórico/direções do sistema. Fases A–F concluídas tecnicamente: contratos, domínio, persistência, trabalho físico, controle no painel existente e pacote de playtest auditado. Clareira restaurada libera a opção, sempre OFF por padrão/legado; só o jogador a ativa. Aceite manual e conforto permanecem pendentes. Âncoras antigas preservadas para links de checkpoints anteriores; aprovação do recorte não significa aprovação manual da implementação.
 
 ### Recorte fechado
 
@@ -117,6 +118,16 @@ Panel local de 440 pixels com fundo opaco, quebra de texto/botões, tamanho cont
 GolemSowerUISmokeTest: 325 verificações de clique no toggle, marco/OFF, recompensas existentes, estados/consulta sem mutação, conflito de prioridade/talento, OFF com cargo, JSON/replay/legado, abertura/fechamento/input, fundo opaco/controles nas três resoluções, recálculo preservando arraste e cache/resize após Bosque. Modo de reabertura confirma três verificações em outro processo a partir de arquivo QA. Importação sem erros, suíte completa 50/50 e inspeção OpenGL; save pessoal idêntico por hash/tamanho/data. Renderização técnica não substitui aceite do autor.
 
 **Fases A–E implementadas; F pendente.** Próximo incremento: auditoria do pacote, nova build de playtest com save separado e checklist consolidado do semeador, preservando os 16 casos manuais anteriores. Não exportado nesta fase de UI; manual anterior e observação/conforto do semeador continuam adiados, sem exigir teste imediato.
+
+### Fase F — fechamento técnico e playtest isolado
+
+Fonte da build: `226bb72`, exportada de checkout limpo em `Builds/Playtest/GolemSower-20261003`. EXE/PCK, StartPlaytest.cmd, LEIA-ME.txt, CHECKLIST.md, manifesto/hashes e logs ficam locais, fora do Git. O pacote anterior PostV0-20261003 foi preservado. Transformação exclusivamente de exportação usa `%APPDATA%/CauldronCropsPlaytest`; não copia/carrega o save pessoal. Builds de playtest compartilham esse ambiente separado: progresso de playtest anterior não é apagado. As verificações automáticas usam ainda outro APPDATA, dentro de Builds/QA do checkout temporário.
+
+Importação/validação sem erros, suíte limpa **50/50**, incluindo domínio 365, persistência 148, trabalho físico 107 e UI 325 verificações. Reabertura executada imediatamente após cada fixture em dois novos processos: persistência 6 e UI 3 verificações, sem outro teste substituir o arquivo entre execução e reabertura. Timers, concorrência, pausa/load, viagem/cache e retomada física cobertos pelos testes; não equivalem a sessão real aprovada.
+
+Startup do EXE passou headless e OpenGL com janela oculta/120 frames. Auditoria do PCK confirmou save separado, cenas/receita necessárias, scripts de cargo/snapshot/painel e ícone de semente; recusou inclusão de testes, docs/tools/Builds/.git e savegame. Manifesto registra fonte, hashes, 50 regressões, dois processos, auditoria/startups e `manual_status: pending`. Save pessoal idêntico por hash/tamanho/data. Checkout temporário removido, arte local/UIDs alheios preservados fora dos commits.
+
+Checklist integrado mantém **16 casos anteriores + GS-01–GS-08 = 24 pendentes**, com aceites anteriores preservados e pré-condições condicionais. Sem exigir teste imediato, editar saves ou reativar F10. Nesta F somente ferramentas de QA/exportação e documentação mudaram; sem novos sistemas/gameplay/schema. Próximo portão de experiência é o checklist quando o autor puder; continuidade de construção pode começar por proposta delimitada do próximo conteúdo, sem implementar economia/NPCs/mapas automaticamente ou presumir aceite deste piloto.
 
 ## Visão Geral
 

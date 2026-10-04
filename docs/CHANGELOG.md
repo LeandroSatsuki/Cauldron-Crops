@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-03 - Golem Semeador: Fase F de fechamento técnico
+
+- Suíte limpa 50/50 e duas reaberturas imediatas em processos separados (6 + 3 verificações), sem outro fixture substituir o save QA. Runner registra startups headless/OpenGL, auditoria e contagem de casos no manifesto.
+- Build da fonte `226bb72` em `Builds/Playtest/GolemSower-20261003`: EXE/PCK, launcher, instruções, manifesto/hashes, logs e checklist 24 casos (16 anteriores + 8 semeador). PCK auditado com dependências do piloto e save próprio; pacote anterior preservado, binários não publicados no Git.
+- Save pessoal idêntico por hash/tamanho/data. Somente ferramentas/documentação nesta F, sem mudança de gameplay/schema. A–F tecnicamente concluídas; aceite manual, arte e conforto continuam pendentes, sem solicitar teste imediato ao autor indisponível.
+
 ## 2026-10-03 - Golem Semeador: Fase E de controle e apresentação
 
 - Semear trigo no painel existente, liberado pela Clareira restaurada e desligado por padrão/legado. Abrir/atualizar/load não emite toggle; OFF com cargo preserva retorno físico. Sem novo talento/recompensa/receita/HUD ou F10.

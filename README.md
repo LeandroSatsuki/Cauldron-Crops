@@ -40,7 +40,8 @@ plantar → regar → colher → combinar ingredientes → descobrir receitas �
 - estações e gerenciamento de água;
 - save/load v4 do progresso principal, com compatibilidade legada;
 - purificação de áreas e expansão da fazenda;
-- golem coletor com prioridades de trabalho e talento de irrigação.
+- golem coletor com prioridades de trabalho e talento de irrigação;
+- piloto de semeadura opcional de trigo em quatro lotes, liberado pela Clareira restaurada, com retirada/transporte/plantio/devolução físicos e cargo persistido.
 
 Loja, venda, requests legados e F10 permanecem desativados. A Mochila ganha +4 slots ao restaurar o Herbário e +4 na primeira coleta do Bosque, uma vez por marco, em qualquer ordem. A barra usa páginas de até 12 e o painel do baú mostra o progresso. Recusas preservam a origem/recompensa, e saves acima da capacidade atual carregam todas as quantidades sem truncamento. Marcos, capturas pendentes e produção do caldeirão integram o save v4. Validação manual integrada ainda pendente.
 
@@ -89,9 +90,11 @@ Para gerar uma build, instale os templates de exportação compatíveis com sua 
 
 ## Estado do desenvolvimento
 
-Checkpoint atual (2026-10-03): playtest pós-V0 exportado da fonte `c43abae` em cópia limpa, com 46/46 smoke tests, auditoria do pacote e startup headless/OpenGL sem erros. Save próprio da build, manifesto e checklist de 16 casos em `Builds/Playtest/PostV0-20261003`; binários locais não publicados no Git. Save pessoal preservado. Manual/arte/ritmo continuam pendentes; próximo recorte recomendado é propor gameplay/progressão delimitados, não implementar sistemas reservados automaticamente.
+Checkpoint atual (2026-10-03): Golem Semeador A–F concluído tecnicamente. Fonte `226bb72` exportada em cópia limpa, suíte **50/50**, mais duas reaberturas em processos separados (6 + 3 verificações), auditoria do PCK/dependências/save separado e startup do EXE headless/OpenGL sem erros. Pacote em `Builds/Playtest/GolemSower-20261003`, com StartPlaytest.cmd, manifesto/hashes, logs e checklist **24 casos** (16 anteriores + 8 semeador). Binários locais fora do Git; pacote anterior e save pessoal preservados. Ambiente `%APPDATA%/CauldronCropsPlaytest` não copia progresso pessoal, mas pode conter progresso de playtest anterior. Semear trigo fica OFF por padrão/legado e só usa sementes do baú, lotes vazios/arados e Primavera. Manual/arte/ritmo continuam pendentes; próximo recorte deve ser proposto antes de ampliar conteúdo.
 
 ### Histórico de checkpoints
+
+Playtest anterior (2026-10-03): fonte `c43abae`, 46/46 smoke tests, auditoria e startup headless/OpenGL. Pacote local `Builds/Playtest/PostV0-20261003` preservado; seu checklist de 16 casos foi ampliado, sem transformar pendências em aprovações.
 
 Checkpoint seguinte (2026-10-03): save prepara arquivo temporário verificado e mantém cópia anterior `.bak` antes de substituir o principal. Falhas são informadas, sem carregar backup automaticamente; formato v3/v4 e gameplay preservados. Testes de arquivo usam somente sandbox de QA. Save/load manual normal e demais casos do checklist continuam adiados; não provocar falhas no save pessoal.
 

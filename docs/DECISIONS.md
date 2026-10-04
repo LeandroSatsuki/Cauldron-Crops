@@ -1,5 +1,12 @@
 # Decisions
 
+## Decisão 118 - Fechamento técnico do semeador sem presumir aceite manual
+
+- Fase F fecha A–F tecnicamente, sem novo gameplay/schema/economia/NPC/mapa. Exportação somente da fonte versionada `226bb72`, em checkout limpo; pacote local GolemSower-20261003 preserva a build anterior e permanece fora do Git. Save exclusivo CauldronCropsPlaytest, sem copiar o pessoal; versões de playtest compartilham esse ambiente separado e não apagam progresso anterior.
+- Runner executa reabertura em novo processo imediatamente após cada fixture de persistência/UI; registra contagem no manifesto. Suíte 50/50 e reaberturas 6 + 3 passaram; timers/viagem/concorrência cobertos pelas regressões existentes. Inicialização do EXE headless/OpenGL oculta e auditoria do PCK passaram, incluindo scripts/cenas/ícone do piloto e exclusões internas. Não extrapolar startup a gameplay completo aprovado.
+- Checklist integrado preserva 16 casos anteriores e acrescenta oito GS, todos pendentes. Autor indisponível: não exigir gate manual agora nem confundir autorização com aceite. Save pessoal idêntico por hash/tamanho/data, arquivos alheios intactos e fora dos commits. Fonte/documentação enviadas ao GitHub; builds/saves/QA não.
+- Após este fechamento, planejar próximo recorte antes de ampliar conteúdo; checklist/arte/ritmo continuam como portão de experiência, sem reabrir a V0 já aprovada ou definir sistemas reservados sem autorização.
+
 ## Decisão 117 - Ativação opcional do semeador e estados no painel
 
 - Fase E autorizada: Semear trigo no painel do golem existente. Marco GroveExpedition.restored libera a opção sem ativar, conceder nova recompensa/talento ou mudar receitas existentes. OFF por padrão e no legado elegível; somente interação explícita usa API da D. Bloco de save da C não mudou.
