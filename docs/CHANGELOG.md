@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-04 - Aceleradora: P2 de contrato/UX proposta
+
+- Autor autorizou formular a etapa seguinte, não integração. Candidato no Farm System/Decisão 129: painel fixo/preparo one-shot sem gasto/reserva, consumo pessoal no início de entrega lógica elegível, cancelamento antes e conservação após gasto até depósito. Comando sem aproximação e ordem persistente ainda precisam de aprovação humana.
+- Gameplay/UX/engenharia revisaram candidato. Marcador de fase da custódia evita confundir retry/load/cache com nova entrega; preparar durante transporte normal espera próxima carga, sem fila/empilhamento/repetição. Baú ausente antes não cobra; estoque perdido desarma/avisa. UI preserva seleções/contexto e distingue estado da poção/trabalho. Schema atual de cinco campos exige extensão explícita futura com invariantes/legado/preflight.
+- P2 somente documental, sem execução de jogo/suíte/build, código/runtime/receitas/save/arte ou acesso a save pessoal. QA independente sem bloqueador documental; validador cinco perfis/seis negativos passou. Ganho P1 de 0,4–1,8 s continua sem valor por frasco homologado; 45 textos manuais idênticos e pacote LivingSoil-20261004 mantidos. Plano de integração/QA futuro definido, não iniciado; aguardar confirmação do contrato completo.
+
 ## 2026-10-04 - Aceleradora: P1 isolada de uma entrega do golem
 
 - Protótipo dev autorizado: um frasco pessoal/uma entrega física de colheita, deslocamento experimental 1,5×. Sem mudanças em runtime, receita, save, prioridades ou navegação de produção; efeito não persistido nem ativado no pacote jogável.

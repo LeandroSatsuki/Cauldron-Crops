@@ -1,6 +1,12 @@
 # Evolução do Projeto
 
-## Etapa atual — Aceleradora, P1 de entrega física isolada (2026-10-04)
+## Etapa atual — Aceleradora, P2 de contrato/UX formulada (2026-10-04)
+
+Autor aprovou preparar a proposta seguinte após P1 `0473814`. **P2 documental**, não implementação. Candidato no FARM_SYSTEM_V2/Decisão 129: painel fixo Golem, preparar one-shot sem gasto/reserva, frasco pessoal consumido no início de entrega lógica elegível; cancelar antes, conservar após gasto até depósito. Marcador de custódia impede tratar retry/load/cache como entrega nova; preparar durante transporte normal espera próxima carga. Estados preparados/ativos persistentes e comando sem aproximação dentro da vila são **propostos, aguardando confirmação humana**. Sem fila, repetição automática, receita/timer alterados, trabalho fora da vila ou tempo offline.
+
+Gameplay/UX/engenharia revisaram regras e riscos: efeito de 0,4–1,8 s continua sem valor econômico homologado, comando precisa ser claro e painel deve caber sem cortar controles. P2 sem execução de jogo/suíte/nova build ou alteração de runtime/save/assets. **45 textos manuais preservados**, autor indisponível; LivingSoil-20261004 permanece jogável vigente. Próximo portão: confirmar contrato completo antes de integrar; plano mínimo inclui domínio, persistência, UI e QA/exportação futuros, não iniciados.
+
+## Checkpoint anterior — Aceleradora, P1 de entrega física isolada (2026-10-04)
 
 Autor aprovou ensaiar um frasco para uma entrega de colheita do golem ao baú, deslocamento experimental 1,5×, sem teleporte/produção extra/empilhar ou modificar outros trabalhos. **P1 concluída tecnicamente**, somente em cena/scripts dev. Headless e OpenGL: **183 verificações, 18 entregas/9 pares por execução**, collider ativo/segmentos seguros/desvio real. Medianas headless finais curto 1,483→1,100 s, longo 5,700→3,917 s, desvio 5,767→4,350 s; distâncias comparáveis, não ganho econômico homologado. Plano/evidências/limites em FARM_SYSTEM_V2 e Decisão 128.
 

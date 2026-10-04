@@ -1,5 +1,13 @@
 # Decisions
 
+## Decisão 129 - Aceleradora: autorização de formular P2, contrato ainda proposto
+
+- Autor aprovou continuar após a oferta de preparar P2. Autoriza formulação/revisão documental, não integração automática, comando remoto ou alteração de save. P1 publicada em `0473814` continua baseline técnico.
+- Candidato: painel fixo Golem → preparar uma entrega; exige frasco pessoal ao armar, sem retirada/reserva, gasto na primeira abertura de entrega lógica elegível, 1,5×/uma carga/sem fila/repetição. Cancelar antes do gasto é grátis; após gasto preserva até depósito sem refund. Sem baú antes não cobra; estoque perdido desarma/avisa e segue normal. Fonte pessoal, comando sem aproximação e ordem persistente precisam de aprovação humana explícita.
+- Nova rota não equivale a nova entrega: marcador de fase da custódia distingue retry/load/cache. Preparar durante transporte normal não beneficia essa carga; legado começa sem efeito e cargo considera entrega iniciada. Golem autoridade, estados exclusivos/preflight estrito; não herdar flags de carga substituída. Nenhum consumo/trabalho fora da vila ativa ou offline.
+- Gameplay mantém ressalva de valor de 0,4–1,8 s; proposta opcional/situacional, sem alterar receita/timers ou ampliar benefício para justificá-lo. UX indica bloco compacto, sem segundo fluxo livre de Aplicar; fechar painel não pausa/cancela preparo. Plano/limites/validação futura em FARM_SYSTEM_V2.
+- P2 documental formulada, aguarda confirmação do conjunto antes da implementação. 45 casos manuais intactos, pacote LivingSoil-20261004 mantido; não considerar números da P1/regressão como execução desta etapa.
+
 ## Decisão 128 - Aceleradora: ensaio isolado de uma entrega do golem
 
 - Após proposta, autor respondeu “sim, pode seguir”: autoriza P1 isolada, não ativação imediata no jogo principal. Poção Aceleradora já é fabricável por peixe + trigo ou carvão + trigo, mas não possui consumidor de gameplay; metadados/receitas não aprovam efeito por existência.
