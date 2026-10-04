@@ -1,6 +1,16 @@
 # Evolução do Projeto
 
-## Etapa atual — Ciclo Sustentável da Fazenda, incremento 2 (2026-10-03)
+## Etapa atual — Ciclo Sustentável da Fazenda, fechamento técnico 1–3 (2026-10-04)
+
+Incremento 3 concluído tecnicamente, sem alterar gameplay/schema. Exportação definitiva da fonte `8a1bc4a` em checkout limpo: suíte **52/52**, quatro reaberturas em novos processos (**6 + 3 + 8 + 8 verificações**) e fixture adicional de replantio (**2**, não contado como reabertura). Runner exige a contagem específica de cada modo antes de aceitar PASS.
+
+Pacote local: `Builds/Playtest/SustainableFarm-20261004`, com EXE/PCK, StartPlaytest.cmd, manifesto/hashes, logs, instruções e checklist **30 casos pendentes** (24 anteriores intactos + 6 SC). Startup headless/OpenGL e auditoria isolada do PCK passaram; receitas de recuperação/replantio conferidas por ingredientes, resultado, disponibilidade, tempo e XP. Save separado CauldronCropsPlaytest; não copia/apaga progresso pessoal nem de playtest anterior. Save pessoal idêntico por hash/tamanho/data; binários/QA/arte local fora do Git.
+
+Controle negativo revelou que `--main-pack` executado da pasta do projeto podia aceitar arquivos locais ausentes no PCK. Auditoria agora usa `--path` da pasta de saída; build histórica sem receitas é recusada corretamente. Commit é capturado uma vez e usado no checkout/manifesto, sem ler HEAD mutável no fim. Pacote SustainableFarm-20261003 é preliminar, marcado como substituído; usar o de 20261004.
+
+Recorte fechado tecnicamente, **não aprovado manualmente**. Arte, conforto, ritmo e balanceamento continuam pendentes, sem exigir teste imediato. Próximo passo de construção: propor um novo recorte delimitado de gameplay/progressão antes de implementar sistemas reservados. Plano em [Farm System](FARM_SYSTEM_V2.md#ciclo-sustentável-da-fazenda--recorte-aprovado-2026-10-03).
+
+## Checkpoint anterior — Ciclo Sustentável da Fazenda, incremento 2 (2026-10-03)
 
 Orientação existente do Livro/Mochila/baú/golem explica reposição e distingue plantio manual de semeadura pelo baú. Nome Semente de Trigo consistente no Livro; descrições curtas, sem novo painel/HUD ou regra de gameplay.
 

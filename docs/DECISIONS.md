@@ -1,5 +1,13 @@
 # Decisions
 
+## Decisão 121 - Fechamento do ciclo sustentável com auditoria de pacote isolada
+
+- Incremento 3 autorizado e concluído tecnicamente. Exportador executa recuperação/reabertura, fixture de replantio/reabertura imediatamente após o ciclo, antes de outra cena substituir o arquivo QA. Exige PASS com contagem específica dos modos; quatro reaberturas totais (6 + 3 + 8 + 8), fixture adicional (2) separado no manifesto.
+- Controle negativo com build antiga revelou possível falso positivo por recursos locais quando a auditoria roda da pasta do projeto. `--path` agora aponta à pasta do pacote; receita ausente é recusada. Auditoria positiva do PCK novo confere duas receitas, ingredientes/resultados, disponibilidade, tempo e XP, além de dependências, exclusões e save separado.
+- Fonte é capturada uma vez para checkout e manifesto; HEAD posterior não identifica indevidamente uma build anterior. Primeira passagem preliminar `66b9d4b` passou na suíte, mas foi substituída após estas correções; metadata local corrigida e pacote marcado como preliminar. Entrega definitiva `SustainableFarm-20261004` exporta `8a1bc4a`, com nova suíte 52/52, quatro reaberturas, fixture e startups headless/OpenGL aprovados.
+- Checklist mantém 24 casos anteriores intactos e acrescenta seis SC, todos pendentes. Fechamento técnico dos incrementos 1–3 não é aceite manual, artístico, de ritmo ou balanceamento. Autor indisponível não precisa testar agora. Save pessoal idêntico por hash/tamanho/data; build/QA/arte local fora do Git, sem mudar gameplay/schema ou sistemas reservados.
+- Próxima construção começa por proposta delimitada de gameplay/progressão. Não iniciar automaticamente economia/NPCs/mapas/mastery ou reabrir a V0 já aprovada.
+
 ## Decisão 120 - Orientação de sementes e validação do ciclo com fontes reais
 
 - Incremento 2 autorizado. Explicar receitas nos tooltips existentes/Livro, depósito no estado sem estoque do golem e fontes de plantio no baú, em ambas as direções. Corrigir texto que tratava toda semente como exclusivamente pessoal; apenas trigo serve ao piloto semeador. Sem nova janela/HUD/automação/toggle, schema ou regras de aquisição.

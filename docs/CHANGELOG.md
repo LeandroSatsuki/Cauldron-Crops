@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-04 - Ciclo Sustentável da Fazenda: fechamento técnico 1–3
+
+- Exportador integra reaberturas específicas de recuperação/replantio, separa fixture adicional e exige contagens esperadas de PASS. Corrigidas auditoria vulnerável a recursos locais e identificação do commit por HEAD mutável; checkout/manifesto agora usam a mesma fonte capturada.
+- Pacote definitivo `SustainableFarm-20261004`, fonte `8a1bc4a`: suíte limpa 52/52, quatro reaberturas (6 + 3 + 8 + 8) e fixture de replantio (2), startups headless/OpenGL e auditoria isolada do PCK aprovados. Receitas/contratos e exclusões conferidos; controle negativo recusa build histórica sem receitas.
+- Checklist preserva 24 casos anteriores e acrescenta seis SC: 30 pendentes, sem aceite manual/arte/ritmo presumido. Pacote preliminar de 20261003 marcado como substituído; builds anteriores preservadas. Save pessoal idêntico por hash/tamanho/data. Sem gameplay/schema ou sistemas novos neste fechamento; fonte/documentação publicadas, binários/saves/QA/arquivos alheios excluídos.
+
 ## 2026-10-03 - Ciclo Sustentável da Fazenda: incremento 2 integrado
 
 - Livro/tooltips e estado sem sementes do golem orientam reposição; baú distingue Mochila para plantar manualmente e sementes de trigo armazenadas para o semeador. Demais sementes continuam manuais. Resultado do Livro com nome canônico; descrições encurtadas após captura, sem nova janela/HUD/regra agrícola.

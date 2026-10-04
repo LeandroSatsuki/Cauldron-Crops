@@ -18,7 +18,7 @@ Autor aprovou duas receitas determinísticas para repor trigo pelo caldeirão: *
 2. **Incremento 2 — orientação/integração:** comunicação discreta de como repor/depositar sementes, testar recuperação a partir dos recursos realmente acessíveis, consumo/plantio manual e ciclo físico com golem, save/load/viagem. Sem HUD extra ou alterar automação.
 3. **Incremento 3 — fechamento:** regressões, pacote novo auditado, ampliar checklist sem apagar os 24 casos existentes; aceite manual adiado. Build anterior permanece histórica.
 
-Estado: **incrementos 1–2 concluídos tecnicamente**; incremento 3 pendente. Checkpoint do incremento 1: importação sem erros, suíte 51/51 e 86 verificações do SustainableSeedsSmokeTest em QA isolado. Testados disponibilidade padrão sem XP, ingredientes duplicados, produção manual, seleção/quantidade/botão do Livro, lote, reservas por origem, cancelamento parcial, recusa por recursos, capacidade sem entrega parcial, reconstrução JSON em nova instância e timer real de 2 segundos.
+Estado: **incrementos 1–3 concluídos tecnicamente**; aceite manual adiado. Checkpoint do incremento 1: importação sem erros, suíte 51/51 e 86 verificações do SustainableSeedsSmokeTest em QA isolado. Testados disponibilidade padrão sem XP, ingredientes duplicados, produção manual, seleção/quantidade/botão do Livro, lote, reservas por origem, cancelamento parcial, recusa por recursos, capacidade sem entrega parcial, reconstrução JSON em nova instância e timer real de 2 segundos.
 
 ### Incremento 2 — orientação e ciclo integrado
 
@@ -28,7 +28,15 @@ SustainableFarmCycleSmokeTest: **77 verificações**. Começa sem trigo/sementes
 
 Arquivo QA final preserva recuperação em produção; outro processo carrega/recarrega e entrega exatamente uma vez (**8 verificações**). Fixture separado de replantio em produção com trigo de duas origens (**2 verificações**) e outra reabertura (**8 verificações**) conferem três sementes, estoques e XP. Suíte **52/52**; retestes finais de contrato/receitas (86), layout do Livro (141), ciclo e reaberturas após encurtar os textos. Golem UI passou em OpenGL (325) e reabertura específica (3); persistência existente/reabertura (6) também passou. Capturas OpenGL de Livro, depósito/retirada e painel sem estoque inspecionadas. Técnica, não aceite manual ou balanceamento.
 
-Save pessoal idêntico por hash/tamanho/data. Sem nova exportação: GolemSower-20261003 ainda não contém estas receitas/orientações. Os 24 casos manuais anteriores permanecem pendentes. Próximo incremento 3: automatizar estas reaberturas no exportador, regressão em checkout limpo, nova build auditada e checklist ampliado sem apagar pendências. Não ampliar sistemas reservados.
+Estado ao fim do incremento 2: save pessoal idêntico por hash/tamanho/data; ainda sem nova exportação, com 24 casos manuais pendentes. GolemSower-20261003 não contém estas receitas/orientações. Fechamento posterior abaixo não altera os contratos ou amplia sistemas reservados.
+
+### Incremento 3 — fechamento técnico (2026-10-04)
+
+Fonte `8a1bc4a` exportada em checkout limpo para `Builds/Playtest/SustainableFarm-20261004`. Suíte **52/52**, reaberturas imediatas do golem (6 + 3) e de recuperação/replantio (8 + 8) em processos separados; preparação de arquivo de replantio (2) registrada como um fixture adicional, não quinta reabertura. Importação/validação, EXE headless/OpenGL e auditoria do PCK passaram. Manifesto registra commit capturado, hashes, 52 regressões, quatro reaberturas, um fixture e 30 casos manuais pendentes.
+
+Auditoria usa a pasta de saída como raiz, sem mascarar recursos ausentes por arquivos do workspace; controle negativo com GolemSower-20261003 recusa a receita ausente. No PCK novo confere ingredientes, resultado, disponibilidade padrão, tempo de dois segundos e XP zero. Commit capturado antes da criação do checkout também identifica o manifesto, mesmo se HEAD mudar durante a exportação. Primeira passagem gerou SustainableFarm-20261003 antes destas proteções: pacote preliminar marcado como substituído, identificação de fonte corrigida para `66b9d4b`; não é a entrega definitiva.
+
+Checklist conserva os 24 casos anteriores integralmente e adiciona SC-01–SC-06. Aceite manual/arte/conforto/ritmo/balanceamento continuam adiados; não exigir teste imediato nem considerar todo o jogo finalizado. Save pessoal idêntico por hash/tamanho/data e pacotes anteriores preservados; build separada não copia/apaga saves. Nenhuma mudança de gameplay/schema/economia/NPC/mapa/mastery. Próximo recorte de construção requer proposta delimitada e aprovação antes de implementar sistemas reservados.
 
 <a id="golem-semeador--piloto-aprovado-fase-d-concluída-2026-10-03"></a>
 <a id="golem-semeador--piloto-aprovado-fase-e-concluída-2026-10-03"></a>
