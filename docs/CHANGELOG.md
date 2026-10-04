@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-04 - Vila em Reconstrução: Poço, fechamento técnico 1–3
+
+- Exportador integra reaberturas física/projeto/habilidade com contagens específicas e preserva modos anteriores; sete reaberturas e dois fixtures distintos. Auditoria isolada valida recursos/contratos/preflight/instância do Poço; pacote anterior sem Poço é recusado, sem fallback local.
+- Fonte `03e209d`, pacote VillageWell-20261004: suíte limpa 54/54, startups headless/OpenGL e auditoria aprovados. Manifesto/hashes/logs/instruções/checklist acompanhando EXE/PCK/StartPlaytest.cmd. Execução interrompida antes da entrega foi refeita integralmente.
+- 30 casos anteriores intactos + seis WL: 36 pendências manuais, sem homologar picking/arte/conforto/balanceamento. Save pessoal idêntico por hash/tamanho/data; builds anteriores/arte local preservadas e checkout temporário removido. Fonte/documentação publicadas; binários/QA/saves/arquivos alheios fora do Git. Sem mudança de gameplay/schema ou ampliação dos sistemas reservados.
+
 ## 2026-10-04 - Vila em Reconstrução: Poço físico e painel
 
 - Poço fora dos canteiros/trilhas atuais, com formas nativas antes/depois, corpo/área clicável/obstáculo e classificação de construção. Aproximação existente para destino seguro, abertura/confirmação por proximidade real sem desselecionar ferramenta.

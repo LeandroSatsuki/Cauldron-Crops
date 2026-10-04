@@ -34,6 +34,14 @@ VillageWellPhysicalSmokeTest: **104 verificações** em headless/OpenGL, aproxim
 
 Suíte **54/54**, sete reaberturas (**6 + 3 + 8 + 8 + 4 + 8 + 8**) e dois fixtures adicionais (**2 + 2**) em QA isolado. Save pessoal idêntico por hash/tamanho/data. Incrementos 1–2 concluídos tecnicamente, sem homologar arte/conforto/posição ou gameplay manual. Nenhuma nova exportação; SustainableFarm-20261004 continua anterior. Os **30 casos manuais** permanecem; próximo incremento 3 integra reaberturas no exportador, pacote auditado e casos do Poço sem apagar os anteriores.
 
+### Incremento 3 — fechamento técnico (2026-10-04)
+
+Incrementos **1–3 concluídos tecnicamente**, sem ampliar gameplay/schema neste fechamento. Exportador executa reabertura física (4), projeto (8), fixture da habilidade (2) e reabertura da habilidade (8) imediatamente após suas cenas, antes de outra sobrescrever o arquivo QA. Preserva as quatro reaberturas anteriores e fixture do ciclo; exige PASS com contagem específica, separando sete reaberturas e dois fixtures no manifesto.
+
+Fonte `03e209d` em checkout limpo gerou **`Builds/Playtest/VillageWell-20261004`**: suíte **54/54**, sete reaberturas (6 + 3 + 8 + 8 + 4 + 8 + 8), dois fixtures (2 + 2), startups headless/OpenGL e auditoria isolada do PCK aprovados. Primeira execução interrompida antes da entrega foi refeita integralmente. Auditoria confere cenas/scripts do Poço, constantes de custo/benefício/alternativa, preflight de projeto/marco/legado e instância/posição na Main, sem instanciar objetos/conceder progresso. Build anterior sem Poço é corretamente recusada; raiz da auditoria é a pasta do pacote, não o workspace.
+
+Manifesto/hashes/logs/instruções e checklist acompanham EXE/PCK/StartPlaytest.cmd. **36 casos manuais pendentes**: 30 anteriores intactos + WL-01–WL-06. Save separado não copia/apaga progresso pessoal ou playtest anterior; save pessoal idêntico por hash/tamanho/data. Checkout temporário removido e arte local/builds anteriores preservadas fora do Git. Não presumir aceite de picking/posição/arte/conforto/ritmo/balanceamento nem exigir teste imediato. Próxima construção requer novo recorte delimitado e aprovação; sistemas reservados permanecem fora.
+
 ## Ciclo Sustentável da Fazenda — recorte aprovado (2026-10-03)
 
 Autor aprovou duas receitas determinísticas para repor trigo pelo caldeirão: **1 carvão + 1 água → 1 Semente de Trigo**, e **2 trigos → 3 Sementes de Trigo**. Baseline de leitura confirmou 10 sementes iniciais, retorno aleatório de 20% na Primavera e ausência de receita com resultado semente_basica; risco de esgotamento, não bloqueio reproduzido no save pessoal. Não mudar o bônus de colheita, estoque inicial, estações ou semeador.

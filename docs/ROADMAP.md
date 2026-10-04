@@ -1,8 +1,14 @@
 # Evolução do Projeto
 
-## Etapa atual — Vila em Reconstrução, Poço: incremento 3 em validação (2026-10-04)
+## Etapa atual — Vila em Reconstrução, Poço: fechamento técnico 1–3 (2026-10-04)
 
-Fechamento autorizado, sem novo gameplay. Exportador integra reaberturas do Poço físico/projeto/habilidade imediatamente após cada teste, preservando modos anteriores e distinguindo sete reaberturas de dois fixtures. Auditoria do PCK confere recursos, custo/benefício/alternativa, preflight e instância/posição física sem conceder progresso. Checklist ampliado para **36 pendências**, com os 30 casos anteriores intactos e WL-01–WL-06 novos. Nova exportação limpa e auditoria ainda em execução; não tratar esta preparação como pacote entregue ou aceite manual.
+Incremento 3 concluído tecnicamente, sem alterar gameplay/schema. Fonte `03e209d` exportada em checkout limpo para **`Builds/Playtest/VillageWell-20261004`**. Suíte **54/54**, sete reaberturas imediatas em novos processos (**6 + 3 + 8 + 8 + 4 + 8 + 8**) e dois fixtures adicionais (**2 + 2**, não contados como reabertura). Runner exige contagem específica em cada modo. Primeira execução interrompida antes do pacote; refeita integralmente, sem reaproveitar PASS parcial.
+
+EXE headless/OpenGL e auditoria isolada do PCK passaram. Recursos do Poço, custo 8 trigos + 1 mistura, capacidade 10/20, alternativa antiga, preflight de projeto/legado e instância em `(540, 280)` conferidos sem criar objetos/conceder progresso. Controle negativo recusa SustainableFarm-20261004 pela cena do Poço ausente, sem fallback do workspace. Manifesto identifica fonte capturada, hashes, contagens e **36 casos manuais pendentes**; logs, StartPlaytest.cmd, instruções e checklist acompanham EXE/PCK.
+
+Save separado CauldronCropsPlaytest; não copia/apaga progresso pessoal ou de playtest anterior. Save pessoal idêntico por hash/tamanho/data; checkout temporário removido, builds anteriores e oito arquivos locais alheios preservados. Fonte/documentação publicadas no GitHub; binários/QA/saves/arte local fora do Git. Recorte **1–3 fechado tecnicamente**, não aceite manual de picking/arte/conforto/ritmo/balanceamento nem conclusão de todo o jogo. Os 30 casos anteriores foram mantidos palavra por palavra e WL-01–WL-06 acrescentados. Autor indisponível não precisa testar agora.
+
+Próximo passo de construção: apresentar novo recorte delimitado de gameplay/progressão e obter aprovação antes de implementar sistemas reservados. Sem loja/moeda/NPC/mapa/mastery/tempo offline por consequência deste fechamento. Plano em [Farm System](FARM_SYSTEM_V2.md#vila-em-reconstrução--poço-da-vila-piloto-aprovado-2026-10-04).
 
 ## Checkpoint anterior — Vila em Reconstrução, Poço: incremento 2 (2026-10-04)
 

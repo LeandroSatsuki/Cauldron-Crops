@@ -1,5 +1,13 @@
 # Decisions
 
+## Decisão 124 - Fechamento do Poço com reaberturas e auditoria isolada
+
+- Incremento 3 autorizado e concluído tecnicamente, fechando o recorte 1–3 sem novo gameplay/schema. Exportador integra reaberturas física/projeto/habilidade imediatamente após seus testes, preserva modos anteriores e exige contagens específicas. Total sete reaberturas (6 + 3 + 8 + 8 + 4 + 8 + 8); dois fixtures (2 + 2) separados, sem inflar a contagem.
+- Fonte `03e209d` exportada em checkout limpo para VillageWell-20261004: suíte 54/54, EXE headless/OpenGL e auditoria do PCK aprovados. Execução interrompida antes do pacote foi refeita integralmente; não aceitar registros parciais como fechamento.
+- Auditoria parte da pasta do pacote, carrega recursos do PCK e verifica constantes de custo/capacidade/alternativa, preflight puro e instância/posição do Poço na Main, sem gerar progresso. Controle negativo com SustainableFarm-20261004 recusa Poço ausente; não mascarar com recursos do workspace. Manifesto identifica commit capturado/hashes/contagens e save separado.
+- Checklist mantém os 30 casos anteriores integralmente e acrescenta seis WL: 36 pendentes. Técnica não homologa picking manual/arte/conforto/ritmo/balanceamento; autor indisponível não precisa testar agora. Save pessoal idêntico por hash/tamanho/data, builds e oito arquivos alheios preservados fora do Git.
+- Fonte/documentação publicadas no fechamento; binários/QA/saves não enviados. Próxima construção começa por proposta delimitada de gameplay/progressão, sem autorização automática para economia/NPC/mapas/mastery/tempo offline ou infraestrutura genérica de projetos.
+
 ## Decisão 123 - Poço físico com aproximação e confirmação local
 
 - Incremento 2 aprovado. VillageWell em `(540, 280)` fora dos lotes/trilhas atuais e acima do limite agrícola; arte por formas nativas, sem assets locais/lore nova. Corpo/click area/obstáculo de navegação separados; solo trata como construção. Nenhuma alteração na origem agrícola/culturas/caminhos/lago.
