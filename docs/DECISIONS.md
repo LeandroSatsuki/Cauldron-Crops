@@ -6,6 +6,7 @@
 - Uma semente do Village Storage conserva seu ID durante retirada, transporte, plantio ou devolução física. Troca bloqueada durante tarefa de semente, inclusive ida ao baú, ou cargo, inclusive pausa/devolução; OFF permanece seguro. Escolha só para nova retirada, sem autorligar ou alterar ferramenta/semente pessoal.
 - Persistência opcional `selected_seed_id`, whitelist dos dois IDs/default Trigo, work v1/save v4 se validado; políticas completas/parciais e cargas independentes da escolha futura. Não converter/depositar/plantar novamente no load ou prometer downgrade para runtime anterior.
 - Rega/colheita/Aceleradora, Solo Vivo para trigo e regras sazonais atuais intactos. Codex integra controle funcional sem produzir arte; nova nota em ART_HANDOFF após implementação. Aprovação do contrato não homologa conforto, produtividade, balanceamento, picking físico ou arte; 60 roteiros anteriores seguem pendentes.
+- B–E fechadas tecnicamente: work v1/save v4 confirmados, fonte `f587fe4`, pacote limpo SelectiveSower-20261004;61/61 headless,14reaberturas/7fixtures/2cenários adicionais, EXE headless/OpenGL e PCK/manifesto/hashes/92logs finais sem ERROR. Dedicados79/129/28 por backend e UI333/8; negativo recusa pacote anterior por API ausente. 60 roteiros intactos + cinco SS = 65 manuais pendentes, sem save pessoal acessado ou arte concorrente integrada. Próximo recorte exige contrato próprio.
 
 ## Decisão 135 - Autorização de formular semeadura seletiva
 
