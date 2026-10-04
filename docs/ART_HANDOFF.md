@@ -82,7 +82,7 @@ Resposta Antigravity: pendente. Plano de substituição: pendente. Aceite artís
 
 ### Tomate como segunda cultura inicial
 
-**Registro:** 2026-10-04. Contrato aprovado pelo autor, domínio/orientação implementados e QA em andamento; ainda não é fechamento de pacote ou aceite artístico.
+**Registro:** 2026-10-04. Contrato aprovado pelo autor, domínio/orientação fechados tecnicamente; gameplay `a42b86d`, entrega `e5846b1`, pacote `Builds/Playtest/TomatoCrop-20261004`. Não é aceite artístico.
 
 - IDs preservados: `semente_verao` e `tomate_sol`; receita nova `Data/recipes/semente_tomate_recuperacao.tres`, sem item/espécie novo. Scripts funcionais: Database, FarmPlot, InventorySlot, UI e SaveManager.
 - Função: fabricar 1 trigo + 1 água → 1 semente/2s/0XP pelo Livro ou mistura; plantar da Mochila na Primavera/Verão e regar. Golem continua semeando somente trigo, Solo Vivo não retém água para tomate. Não há novo calendário ou lore.
@@ -90,5 +90,5 @@ Resposta Antigravity: pendente. Plano de substituição: pendente. Aceite artís
 - Representação: assets e visual de cultivo existentes reutilizados, sem desenho ou animação novo por Codex. Os PNGs locais produzidos pelo trabalho artístico separado não são publicados ou certificados nesta etapa; pacote limpo usa recursos versionados.
 - Demanda: considerar o tomate/semente no conjunto visual e na legibilidade dos estados existentes. Nenhum pedido de paleta/conceito novo, cultura sazonal em lote especial ou janela adicional.
 - Restrições: manter IDs, raiz/posição/grid/picking/alcance, plantio pessoal, consumo somente após validação, renderização abaixo dos objetos e controles opacos sem atravessar input. Arte não altera 5s/base, rega/bônus ou políticas de estação. Reorganização de hierarquia/viewport/grid exige coordenação técnica.
-- Evidência e pendência: teste automático e pacote ainda em validação; cinco TC no checklist, todos pendentes. Não inferir picking físico, conforto, ritmo ou arte aprovados.
+- Evidência e pendência: Tomato125 por backend headless/OpenGL/fixture2/reabertura8; suíte limpa59/59,12reaberturas/6fixtures, startups/PCK/manifesto/hashes/85logs conferidos pelo QA independente. Cinco TC no checklist, todos pendentes, em total60; não inferir picking físico, conforto, ritmo ou arte aprovados. Arte concorrente não incluída no pacote; respostas do Antigravity permanecem no workspace sem serem publicadas por este fechamento.
 - Resposta Antigravity: pendente. Nova arte integrada por Codex: pendente. Aceite artístico do autor: pendente.

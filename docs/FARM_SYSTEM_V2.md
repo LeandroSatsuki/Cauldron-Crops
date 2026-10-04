@@ -1,6 +1,6 @@
 # Farm System V2
 
-## Segunda cultura inicial aprovada e em validação
+## Segunda cultura inicial — fechamento técnico, manual pendente
 
 **Data:** 2026-10-04. Autor respondeu “aprovado” ao contrato apresentado após `3153e5d`, incluindo tomate opcional Primavera/Verão e bootstrap padrão 1 trigo + 1 água → 1 semente/2s/0XP. A confirmação autoriza B–D delimitadas; não homologa arte, conforto ou balanceamento.
 
@@ -8,7 +8,11 @@ Domínio implementado: `Database.semente_verao.estacoes_permitidas` inclui Prima
 
 Orientação funcional em descrição da semente, tooltip da Mochila/seleção e receitas do Livro; nenhum painel/HUD/collider/layout ou arte novo. Reinvestimento conserva ingredientes/quantidade/tempo/XP/descoberta. Solo Vivo não concede retenção ao tomate; bônus globais atuais não são alterados ou importados do Verão para Primavera. Não destruir culturas já existentes por estação de plantio.
 
-**Checkpoint de implementação; pacote ainda em validação.** Dedicado final: 125 verificações por backend headless/OpenGL, fixture2/reabertura8; regressão da Raiz86/fixture2/reabertura8. Fixtures isolam eventos RNG legados e executam o refresh visual que o mundo congelado não faria; primeiras falhas de preparação preservadas, não contadas como PASS. Suíte limpa completa e auditoria do pacote ainda pendentes. Preservados 55 roteiros anteriores, acrescentados cinco TC: **60 manuais pendentes**, sem execução imediata obrigatória. Nenhum save pessoal acessado. Conteúdo visual registrado em ART_HANDOFF para Antigravity, não produção artística.
+**B–D fechadas tecnicamente.** Gameplay `a42b86d`, auditor corrigido `e5846b1`; pacote limpo **`Builds/Playtest/TomatoCrop-20261004`**, fonte `e5846b1`: **59/59 regressões, 12 reaberturas em processos novos e seis fixtures** (duas verificações cada, não reaberturas). Dedicado final: 125 verificações por backend headless/OpenGL, fixture2/reabertura8; regressão da Raiz86/fixture2/reabertura8. EXE headless/OpenGL, auditoria isolada do próprio PCK, manifesto/hashes e 85 logs passaram sem ERROR. Controle negativo recusa RenewableRoot antigo pela receita ausente; launcher/instruções/checklist presentes, checkout temporário removido. QA independente conferiu fonte e artefato sem bloqueador material.
+
+Fixtures isolam eventos RNG legados e executam o refresh visual que o mundo congelado não faria; primeiras falhas de preparação preservadas, não contadas como PASS. Export inicial de `a42b86d` rejeitado por inferência de tipo no auditor; correção explícita não altera gameplay, repetição integral de `e5846b1` certifica o pacote. Diagnósticos negativos separados dos 85 logs finais.
+
+Preservados 55 roteiros anteriores, acrescentados cinco TC: **60 manuais pendentes**, sem execução imediata obrigatória. Nenhum save pessoal acessado. Picking físico, conforto, ritmo, balanceamento e arte não homologados. Conteúdo visual registrado em ART_HANDOFF para Antigravity, não produção artística; spritesheets/cena/ícones e respostas artísticas concorrentes preservados fora desta publicação. Próximo recorte exige proposta delimitada e confirmação humana, sem ativar calendário/economia/efeitos reservados por consequência.
 
 ## Histórico da proposta de segunda cultura inicial
 

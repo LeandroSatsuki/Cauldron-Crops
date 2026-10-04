@@ -1,10 +1,11 @@
 # Changelog
 
-## 2026-10-04 - Tomate inicial: checkpoint de implementação
+## 2026-10-04 - Tomate inicial: fechamento técnico
 
 - Contrato da Decisão 134 confirmado: tomate opcional na Primavera/Verão, IDs e 5s/base preservados; receita padrão repetível 1 trigo + 1 água → 1 semente_verao/2s/0XP. Sem calendário, gate, semeador multicultura ou benefício de Solo Vivo para tomate.
 - FarmPlot usa validação sazonal pura antes de gastar; load reconcilia receitas padrão sem recompensas ou schema novo. Orientação no catálogo/Mochila/Livro, fontes/capacidade/cancelamento vigentes preservados. Engenharia guiada por perfil; QA independente. Arte externa não integrada por este recorte.
-- Dedicado final125 por backend headless/OpenGL, fixture2/reabertura8; regressão Raiz86/2/8. Negativas preservadas de refresh congelado e RNG legado de Colheita Dourada; corrigida apenas preparação do fixture, mantendo asserts estritos e runtime intacto. Suíte completa/exportação/auditoria ainda pendentes neste checkpoint.
+- Dedicado final125 por backend headless/OpenGL, fixture2/reabertura8; regressão Raiz86/2/8. Negativas preservadas de refresh congelado e RNG legado de Colheita Dourada; corrigida apenas preparação do fixture, mantendo asserts estritos e runtime intacto.
+- Gameplay `a42b86d`, auditor corrigido `e5846b1`; pacote TomatoCrop-20261004 limpo de `e5846b1`:59/59,12reaberturas/6fixtures, startups headless/OpenGL e PCK auditado. QA independente conferiu fonte/manifesto/hashes/85logs/launcher/checklist; checkout temporário removido. Primeira exportação rejeitada por inferência de tipo do auditor, diagnóstico preservado e repetição integral final certificada, sem gameplay alterado.
 - 55 roteiros anteriores intactos + cinco TC = 60 manuais pendentes; sem save pessoal acessado. Publicação seleciona apenas código/QA/documentação próprios, não spritesheets/cena/respostas artísticas em produção paralela.
 
 ## 2026-10-04 - Proposta da segunda cultura inicial
