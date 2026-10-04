@@ -1,5 +1,13 @@
 # Decisions
 
+## Decisão 131 - Arte no Antigravity e passagem permanente
+
+- Autor atribuiu explicitamente direção/produção de arte ao Antigravity externo. Codex concentra código, integração funcional, testes e documentação; não criar arte final ou elaborar placeholders artísticos. Usar assets existentes ou geometria mínima para testar.
+- `docs/ART_HANDOFF.md` é o documento fixo para passagem: notas ao final a cada implementação com impacto visual, com conteúdo real, IDs/caminhos, estados e limites técnicos. Antigravity registra proposta/produção; autor aprova arte; Codex confirma integração técnica separadamente. Sem troca automática de mensagens ou conexão entre aplicativos alegada.
+- `cc_art` permanece referência histórica, não diretor artístico ativo ou consulta automática. A divisão substitui o roteamento anterior; não redefine paleta, conceitos, assets do autor ou guia artístico mantido em trabalho separado.
+- Resolução/grid/câmera, hierarquia funcional, collider/picking/input e save não mudam como consequência de uma nova textura. Coordenar arquivos compartilhados, preservar trabalho alheio e testar qualquer alteração funcional.
+- Próximo recorte de conteúdo apenas formulado: coleta renovável de Raiz no Bosque, uma unidade/45s de sessão, primeira visita, usos existentes e sem aprendizado automático, para confirmação em `FIRST_EXTERNAL_REGION_VERTICAL_SLICE.md`. Não adiciona novas receitas/culturas/animais/golems agora; 50 manuais continuam pendentes, nenhuma nova suíte/build ou acesso a save pessoal.
+
 ## Decisão 130 - Aceleradora: contrato aprovado e integração de produção
 
 - Autor respondeu “sim” à confirmação do contrato P2 inteiro, incluindo preparo sem aproximação e persistência no save. Autoriza integração delimitada em domínio, persistência, painel e QA/exportação.

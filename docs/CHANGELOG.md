@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-10-04 - Passagem para Antigravity e proposta de aquisição
+
+- Autor separou direção/produção artística no Antigravity. Criado `ART_HANDOFF.md` como passagem permanente com notas funcionais de Aceleradora/Solo Vivo e referências de protótipos existentes; sem arte criada ou guia/paleta redefinidos.
+- AGENTS/equipe/contexto/Decisão 131 registram código/QA com Codex, arte com Antigravity, comunicação documental e coordenação de arquivos. Perfil artístico permanece histórico, sem consulta automática.
+- Formulado próximo recorte: Raiz renovável no Bosque com candidato uma unidade/45s de sessão e receitas atuais, sem ensino automático. Aprovação de parâmetros pendente; não implementado, sem novas culturas/animais/golems/receitas ou sistema sazonal/econômico.
+- Entrega somente documental; não repetir 57/57 como suíte desta etapa. Mantidos 50 casos manuais, nenhum save pessoal acessado e alterações alheias de arte preservadas fora deste incremento.
+- Validação desta etapa: cinco perfis/referências e seis controles negativos passaram; diff sem erros e os 50 textos manuais intactos. QA independente sem bloqueador documental; gameplay/engenharia consultados em leitura guiada, sem consulta artística. Engenharia identificou preflight do writer da expedição, guarda de coleta por contexto e seleção explícita dos IDs na regressão como trabalho futuro do recorte.
+
 ## 2026-10-04 - Aceleradora: integração de produção P3
 
 - Autor confirmou contrato completo P2, incluindo comando sem aproximação e save persistente (Decisão 130). Golem é autoridade de preparo/custódia/benefício: fonte pessoal, preparo sem gasto/reserva, um frasco por primeira abertura de nova entrega lógica, deslocamento 1,5× somente até o baú. Retry/load/cache não reativam entrega antiga; cancelar antes gratuito, depois conserva até depósito único, sem refund/fila/repetição.

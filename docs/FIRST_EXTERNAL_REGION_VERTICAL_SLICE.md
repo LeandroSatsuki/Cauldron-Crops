@@ -1,5 +1,36 @@
 # Primeira Região Externa — Plano de Vertical Slice
 
+## Próximo recorte proposto de aquisição de Raiz Gélida
+
+**Status em 2026-10-04: proposta para aprovação, não implementada.** Após fechar tecnicamente a Aceleradora, o autor autorizou formular o próximo recorte e separou arte para Antigravity. Não há autorização inferida para novas culturas, animais, golems, estações, economia ou mapa. Gameplay e engenharia foram consultados em leitura guiada pelos perfis.
+
+Recomendação: acrescentar **uma fonte física determinística e renovável de `raiz_gelida` no Bosque existente**, acessível desde a primeira visita sem depender de purificação ou restauração. Fluxo principal: coletar na Mochila → retornar à vila → combinar com trigo no caldeirão → obter Poção de Crescimento → aplicar numa cultura pelo fluxo existente. Uso secundário já existente: raiz + peixe → Infusão Purificadora → primeira purificação. A nova aquisição não altera a Raiz cultivada no inverno nem exige sua obtenção por RNG.
+
+### Contrato candidato para confirmação
+
+- Uma fonte, **uma Raiz por coleta**, renovação em **45 segundos de sessão aberta**, inclusive enquanto o jogador está na vila; sem progresso offline. Quantidade e intervalo são proposta de piloto, não balanceamento homologado. O carvão atual entrega duas unidades; não copiar essa quantidade por engano.
+- Fonte disponível na primeira visita e em saves já existentes, em local alcançável do Bosque, sem mover carvão, portal, curiosidades ou área de restauração. Posição final será conferida tecnicamente na implementação, sem criar direção visual ou bioma novo.
+- Clique segue aproximação física de `ForageNode`; resultado exclusivamente na Mochila. Sem espaço, recusa preserva a fonte e não inicia renovação. Duplo clique/callback antigo/save/replay não entregam duas vezes.
+- Renovação segue o relógio global de sessão de `GroveExpedition`, que já conta o carvão fora do Bosque. Não descontar de novo tempo de ausência ao retornar. Salvar conserva tempo restante; reabrir não acrescenta o tempo de jogo fechado.
+- Receitas, custos, tempos, resultados e XP atuais permanecem: trigo + raiz → uma Poção de Crescimento, raiz + peixe → uma Infusão Purificadora, dois segundos por craft. Mistura manual continua descobrindo normalmente; primeira coleta não concede receita, XP, slots ou marco novo. Pista funcional curta pode indicar usos sem simular descoberta.
+- Arte exclusivamente Antigravity. Codex reutiliza a estrutura disponível/esgotada com geometria mínima e registra o contrato em `ART_HANDOFF.md` após implementar. Nenhum conceito ou asset final nesta proposta.
+
+### Por que não começar apenas com novas sementes
+
+O catálogo já tem quatro culturas. `FarmPlot` recusa fora da estação ideal; o jogo começa na Primavera e o caminho público localizado de avanço sazonal é Dormir legado com moeda. Semente de Verão exige tomate na própria receita, Outono exige tomate + raiz, e Inverno depende de drop de colheita. Adicionar uma receita isolada de semente não resolve simultaneamente a circularidade de aquisição e o acesso à estação.
+
+Este recorte diversifica **exploração e alquimia**, não entrega uma segunda cultura plantável na Primavera. Uma expansão agrícola, animal ou de golem será proposta separadamente com função, aquisição, consumo e persistência explícitos. Elixir Estacional ou adubo catalogados não ganham efeito por existência.
+
+### Implementação e validação previstas após aprovação
+
+`ForageNode` já implementa inserção pessoal com capacidade e aproximação; `GroveExpedition` hoje reconhece cinco fontes e apenas `clearing_charcoal` como renovável. Será necessário um segundo ID estável e política explícita de fonte, com preflight/save compatíveis, sem framework genérico de aquisição. A apresentação de carvão também contém texto específico que não pode aparecer na nova fonte de raiz.
+
+A etapa de código terá escopo em `Scenes/ForagingGroveRegion.tscn`, `Scripts/GroveExpedition.gd`, `Scripts/ForageNode.gd`, descrição funcional de `Database` somente se necessária, testes dev e auditoria/runner de entrega. Engenharia confirmou duas proteções pertinentes: `collect()` deve recusar callback de contexto obsoleto; `SaveManager.save_game()` precisa validar o domínio da expedição antes da gravação, reaproveitando o validador que o load já usa. Conservar schema v4/domínio existente; não criar migração genérica. O teste de coleta original precisa selecionar explicitamente seus quatro IDs, pois hoje exclui apenas carvão renovável e incluiria a Raiz por engano. Nada foi implementado nesta formulação.
+
+Cobertura prevista: coleta/capacidade, aproximação e input modal, dupla coleta, renovação nos dois contextos, tempos sem desconto duplicado, snapshot legado/parcial/replay e rejeição sem mutação, reabertura em processo novo, produção/cancelamento/persistência das receitas existentes e uso real do consumível. Exportação limpa e revisão QA independente fecham a técnica; novos casos manuais entram pendentes depois da implementação. Os **50 casos atuais permanecem intactos**; não foi executada nova suíte ou build nesta formulação.
+
+Próximo portão: aprovação humana do conjunto candidato antes de código. Fontes: `Scripts/Database.gd`, `Scripts/FarmPlot.gd`, `Scripts/SeasonManager.gd`, `Scripts/GroveExpedition.gd`, `Scripts/ForageNode.gd`, `Scripts/data/RecipeResolver.gd`, `Data/recipes/pocao_crescimento_basica.tres` e `Data/recipes/raiz_gelida_peixe_comum.tres`. O histórico abaixo conserva seus próprios aceites e números datados.
+
 ## Status
 
 Fases A, B, C e D implementadas, automatizadas e aprovadas manualmente. As correções posteriores de continuidade também foram automatizadas e aprovadas manualmente.

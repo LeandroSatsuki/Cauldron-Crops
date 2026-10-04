@@ -1,5 +1,11 @@
 # Evolução do Projeto
 
+## Continuidade atual e divisão de arte
+
+Em 2026-10-04 o autor definiu **Antigravity para direção/produção artística e Codex para código, integração funcional, testes e documentação**. Passagem permanente em `ART_HANDOFF.md`, com notas de conteúdo implementado e restrições técnicas, sem assets finais produzidos por Codex. `cc_art` é referência histórica, não acionamento automático.
+
+Próximo recorte **formulado, aguardando aprovação do contrato antes de código**: uma fonte renovável determinística de Raiz Gélida no Bosque existente, uma unidade/45s de sessão aberta, disponível na primeira visita. Conecta receitas/consumíveis existentes sem novas culturas, animais, golems, economia ou estação. Plano e riscos em `FIRST_EXTERNAL_REGION_VERTICAL_SLICE.md`; não é nova funcionalidade jogável. As **50 pendências manuais** e o pacote da Aceleradora abaixo permanecem; nenhuma suíte/build nova nesta etapa documental.
+
 ## Etapa atual — Aceleradora, P3 fechada tecnicamente (2026-10-04)
 
 Contrato P2 confirmado integralmente pelo autor, incluindo preparo remoto pelo painel na vila ativa e ordem persistente. Integração implementada em FARM_SYSTEM_V2/Decisão 130: um frasco pessoal por nova entrega lógica, deslocamento 1,5× somente transporte de colheita. Cancelar antes gratuito; fechar não cancela, retry/load/cache não cobram novamente ou tornam cargo antigo elegível. Sem alterar receitas/timers/outras tarefas, fila ou repetição. Painel opaco/rolável, cabeçalho/Fechar fixos, seleções preservadas e cartão consultivo sem Aplicar livre.

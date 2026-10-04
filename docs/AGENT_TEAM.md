@@ -1,5 +1,13 @@
 # Equipe de especialistas — Cauldron Crops
 
+## Divisão atual com Antigravity
+
+Decisão humana de 2026-10-04, posterior à configuração dos cinco perfis: **Antigravity externo assume direção e produção de arte; Codex concentra código, integração funcional, testes e documentação.** O autor continua diretor criativo. Não há conexão automática ou memória compartilhada entre aplicativos comprovada: a passagem permanente é `docs/ART_HANDOFF.md`, a ser consultada pelo Antigravity.
+
+Codex acrescenta uma nota ao final do documento em cada implementação com impacto visual: conteúdo realmente adicionado, IDs/caminhos, estados, representação provisória e limites técnicos. Usa assets existentes ou geometria mínima, sem criar conceito, paleta, textura ou animação final. Layout técnico pode garantir controles acessíveis e input correto; estética e acabamento ficam com Antigravity. Mudanças físicas, de renderização global ou de hierarquia funcional exigem coordenação antes de integração.
+
+O perfil `cc_art` permanece no repositório como referência histórica, não como diretor artístico ativo nem consulta automática de Codex. As instruções abaixo sobre cinco perfis devem ser lidas com essa substituição de responsabilidade. Antigravity não é subagente iniciado por esta sessão.
+
 ## Autorização e alcance
 
 Em 2026-10-04, o autor autorizou estruturar cinco especialistas com base na documentação existente. Esta etapa organiza papéis, referências e revisão; não implementa gameplay, narrativa, arte final ou sistemas reservados. O Poço já está fechado tecnicamente; seus 36 testes manuais continuam pendentes.
@@ -13,12 +21,12 @@ Perfis nativos em `.codex/agents/`, no formato documentado pelo Codex. Não são
 | Perfil | Quando consultar | Limite de atuação |
 | --- | --- | --- |
 | `cc_gameplay` | Nova decisão sobre mecânica, progressão, custo, recompensa, automação ou economia | Revisão somente leitura; não inventar conteúdo/balanceamento aprovado |
-| `cc_art` | Nova decisão visual, referência, asset, animação, layout/UX ou identidade sonora | Revisão somente leitura; não produzir/substituir arte nem mudar regras físicas |
+| `cc_art` | Referência histórica da equipe anterior; não acionado automaticamente | Direção e produção agora com Antigravity externo, pela passagem em `ART_HANDOFF.md` |
 | `cc_narrative` | Lore, nome definitivo, NPC, diálogo, missão ou significado de descoberta | Revisão/proposta textual, sem canonizar hipótese ou implementar conteúdo |
 | `cc_engineering` | Arquitetura, integração, persistência, navegação, implementação atribuída | Análise por padrão; escrita só em pedido de implementação autorizado e arquivos atribuídos |
 | `cc_qa` | Revisão independente e fechamento de uma entrega | Revisor somente leitura; execução de testes que gravam fica com coordenador/engenharia em QA isolado |
 
-O principal aciona somente os papéis pertinentes, não todos em toda correção mecânica. Novas decisões de gameplay passam por gameplay; novas decisões de arte passam por arte; mudanças narrativas passam por narrativa. Mudanças técnicas relevantes recebem engenharia e entregas materiais recebem QA independente. Se um papel já tem parecer para o mesmo recorte/versão, reaproveitar o parecer verificando o que mudou, em vez de duplicar revisão.
+O principal aciona somente os papéis pertinentes, não todos em toda correção mecânica. Novas decisões de gameplay passam por gameplay; arte é encaminhada ao Antigravity em `ART_HANDOFF.md`; mudanças narrativas passam por narrativa. Mudanças técnicas relevantes recebem engenharia e entregas materiais recebem QA independente. Se um papel já tem parecer para o mesmo recorte/versão, reaproveitar o parecer verificando o que mudou, em vez de duplicar revisão.
 
 ## Memória e precedência
 
@@ -72,7 +80,7 @@ Nas fontes consultadas não há uma folha final aprovada de paleta com valores, 
 
 ## Uso e verificação
 
-Exemplo de pedido: “Consulte `cc_gameplay` sobre o recorte aprovado e `cc_engineering` sobre persistência; mantenha leitura até apresentar os riscos. Depois consulte `cc_qa` sobre a implementação delimitada.” Uma proposta visual nova acrescenta `cc_art`; narrativa só entra se houver conteúdo narrativo.
+Exemplo de pedido: “Consulte `cc_gameplay` sobre o recorte aprovado e `cc_engineering` sobre persistência; mantenha leitura até apresentar os riscos. Depois consulte `cc_qa` sobre a implementação delimitada.” Necessidades visuais são registradas em `ART_HANDOFF.md` para Antigravity; narrativa só entra se houver conteúdo narrativo.
 
 O validador `tools/Test-AgentProfiles.py` confere TOML, identidade dos cinco papéis, campos suportados usados, referências locais e políticas declaradas de leitura. Isso não prova julgamento correto, aplicação efetiva do sandbox no app ou descoberta/carregamento nativos. Pareceres de teste guiados pelos perfis são evidência separada; somente uma execução que exponha o papel nativo pode confirmar a integração nativa em uma sessão futura.
 
