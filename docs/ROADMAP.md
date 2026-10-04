@@ -1,6 +1,14 @@
 # Evolução do Projeto
 
-## Etapa atual — Ciclo Sustentável da Fazenda, incremento 1 (2026-10-03)
+## Etapa atual — Ciclo Sustentável da Fazenda, incremento 2 (2026-10-03)
+
+Orientação existente do Livro/Mochila/baú/golem explica reposição e distingue plantio manual de semeadura pelo baú. Nome Semente de Trigo consistente no Livro; descrições curtas, sem novo painel/HUD ou regra de gameplay.
+
+Suíte **52/52** e retestes finais; ciclo integrado com **77 verificações**, fontes reais de carvão/água, plantio/rega/colheita, reinvestimento, depósito/retirada físicos e cargo durante Bosque/save/load. Duas reaberturas de receitas em processos separados (**8 + 8**, fixture de replantio **2**), mais as existentes do golem. Capturas OpenGL do Livro/transferência e painel do golem inspecionadas. Marco restaurado é fixture explícito da parte de automação, não concedido pelas receitas. Bônus de colheita/eventos e XP antigos preservados, sem depender deles para repor sementes.
+
+Incrementos 1–2 concluídos tecnicamente; save pessoal intacto, **24 casos manuais** pendentes. **Sem nova exportação:** GolemSower-20261003 ainda sem este ciclo/orientações. Próximo **incremento 3 — fechamento**: exportador executa reaberturas específicas, suíte em checkout limpo, build auditada e checklist ampliado preservando casos anteriores. Sem ampliar economia/conteúdo reservado. Plano em [Farm System — Ciclo Sustentável](FARM_SYSTEM_V2.md#ciclo-sustentável-da-fazenda--recorte-aprovado-2026-10-03).
+
+## Checkpoint anterior — Ciclo Sustentável da Fazenda, incremento 1 (2026-10-03)
 
 Contratos/receitas concluídos tecnicamente: **1 carvão + 1 água → 1 Semente de Trigo** e **2 trigos → 3 Sementes de Trigo**, padrão no Livro, sem RNG/marco/XP. Reusam manual/lote, baú prioritário/complemento pessoal, resultado na Mochila, reservas/refund e snapshot existentes. Água não ocupa slots. Tempo de piloto: 2 segundos por craft; economia, fontes, estações, colheita e golem preservados.
 

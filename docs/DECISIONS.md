@@ -1,5 +1,13 @@
 # Decisions
 
+## Decisão 120 - Orientação de sementes e validação do ciclo com fontes reais
+
+- Incremento 2 autorizado. Explicar receitas nos tooltips existentes/Livro, depósito no estado sem estoque do golem e fontes de plantio no baú, em ambas as direções. Corrigir texto que tratava toda semente como exclusivamente pessoal; apenas trigo serve ao piloto semeador. Sem nova janela/HUD/automação/toggle, schema ou regras de aquisição.
+- Nome Semente de Trigo no resultado do Livro reutiliza catálogo apenas para este ID. Captura mostrou descrição longa empurrando Produzir para rolagem; textos encurtados sem remover instrução essencial, controles/rolagem existentes preservados. Custos/quantidades/tempo e lógica agrícola/semear inalterados.
+- Teste integrado usa caminhada/coleta reais no Bosque, água regenerada pelo poço, timers de produção/crescimento, plantio/rega/colheita manuais, reinvestimento e depósito seletivo de sementes produzidas. Clareira restaurada é fixture explícito só na integração do golem, não desbloqueio causado pela receita. Bônus RNG não são requisito; eventos de colheita podem conceder XP antigo, por isso teste compara XP antes/depois de cada receita, sem desativar/reformular eventos.
+- 77 verificações do ciclo; arquivos reais só em QA, com duas reaberturas de receita em processos separados (8 + 8) e fixture adicional de replantio (2). Retirada física, pausa/cargo/Bosque/save externo/replay/retomada conservam estoques. Suíte 52/52 e retestes após polimento; OpenGL do ciclo e painel do golem, mais reaberturas existentes. Save pessoal idêntico por hash/tamanho/data, arte local/arquivos alheios fora do commit.
+- Incrementos 1–2 concluídos tecnicamente, sem exportação ou aceite manual. Os 24 casos anteriores continuam pendentes. Próximo 3 integra reaberturas no exportador, build limpa auditada e checklist ampliado; não ampliar economia/NPCs/mapas/mastery ou fechar experiência automaticamente.
+
 ## Decisão 119 - Reposição determinística de sementes de trigo pelo caldeirão
 
 - Ciclo Sustentável da Fazenda aprovado: 1 carvão + 1 água → 1 semente de trigo para recuperação sem trigo/sementes, e 2 trigos → 3 sementes para reinvestimento. Baseline confirmou 10 sementes iniciais e bônus aleatório de colheita; esgotamento é risco, não bloqueio reproduzido no save pessoal. Estoque inicial, RNG, estações, semeador e fontes existentes do Bosque/poço permanecem.

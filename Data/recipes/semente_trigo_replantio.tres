@@ -6,7 +6,7 @@
 script = ExtResource("1_recipe")
 id = "semente_trigo_replantio"
 nome = "Sementes de Trigo · Replantio"
-descricao = "Reserve parte da colheita: combine 2 trigos para produzir 3 sementes de trigo. O caldeirão usa o Baú da Vila primeiro e completa pela Mochila; o resultado vai para a Mochila. Valores de piloto, não balanceamento final."
+descricao = "Reinvista a colheita. Baú primeiro, Mochila completa os ingredientes. Resultado na Mochila: plante à mão ou deposite no Baú para o golem."
 categoria = "semente"
 ingredientes = Array[String](["trigo", "trigo"])
 resultado_item = "semente_basica"

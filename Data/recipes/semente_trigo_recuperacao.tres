@@ -6,7 +6,7 @@
 script = ExtResource("1_recipe")
 id = "semente_trigo_recuperacao"
 nome = "Semente de Trigo · Recuperação"
-descricao = "Combine 1 carvão e 1 água para produzir 1 semente de trigo, mesmo sem trigo ou sementes. Use o Livro de Receitas: a água vem da reserva do poço e não ocupa slots. O resultado vai para a Mochila."
+descricao = "Sem trigo ou sementes? Colete carvão no Bosque e use água regenerada pelo poço (não ocupa slots). Produza pelo Livro. Resultado na Mochila: plante à mão ou deposite no Baú para o golem."
 categoria = "semente"
 ingredientes = Array[String](["carvao", "agua"])
 resultado_item = "semente_basica"

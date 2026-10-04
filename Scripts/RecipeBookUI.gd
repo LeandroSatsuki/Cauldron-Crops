@@ -536,6 +536,8 @@ func _format_recipe_name(recipe_id: String) -> String:
 func _format_item_name(item_id: String) -> String:
 	if item_id == "":
 		return "-"
+	if item_id == "semente_basica":
+		return Database.obter_nome_item(item_id)
 
 	var nome := item_id.replace("_", " ")
 	if nome.length() == 0:

@@ -96,7 +96,7 @@ func _open_transfer(item_id: String, from_chest: bool) -> void:
 	quantity_picker.max_value = available
 	quantity_picker.value = 1
 	quantity_picker.get_line_edit().text = "1"
-	feedback.text = "Sementes precisam estar na mochila para plantar." if item_id.begins_with("semente_") and not from_chest else ""
+	feedback.text = "Mochila: plantio manual. Baú: sementes para o golem semeador." if item_id == "semente_basica" else ("Mantenha na Mochila para plantar manualmente." if item_id.begins_with("semente_") else "")
 	_shield.show()
 	transfer_popup.show()
 	quantity_picker.get_line_edit().grab_focus()
@@ -291,6 +291,8 @@ func _fill_grid(grid: GridContainer, items: Dictionary, from_chest: bool) -> voi
 		slot.set_meta("item_id", item_id)
 		slot.set_meta("quantity", quantity)
 		slot.tooltip_text = "%s × %d" % [Database.obter_nome_item(item_id), quantity]
+		if item_id == "semente_basica":
+			slot.tooltip_text += "\n" + Database.obter_descricao_item(item_id)
 		if not from_chest:
 			slot.tooltip_text += "\nPilha %d/%d · total do item: %d" % [int(entry["stack_index"]) + 1, int(entry["stack_count"]), int(items[item_id])]
 		slot.custom_minimum_size = Vector2(66, 66)

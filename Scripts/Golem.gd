@@ -1046,7 +1046,7 @@ func get_seeding_status() -> Dictionary:
 		return _seed_status(result, "no_chest", "Baú da Vila indisponível. Nenhuma semente retirada.")
 	var stock := chest.get_item_quantity(GolemSeedCargo.SEED_ITEM_ID)
 	if stock < 1:
-		return _seed_status(result, "no_seeds", "Deposite sementes de trigo no Baú da Vila; não usa a Mochila.")
+		return _seed_status(result, "no_seeds", "Produza sementes no Livro do caldeirão e deposite no Baú da Vila. Não usa a Mochila.")
 	return _seed_status(result, "ready", "Pronto · %d lote(s) · %d semente(s) no baú." % [prepared, stock])
 
 

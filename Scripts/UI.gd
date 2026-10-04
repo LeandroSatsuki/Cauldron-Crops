@@ -3838,6 +3838,8 @@ func atualizar_inventario_visual() -> void:
 			if stack_count > 1:
 				stack_detail = "\nPilha %d/%d" % [stack_index + 1, stack_count]
 			slot.tooltip_text = "%s%s\nQuantidade: %d" % [Database.obter_nome_item(item_key), stack_detail, qtd]
+			if item_key == "semente_basica":
+				slot.tooltip_text += "\n" + Database.obter_descricao_item(item_key)
 
 
 
@@ -10211,7 +10213,7 @@ func _atualizar_semeador_golem() -> void:
 		golem_task_label.visible = status["code"] not in ["fetching", "transporting", "planting", "returning", "return_pending", "cargo_waiting", "paused_cargo"]
 	golem_seeding_toggle.set_pressed_no_signal(bool(status["enabled"]))
 	golem_seeding_toggle.disabled = not bool(status["unlocked"])
-	golem_seeding_toggle.tooltip_text = "Semear trigo nos 4 lotes iniciais, após colheita/rega. Sementes somente do Baú da Vila." if status["unlocked"] else "Liberado ao restaurar a Clareira do Bosque."
+	golem_seeding_toggle.tooltip_text = "Semear trigo nos 4 lotes iniciais, após colheita/rega. Produza sementes no Livro do caldeirão e deposite no Baú da Vila." if status["unlocked"] else "Liberado ao restaurar a Clareira do Bosque."
 	golem_seeding_status.text = str(status["text"])
 
 

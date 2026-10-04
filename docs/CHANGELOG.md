@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-03 - Ciclo Sustentável da Fazenda: incremento 2 integrado
+
+- Livro/tooltips e estado sem sementes do golem orientam reposição; baú distingue Mochila para plantar manualmente e sementes de trigo armazenadas para o semeador. Demais sementes continuam manuais. Resultado do Livro com nome canônico; descrições encurtadas após captura, sem nova janela/HUD/regra agrícola.
+- Teste com 77 verificações: carvão real do Bosque, água do poço, produção pelo Livro, aragem/plantio/rega/colheita, reinvestimento, depósito seletivo, retirada/cargo físicos, viagem/save externo/load e retomada. Marco do semeador preparado explicitamente no fixture; receitas não o concedem. RNG não é requisito e XP antigo de eventos de colheita permanece válido.
+- Suíte 52/52 e retestes finais após polimento. Duas reaberturas de receitas em novos processos (8 + 8), fixture de replantio (2), layout/contratos/86 verificações de receitas e reaberturas existentes do golem. OpenGL do ciclo (77), painel (325) e capturas inspecionadas; save pessoal idêntico por hash/tamanho/data.
+- Sem exportação nesta etapa; 24 testes manuais continuam pendentes. Próximo incremento 3 fecha exportador/reaberturas, suíte em checkout limpo, pacote auditado e checklist ampliado. Arquivos locais alheios e QA preservados fora do commit.
+
 ## 2026-10-03 - Ciclo Sustentável da Fazenda: incremento 1 de receitas
 
 - Duas receitas padrão sem RNG/marco/XP: carvão + água produz uma semente de trigo; dois trigos produzem três. Resources reutilizam manual/Livro/lote, fontes/refund/capacidade e snapshot existentes; 2 segundos por craft como tempo provisório. Sem mudança de schema, golem, economia, estoques iniciais ou bônus de colheita.

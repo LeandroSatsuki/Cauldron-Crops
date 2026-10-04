@@ -154,7 +154,7 @@ var itens: Dictionary = {
 		"pode_usar_em_receita": false,
 		"tags": ["semente", "crop", "trigo"],
 		"origem": "cultivo",
-		"descricao": "Semente básica usada para iniciar o ciclo de cultivo.",
+		"descricao": "No Livro do caldeirão: 1 carvão + 1 água → 1 semente; 2 trigos → 3 sementes. Mochila para plantar à mão; Baú da Vila para o golem. Trigo cresce na Primavera.",
 		"icone": "🌱"
 	},
 	"semente_inverno": {
