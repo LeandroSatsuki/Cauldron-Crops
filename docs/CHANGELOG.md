@@ -2,10 +2,12 @@
 
 ## 2026-10-05 - Abastecimento físico de sementes implementado
 
+- QA final independente conferiu manifesto/hashes/logs/startups/PCK/negativo/launcher/checklist/instruções, sem bloqueador para fechamento/publicação e sem execução própria. Corrigidas duas frases históricas das instruções para distinguir destino pessoal de entrega opt-in; LEIA-ME e template sincronizados, sem reexportar ou alterar binários.
+
 - Contrato integral `6da1cd5` aprovado pelo autor (Decisão142). Livro oferece Mochila padrão ou Baú via golem após Clareira; apenas receitas disponíveis de sementes de Trigo/Tomate, quantidade finita, sem fila/autorloop ou alteração de custos/rendimento/tempo/XP.
 - Um preparo convertido por vez no caldeirão OU cargo próprio do golem; retirada, transporte e depósito físicos. Próximo timer somente após depósito. Modos mistos atendem após tarefa/carga atual, antes de novas agrícolas; exclusivos/Pausado conservam. Cancelar devolve só reservas não convertidas e preserva saída/cargo/refund pendente.
 - Save v4/work v1 opcionais estritos, preflight efetivo conjunto e writer protegido; legado/parcial/replay/catch-up/reabertura testados. Catch-up validado do loader não encadeia produção; Livro fecha/reseta intenção em todo apply aceito. Descrição UI acompanha destino sem alterar receita.
-- Dedicados domínio150/transporte184/persistência109 por backend, fixture2/reabertura8 por backend e UI39/42; três capturas técnicas. Pacote limpo/regressão integral ainda em preparação neste checkpoint. 75 textos manuais intactos + cinco SD = 80 pendentes; QA não homologa mouse físico, arte, ritmo ou balanceamento.
+- Fechamento técnico: Fonte `8b73dc6`, pacote `Builds/Playtest/SeedDelivery-20261005`: 71/71 regressões headless, 17 reaberturas, 10 fixtures e dois cenários adicionais. EXE headless/OpenGL, PCK/manifesto/hashes e 108 logs finais sem ERROR/SCRIPT ERROR/FAIL conferidos; checkout temporário removido. Dedicados domínio150/transporte184/persistência109 por backend, fixture2/reabertura8, UI39/42. 75 textos manuais intactos + cincoSD = 80 pendentes, sem aceite artístico/manual/ritmo. LEIA-ME atualizado no fechamento documental, sem mudar EXE/PCK.
 - Arte com Antigravity, demanda funcional em ART_HANDOFF. Assets/cenas artísticas concorrentes preservados fora da publicação; sem save pessoal, F10, economia, calendário, Elixir, segundo ator ou lore novo.
 
 ## 2026-10-04 - Proposta de abastecimento físico de sementes

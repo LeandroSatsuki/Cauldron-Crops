@@ -14,7 +14,7 @@ Direção e produção de arte: Antigravity, com aprovação criativa do autor. 
 
 ## Sobre o jogo
 
-Novo checkpoint implementado: abastecimento físico de sementes; pacote limpo em preparação. O pacote certificado anterior é `Builds/Playtest/HerbariumProduction-20261004`, fonte `328af62`; seus 67/67 testes são evidência anterior, não desta entrega. Save de playtest separado; 80 testes manuais pendentes.
+Pacote de teste vigente: `Builds/Playtest/SeedDelivery-20261005`, fonte `8b73dc6`. 71/71 regressões headless, 17 reaberturas e10fixtures passaram; EXE headless/OpenGL e PCK/manifesto/hashes auditados,108logs finais sem erros. Use StartPlaytest.cmd com EXE/PCK juntos, save separado e80testes manuais pendentes. B–E fechadas tecnicamente, sem aceite artístico ou de ritmo.
 
 Etapa atual: destino opcional **Baú via golem** no Livro para lotes finitos de sementes de Trigo/Tomate após a Clareira. Um preparo por transporte físico; o próximo só começa após depósito. Produção pessoal segue padrão; cancelamento preserva produto convertido e devolve somente futuras reservas. Não liga semeadura nem muda sua cultura. Contrato/QA em [Sistema agrícola](./docs/FARM_SYSTEM_V2.md); arte com Antigravity. Checkpoints abaixo são históricos quando anteriores a este incremento.
 

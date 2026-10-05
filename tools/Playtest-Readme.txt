@@ -13,7 +13,17 @@ Nao copie saves antigos para este ambiente sem planejar uma copia segura.
 
 F5 salva; F9 carrega. F10 permanece desativado.
 CHECKLIST.md contem os casos pendentes e os aceites anteriores.
-Inclui 75 casos: 70 anteriores preservados e 5 do Herbario produtivo (HP).
+Inclui 80 casos: 75 anteriores preservados e 5 de abastecimento de sementes (SD).
+Livro: destino pessoal padrao; apos restaurar a Clareira, escolher explicitamente
+Bau via golem para um lote finito de sementes de Trigo ou Tomate disponiveis.
+Um preparo inteiro por viagem fisica; proximo timer somente apos deposito.
+Colher primeiro/Regar primeiro terminam tarefa/carga atual e atendem saida pronta
+antes de novas agricolas. So colher/So regar/Pausado aguardam sem mudar sozinhos.
+Cancelar para futuros preparos e devolve so reservas nao convertidas; saida/cargo
+ja convertido continua destinado ao bau. Clicar caldeirao acompanha, nao cancela.
+Nao liga semeadura, troca cultura/ferramenta ou usa Aceleradora nas sementes.
+Save/load/viagem conservam custodia. Sem transporte remoto, fila ou progresso offline.
+Abrir/trocar receita/fechar/carregar limpa a escolha de destino nao confirmada.
 Herbario produtivo: ponto a leste do projeto, apos Herbario e Clareira restaurados.
 Melhoria opcional, investimento unico8 trigos+2 tomates+1 Mistura Restauradora.
 Bau da Vila primeiro, Mochila complementar; abrir/cancelar nao gasta.
@@ -25,7 +35,8 @@ Nao e cultura ou trabalho de golem; fonte do Bosque continua independente45s.
 Tomate do Sol pode ser plantado na Primavera ou no Verao, sem mudar estacao.
 No Livro: 1 trigo + 1 agua -> 1 Semente de Tomate, 2 segundos/zero XP,
 receita conhecida desde o inicio e repetivel, mesmo sem tomate anterior.
-Resultado na Mochila; plantar exige semente pessoal e rega normal.
+Resultado pessoal padrao na Mochila; Bau via golem e opcional apos a Clareira.
+Plantio manual exige semente pessoal e rega normal.
 O golem pode semear Trigo OU Tomate por escolha no painel. Nao ha calendario publico novo,
 efeito novo de Elixir ou beneficio de Solo Vivo para tomate.
 Adubo Flamejante: misture 1 tomate + 1 trigo -> 1 adubo/2 segundos;
@@ -48,8 +59,9 @@ Clareira restaurada libera a semeadura no painel, sem ativar.
 Escolha Trigo (Primavera) OU Tomate (Primavera/Verao), sem ligar a habilidade
 automaticamente ou mudar sua ferramenta/semente pessoal. Usa quatro lotes
 iniciais arados e sementes no Bau da Vila. Nao ara nem usa a Mochila.
-Se faltar a semente escolhida, nao usa outra como fallback. Sementes precisam
-ser fabricadas e depositadas pelo jogador; nao e um ciclo autossuficiente.
+Se faltar a semente escolhida, nao usa outra como fallback. O jogador encomenda
+a fabricacao; no destino pessoal deposita manualmente, ou escolhe a entrega
+finita ao bau pelo golem. Nao e um ciclo autossuficiente.
 Troca bloqueada durante ida ao bau/tarefa/carga de sementes, inclusive pausa
 e devolucao. Desligar permite devolver fisicamente a unidade original;
 retome prioridade mista se pausado. Escolha e carga conservadas no save.
@@ -59,7 +71,8 @@ No Livro: 1 carvao + 1 agua gera 1 Semente de Trigo; 2 trigos geram 3.
 Carvao vem do Bosque e agua da reserva regenerada pelo poco, fora dos slots.
 As receitas estao disponiveis por padrao, levam 2 segundos por craft
 e nao concedem pontos de alquimia. Eventos de colheita antigos permanecem.
-Resultado vai para a Mochila: plante manualmente ou deposite para o golem.
+No destino pessoal padrao, resultado vai para a Mochila: plante manualmente
+ou deposite para o golem. Bau via golem e opt-in por encomenda apos a Clareira.
 Salvar producao em andamento e condicional: se terminou antes, nao executado.
 Poco fisico fica acima dos canteiros, proximo ao nucleo da vila.
 Clique para aproximar e abrir, mesmo com ferramenta selecionada.

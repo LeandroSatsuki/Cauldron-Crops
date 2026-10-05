@@ -2,7 +2,9 @@
 
 ## Abastecimento físico de sementes aprovado
 
-**2026-10-04, Decisão 142:** o autor respondeu “aprovado” ao contrato integral publicado em `6da1cd5`, autorizando B–E. O portão da proposta abaixo está substituído, não reaberto. Domínio, logística, persistência e interface implementados; fechamento do pacote em andamento em 2026-10-05. 80 testes manuais pendentes, com 75 textos anteriores intactos; ainda não há novo pacote certificado por este checkpoint.
+**2026-10-04, Decisão 142:** o autor respondeu “aprovado” ao contrato integral publicado em `6da1cd5`, autorizando B–E. O portão da proposta abaixo está substituído, não reaberto. B–E fechadas tecnicamente em 2026-10-05; 80 testes manuais pendentes, com 75 textos anteriores intactos.
+
+Fonte `8b73dc6`, pacote `Builds/Playtest/SeedDelivery-20261005`: 71/71 regressões headless, 17 reaberturas, 10 fixtures e dois cenários adicionais. EXE headless/OpenGL, PCK/manifesto/hashes e 108 logs finais sem ERROR/SCRIPT ERROR/FAIL conferidos; checkout temporário removido. Negativo absoluto recusa HerbariumProduction antigo por SeedDeliveryOrder ausente, sem fallback do workspace. LEIA-ME sincronizado no fechamento documental posterior, sem alterar EXE/PCK; sourceCommit do manifesto permanece a fonte executável.
 
 Dedicados em APPDATA isolado: domínio 150 e transporte físico 184 por backend; persistência 109/fixture 2/reabertura 8 por backend; UI 39 headless/42 OpenGL, três capturas em 800×600/800×720/1280×720. Loader recebeu catch-up interno de uma geração validada (no máximo um preparo, sem cadeia/entrega) e fecha/resetará intenção do Livro em todo apply aceito, inclusive parcial IDLE. Recibos exigem booleanos estritos. Capturas do workspace incluem arte concorrente, não certificam o pacote limpo nem arte final. Negativas iniciais de fixtures/layout e diagnósticos preservadas fora dos finais.
 

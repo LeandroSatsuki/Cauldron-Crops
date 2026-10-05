@@ -136,7 +136,7 @@ Resposta Antigravity: pendente. Plano de substituição: pendente. Aceite artís
 
 ### Abastecimento físico de sementes — passagem funcional
 
-**Registro:** 2026-10-05. Contrato `6da1cd5` aprovado (Decisão142); domínio, persistência, transporte e interface implementados. Exportação limpa/regressão integral em preparação neste checkpoint; não é aceite artístico/manual ou de ritmo.
+**Registro:** 2026-10-05. Contrato `6da1cd5` aprovado (Decisão142); B–E fechadas tecnicamente. Fonte `8b73dc6`, pacote `Builds/Playtest/SeedDelivery-20261005`: 71/71 regressões headless, 17 reaberturas, 10 fixtures e dois cenários adicionais. EXE headless/OpenGL, PCK/manifesto/hashes e 108 logs finais sem ERROR/SCRIPT ERROR/FAIL conferidos; checkout temporário removido. Não é aceite artístico/manual ou de ritmo; arte concorrente não incorporada.
 
 - IDs existentes `semente_basica`/`semente_verao`; receitas disponíveis, tempos, rendimentos e descoberta/XP preservados. Nenhum asset, conceito, textura ou animação novo por Codex. Arte local concorrente não integra a entrega técnica.
 - Livro `Scripts/RecipeBookUI.gd`: controles runtime `SeedDeliveryDestination`/`SeedDeliveryHint` no scroll de detalhes, escolha pessoal padrão ou Baú via golem após Clareira. Mostra preparos/total, espera e custo de oportunidade; painel opaco/arrastável existente. Cabeçalho/Fechar acessíveis em800×600/800×720/1280×720; Produzir via scroll. Troca/fechamento/load limpa intenção, clique não atravessa o mundo nem troca ferramenta.
