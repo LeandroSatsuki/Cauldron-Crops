@@ -6,7 +6,7 @@
 script = ExtResource("1_recipe_data")
 id = "tomate_sol_trigo"
 nome = "Adubo Flamejante"
-descricao = "Mistura provisoria de tomate do sol e trigo para produzir adubo flamejante."
+descricao = "Produz um adubo para acrescentar +2 tomates à próxima colheita de uma planta de tomate. Uma aplicação por planta; não rega nem evita morte."
 categoria = "adubo"
 ingredientes = Array[String](["tomate_sol", "trigo"])
 resultado_item = "adubo_flamejante"

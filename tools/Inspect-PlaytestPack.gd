@@ -26,8 +26,52 @@ func _initialize() -> void:
 		return
 	if not _check_selective_sower_contract():
 		return
-	print("PlaytestPackAudit: PASS - recursos, receitas sustentáveis, Poço, Solo Vivo, Aceleradora, Raiz renovável, tomate Primavera/Verão, semeadura seletiva, aplicação, exclusões e save separado.")
+	if not _check_flame_fertilizer_contract():
+		return
+	print("PlaytestPackAudit: PASS - recursos, receitas sustentáveis, Poço, Solo Vivo, Aceleradora, Raiz renovável, tomate Primavera/Verão, semeadura seletiva, Adubo Flamejante, aplicação, exclusões e save separado.")
 	quit(0)
+
+func _check_flame_fertilizer_contract() -> bool:
+	var plot: GDScript = ResourceLoader.load("res://Scripts/FarmPlot.gd")
+	var tile: GDScript = ResourceLoader.load("res://Scripts/data/FarmTileData.gd")
+	if plot == null or tile == null:
+		return _fail("domínio do Adubo ausente")
+	var names: Array = []
+	for method in plot.get_script_method_list():
+		names.append(str(method["name"]))
+	for method in ["can_apply_flame_fertilizer", "apply_flame_fertilizer", "get_crop_generation"]:
+		if method not in names:
+			return _fail("API do Adubo ausente: " + method)
+	if plot.get_script_constant_map().get("FLAME_FERTILIZER_BONUS") != 2:
+		return _fail("bônus do Adubo fora do contrato")
+	var recipe: Resource = ResourceLoader.load("res://Data/recipes/tomate_sol_trigo.tres")
+	if recipe == null or recipe.get("id") != "tomate_sol_trigo" or recipe.get("ingredientes") != ["tomate_sol", "trigo"] or recipe.get("resultado_item") != "adubo_flamejante" or recipe.get("resultado_quantidade") != 1 or recipe.get("tempo_producao") != 2.0 or recipe.get("recompensa_pontos_alquimia") != 1 or recipe.get("desbloqueada_por_padrao") or recipe.get("exige_descoberta"):
+		return _fail("receita experimental do Adubo alterada")
+	names.clear()
+	for method in tile.get_script_method_list():
+		names.append(str(method["name"]))
+	if "is_flame_fertilizer_valid" not in names:
+		return _fail("preflight do Adubo ausente")
+	var valid := {"flame_fertilizer_applied": true, "crop_id": "semente_verao", "tile_state": 3, "remaining_growth_time": 0.0, "pending_harvest_rewards": {"tomate_sol": 3}}
+	if not tile.call("is_flame_fertilizer_valid", valid):
+		return _fail("snapshot de tomate adubado recusado")
+	for value in [null, 1, "true", [], {}]:
+		var invalid: Dictionary = valid.duplicate(true)
+		invalid["flame_fertilizer_applied"] = value
+		if tile.call("is_flame_fertilizer_valid", invalid):
+			return _fail("flag do Adubo não é estrita")
+	var invalid: Dictionary = valid.duplicate(true)
+	invalid["pending_harvest_rewards"] = {"tomate_sol": 2}
+	if tile.call("is_flame_fertilizer_valid", invalid):
+		return _fail("snapshot adubado sem bônus aceito")
+	invalid = valid.duplicate(true)
+	invalid["crop_id"] = "semente_basica"
+	if tile.call("is_flame_fertilizer_valid", invalid):
+		return _fail("Adubo aceito em outro cultivo")
+	valid.erase("flame_fertilizer_applied")
+	if not tile.call("is_flame_fertilizer_valid", valid):
+		return _fail("snapshot antigo recusado por ausência do campo opcional")
+	return true
 
 func _check_selective_sower_contract() -> bool:
 	# Scripts carregados exclusivamente do PCK, sem instanciar mundo/ready/save.

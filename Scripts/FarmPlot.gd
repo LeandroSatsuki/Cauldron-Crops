@@ -15,6 +15,10 @@ const TOOL_WATERING_CAN := 3
 const TOOL_HARVEST := 4
 const FEEDBACK_COR: Color = Color(1.0, 0.95, 0.6, 1.0)
 const LivingSoil = preload("res://Scripts/LivingSoilState.gd")
+const FLAME_FERTILIZER_ITEM := "adubo_flamejante"
+const FLAME_FERTILIZER_SEED := "semente_verao"
+const FLAME_FERTILIZER_PRODUCT := "tomate_sol"
+const FLAME_FERTILIZER_BONUS := 2
 
 # Máquina de estados simples
 enum State {
@@ -47,6 +51,8 @@ var expansion_blocked: bool = false
 var _pending_manual_harvest_rewards: Array = []
 var living_soil_treated: bool = false
 var living_soil_moisture: bool = false
+var flame_fertilizer_applied: bool = false
+var _crop_generation: int = 0
 
 func _ready() -> void:
 	add_to_group("lotes_terra")
@@ -91,6 +97,8 @@ func _process(_delta: float) -> void:
 	if living_soil_treated:
 		tooltip_area.tooltip_text += "\nSolo Vivo · tratamento durável"
 		tooltip_area.tooltip_text += "\nUmidade preservada para trigo" if living_soil_moisture else "\nTrigo regado conserva umidade após colher"
+	if flame_fertilizer_applied:
+		tooltip_area.tooltip_text += "\nAdubo Flamejante · +2 tomates na próxima colheita"
 
 # Função para capturar cliques do mouse (usando _input_event)
 func _input_event(_viewport: Viewport, event: InputEvent, _shape_idx: int) -> void:
@@ -219,6 +227,45 @@ func apply_living_soil() -> bool:
 	return true
 
 
+func get_crop_generation() -> int:
+	# Identidade transitória da cultura, não do lote/estágio e nunca do save.
+	return _crop_generation
+
+
+func is_flame_fertilizer_runtime_valid() -> bool:
+	# Preflight da representação viva antes que o snapshot agregue quantidades.
+	if not flame_fertilizer_applied:
+		return true # Culturas legadas continuam sujeitas aos preflights anteriores.
+	var totals: Variant = GolemWorkState.harvest_totals(_pending_manual_harvest_rewards)
+	if totals == null:
+		return false
+	var data := get_save_data()
+	data["pending_harvest_rewards"] = totals
+	return FarmTileData.is_flame_fertilizer_valid(data)
+
+
+func can_apply_flame_fertilizer() -> bool:
+	if not _is_application_runtime_available():
+		return false
+	var scene: Node = get_tree().current_scene
+	if not scene.has_method("get_current_region_identity") or bool(scene.get("_region_being_cached")):
+		return false
+	return semente_id_plantada == FLAME_FERTILIZER_SEED and estado_atual in [State.CRESCENDO, State.PRONTO_PARA_COLHER] \
+		and not flame_fertilizer_applied and _pending_manual_harvest_rewards.is_empty() \
+		and GlobalInventory.can_remove_item(FLAME_FERTILIZER_ITEM, 1)
+
+
+func apply_flame_fertilizer() -> bool:
+	if not can_apply_flame_fertilizer():
+		return false
+	# Commit síncrono: custo e marca consistentes antes de qualquer sinal.
+	if not GlobalInventory.remover_item(FLAME_FERTILIZER_ITEM, 1):
+		return false
+	flame_fertilizer_applied = true
+	_notificar_estado_alterado()
+	return true
+
+
 func validate_seed_planting(seed_id: String) -> Dictionary:
 	# Consulta pura: inclusive metadados, timer e sinais ficam intactos na recusa.
 	if not is_inside_tree() or is_queued_for_deletion() or not is_instance_valid(timer):
@@ -272,6 +319,8 @@ func _try_plant_seed(seed_id: String, consume_seed: Callable) -> Dictionary:
 	# Não aceitar fontes agregadas nem callbacks externos que publiquem estado parcial.
 	if not consume_seed.is_valid() or not bool(consume_seed.call()):
 		return _planting_result(false, "no_stock")
+	_crop_generation += 1
+	flame_fertilizer_applied = false
 	# Outro cultivo descarta só água herdada; rega manual comum segue inalterada.
 	if living_soil_moisture and seed_id != LivingSoil.WHEAT_SEED_ID:
 		regado = false
@@ -481,6 +530,8 @@ func debug_apply_daily_decay() -> bool:
 		timer.stop()
 
 	estado_atual = State.VAZIO
+	_crop_generation += 1
+	flame_fertilizer_applied = false
 	regado = false
 	living_soil_moisture = false
 	pronto_para_colher = false
@@ -531,10 +582,14 @@ func get_save_data() -> Dictionary:
 		"pronto_para_colher": pronto_para_colher,
 		"pending_harvest_rewards": _get_pending_harvest_totals(),
 		"living_soil_treated": living_soil_treated,
-		"living_soil_moisture": living_soil_moisture
+		"living_soil_moisture": living_soil_moisture,
+		"flame_fertilizer_applied": flame_fertilizer_applied
 	}
 
 func load_save_data(data: Dictionary) -> void:
+	if not FarmTileData.is_flame_fertilizer_valid(data):
+		push_warning("FarmPlot: estado de Adubo Flamejante invalido; lote nao alterado.")
+		return
 	var soil_cell: Vector2i = LivingSoil.PILOT_CELL if _is_living_soil_pilot_plot() else Vector2i(-1, -1)
 	if not LivingSoil.validate_flags(data, soil_cell):
 		push_warning("FarmPlot: estado de Solo Vivo invalido; lote nao alterado.")
@@ -542,11 +597,13 @@ func load_save_data(data: Dictionary) -> void:
 	if not FarmTileData.is_pending_harvest_valid(data.get("pending_harvest_rewards", {})):
 		push_warning("FarmPlot: recompensa pendente invalida; lote nao alterado.")
 		return
+	_crop_generation += 1
 	if timer:
 		timer.stop()
 	_pending_manual_harvest_rewards.clear()
 	living_soil_treated = data.get("living_soil_treated", false)
 	living_soil_moisture = data.get("living_soil_moisture", false)
+	flame_fertilizer_applied = data.get("flame_fertilizer_applied", false)
 
 	if data.is_empty():
 		_concluir_colheita(false)
@@ -605,7 +662,6 @@ func load_save_data(data: Dictionary) -> void:
 			pronto_para_colher = true
 			_atualizar_visual()
 			atualizar_visual_planta(semente_id_plantada, 2)
-			_notificar_estado_alterado()
 		State.CRESCENDO:
 			estado_atual = State.CRESCENDO
 			pronto_para_colher = false
@@ -614,13 +670,11 @@ func load_save_data(data: Dictionary) -> void:
 				pronto_para_colher = true
 				_atualizar_visual()
 				atualizar_visual_planta(semente_id_plantada, 2)
-				_notificar_estado_alterado()
 			else:
 				if timer:
 					timer.wait_time = tempo_restante_salvo
 					timer.start()
 				_atualizar_visual()
-				_notificar_estado_alterado()
 				var wait_t: float = tempo_total_crescimento if tempo_total_crescimento > 0.0 else tempo_restante_salvo
 				var progresso: float = (wait_t - tempo_restante_salvo) / wait_t if wait_t > 0.0 else 0.0
 				var estagio: int = 1 if progresso >= 0.5 else 0
@@ -631,7 +685,8 @@ func load_save_data(data: Dictionary) -> void:
 		for item_id in data.get("pending_harvest_rewards", {}):
 			var quantity: int = int(data["pending_harvest_rewards"][item_id])
 			_adicionar_recompensa_colheita(_pending_manual_harvest_rewards, item_id, quantity, true, "+%d %s" % [quantity, _obter_nome_exibicao_item(item_id)], Color.YELLOW)
-		_notificar_estado_alterado()
+	# Publicar somente após reconstruir toda a custódia de recompensas.
+	_notificar_estado_alterado()
 
 
 func advance_inactive_time(elapsed_seconds: float) -> bool:
@@ -680,6 +735,8 @@ func _gerar_recompensas_colheita(produto: String) -> Array:
 		"+1 " + _obter_nome_exibicao_item(produto),
 		Color.YELLOW
 	)
+	if flame_fertilizer_applied and semente_id_plantada == FLAME_FERTILIZER_SEED and produto == FLAME_FERTILIZER_PRODUCT:
+		_adicionar_recompensa_colheita(recompensas, FLAME_FERTILIZER_PRODUCT, FLAME_FERTILIZER_BONUS, true, "+2 Tomate Sol · Adubo", Color.YELLOW)
 
 	if SeasonManager.estacao_atual == SeasonManager.Estacao.OUTONO and randf() <= 0.20:
 		_adicionar_recompensa_colheita(recompensas, produto, 1)
@@ -844,6 +901,8 @@ func _complete_successful_harvest(preservar_arado: bool = true, notify_change: b
 
 
 func _concluir_colheita(preservar_arado: bool = true, notify_change: bool = true) -> void:
+	_crop_generation += 1
+	flame_fertilizer_applied = false
 	_pending_manual_harvest_rewards.clear()
 	estado_atual = State.VAZIO
 	regado = false
@@ -867,6 +926,8 @@ func _on_timer_timeout() -> void:
 	if estado_atual == State.CRESCENDO:
 		if not regado and SeasonManager.estacao_atual != SeasonManager.Estacao.INVERNO:
 			if randf() <= 0.20:
+				_crop_generation += 1
+				flame_fertilizer_applied = false
 				living_soil_moisture = false
 				regado = false
 				semente_atual = {}

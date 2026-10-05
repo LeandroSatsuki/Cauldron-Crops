@@ -55,10 +55,19 @@ func save_game() -> bool:
 		last_file_error = "Golem indisponível. O save anterior não foi alterado."
 		return false
 	for plot in _get_save_group_nodes("lotes_terra"):
+		if plot.has_method("is_flame_fertilizer_runtime_valid") and not bool(plot.call("is_flame_fertilizer_runtime_valid")):
+			last_file_error = "Estado de Adubo Flamejante inválido. O save anterior não foi alterado."
+			return false
+		if plot.has_method("get_save_data") and not FarmTileData.is_flame_fertilizer_valid(plot.get_save_data()):
+			last_file_error = "Estado de Adubo Flamejante inválido. O save anterior não foi alterado."
+			return false
 		if plot.has_method("get_save_data") and not LivingSoilState.validate_flags(plot.get_save_data(), _living_soil_plot_cell(plot)):
 			last_file_error = "Estado de Solo Vivo inválido. O save anterior não foi alterado."
 			return false
 	var data := _build_save_data()
+	if not _is_flame_fertilizer_save_valid(data, _resolve_farm_save_source(data, SAVE_VERSION)):
+		last_file_error = "Estado de Adubo Flamejante inválido. O save anterior não foi alterado."
+		return false
 	if not GroveExpedition.is_save_data_valid(data.get("grove_expedition")):
 		last_file_error = "Estado da expedição inválido. O save anterior não foi alterado."
 		return false
@@ -262,6 +271,9 @@ func _apply_save_data(data: Dictionary) -> bool:
 		push_error("SaveManager: versao de save invalida.")
 		return false
 	var farm_save_source: FarmSaveSource = _resolve_farm_save_source(data, save_version)
+	if not _is_flame_fertilizer_save_valid(data, farm_save_source):
+		push_warning("SaveManager: Adubo Flamejante invalido; save nao aplicado.")
+		return false
 	data = _with_living_soil_partial_defaults(data, farm_save_source)
 	if not _is_living_soil_save_valid(data, farm_save_source):
 		push_warning("SaveManager: Solo Vivo invalido; save nao aplicado.")
@@ -602,6 +614,29 @@ func _is_pending_harvest_save_valid(data: Dictionary, source: FarmSaveSource) ->
 	return true
 
 
+func _is_flame_fertilizer_save_valid(data: Dictionary, source: FarmSaveSource) -> bool:
+	if source == FarmSaveSource.NONE:
+		return true
+	var entries: Variant = _safe_dictionary(data.get("farm_grid", {})).get("tiles", []) if source == FarmSaveSource.GRID_V4 else data.get("farm_plots", [])
+	if not entries is Array:
+		return false
+	var seen_cells := {}
+	for entry in entries:
+		if not entry is Dictionary:
+			continue
+		if not FarmTileData.is_flame_fertilizer_valid(entry):
+			return false
+		if source == FarmSaveSource.GRID_V4:
+			var cell := _living_soil_cell(entry)
+			var applied: bool = entry.get("flame_fertilizer_applied", false)
+			if applied and cell == Vector2i(-1, -1):
+				return false
+			if seen_cells.has(cell) and (applied or seen_cells[cell]):
+				return false
+			seen_cells[cell] = applied
+	return true
+
+
 func _living_soil_cell(entry: Dictionary) -> Vector2i:
 	var position: Variant = entry.get("grid_position", {})
 	if position is Vector2i:
@@ -810,7 +845,8 @@ func _converter_farm_tile_para_plot_save_data(tile: FarmTileData) -> Dictionary:
 			"arado": false,
 			"tempo_restante": 0.0,
 			"tempo_total_crescimento": 0.0,
-			"pronto_para_colher": false
+			"pronto_para_colher": false,
+			"flame_fertilizer_applied": tile.flame_fertilizer_applied
 		}
 
 	var regado: bool = tile.is_watered or tile.tile_state == FarmTileData.TileState.MOLHADO
@@ -824,7 +860,8 @@ func _converter_farm_tile_para_plot_save_data(tile: FarmTileData) -> Dictionary:
 			"tempo_total_crescimento": 0.0,
 			"pronto_para_colher": false,
 			"living_soil_treated": tile.living_soil_treated,
-			"living_soil_moisture": tile.living_soil_moisture
+			"living_soil_moisture": tile.living_soil_moisture,
+			"flame_fertilizer_applied": tile.flame_fertilizer_applied
 		}
 
 	var tempo_restante: float = maxf(tile.remaining_growth_time, 0.0)
@@ -839,7 +876,8 @@ func _converter_farm_tile_para_plot_save_data(tile: FarmTileData) -> Dictionary:
 		"pronto_para_colher": tempo_restante <= 0.0,
 		"pending_harvest_rewards": tile.pending_harvest_rewards.duplicate(true),
 		"living_soil_treated": tile.living_soil_treated,
-		"living_soil_moisture": tile.living_soil_moisture
+		"living_soil_moisture": tile.living_soil_moisture,
+		"flame_fertilizer_applied": tile.flame_fertilizer_applied
 	}
 
 func _safe_dictionary(value: Variant) -> Dictionary:

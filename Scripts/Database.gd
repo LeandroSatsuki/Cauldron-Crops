@@ -250,7 +250,7 @@ var itens: Dictionary = {
 		"pode_usar_em_receita": true,
 		"tags": ["adubo", "consumivel", "fogo"],
 		"origem": "alquimia",
-		"descricao": "Adubo especial usado em receitas e futuras melhorias.",
+		"descricao": "Acrescenta +2 tomates à próxima colheita de uma planta de tomate. Uma aplicação por planta, crescendo ou madura, antes da colheita ser calculada. Não rega nem evita morte.",
 		"icone": "🔥"
 	},
 	"elixir_estacional": {

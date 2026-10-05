@@ -1,6 +1,18 @@
 # Farm System V2
 
-## Proposta de Adubo Flamejante para a colheita de tomate
+## Adubo Flamejante aprovado
+
+**Data:** 2026-10-04. O autor respondeu “sim” ao contrato integral apresentado após `6f92350`, autorizando B–E/Decisão 138. A confirmação substitui o portão da proposta histórica abaixo: +2 tomates garantidos, receita atual, uma aplicação por cultura crescendo/madura antes de materializar recompensas, consumo pessoal na chegada e perda na morte/reset real. Não é aceite de balanceamento, arte ou testes manuais.
+
+Implementado: terceiro ramo explícito de aplicação pelo mouse, identidade transitória da cultura durante a aproximação, consumo pessoal e marca por cultura, +2 aditivos na geração única de recompensas e limpeza na coleta/morte/reset. Campo opcional booleano estrito em save v4, pontes GRID/legado e preflight antes de mutação/normalização/I/O. Culturas sem marca continuam com a validação anterior; o novo preflight vivo protege a recompensa marcada antes da agregação. Golem conserva somente os totais existentes no cargo, sem segunda promessa.
+
+QA dedicada em APPDATA isolado: domínio **123** por backend headless/OpenGL; persistência **86**, fixture **2** e reabertura em processo novo **8** por backend; UI/física **144** headless e **150** OpenGL (seis extras verificam capturas). A UI exercita a entrada do slot da Mochila, consulta/Aplicar/Cancelar, caminhada real de 46 pixels, identidade/replantio/maturação, alvo/saldo perdido, callbacks obsoletos, load/viagem e Crescimento/Solo Vivo. Capturas técnicas em 800×600/800×720/1280×720 conferidas, com arte concorrente do workspace; não certificam visual de pacote limpo. Regressões existentes Solo Vivo173 e Tomate125 passaram. Pacote limpo/suíte integral e revisão independente ainda em fechamento neste checkpoint.
+
+Negativas preservadas: primeira importação recusada pelo armazenamento de certificados; preparação inicial de testes recusada por tipos/argumentos da fixture, versão ausente em GRID parcial e comparação int/float do JSON do baú. Corrigidos somente os fixtures. UI reproduziu cartão de altura616 com mínimo321 em 800×600: corrigido `ItemUsePanel.reset_size()` antes do clamp, sem recortar texto, mudar arte ou regra de uso; repetição final passou. Invocação gráfica sem o argumento específico de captura passou144, mas recusou a expectativa incorreta de150; repetida com captura explícita. Auditor novo recusa SelectiveSower anterior pela API de Adubo ausente, sem buscar implementação no workspace. Controles negativos não contam como gameplay aprovado.
+
+Os **65 textos manuais anteriores permanecem exatamente intactos**, com cinco AF acrescentados: **70 pendentes**. Nenhum save pessoal acessado, loja/F10/calendário/Elixir/espécie/mapa novo ou arte concorrente integrado. Arte e acabamento permanecem com Antigravity; passagem funcional em ART_HANDOFF. Sem exigir teste imediato ou inferir aceite de conforto, ritmo ou balanceamento.
+
+## Histórico da proposta de Adubo Flamejante para a colheita de tomate
 
 **Status em 2026-10-04: formulação autorizada, aguardando aprovação integral do contrato.** O autor respondeu “pode continuar” após `0d48d8b`. Esta etapa propõe um uso novo para um item existente; não implementa nem considera aprovado esse efeito. Baseline jogável: fonte `f587fe4`, pacote `Builds/Playtest/SelectiveSower-20261004`. Suas 61/61 regressões são evidência anterior, não execução desta consulta. Os **65 testes manuais permanecem pendentes e intactos**.
 

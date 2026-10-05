@@ -137,6 +137,8 @@ func _refresh_card() -> void:
 		description_label.text = "Reduz pela metade o tempo restante de uma planta crescendo. Cada frasco rende 3 doses. O frasco só é aberto na primeira aplicação válida."
 	elif item_id == "preparo_solo_vivo":
 		description_label.text = "Trata permanentemente o lote marcado, vazio e arado. Após regar e colher trigo, conserva umidade para o próximo trigo. Aplicar não rega."
+	elif item_id == "adubo_flamejante":
+		description_label.text = "Aplicar num tomate crescendo ou maduro acrescenta +2 tomates à próxima colheita. Uma aplicação por planta, antes de a colheita ser calculada. Não rega nem evita morte; se a planta morrer, o adubo é perdido."
 	elif item_id == "mistura_restauradora":
 		description_label.text = "Ingrediente para receitas e projetos de restauração. Use pelo caldeirão ou pelo painel do projeto; não é aplicado livremente no cenário."
 	elif item_id == "pocao_purificadora_fraca":
@@ -147,7 +149,7 @@ func _refresh_card() -> void:
 		description_label.text = Database.obter_descricao_item(item_id)
 		if description_label.text == "":
 			description_label.text = "Consulte as receitas e projetos conhecidos para encontrar usos deste item."
-	apply_button.visible = item_id in ["pocao_crescimento", "preparo_solo_vivo"]
+	apply_button.visible = item_id in ["pocao_crescimento", "preparo_solo_vivo", "adubo_flamejante"]
 	apply_button.disabled = GlobalInventory.get_item_quantity(item_id) <= 0 and not (item_id == "pocao_crescimento" and GlobalInventory.cargas_crescimento > 0)
 
 func _apply_pressed() -> void:
@@ -186,6 +188,9 @@ func _process(_delta: float) -> void:
 		_layout()
 	# Containers podem mudar de altura após reflow/resize; manter no viewport.
 	for panel in [card, application_bar]:
+		# O primeiro reflow pode inflar a altura antes de a largura ser conhecida.
+		# Recuperar o mínimo atual permite encolher novamente sem recortar texto.
+		panel.reset_size()
 		panel.position.x = clampf(panel.position.x, 12.0, maxf(12.0, _last_size.x - panel.size.x - 12.0))
 		panel.position.y = clampf(panel.position.y, 12.0, maxf(12.0, _last_size.y - panel.size.y - 12.0))
 

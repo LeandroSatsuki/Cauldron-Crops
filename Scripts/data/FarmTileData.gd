@@ -34,6 +34,39 @@ enum SoilType {
 @export var pending_harvest_rewards: Dictionary = {}
 @export var living_soil_treated: bool = false
 @export var living_soil_moisture: bool = false
+@export var flame_fertilizer_applied: bool = false
+
+static func is_flame_fertilizer_valid(data: Dictionary) -> bool:
+	var applied: Variant = data.get("flame_fertilizer_applied", false)
+	if not applied is bool:
+		return false
+	if not applied:
+		return true
+	var grid := data.has("crop_id") or data.has("tile_state")
+	var seed: Variant = data.get("crop_id", "") if grid else data.get("semente_id_plantada", "")
+	var state: Variant = data.get("tile_state") if grid else data.get("estado_atual")
+	if not seed is String or seed != "semente_verao" or typeof(state) not in [TYPE_INT, TYPE_FLOAT]:
+		return false
+	if not is_finite(float(state)) or float(state) != float(int(state)):
+		return false
+	if grid:
+		if int(state) not in [TileState.MOLHADO, TileState.PLANTADO]:
+			return false
+	elif int(state) not in [1, 2] or data.get("expansion_blocked", false):
+		return false
+	var pending: Variant = data.get("pending_harvest_rewards", {})
+	if not is_pending_harvest_valid(pending):
+		return false
+	if pending.is_empty():
+		return true
+	if int(pending.get("tomate_sol", 0)) < 3:
+		return false
+	# Recompensa já materializada só pode pertencer a uma colheita madura;
+	# recusar antes de um load que descartaria o pending de cultura crescendo.
+	var remaining: Variant = data.get("remaining_growth_time", 0.0) if grid else data.get("tempo_restante", 0.0)
+	if typeof(remaining) not in [TYPE_INT, TYPE_FLOAT] or not is_finite(float(remaining)) or float(remaining) < 0.0:
+		return false
+	return float(remaining) == 0.0 if grid or int(state) == 1 else true
 
 static func is_pending_harvest_valid(value: Variant) -> bool:
 	if not value is Dictionary:
@@ -58,6 +91,7 @@ func can_plant() -> bool:
 	return (tile_state == TileState.ARADO or tile_state == TileState.MOLHADO) and crop_id == "" and occupant_id == ""
 
 func clear_crop() -> void:
+	flame_fertilizer_applied = false
 	living_soil_moisture = false
 	crop_id = ""
 	pending_harvest_rewards.clear()
@@ -90,11 +124,15 @@ func to_save_data() -> Dictionary:
 		"total_growth_time": total_growth_time,
 		"pending_harvest_rewards": pending_harvest_rewards.duplicate(true),
 		"living_soil_treated": living_soil_treated,
-		"living_soil_moisture": living_soil_moisture
+		"living_soil_moisture": living_soil_moisture,
+		"flame_fertilizer_applied": flame_fertilizer_applied
 	}
 
 func load_save_data(data: Dictionary) -> void:
 	if data.is_empty():
+		return
+	if not is_flame_fertilizer_valid(data):
+		push_warning("FarmTileData: Adubo Flamejante invalido; tile nao alterado.")
 		return
 	var incoming_cell := _ler_vector2i_de_grid_position(data.get("grid_position", grid_position))
 	if not LivingSoilState.validate_flags(data, incoming_cell):
@@ -107,6 +145,7 @@ func load_save_data(data: Dictionary) -> void:
 	grid_position = _ler_vector2i_de_grid_position(data.get("grid_position", grid_position))
 	living_soil_treated = data.get("living_soil_treated", false)
 	living_soil_moisture = data.get("living_soil_moisture", false)
+	flame_fertilizer_applied = data.get("flame_fertilizer_applied", false)
 	tile_state = _normalizar_tile_state(int(data.get("tile_state", int(tile_state))))
 	soil_type = _normalizar_soil_type(int(data.get("soil_type", int(soil_type))))
 	crop_id = str(data.get("crop_id", crop_id))

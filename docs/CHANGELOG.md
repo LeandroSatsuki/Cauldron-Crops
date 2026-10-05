@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-04 - Adubo Flamejante aprovado e implementado
+
+- Autor confirmou integralmente o contrato após `6f92350` (Decisão138). Aplicação pessoal pelo mouse em uma cultura de tomate crescendo/madura, um adubo na chegada, +2 tomates aditivos uma vez; sem água/velocidade/estação/XP novo, efeito permanente ou aplicação pelo golem.
+- Proteção por geração transitória da cultura, limpeza em coleta/morte/reset sem refund, campo opcional estrito e pontes/preflight GRID/legado/save v4. Pending/cargo preservados por capacidade/load/cache/retry; marca não inferida de quantidades antigas. Receita/custos/descoberta/XP vigentes preservados.
+- Dedicados domínio123 e persistência86/fixture2/reabertura8 em headless/OpenGL; UI144/150 (6 extras de captura), entrada do slot e layout em três resoluções, regressões Solo Vivo173/Tomate125. Corrigida altura retida do cartão; negativas de certificados/fixtures/overflow preservadas. Auditor recusa pacote anterior sem API. Suíte integral/pacote limpo/revisão independente em fechamento.
+- 65 textos manuais preservados, cincoAF novos:70 pendentes. Sem teste imediato, save pessoal, arte concorrente, economia/Elixir/calendário ativados; passagem funcional para Antigravity.
+
 ## 2026-10-04 - Proposta de uso agrícola do Adubo Flamejante
 
 - Gameplay/engenharia compararam uso do tomate/Adubo, nova restauração e calendário/solo sazonal. Recomendada uma cultura/uma colheita com +2 tomates garantidos, sem repetir a semeadura concluída ou alongar timers; números/regra novos ainda não aprovados.

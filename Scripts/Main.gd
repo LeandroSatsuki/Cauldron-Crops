@@ -372,6 +372,7 @@ func _converter_farm_plot_para_tile_data(grid_position: Vector2i, plot: Node2D) 
 	tile.is_watered = regado
 	tile.living_soil_treated = bool(save_data.get("living_soil_treated", false))
 	tile.living_soil_moisture = bool(save_data.get("living_soil_moisture", false))
+	tile.flame_fertilizer_applied = bool(save_data.get("flame_fertilizer_applied", false))
 	tile.crop_id = semente_id
 	tile.remaining_growth_time = maxf(float(save_data.get("tempo_restante", 0.0)), 0.0)
 	tile.total_growth_time = maxf(float(save_data.get("tempo_total_crescimento", 0.0)), 0.0)
@@ -587,7 +588,7 @@ func _consumable_context_valid() -> bool:
 
 
 func begin_consumable_application(item_id: String) -> bool:
-	if item_id not in ["preparo_solo_vivo", "pocao_crescimento"] or not _consumable_context_valid():
+	if item_id not in ["preparo_solo_vivo", "pocao_crescimento", "adubo_flamejante"] or not _consumable_context_valid():
 		return false
 	if item_id == "pocao_crescimento":
 		if GlobalInventory.cargas_crescimento <= 0 and GlobalInventory.get_item_quantity(item_id) <= 0:
@@ -598,7 +599,13 @@ func begin_consumable_application(item_id: String) -> bool:
 	ToolManager.clear_tool()
 	GlobalInventory.semente_selecionada = ""
 	selected_consumable = item_id
-	consumable_feedback = "Clique no lote piloto vazio e arado." if item_id == "preparo_solo_vivo" else "Clique numa planta ainda crescendo."
+	match item_id:
+		"preparo_solo_vivo":
+			consumable_feedback = "Clique no lote piloto vazio e arado."
+		"pocao_crescimento":
+			consumable_feedback = "Clique numa planta ainda crescendo."
+		"adubo_flamejante":
+			consumable_feedback = "Clique num tomate crescendo ou maduro, ainda não adubado."
 	return true
 
 
@@ -623,19 +630,37 @@ func try_apply_selected_consumable_to_plot(plot: Node2D) -> bool:
 		return true
 	_cancel_pending_player_interaction(true)
 	_consumable_generation += 1
-	var method := "can_apply_living_soil" if selected_consumable == "preparo_solo_vivo" else "can_apply_growth_dose"
+	var method := _consumable_plot_method(selected_consumable, false)
 	if plot == null or not is_instance_valid(plot) or not plot.has_method(method) or not bool(plot.call(method)):
-		consumable_feedback = "Use no lote piloto vazio/arado, ainda não tratado, com um preparo na Mochila." if selected_consumable == "preparo_solo_vivo" else "É preciso uma planta crescendo e uma dose ou frasco na Mochila."
+		match selected_consumable:
+			"preparo_solo_vivo":
+				consumable_feedback = "Use no lote piloto vazio/arado, ainda não tratado, com um preparo na Mochila."
+			"pocao_crescimento":
+				consumable_feedback = "É preciso uma planta crescendo e uma dose ou frasco na Mochila."
+			"adubo_flamejante":
+				consumable_feedback = "Use num tomate crescendo/maduro, sem adubo ou colheita já calculada, com um adubo na Mochila."
 		return true
 	var generation := _consumable_generation
 	var item_id := selected_consumable
+	var crop_generation: int = int(plot.call("get_crop_generation")) if item_id == "adubo_flamejante" else -1
 	consumable_feedback = "Indo aplicar… Cancelar não gasta recursos."
-	if not request_player_interaction(plot, plot.global_position, 46.0, Callable(self, "_commit_consumable_application").bind(weakref(plot), item_id, generation)):
+	if not request_player_interaction(plot, plot.global_position, 46.0, Callable(self, "_commit_consumable_application").bind(weakref(plot), item_id, generation, crop_generation)):
 		consumable_feedback = "Não foi possível alcançar o lote. Nada foi gasto."
 	return true
 
 
-func _commit_consumable_application(plot_ref: WeakRef, item_id: String, generation: int) -> void:
+func _consumable_plot_method(item_id: String, apply: bool) -> String:
+	match item_id:
+		"preparo_solo_vivo":
+			return "apply_living_soil" if apply else "can_apply_living_soil"
+		"pocao_crescimento":
+			return "apply_growth_dose" if apply else "can_apply_growth_dose"
+		"adubo_flamejante":
+			return "apply_flame_fertilizer" if apply else "can_apply_flame_fertilizer"
+	return ""
+
+
+func _commit_consumable_application(plot_ref: WeakRef, item_id: String, generation: int, crop_generation: int = -1) -> void:
 	if generation != _consumable_generation or selected_consumable != item_id or not _consumable_context_valid():
 		return
 	if ToolManager.get_active_tool() != ToolManager.ToolType.NONE or GlobalInventory.semente_selecionada != "":
@@ -646,11 +671,14 @@ func _commit_consumable_application(plot_ref: WeakRef, item_id: String, generati
 		or player_avatar.global_position.distance_to(plot.global_position) > 46.0:
 		consumable_feedback = "Alvo indisponível. Nada foi gasto."
 		return
-	var method := "apply_living_soil" if item_id == "preparo_solo_vivo" else "apply_growth_dose"
+	if item_id == "adubo_flamejante" and (crop_generation < 0 or int(plot.call("get_crop_generation")) != crop_generation):
+		consumable_feedback = "A cultura mudou. Nada foi gasto; escolha outro alvo ou cancele."
+		return
+	var method := _consumable_plot_method(item_id, true)
 	# Encerrar antes dos sinais do commit impede reentrada/duplo clique.
 	selected_consumable = ""
 	_consumable_generation += 1
-	if not bool(plot.call(method)):
+	if method == "" or not plot.has_method(method) or not bool(plot.call(method)):
 		selected_consumable = item_id
 		consumable_feedback = "O alvo ou estoque mudou. Nada foi gasto; escolha outro alvo ou cancele."
 	else:

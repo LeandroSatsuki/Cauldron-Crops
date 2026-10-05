@@ -42,6 +42,7 @@ plantar → regar → colher → combinar ingredientes → descobrir receitas �
 - uso explícito pelo mouse: cartão opaco → Aplicar → alvo/chegada, com cancelamento sem gasto; crescimento mantém três doses por frasco e preserva cargas antigas;
 - reposição determinística de sementes de trigo pelo Livro: carvão + água → 1 semente, ou 2 trigos → 3 sementes, sem desbloqueio/RNG;
 - tomate opcional na Primavera/Verão, com primeira semente e recuperação pelo Livro: 1 trigo + 1 água → 1 semente, 2 segundos/sem XP;
+- Adubo Flamejante: tomate + trigo produz um adubo; aplicar pessoalmente em uma planta de tomate crescendo/madura acrescenta +2 tomates àquela colheita, uma vez. Não rega/evita morte; capacidade/save/load e coleta do golem preservam os totais sem repetir bônus;
 - pesca com minigame de sincronia;
 - coleção de pesca, eventos e descobertas opcionais;
 - personagem físico com navegação por clique e exploração do bosque;
@@ -99,6 +100,8 @@ O projeto possui o preset `Windows Desktop - Fase 1 Demo` em `export_presets.cfg
 Para gerar uma build, instale os templates de exportação compatíveis com sua versão do Godot e exporte para a pasta `Builds/Fase1/`. Os binários são ignorados pelo Git e não fazem parte do repositório.
 
 ## Estado do desenvolvimento
+
+Continuidade atual (2026-10-04): **Adubo Flamejante aprovado e implementado, entrega técnica em fechamento**. Domínio123 e persistência86/fixture2/reabertura8 por backend headless/OpenGL; UI144/150 (seis capturas extras), cartão/faixa nas três resoluções e regressões Solo Vivo/Tomate conferidos. Suíte integral e pacote limpo ainda em fechamento; fonte jogável anterior é `f587fe4`/SelectiveSower-20261004. **70 testes manuais pendentes**, sem solicitar teste imediato ou considerar arte/balanceamento aprovados. Estado vigente em [Sistema agrícola](./docs/FARM_SYSTEM_V2.md) e [Roadmap](./docs/ROADMAP.md); registros abaixo são históricos, não o checkpoint mais recente.
 
 Checkpoint mais recente (2026-10-04): **Vila em Reconstrução — Poço, incrementos 1–3 concluídos tecnicamente**. Pacote `Builds/Playtest/VillageWell-20261004`, fonte `03e209d`, gerado em checkout limpo: suíte **54/54**, sete reaberturas (6 + 3 + 8 + 8 + 4 + 8 + 8), dois fixtures (2 + 2), EXE headless/OpenGL e auditoria isolada do PCK aprovados. Inclui StartPlaytest.cmd, manifesto/hashes, logs, instruções e checklist **36 testes manuais pendentes** (30 intactos + 6 WL). Contratos e instância física do Poço auditados; pacote anterior sem Poço é recusado, sem buscar recursos no workspace. Save pessoal intacto e ambiente de playtest separado, sem copiar/apagar progresso já existente. Recorte fechado tecnicamente, não picking/arte/conforto/ritmo/balanceamento aprovados manualmente nem jogo inteiro finalizado. Próximo recorte de gameplay/progressão precisa de proposta e aprovação antes de ampliar sistemas reservados. Plano em [Sistema agrícola](./docs/FARM_SYSTEM_V2.md).
 

@@ -13,13 +13,21 @@ Nao copie saves antigos para este ambiente sem planejar uma copia segura.
 
 F5 salva; F9 carrega. F10 permanece desativado.
 CHECKLIST.md contem os casos pendentes e os aceites anteriores.
-Inclui 65 casos: 60 anteriores preservados e 5 de semeadura seletiva (SS).
+Inclui 70 casos: 65 anteriores preservados e 5 do Adubo Flamejante (AF).
 Tomate do Sol pode ser plantado na Primavera ou no Verao, sem mudar estacao.
 No Livro: 1 trigo + 1 agua -> 1 Semente de Tomate, 2 segundos/zero XP,
 receita conhecida desde o inicio e repetivel, mesmo sem tomate anterior.
 Resultado na Mochila; plantar exige semente pessoal e rega normal.
 O golem pode semear Trigo OU Tomate por escolha no painel. Nao ha calendario publico novo,
-efeito novo de Adubo/Elixir ou beneficio de Solo Vivo para tomate.
+efeito novo de Elixir ou beneficio de Solo Vivo para tomate.
+Adubo Flamejante: misture 1 tomate + 1 trigo -> 1 adubo/2 segundos;
+a primeira descoberta ensina a receita e concede o ponto de alquimia vigente.
+Consulte o adubo na Mochila -> Aplicar -> clique num tomate crescendo/maduro.
+O personagem se aproxima; custa 1 adubo pessoal somente na chegada valida.
+Uma aplicacao por planta acrescenta +2 tomates a sua colheita (base 3),
+sem multiplicar sementes/drops, acelerar ou regar. Planta morta perde o adubo.
+Cancelar ou trocar de cultura durante a caminhada nao gasta. Falta de espaco
+conserva o resultado calculado; save/load e golem nao repetem o bonus.
 No Bosque, fonte de Raiz Gelida perto da bifurcacao inicial (960,630).
 Entrega 1 na Mochila e renova em 45 segundos de jogo aberto, inclusive
 durante tempo na vila. Sem espaco, preserva o recurso e nao inicia espera.
