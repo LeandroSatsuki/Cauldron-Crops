@@ -13639,6 +13639,9 @@ func _tem_popup_modal_aberto(include_item_card: bool = true) -> bool:
 	var well := _obter_current_scene().get_node_or_null("VillageWell") if _obter_current_scene() != null else null
 	if well != null and well.is_panel_open():
 		return true
+	var herbarium := _obter_current_scene().get_node_or_null("ProductiveHerbarium") if _obter_current_scene() != null else null
+	if herbarium != null and herbarium.is_panel_open():
+		return true
 	if skill_tree and skill_tree.is_visible_in_tree():
 		return true
 	if golem_panel and golem_panel.is_visible_in_tree():

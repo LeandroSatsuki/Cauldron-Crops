@@ -13,7 +13,15 @@ Nao copie saves antigos para este ambiente sem planejar uma copia segura.
 
 F5 salva; F9 carrega. F10 permanece desativado.
 CHECKLIST.md contem os casos pendentes e os aceites anteriores.
-Inclui 70 casos: 65 anteriores preservados e 5 do Adubo Flamejante (AF).
+Inclui 75 casos: 70 anteriores preservados e 5 do Herbario produtivo (HP).
+Herbario produtivo: ponto a leste do projeto, apos Herbario e Clareira restaurados.
+Melhoria opcional, investimento unico8 trigos+2 tomates+1 Mistura Restauradora.
+Bau da Vila primeiro, Mochila complementar; abrir/cancelar nao gasta.
+Primeira coleta pronta no ponto, nao presente automatico. Cada coleta entrega
+1 Raiz Gelida na Mochila e renova em90s de sessao, inclusive no Bosque.
+Maximo uma pronta, sem acumulo/offline. Sem espaco, preserva a disponibilidade.
+Save/carregar/reabrir conservam restante, sem cobrar ou entregar novamente.
+Nao e cultura ou trabalho de golem; fonte do Bosque continua independente45s.
 Tomate do Sol pode ser plantado na Primavera ou no Verao, sem mudar estacao.
 No Livro: 1 trigo + 1 agua -> 1 Semente de Tomate, 2 segundos/zero XP,
 receita conhecida desde o inicio e repetivel, mesmo sem tomate anterior.

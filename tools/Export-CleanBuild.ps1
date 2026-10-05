@@ -190,6 +190,10 @@ try {
             Write-Host "PASS $($test.Name)"
             # Reopen immediately, before another fixture can replace the QA save.
             $steps = @(switch ($test.BaseName) {
+                "HerbariumProductionPersistenceSmokeTest" {
+                    @{ Name = "herbarium-fixture"; Mode = "--write-herbarium-fixture"; Checks = 2; Reopen = $false }
+                    @{ Name = "herbarium-reopen"; Mode = "--verify-herbarium-reopen"; Checks = 8; Reopen = $true }
+                }
                 "FlameFertilizerPersistenceSmokeTest" {
                     @{ Name = "fertilizer-fixture"; Mode = "--write-flame-fertilizer-fixture"; Checks = 2; Reopen = $false }
                     @{ Name = "fertilizer-reopen"; Mode = "--verify-flame-fertilizer-reopen"; Checks = 8; Reopen = $true }

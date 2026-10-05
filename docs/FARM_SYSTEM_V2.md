@@ -1,6 +1,18 @@
 # Farm System V2
 
-## Proposta de Herbário produtivo
+## Herbário produtivo aprovado e implementado
+
+**2026-10-04, Decisão 140:** o autor respondeu “aprovado” ao contrato integral da proposta publicada em `2c2461b`, autorizando B–E. Domínio, persistência e interação estão implementados; fechamento do pacote limpo em execução. A proposta abaixo é histórica e seu portão foi substituído, não reaberto. Testes automáticos não homologam arte, conforto, ritmo ou balanceamento.
+
+Melhoria opcional após Herbário e Clareira restaurados: investimento único de **8 trigos + 2 Tomates do Sol + 1 Mistura Restauradora**, Village Storage vivo primeiro e Mochila complementar. O ponto `Main/ProductiveHerbarium`, 104 pixels a leste do projeto antigo, aproxima o personagem e abre painel opaco/arrastável. Abrir/cancelar não gasta; confirmar revalida contexto, alcance, gates e saldo, com recibo/rollback e proteção de reentrada. A enxada não impede a interação contextual e permanece selecionada.
+
+A ativação disponibiliza a primeira coleta no ponto, sem conceder item. Cada coleta entrega **1 Raiz Gélida exclusivamente na Mochila** e inicia **90 segundos de sessão aberta**, inclusive no Bosque. Mochila cheia preserva a coleta e não inicia intervalo. Máximo uma coleta pronta, sem acúmulo/offline; Bosque mantém sua fonte independente de 1/45s. Não é cultura, não usa rega/poções/golem nem repete Rama/slots/XP/receitas da restauração original.
+
+`HerbariumProduction` é o único dono do relógio, fora da cena, sem integração ao catch-up de Main nem à whitelist do Grove. Save v4 recebe `herbarium_production` opcional e estrito: booleano `activated`, tempo numérico finito 0–90, desativado exige zero. Completo antigo sem bloco resolve desativado; parcial ausente preserva estado, sujeito aos gates efetivos. Contradições e writer inválido recusam antes de mutação/retorno à vila/I/O. Load invalida callbacks, fecha painel e publica somente o snapshot coerente.
+
+QA dedicada isolada: domínio115 por backend; persistência101/fixture2/reabertura8 por backend; interface70 headless/75 OpenGL, cinco capturas e layout em 800×600/800×720/1280×720. Evidências em `Builds/QA/Herbarium-*`. Negativas de preparação dos fixtures preservadas, sem modificar coerções legadas globais. Revisão independente inicial sem bloqueador; pacote e revisão final ainda em execução. Os 70 casos manuais anteriores permanecem intactos; cinco HP acrescentados, **75 pendentes**, sem exigir teste imediato ou acessar save pessoal. Representação geométrica mínima/assets existentes; arte externa não incorporada, passagem em ART_HANDOFF.
+
+## Histórico da proposta de Herbário produtivo
 
 **Status em 2026-10-04:** Fase A documental, Decisão 139. O autor pediu a próxima fase após `4313015`; isso autoriza formular o recorte, não aprova os novos custos, benefício ou regras abaixo. Gameplay e engenharia foram consultados em leitura explícita dos perfis. **Nenhum sistema novo implementado.** Fonte jogável continua `17e7050`, pacote FlameFertilizer-20261004; suas 64/64 regressões são evidência anterior, não execução desta consulta. Os 70 testes manuais permanecem pendentes e intactos.
 

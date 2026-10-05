@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-04 - Herbário produtivo aprovado e implementado
+
+- Autor confirmou a proposta `2c2461b` (Decisão140). Melhoria opcional após Herbário/Clareira, custo único8 trigos+2 tomates+1 Mistura, ponto local de1 Raiz/90s de sessão e primeira coleta disponível, sem acúmulo/offline. Storage prioritário/Mochila complementar para ativação; coleta exclusivamente pessoal.
+- Domínio/relógio separados do Bosque, capacidade/reentrada/rollback, preflight/gates efetivos/savev4 opcional estrito, ponto/painel opaco/aproximação e callbacks invalidados. Sem novos prêmios de restauração/cultura/golem/receita/arte; fonte Bosque1/45 intacta.
+- Dedicados isolados domínio115/persistência101/fixture2/reabertura8 por backend, UI70/75. Pacote limpo e revisão final em execução.70 textos manuais intactos+5HP=75 pendentes, sem teste imediato/save pessoal/arte externa incorporada. Passagem funcional ao Antigravity.
+
 ## 2026-10-04 - Proposta de Herbário produtivo
 
 - Próxima fase formulada após `4313015`, sem implementação: melhoria opcional do Herbário depois de Herbário/Clareira restaurados, para uma fonte física local de Raiz Gélida. Gate, investimento 8 trigos + 2 tomates + 1 Mistura, 1/90 segundos e primeira disponibilidade são candidatos para aprovação integral, não decisões aprovadas.

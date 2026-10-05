@@ -119,3 +119,15 @@ Resposta Antigravity: pendente. Plano de substituição: pendente. Aceite artís
 - Restrições: manter IDs, posição/grid/collider/picking, alcance46 e geração da cultura; crescer→maduro é a mesma planta, replantar não. Arte não altera timers/rega/sorteios/quantidades. GUI opaca deve bloquear clique atravessado, com Aplicar/Fechar/Cancelar legíveis em 800×600/800×720/1280×720. Reflow do cartão foi corrigido com reset_size, sem redesenho.
 - Evidência: domínio124 e persistência86/fixture2/reabertura8 por backend; UI144 headless/150 OpenGL (6 capturas extras), entrada do slot e caminhada/recusas/cancelamentos. Capturas do workspace incluem arte concorrente, não certificam a arte do pacote limpo. Cinco AF no checklist, total70 manuais pendentes. Mouse físico, conforto, ritmo, arte e balanceamento não homologados.
 - Resposta Antigravity: pendente. Nova arte integrada por Codex: nenhuma. Aceite artístico do autor: pendente.
+
+### Herbário produtivo na vila
+
+**Registro:** 2026-10-04. Contrato integral aprovado após `2c2461b`, Decisão140. Domínio, persistência e interação implementados; pacote limpo em fechamento. Não é aprovação de arte, mouse físico ou balanceamento.
+
+- IDs existentes: `raiz_gelida`, `trigo`, `tomate_sol`, `mistura_restauradora`. Nenhum asset, receita ou conceito artístico novo produzido por Codex.
+- Ponto físico independente `Main/ProductiveHerbarium`, criado em runtime104pixels a leste de `RestorationProject_FirstHerbarium` (posição atual1484,926). Arquivos `Scripts/ProductiveHerbarium.gd`/`ProductiveHerbariumPanel.gd`; `ClickableArea` tem círculo24pixels e aproximação62pixels. Não desloca projeto original/pocket/cultivo livre/caminhos ou altera a geometria externa concorrente.
+- Representação técnica mínima: retângulo44×40 com textura existente da Raiz e um marcador de disponibilidade; não é direção de arte nem solução final. O footprint é tratado como construção pela política de solo; troca visual não pode ampliar picking silenciosamente.
+- Estados para acabamento: bloqueado por Herbário/Clareira, materiais faltantes/prontos, confirmação única, primeira coleta disponível, renovação90s e mochila sem espaço. Painel opaco/arrastável/rolável, cabeçalho e ação/Fechar acessíveis, sem nova HUD fixa. Materiais do Storage prioritário/Mochila complementar; coleta exclusivamente pessoal. Máximo uma pronta, sem acúmulo/offline; fonte do Bosque1/45 permanece separada.
+- Restrições: manter nome/ID/contexto/gates/collider/alcance/cancelamento, relógio único e savev4. Não é cultivo, não recebe água/poções, não cria trabalho do golem, prêmio Rama/slots/XP ou lore. O aspecto visual não deve sugerir estoque infinito/produção automática no baú.
+- Evidência: domínio115 e persistência101/fixture2/reabertura8 por backend; UI70headless/75OpenGL, cinco capturas em três resoluções. Capturas do workspace incluem arte externa e não certificam o visual do pacote limpo.75manuais pendentes,70anteriores intactos; arte/conforto/ritmo não homologados.
+- Resposta Antigravity: pendente. Nova arte integrada por Codex: nenhuma. Aceite artístico do autor: pendente.

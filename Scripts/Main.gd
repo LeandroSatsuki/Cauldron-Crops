@@ -122,6 +122,7 @@ func _ready() -> void:
 	_sincronizar_areas_expansao()
 	_garantir_primeira_descoberta_lore()
 	_garantir_primeiro_projeto_restauracao()
+	_garantir_herbario_produtivo()
 	_reconstruir_farm_grid_manager()
 	var pilot := farm_plot_registry.get(Vector2i(2, 2)) as Node2D
 	if pilot != null:
@@ -180,6 +181,9 @@ func on_region_became_inactive() -> void:
 	var well := get_node_or_null("VillageWell")
 	if well != null:
 		well.close_panel()
+	var herbarium := get_node_or_null("ProductiveHerbarium")
+	if herbarium != null:
+		herbarium.close_panel()
 
 
 func on_region_became_active() -> void:
@@ -553,6 +557,10 @@ func _process_pending_player_interaction() -> void:
 
 
 func _cancel_pending_player_interaction(stop_player: bool) -> void:
+	var target_ref: WeakRef = _pending_player_interaction.get("target_ref") as WeakRef
+	var target: Object = target_ref.get_ref() if target_ref != null else null
+	if is_instance_valid(target) and target.has_method("cancel_pending_open"):
+		target.call("cancel_pending_open")
 	_pending_player_interaction.clear()
 	_clear_player_destination_marker()
 	if stop_player and player_avatar != null and is_instance_valid(player_avatar) and player_avatar.has_method("stop_moving"):
@@ -1138,7 +1146,7 @@ func _obter_bloqueios_solo_na_celula(grid_position: Vector2i) -> Dictionary:
 			blockers["water"] = true
 		elif _node_ou_ancestral_no_grupo(collider, "purification_obstacle"):
 			blockers["corruption"] = true
-		elif _node_ou_ancestral_no_grupo(collider, "cauldrons") or _node_ou_ancestral_no_grupo(collider, "village_chest") or _node_ou_ancestral_no_grupo(collider, "village_well"):
+		elif _node_ou_ancestral_no_grupo(collider, "cauldrons") or _node_ou_ancestral_no_grupo(collider, "village_chest") or _node_ou_ancestral_no_grupo(collider, "village_well") or _node_ou_ancestral_no_grupo(collider, "herbarium_production_site"):
 			blockers["building"] = true
 		else:
 			blockers["obstacle"] = true
@@ -1896,6 +1904,18 @@ func _garantir_primeiro_projeto_restauracao() -> void:
 	add_child(project)
 	restoration_projects[EXPANSION_V0_OBSTACLE_ID] = project
 	project.call("set_area_purified", _obter_estado_purificacao_obstaculo(EXPANSION_V0_OBSTACLE_ID))
+
+func _garantir_herbario_produtivo() -> void:
+	if get_node_or_null("ProductiveHerbarium") != null:
+		return
+	var project := restoration_projects.get(EXPANSION_V0_OBSTACLE_ID) as Node2D
+	if project == null:
+		return
+	var site := preload("res://Scripts/ProductiveHerbarium.gd").new()
+	site.name = "ProductiveHerbarium"
+	# Ponto independente a leste do projeto, fora do pocket e do cultivo livre.
+	site.position = project.position + Vector2(104.0, 0.0)
+	add_child(site)
 
 func _garantir_lago_da_fazenda() -> void:
 

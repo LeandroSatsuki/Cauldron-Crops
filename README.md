@@ -14,6 +14,8 @@ Direção e produção de arte: Antigravity, com aprovação criativa do autor. 
 
 ## Sobre o jogo
 
+Etapa atual: **Herbário produtivo aprovado e implementado**, fechamento técnico do pacote em execução. Após restaurar Herbário e Clareira, melhoria opcional de8 trigos+2 tomates+1 Mistura libera coleta local de1 Raiz Gélida/90s de sessão na Mochila. Primeira coleta pronta no ponto; sem acúmulo/offline ou repetição de prêmios. Bosque1/45s preservado. Contrato/QA em [Sistema agrícola](./docs/FARM_SYSTEM_V2.md);75 testes manuais pendentes,70 textos anteriores intactos. Arte permanece com Antigravity.
+
 Organização atual: especialistas de gameplay/progressão, narrativa, engenharia e QA apoiam o agente principal conforme o assunto, sob aprovação criativa do autor. O perfil artístico permanece como referência histórica; direção e produção de arte estão no Antigravity externo. Fontes, responsabilidades e limites em [Equipe de especialistas](./docs/AGENT_TEAM.md). Os moldes do protótipo não representam arte final; esta organização não acrescenta sistemas ao jogo.
 
 Checkpoint visual atual: camadas de solo estáveis, caldeirão limpo, grama suavizada, HUD opaco, trilhas/vegetação não interativas, golem de pedra, lago com margem e entrada distinta da corrupção. Dois pacotes de polimento; direção artística final e aceite manual ainda pendentes. Escopo e próximos passos em `docs/ROADMAP.md` e Decisões 96–97.

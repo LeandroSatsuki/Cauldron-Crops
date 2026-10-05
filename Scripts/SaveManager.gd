@@ -40,7 +40,7 @@ func save_game() -> bool:
 	if not _is_growth_charges_valid(GlobalInventory.cargas_crescimento):
 		last_file_error = "Doses de crescimento inválidas. O save anterior não foi alterado."
 		return false
-	if _applying_snapshot or EconomyManager.is_well_transaction_in_progress():
+	if _applying_snapshot or EconomyManager.is_well_transaction_in_progress() or HerbariumProduction.is_transaction_in_progress():
 		last_file_error = "Aguarde o fim do carregamento antes de salvar."
 		return false
 	var home: Node = _get_save_scene()
@@ -54,6 +54,10 @@ func save_game() -> bool:
 	if _get_save_golem() == null:
 		last_file_error = "Golem indisponível. O save anterior não foi alterado."
 		return false
+	# Validar o domínio vivo antes de reconstruir índices ou abrir arquivos.
+	if not _resolve_herbarium_snapshot({"herbarium_production": HerbariumProduction.get_save_data()}).get("valid", false):
+		last_file_error = "Estado do Herbário produtivo inválido. O save anterior não foi alterado."
+		return false
 	for plot in _get_save_group_nodes("lotes_terra"):
 		if plot.has_method("is_flame_fertilizer_runtime_valid") and not bool(plot.call("is_flame_fertilizer_runtime_valid")):
 			last_file_error = "Estado de Adubo Flamejante inválido. O save anterior não foi alterado."
@@ -65,6 +69,9 @@ func save_game() -> bool:
 			last_file_error = "Estado de Solo Vivo inválido. O save anterior não foi alterado."
 			return false
 	var data := _build_save_data()
+	if not _resolve_herbarium_snapshot(data).get("valid", false):
+		last_file_error = "Estado do Herbário produtivo inválido. O save anterior não foi alterado."
+		return false
 	if not _is_flame_fertilizer_save_valid(data, _resolve_farm_save_source(data, SAVE_VERSION)):
 		last_file_error = "Estado de Adubo Flamejante inválido. O save anterior não foi alterado."
 		return false
@@ -94,6 +101,9 @@ func save_game() -> bool:
 
 func load_game() -> bool:
 	last_file_error = ""
+	if _applying_snapshot or EconomyManager.is_well_transaction_in_progress() or HerbariumProduction.is_transaction_in_progress():
+		last_file_error = "Aguarde o fim da transação antes de carregar."
+		return false
 	if not has_save():
 		print("SaveManager: nenhum save encontrado em %s" % SAVE_PATH)
 		if FileAccess.file_exists(SAVE_PATH + ".bak"):
@@ -194,6 +204,7 @@ func _build_save_data() -> Dictionary:
 
 	var save_data: Dictionary = {
 		"version": SAVE_VERSION,
+		"herbarium_production": HerbariumProduction.get_save_data(),
 		"grove_expedition": GroveExpedition.get_save_data(),
 		"home_inactive_seconds": RegionTravelCoordinator.get_inactive_region_elapsed_seconds(&"farm_village"),
 		"cauldrons": _build_cauldron_save_data(),
@@ -243,7 +254,11 @@ func _build_save_data() -> Dictionary:
 	return save_data
 
 func _apply_save_data(data: Dictionary) -> bool:
-	if _applying_snapshot or EconomyManager.is_well_transaction_in_progress():
+	if _applying_snapshot or EconomyManager.is_well_transaction_in_progress() or HerbariumProduction.is_transaction_in_progress():
+		return false
+	var herbarium_snapshot := _resolve_herbarium_snapshot(data)
+	if not herbarium_snapshot.get("valid", false):
+		push_warning("SaveManager: Herbário produtivo inválido; save não aplicado.")
 		return false
 	var well_snapshot := _resolve_well_snapshot(data)
 	if not bool(well_snapshot.get("valid", false)):
@@ -425,6 +440,9 @@ func _apply_save_data(data: Dictionary) -> bool:
 	if data.has("farm_expansion"):
 		var farm_expansion_data: Dictionary = _safe_dictionary(data.get("farm_expansion", {}))
 		_aplicar_estado_projetos_restauracao(_safe_dictionary(farm_expansion_data.get("restoration_projects", {})))
+	# Substituição sem pagamento/entrega; geração invalida callbacks, inclusive
+	# em parciais que preservam exatamente a disponibilidade anterior.
+	HerbariumProduction.load_save_data(herbarium_snapshot["state"])
 
 	if data.has("cauldrons") or inventory_data.get("inventario") is Dictionary:
 		# Save antigo completo nao contem producao: limpar o runtime sem refund.
@@ -448,8 +466,56 @@ func _apply_save_data(data: Dictionary) -> bool:
 	var well := get_tree().current_scene.get_node_or_null("VillageWell") if get_tree().current_scene != null else null
 	if well != null:
 		well.close_panel()
+	var site := get_tree().current_scene.get_node_or_null("ProductiveHerbarium") if get_tree().current_scene != null else null
+	if site != null and site.has_method("close_panel"):
+		site.call("close_panel")
+	HerbariumProduction.progress_changed.emit()
 	EconomyManager.well_improvement_changed.emit()
 	return true
+
+func _resolve_herbarium_snapshot(data: Dictionary) -> Dictionary:
+	var complete := _safe_dictionary(data.get("inventory", {})).get("inventario") is Dictionary
+	var state: Variant = data.get("herbarium_production", HerbariumProductionState.default_data() if complete else HerbariumProduction.get_save_data())
+	if not HerbariumProductionState.is_valid(state):
+		return {"valid": false}
+	if state["activated"] and not _effective_herbarium_gates(data, complete):
+		return {"valid": false}
+	return {"valid": true, "state": state.duplicate(true)}
+
+func _effective_herbarium_gates(data: Dictionary, complete: bool) -> bool:
+	# Refletir a aplicação existente: farm_expansion presente SUBSTITUI mapas,
+	# ausente preserva nós; Grove ausente reseta só no inventário completo.
+	var grove: Variant = data.get("grove_expedition")
+	var grove_restored: Variant = grove.get("restored", false) if grove is Dictionary and data.has("grove_expedition") else (false if complete else GroveExpedition.restored)
+	if not (grove_restored is bool and grove_restored):
+		return false
+	var project: Node = null
+	for candidate in _get_save_group_nodes("restoration_project"):
+		if candidate.has_method("get_save_data") and str(candidate.call("get_save_data").get("restoration_id", "")) == "first_herbarium":
+			project = candidate
+			break
+	if project == null:
+		return false
+	var restored: Variant = project.get("restored_state")
+	var purified: Variant = project.get("area_purified")
+	if data.has("farm_expansion"):
+		var expansion := _safe_dictionary(data.get("farm_expansion"))
+		restored = _safe_dictionary(expansion.get("restoration_projects")).get("first_herbarium", false)
+		purified = _safe_dictionary(expansion.get("purification_obstacles")).get(str(project.get("required_purification_obstacle_id")), false)
+	else:
+		# O writer agrega o obstáculo real; uma flag derivada fora de sincronia
+		# não pode só falhar depois da reconstrução do GRID no _build_save_data.
+		var obstacle_purified: Variant = false
+		for obstacle in _get_save_group_nodes("purification_obstacle"):
+			if not obstacle.has_method("get_save_data"):
+				continue
+			var obstacle_state: Dictionary = obstacle.call("get_save_data")
+			if str(obstacle_state.get("obstacle_id", "")) == str(project.get("required_purification_obstacle_id")):
+				obstacle_purified = obstacle_state.get("purified", false)
+				break
+		if not (obstacle_purified is bool and obstacle_purified):
+			return false
+	return restored is bool and restored and purified is bool and purified
 
 func _reconcile_default_recipe_discoveries() -> void:
 	# Aprendizado padrão é política do catálogo, não recompensa de load.

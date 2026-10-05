@@ -28,8 +28,43 @@ func _initialize() -> void:
 		return
 	if not _check_flame_fertilizer_contract():
 		return
-	print("PlaytestPackAudit: PASS - recursos, receitas sustentáveis, Poço, Solo Vivo, Aceleradora, Raiz renovável, tomate Primavera/Verão, semeadura seletiva, Adubo Flamejante, aplicação, exclusões e save separado.")
+	if not _check_herbarium_contract():
+		return
+	print("PlaytestPackAudit: PASS - recursos, receitas sustentáveis, Poço, Solo Vivo, Aceleradora, Raiz renovável, tomate Primavera/Verão, semeadura seletiva, Adubo Flamejante, Herbário produtivo, aplicação, exclusões e save separado.")
 	quit(0)
+
+func _check_herbarium_contract() -> bool:
+	for path in ["res://Scripts/HerbariumProduction.gd", "res://Scripts/data/HerbariumProductionState.gd", "res://Scripts/ProductiveHerbarium.gd", "res://Scripts/ProductiveHerbariumPanel.gd"]:
+		if not ResourceLoader.exists(path) or ResourceLoader.load(path) == null:
+			return _fail("Herbário produtivo ausente: " + path)
+	if ProjectSettings.get_setting("autoload/HerbariumProduction", "") != "*res://Scripts/HerbariumProduction.gd":
+		return _fail("relógio único do Herbário não registrado")
+	var domain: GDScript = ResourceLoader.load("res://Scripts/HerbariumProduction.gd")
+	var constants := domain.get_script_constant_map()
+	if constants.get("PROJECT_REQUIREMENTS") != {"trigo": 8, "tomate_sol": 2, "mistura_restauradora": 1} or constants.get("ROOT_ITEM_ID") != "raiz_gelida" or constants.get("RENEWAL_SECONDS") != 90.0:
+		return _fail("custo/fonte/intervalo do Herbário fora do contrato")
+	var names: Array = []
+	for method in domain.get_script_method_list():
+		names.append(str(method["name"]))
+	for method in ["get_save_data", "load_save_data", "get_generation", "get_status", "try_activate", "try_collect", "advance_session_time", "is_transaction_in_progress"]:
+		if method not in names:
+			return _fail("API do Herbário ausente: " + method)
+	var state: GDScript = ResourceLoader.load("res://Scripts/data/HerbariumProductionState.gd")
+	if state.call("default_data") != {"activated": false, "renewal_remaining": 0.0}:
+		return _fail("Herbário antigo ativado automaticamente")
+	for value in [{"activated": true, "renewal_remaining": 0.0}, {"activated": true, "renewal_remaining": 90.0}, {"activated": false, "renewal_remaining": 0.0}]:
+		if not state.call("is_valid", value):
+			return _fail("estado válido do Herbário recusado")
+	for value in [{"activated": 1, "renewal_remaining": 0.0}, {"activated": false, "renewal_remaining": 1.0}, {"activated": true, "renewal_remaining": 91.0}, {"activated": true, "renewal_remaining": true}, {"activated": true, "renewal_remaining": -1.0}, {}]:
+		if state.call("is_valid", value):
+			return _fail("estado inválido do Herbário aceito")
+	var save: GDScript = ResourceLoader.load("res://Scripts/SaveManager.gd")
+	names.clear()
+	for method in save.get_script_method_list():
+		names.append(str(method["name"]))
+	if "_resolve_herbarium_snapshot" not in names:
+		return _fail("preflight do Herbário ausente")
+	return true
 
 func _check_flame_fertilizer_contract() -> bool:
 	var plot: GDScript = ResourceLoader.load("res://Scripts/FarmPlot.gd")
