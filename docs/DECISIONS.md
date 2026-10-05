@@ -1,5 +1,13 @@
 # Decisions
 
+## Decisão 139 - Formulação de Herbário produtivo
+
+- Em 2026-10-04, o autor pediu a próxima fase após `4313015`. Autoriza formular um novo recorte; não aprova automaticamente custos, benefício, regras ou sistemas reservados. Fase A exclusivamente documental, sem runtime/testes/exportação novos ou save pessoal acessado.
+- Gameplay recomenda melhoria funcional opcional no Herbário já restaurado, após Herbário e Clareira, em vez de mais slots sem necessidade demonstrada, calendário ou outra poção numérica. Candidatos do principal: 8 trigos + 2 tomates + 1 Mistura Restauradora; fonte local com 1 Raiz Gélida por coleta/90 segundos de sessão e primeira coleta disponível. Uma coleta pronta, sem acúmulo/offline, aproximação e resultado pessoal. Bosque mantém 1/45 segundos; duas fontes aumentam oferta total, sem vantagem econômica/ritmo homologados.
+- Sem repetir restauração/Rama/slots/XP ou alterar golem/culturas/receitas. Projeto paga com Village Storage prioritário e Mochila complementar apenas na vila ativa. Fonte local não usa armazenamento remoto nem é uma cultura; capacidade/recusas preservam disponibilidade.
+- Engenharia confirma risco localizado: projeto antigo hardcoded/picking desligado, fonte do Bosque vinculada a região/whitelist/45 segundos e snapshot de restauração booleano. Recomendados domínio local específico/relógio único, novo campo opcional estrito v4 e preflight de gates resolvidos, sem catch-up duplo. Arquitetura detalhada e parâmetros aguardam aprovação; contrato/B–E no FARM_SYSTEM_V2.
+- Fonte jogável `17e7050`/FlameFertilizer-20261004 permanece;64/64 é baseline anterior, não teste desta proposta. 70 casos manuais intactos/pendentes; arte externa preservada e Antigravity mantém produção. Não registrar a proposta como conteúdo implementado no ART_HANDOFF.
+
 ## Decisão 138 - Uso agrícola do Adubo Flamejante aprovado
 
 - B–E fechadas tecnicamente na fonte `17e7050`, pacote limpo FlameFertilizer-20261004:64/64 headless,15reaberturas/8fixtures/2cenários adicionais; EXE headless/OpenGL/PCK/manifesto/hashes/97logs finais sem ERROR e limpeza do worktree conferida. Dedicados domínio124/persistência86/fixture2/reabertura8 por backend, UI144/150 (6 capturas extras). Recompensa primária adubada usa um aviso +3, sem +1/+2 sobrepostos; RNG/totais intactos. A preliminar `aa8f759` fica preservada, não é a entrega vigente. 65 textos antigos intactos+5AF=70 manuais pendentes; revisão final independente concluída sem bloqueador, sem aceite artístico/manual/balanceamento.

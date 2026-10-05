@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-04 - Proposta de Herbário produtivo
+
+- Próxima fase formulada após `4313015`, sem implementação: melhoria opcional do Herbário depois de Herbário/Clareira restaurados, para uma fonte física local de Raiz Gélida. Gate, investimento 8 trigos + 2 tomates + 1 Mistura, 1/90 segundos e primeira disponibilidade são candidatos para aprovação integral, não decisões aprovadas.
+- Gameplay e engenharia consultados em leitura explícita; fronteiras de fonte/contexto, relógio de sessão, save parcial/legado/preflight e preservação do Herbário antigo descritas em FARM_SYSTEM_V2/Decisão139. Sem cultura/golem/mapa/receita/arte/lore/economia novos.
+- Fonte/pacote FlameFertilizer preservados, sem nova execução de testes/exportação/save pessoal;70 casos manuais intactos. Documentação separa proposta de implementação e QA de aceite manual. Arte concorrente fica fora da publicação própria.
+
 ## 2026-10-04 - Adubo Flamejante aprovado e implementado
 
 - Autor confirmou integralmente o contrato após `6f92350` (Decisão138). Aplicação pessoal pelo mouse em uma cultura de tomate crescendo/madura, um adubo na chegada, +2 tomates aditivos uma vez; sem água/velocidade/estação/XP novo, efeito permanente ou aplicação pelo golem.

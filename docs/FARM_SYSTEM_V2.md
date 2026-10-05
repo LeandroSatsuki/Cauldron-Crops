@@ -1,5 +1,49 @@
 # Farm System V2
 
+## Proposta de Herbário produtivo
+
+**Status em 2026-10-04:** Fase A documental, Decisão 139. O autor pediu a próxima fase após `4313015`; isso autoriza formular o recorte, não aprova os novos custos, benefício ou regras abaixo. Gameplay e engenharia foram consultados em leitura explícita dos perfis. **Nenhum sistema novo implementado.** Fonte jogável continua `17e7050`, pacote FlameFertilizer-20261004; suas 64/64 regressões são evidência anterior, não execução desta consulta. Os 70 testes manuais permanecem pendentes e intactos.
+
+### Resultado recomendado
+
+Dar uma função recorrente ao Herbário já restaurado: uma melhoria opcional permitiria coletar Raiz Gélida num ponto físico da vila. Cultivo e caldeirão financiariam a melhoria; a Raiz continuaria alimentando receitas existentes. Não restaurar novamente o Herbário, repetir sua Rama Encantada ou conceder slots/XP.
+
+O Bosque manteria sua fonte de 1 Raiz a cada 45 segundos e o carvão externo. A fonte local proposta seria mais lenta, de 1/90 segundos. Isso oferece conveniência, não produtividade superior de uma fonte isolada. As duas fontes aumentariam a oferta total; menos viagens por uma Raiz é uma consequência possível e desejável para quem prefere a rotina local, não garantia de balanceamento ou da mesma frequência de exploração.
+
+Mais slots não resolvem uma necessidade demonstrada nesta consulta. Abrir Abóbora exigiria acesso sazonal local e um destino funcional para o excedente; o Elixir catalogado não possui efeito aprovado. Calendário global altera culturas, bônus e quests. Outro consumível numérico repetiria a frente de otimização recém-concluída. Essas alternativas permanecem reservadas, sem autorização por consequência.
+
+### Contrato candidato para confirmação
+
+Todos os parâmetros desta seção são **proposta**, não decisões aprovadas ou balanceamento homologado.
+
+1. **Gate:** Herbário e Clareira restaurados. A melhoria é opcional e separada das restaurações antigas; saves com ambos os marcos seriam elegíveis, nunca ativados automaticamente.
+2. **Investimento único:** 8 trigos + 2 Tomates do Sol + 1 Mistura Restauradora. Usar o Village Storage vivo da vila primeiro, com complemento da Mochila. Não exigir Rama, raridades, moeda, estação ou RNG; as aquisições públicas atuais são determinísticas. Consulta/abertura/cancelamento não gastam. Confirmação revalida gate, contexto, proximidade e saldo; falha não cobra parcialmente.
+3. **Interação:** clicar num ponto funcional junto ao Herbário → aproximar → abrir painel compacto opaco → confirmar a melhoria. Um controle local separado preserva picking e recompensa do projeto antigo. Antes do gate, explicar o requisito e desabilitar ativação; depois, mostrar custo e estado. Ferramenta selecionada não impede interação contextual. Sem nova HUD fixa ou seleção obrigatória.
+4. **Benefício:** UM ponto físico de Raiz Gélida, com **1 unidade por coleta**. Primeira coleta disponível imediatamente após ativar, no ponto, sem inserir item na Mochila. Não é cultura: sem semente, rega, morte, solo sazonal ou efeitos de poções. Não altera FarmPlot nem trabalho do golem.
+5. **Coleta pessoal:** clicar e aproximar antes do commit; resultado exclusivamente na Mochila. Capacidade insuficiente conserva disponibilidade e não inicia intervalo. Cancelamento, outro destino, ferramenta/seleção alterada, load, viagem ou callback obsoleto não entregam recurso. Nunca depositar automaticamente no Village Storage ou usar o baú remoto no Bosque.
+6. **Renovação:** após coleta válida, aguardar **90 segundos de sessão aberta**, inclusive durante visita ao Bosque. Ao terminar, fica UMA coleta pronta: sem estoque acumulado, fila, múltiplos ciclos ou exigência de coleta cronometrada. Fonte do Bosque permanece independente em 45 segundos; nenhuma mudança nas receitas existentes.
+7. **Persistência:** guardar melhoria e tempo restante, não data real. Fechar/reabrir não progride offline nem reinicia intervalo; load/replay não gasta, concede Raiz ou reativa prêmio antigo. Save completo antigo sem o novo domínio inicia desativado; parcial sem ele preserva o estado atual, sujeito à coerência dos gates resolvidos. Ativada exige ambos os marcos no estado efetivo do snapshot; um parcial que revogue gate e deixe a melhoria ativada é recusado, não desativa silenciosamente o benefício. Novo bloco opcional estrito no v4 é candidato, sem downgrade garantido. Desativada exige restante zero; ativada com zero está disponível, e restante positivo finito não pode ultrapassar 90 segundos. Estados contraditórios/inválidos devem recusar antes de mutação/retorno à vila/I/O.
+8. **Conservação:** pagamento e ativação únicos, sem entrega parcial, reentrada ou fonte duplicada em load/cache. Sinais só publicam estado coerente. Um único dono do relógio continua vivo fora da cena da vila; não somar seu avanço a `home_inactive_seconds` ou `Main.advance_inactive_time`.
+
+### Baseline técnico e limites
+
+`RestorationProject.gd` possui custo/recompensa/textos específicos do Herbário e desliga picking/collider após restauração; não é um framework pronto para essa melhoria. `SaveManager.gd` agrega projetos como booleanos, não persiste automaticamente disponibilidade/intervalo. `ForageNode.gd` vincula fontes persistentes à região Bosque; `GroveExpedition.gd` tem whitelist de seis fontes e limite de 45 segundos. Inserir uma fonte da vila nesse domínio para aproveitar código confundiria identidade, contexto e persistência.
+
+A recomendação técnica é um domínio local específico, com ID próprio, validação e relógio únicos; o formato final será definido na engenharia do recorte aprovado. Ponto/picking devem ser conferidos contra cultivo livre, canteiro, caminhos e alcance, sem mudar a geometria antiga silenciosamente. Aparência final e integração artística seguem com Antigravity; não há nova nota de conteúdo implementado no ART_HANDOFF nesta proposta.
+
+### Plano mínimo após aprovação
+
+- **B — domínio:** melhoria/consulta/gates, pagamento com recibo e proteção de reentrada, coleta pessoal atômica e estados desativado/disponível/renovando. Um dono do relógio, não um framework genérico de construção/coleta.
+- **C — persistência:** campo local opcional v4, preflight/writer, completo antigo/parcial/replay e gates efetivos. Renovação durante viagem/save no Bosque, sem avanço duplo nem offline; callbacks invalidados por geração.
+- **D — interação:** criar ponto local/painel funcionais reutilizando componentes atuais, com aproximação/cancelamento/tooltip e estados bloqueado/pronto/disponível/renovando, sem sobrepor solo ou alterar arte concorrente. Reusar assets ou geometria mínima e registrar somente a implementação real no ART_HANDOFF.
+- **E — fechamento:** custos combinados/recusas/rollback/reentrada, capacidade, contextos e callbacks, fontes 90/45 independentes, ausência da vila, save/reabertura e preservação do arquivo anterior. Regressões Herbário/Rama/slots, Raiz do Bosque, caldeirão, Adubo/Solo Vivo/Aceleradora/semeador; suíte limpa, auditor/PCK/EXE/manifesto e checklist futuro mantendo os 70 casos atuais. Testes automáticos não homologam mouse físico, arte, ritmo ou balanceamento.
+
+### Portão humano
+
+Confirmar conjuntamente **melhoria opcional após Herbário e Clareira, custo 8 trigos + 2 tomates + 1 Mistura, fonte local de 1 Raiz/90 segundos de sessão, primeira coleta disponível, capacidade máxima de uma coleta pronta, coleta pessoal sem golem e persistência sem offline** antes de B–E. Nenhum runtime autorizado por esta formulação. Sem nova cultura/estação, expansão de mapa, NPC/lore, economia/loja/F10, Elixir, mastery, rede de baús ou arte final.
+
+QA independente revisou as cinco fontes documentais em leitura, sem bloqueador para publicação/apresentação. Os 70 casos manuais coincidem em texto e ordem com o checkpoint anterior. A revisão não inclui aprovação de parâmetros, execução de testes, nova certificação da build ou integração de arte; o portão humano permanece aberto.
+
 ## Adubo Flamejante fechado tecnicamente
 
 **Data:** 2026-10-04. O autor respondeu “sim” ao contrato integral apresentado após `6f92350`, autorizando B–E/Decisão 138. A confirmação substitui o portão da proposta histórica abaixo: +2 tomates garantidos, receita atual, uma aplicação por cultura crescendo/madura antes de materializar recompensas, consumo pessoal na chegada e perda na morte/reset real. Não é aceite de balanceamento, arte ou testes manuais.
