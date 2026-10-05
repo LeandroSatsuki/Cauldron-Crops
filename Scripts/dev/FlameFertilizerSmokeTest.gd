@@ -171,6 +171,11 @@ func _manual_capacity() -> void:
 	_check(not plot.call("_colher_manualmente", false), "colheita cheia recusa atomicamente")
 	var saved := _snapshot()
 	_check(saved.flame_fertilizer_applied and int(saved.pending_harvest_rewards.get(PRODUCT, 0)) == 3 and int(saved.estado_atual) == 2, "falha conserva marca e bônus único materializado")
+	var product_feedback: Array = []
+	for reward in plot.get("_pending_manual_harvest_rewards"):
+		if reward.get("item_id") == PRODUCT and reward.get("mostrar_texto", false):
+			product_feedback.append(reward)
+	_check(product_feedback.size() == 1 and product_feedback[0]["quantidade"] == 3 and str(product_feedback[0]["texto_flutuante"]).begins_with("+3 "), "produto adubado mostra um único aviso coerente, sem +1/+2 sobrepostos")
 	_check(_resources() == resources, "colheita bloqueada não entrega fração")
 	_check(not plot.call("_colher_manualmente", false) and _snapshot() == saved, "retry bloqueado mantém recompensas exatas sem reroll/+2 novo")
 	var generation := _generation()

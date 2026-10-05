@@ -727,16 +727,17 @@ func _gerar_recompensas_colheita(produto: String) -> Array:
 	if produto == "":
 		return recompensas
 
+	var quantidade_produto := 1
+	if flame_fertilizer_applied and semente_id_plantada == FLAME_FERTILIZER_SEED and produto == FLAME_FERTILIZER_PRODUCT:
+		quantidade_produto += FLAME_FERTILIZER_BONUS
 	_adicionar_recompensa_colheita(
 		recompensas,
 		produto,
-		1,
+		quantidade_produto,
 		true,
-		"+1 " + _obter_nome_exibicao_item(produto),
+		"+%d %s" % [quantidade_produto, _obter_nome_exibicao_item(produto)],
 		Color.YELLOW
 	)
-	if flame_fertilizer_applied and semente_id_plantada == FLAME_FERTILIZER_SEED and produto == FLAME_FERTILIZER_PRODUCT:
-		_adicionar_recompensa_colheita(recompensas, FLAME_FERTILIZER_PRODUCT, FLAME_FERTILIZER_BONUS, true, "+2 Tomate Sol · Adubo", Color.YELLOW)
 
 	if SeasonManager.estacao_atual == SeasonManager.Estacao.OUTONO and randf() <= 0.20:
 		_adicionar_recompensa_colheita(recompensas, produto, 1)
