@@ -169,19 +169,36 @@ Examples:
 
 These are conceptual examples, not final designs.
 
-## Magic
+## Magic and the Inner Spirit
 
-Magic should feel physically integrated into the creature.
+Every golem must carry a visible but restrained **vestige of magic**.
 
-Preferred manifestations:
+The magic is not a decorative effect added on top of the creature. It represents the magical spirit inhabiting and animating the material.
 
-- subtle light between cracks;
-- energy inside material;
-- faint magical roots;
-- small floating particles;
-- restrained inner glow.
+The visual form of this vestige may change according to the material, but it should always provide evidence that the creature is more than animated matter.
 
-Avoid using neon glow as the primary way to communicate magic.
+For the moss-and-stone golem, this appears as **small cracks with subtle blue magical light inside the stone body**.
+
+The spirit may manifest in other materials through:
+
+- light visible inside cracks;
+- an inner glow beneath translucent or layered material;
+- magical energy visible between structural fragments;
+- faint luminous growth;
+- tiny internal particles;
+- another material-appropriate manifestation.
+
+The exact color does not have to be blue for every species. The important rule is the **presence of an internal magical life-sign**, not a universal effect color.
+
+Avoid:
+
+- large external auras;
+- neon outlines;
+- heavy magical smoke;
+- excessive particles;
+- magic that visually overwhelms the material.
+
+The material should remain the primary visual identity; the inner magic is the evidence of life.
 
 ## Visual Language
 
@@ -219,10 +236,11 @@ When generating a new golem:
 3. Derive the body from that process.
 4. Derive the functional appendages from the material.
 5. Establish the creature's youthful/ageless personality.
-6. Check silhouette without facial details.
-7. Check material identity without facial details.
-8. Only then add restrained magical accents.
-9. Preserve the shared species philosophy without forcing shared anatomy.
+6. Give the creature a restrained, material-appropriate visible vestige of its inner magic.
+7. Check silhouette without facial details.
+8. Check material identity without facial details.
+9. Only then add restrained magical accents or surface details.
+10. Preserve the shared species philosophy without forcing shared anatomy.
 
 ## Reference Status
 
@@ -234,7 +252,7 @@ When generating a new golem:
 - stone-and-moss core;
 - living brown roots;
 - vine-like root extremities;
-- subtle magical light;
+- subtle internal blue magical light visible through cracks;
 - simple luminous eye;
 - strange but gentle;
 - slightly awkward implied movement.
@@ -243,6 +261,10 @@ This is the current visual north for the species.
 
 It is not a mandate that every future golem share the same body.
 
-## Key Rule
+## Key Rules
 
 > **Golems should be strange before they are cute. Their cuteness should emerge from the contrast between an unfamiliar magical body and gentle, curious, slightly awkward behavior.**
+
+> **Every golem must show some restrained evidence of the magical spirit inhabiting its material.**
+
+> **No two golems need to share the same anatomy. They share a philosophy, not a body plan.**
