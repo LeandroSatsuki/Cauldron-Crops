@@ -1,8 +1,18 @@
 # Farm System V2
 
+## Abastecimento físico de sementes aprovado
+
+**2026-10-04, Decisão 142:** o autor respondeu “aprovado” ao contrato integral publicado em `6da1cd5`, autorizando B–E. O portão da proposta abaixo está substituído, não reaberto. Domínio, logística, persistência e interface implementados; fechamento do pacote em andamento em 2026-10-05. 80 testes manuais pendentes, com 75 textos anteriores intactos; ainda não há novo pacote certificado por este checkpoint.
+
+Dedicados em APPDATA isolado: domínio 150 e transporte físico 184 por backend; persistência 109/fixture 2/reabertura 8 por backend; UI 39 headless/42 OpenGL, três capturas em 800×600/800×720/1280×720. Loader recebeu catch-up interno de uma geração validada (no máximo um preparo, sem cadeia/entrega) e fecha/resetará intenção do Livro em todo apply aceito, inclusive parcial IDLE. Recibos exigem booleanos estritos. Capturas do workspace incluem arte concorrente, não certificam o pacote limpo nem arte final. Negativas iniciais de fixtures/layout e diagnósticos preservadas fora dos finais.
+
+`SeedDeliveryOrder` conserva 16 campos do pedido e payload de cinco campos; `GolemLogisticsCargo` é exclusivo de seed/harvest cargo. Save v4/work v1 continuam, novos campos opcionais; preflight resolve caldeirão/golem/Clareira efetivos antes de mutação/I/O, writer protegido, replay/reabertura sem offline/duplicação. Personal BATCH/BREWING/READY permanecem distintos. Geometria e assets existentes reaproveitados; passagem em ART_HANDOFF, nenhuma direção/produção artística por Codex.
+
+O escopo aprovado é lote finito opt-in de sementes de Trigo/Tomate após Clareira, um preparo transportado por vez, próximo preparo só após depósito físico e execução nos modos Colher primeiro/Regar primeiro após tarefa/carga atual, antes de novas agrícolas. Cancelamento conserva saída/cargo convertido e devolve somente reservas não convertidas, incluindo preparo interrompido. Produção pessoal, receitas, seleções, semeador OFF e Aceleradora de colheita preservados; arte com Antigravity.
+
 ## Proposta — abastecimento físico de sementes
 
-**2026-10-04, Fase A / Decisão 141: aguardando aprovação do contrato.** O pedido de próxima fase autoriza esta formulação; não aprova automaticamente o destino logístico, a prioridade ou a nova custódia. Gameplay e engenharia foram consultados mediante leitura explícita dos perfis. Nenhum código, receita, cena, save ou arte foi alterado; nenhum jogo, teste ou exportação foi executado nesta consulta.
+**Histórico de 2026-10-04, Fase A / Decisão 141:** a formulação aguardava aprovação, posteriormente concedida pela Decisão 142. Gameplay e engenharia foram consultados mediante leitura explícita dos perfis. Nenhum código, receita, cena, save ou arte foi alterado e nenhum jogo, teste ou exportação foi executado naquela consulta documental.
 
 O baseline jogável permanece `328af62`, pacote `Builds/Playtest/HerbariumProduction-20261004`. Suas 67/67 regressões são evidência anterior, não resultado desta fase. Os **75 casos manuais permanecem pendentes, com texto e ordem preservados**, sem exigir execução imediata.
 

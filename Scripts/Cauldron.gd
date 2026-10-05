@@ -1,10 +1,19 @@
 extends Node2D
 
+signal seed_delivery_changed
+
 const MOUSE_LEFT = MOUSE_BUTTON_LEFT
 const UIDragHelperScript = preload("res://Scripts/UIDragHelper.gd")
 const RecipeResolverScript = preload("res://Scripts/data/RecipeResolver.gd")
 const VillageResourceAccessScript = preload("res://Scripts/VillageResourceAccess.gd")
 const FeedbackLabelScript := preload("res://Scripts/CauldronFeedbackLabel.gd")
+const SeedOrder := preload("res://Scripts/data/SeedDeliveryOrder.gd")
+const PERSONAL_DESTINATION := "personal"
+const DELIVERY_ARRIVAL_DISTANCE := 14.0
+var _seed_delivery_order: Dictionary = {}
+var _seed_delivery_generation := 0
+var _seed_delivery_transaction := false
+var _seed_delivery_snapshot_generation := -1
 var _temporary_feedback: Label
 
 @onready var drop_slot_1: Panel = $PopupLayer/CenterContainer/PopupUI/DropSlot1
@@ -120,6 +129,8 @@ func _find_village_storage() -> Node:
 
 
 func get_save_data() -> Dictionary:
+	if estado_atual == "SEED_DELIVERY" or not _seed_delivery_order.is_empty():
+		return {"state": estado_atual, "delivery": get_seed_delivery_order_data()}
 	if estado_atual == "BATCH":
 		return {
 			"state": "BATCH",
@@ -149,8 +160,12 @@ func get_save_data() -> Dictionary:
 
 func is_save_data_valid(data: Dictionary) -> bool:
 	var state: Variant = data.get("state")
-	if not (state is String) or state not in ["IDLE", "BREWING", "READY", "BATCH"]:
+	if not (state is String) or state not in ["IDLE", "BREWING", "READY", "BATCH", "SEED_DELIVERY"]:
 		return false
+	if state == "SEED_DELIVERY":
+		return data.size() == 2 and SeedOrder.is_valid(data.get("delivery"))
+	if data.get("delivery") != null:
+		return false # Nunca esconder pedido em um estado pessoal/legado.
 	if state == "IDLE":
 		return true
 	if state != "BATCH":
@@ -236,9 +251,208 @@ func _save_time_valid(value: Variant) -> bool:
 	return (typeof(value) == TYPE_INT or typeof(value) == TYPE_FLOAT) and is_finite(float(value)) and float(value) >= 0.0
 
 
-func load_save_data(data: Dictionary) -> bool:
-	if not is_save_data_valid(data):
+func get_seed_delivery_generation() -> int:
+	return _seed_delivery_generation
+
+func is_seed_delivery_transaction_in_progress() -> bool:
+	return _seed_delivery_transaction
+
+func get_seed_delivery_order_data() -> Variant:
+	if _seed_delivery_order.is_empty(): return null
+	var snapshot := _seed_delivery_order.duplicate(true)
+	snapshot.time_remaining = maxf(batch_timer.time_left, 0.0) if snapshot.phase == "brewing" else 0.0
+	return snapshot
+
+func get_ready_seed_delivery() -> Dictionary:
+	return _seed_delivery_order.output.duplicate(true) if _seed_delivery_order.get("phase") == "ready" else {}
+
+func get_seed_delivery_pickup_position() -> Vector2:
+	return $BaseAnchor.global_position + Vector2(0, -20)
+
+func _seed_delivery_home() -> Node:
+	if not is_inside_tree() or is_queued_for_deletion() or SaveManager.is_applying_snapshot() or RegionTravelCoordinator.is_transition_in_progress(): return null
+	var home := get_tree().current_scene
+	if home == null or home.get_node_or_null("CauldronUI") != self or not home.has_method("get_current_region_identity") or bool(home.get("_region_being_cached")): return null
+	return home if home.call("get_current_region_identity").get("region_id", "") == "farm_village" else null
+
+func _seed_delivery_chest(home: Node) -> VillageChest:
+	var chest := home.get_node_or_null("VillageChest") as VillageChest if home != null else null
+	return chest if is_instance_valid(chest) and chest.is_inside_tree() and not chest.is_queued_for_deletion() else null
+
+func get_seed_delivery_offer(recipe_id: String) -> Dictionary:
+	var home := _seed_delivery_home()
+	if home == null: return {"eligible": false, "reason": "home_unavailable"}
+	if not GroveExpedition.restored: return {"eligible": false, "reason": "locked"}
+	var actor := home.get_node_or_null("Golem")
+	if actor == null or not actor.is_inside_tree() or actor.is_queued_for_deletion() or not actor.has_method("accept_logistics_cargo"): return {"eligible": false, "reason": "no_golem"}
+	if _seed_delivery_chest(home) == null: return {"eligible": false, "reason": "no_chest"}
+	var recipe: Dictionary = recipe_resolver.get_recipe(recipe_id)
+	if recipe.is_empty() or not recipe_resolver.is_recipe_available(recipe_id): return {"eligible": false, "reason": "recipe_unavailable"}
+	if recipe.get("resultado_item", "") not in SeedOrder.ITEM_IDS: return {"eligible": false, "reason": "unsupported_result"}
+	var player := home.get_node_or_null("PlayerAvatar") as Node2D
+	var distance := float(home.call("_resolve_safe_interaction_distance", self, $BaseAnchor.global_position, 64.0)) if home.has_method("_resolve_safe_interaction_distance") else 64.0
+	if player == null or not player.is_inside_tree() or player.global_position.distance_to($BaseAnchor.global_position) > distance: return {"eligible": false, "reason": "too_far"}
+	return {"eligible": true, "reason": ""}
+
+func _new_seed_delivery_order(recipe: Dictionary, total: int, receipts: Array[Dictionary]) -> Dictionary:
+	return {"order_id": Crypto.new().generate_random_bytes(16).hex_encode(), "source_id": SeedOrder.SOURCE_ID, "recipe_id": recipe.id, "result_item": recipe.resultado_item, "result_quantity": int(recipe.resultado_quantidade), "seconds_per_craft": float(recipe.tempo_producao), "total": total, "converted": 0, "delivered": 0, "refunded": 0, "cancelled": false, "phase": "brewing", "time_remaining": float(recipe.tempo_producao), "ingredients": _contar_ingredientes(recipe.ingredientes), "reservations": receipts.duplicate(true), "output": null}
+
+func _start_seed_delivery(recipe_id: String, amount: int) -> bool:
+	if _seed_delivery_transaction or estado_atual != "IDLE" or not _seed_delivery_order.is_empty() or amount <= 0 or not get_seed_delivery_offer(recipe_id).eligible: return false
+	var recipe: Dictionary = recipe_resolver.get_recipe(recipe_id)
+	var total := mini(amount, _calcular_quantidade_maxima_ingredientes(recipe.ingredientes))
+	if total <= 0 or int(recipe.resultado_quantidade) <= 0 or float(recipe.tempo_producao) <= 0: return false
+	var access := VillageResourceAccessScript.new(_seed_delivery_chest(_seed_delivery_home()))
+	var receipts: Array[Dictionary] = []
+	_seed_delivery_transaction = true
+	var success := true
+	for _index in range(total):
+		var receipt: Dictionary = access.consume(_contar_ingredientes(recipe.ingredientes))
+		if not receipt.get("success", false):
+			success = false
+			break
+		receipts.append(receipt)
+	if not get_seed_delivery_offer(recipe_id).eligible: success = false
+	if success:
+		_seed_delivery_order = _new_seed_delivery_order(recipe, total, receipts)
+		estado_atual = "SEED_DELIVERY"
+		_seed_delivery_generation += 1
+		batch_timer.wait_time = float(recipe.tempo_producao)
+		batch_timer.start()
+		fechar_popup()
+		_abrir_painel_lote()
+	else:
+		var pending: Array[Dictionary] = []
+		for receipt in receipts:
+			if not access.refund(receipt): pending.append(receipt)
+		if not pending.is_empty():
+			# Rollback bloqueado continua representado; nunca sumir com reserva.
+			_seed_delivery_order = _new_seed_delivery_order(recipe, receipts.size(), pending)
+			_seed_delivery_order.refunded = receipts.size() - pending.size()
+			_seed_delivery_order.cancelled = true
+			_seed_delivery_order.phase = "refund_pending"
+			_seed_delivery_order.time_remaining = 0.0
+			estado_atual = "SEED_DELIVERY"
+			_seed_delivery_generation += 1
+	_publish_seed_delivery()
+	_seed_delivery_transaction = false
+	return success
+
+func _convert_seed_delivery_craft(snapshot_catchup: bool = false) -> void:
+	if _seed_delivery_transaction or estado_atual != "SEED_DELIVERY" or _seed_delivery_order.get("phase") != "brewing": return
+	if SaveManager.is_applying_snapshot() and not snapshot_catchup: return
+	if snapshot_catchup and (not SaveManager.is_applying_snapshot() or _seed_delivery_snapshot_generation != _seed_delivery_generation): return
+	if not SeedOrder.is_valid(get_seed_delivery_order_data()): return
+	_seed_delivery_transaction = true
+	batch_timer.stop()
+	_seed_delivery_order.reservations.pop_front()
+	_seed_delivery_order.converted += 1
+	_seed_delivery_order.phase = "ready"
+	_seed_delivery_order.time_remaining = 0.0
+	_seed_delivery_order.output = SeedOrder.expected_payload(_seed_delivery_order)
+	_seed_delivery_generation += 1
+	_seed_delivery_snapshot_generation = -1
+	_publish_seed_delivery()
+	_seed_delivery_transaction = false
+
+func _cancel_seed_delivery() -> void:
+	if _seed_delivery_transaction or _seed_delivery_home() == null or not SeedOrder.is_valid(get_seed_delivery_order_data()): return
+	_seed_delivery_transaction = true
+	batch_timer.stop()
+	_seed_delivery_order.cancelled = true
+	_seed_delivery_order.time_remaining = 0.0
+	var access := VillageResourceAccessScript.new(_seed_delivery_chest(_seed_delivery_home()))
+	var pending: Array[Dictionary] = []
+	for receipt in _seed_delivery_order.reservations:
+		if access.refund(receipt): _seed_delivery_order.refunded += 1
+		else: pending.append(receipt)
+	_seed_delivery_order.reservations = pending
+	if _seed_delivery_order.converted == _seed_delivery_order.delivered:
+		_seed_delivery_order.phase = "refund_pending"
+	_finish_seed_delivery_if_resolved()
+	_seed_delivery_generation += 1
+	_publish_seed_delivery()
+	_seed_delivery_transaction = false
+
+func _seed_delivery_actor_valid(actor: Node) -> bool:
+	var home := _seed_delivery_home()
+	return home != null and GroveExpedition.restored and is_instance_valid(actor) and actor.is_inside_tree() and not actor.is_queued_for_deletion() and home.get_node_or_null("Golem") == actor and int(actor.get("work_priority")) in [0, 1]
+
+func take_ready_seed_delivery(actor: Node2D, expected_payload: Dictionary, expected_generation: int = -1) -> bool:
+	if _seed_delivery_transaction or not _seed_delivery_actor_valid(actor) or (expected_generation >= 0 and expected_generation != _seed_delivery_generation): return false
+	if not SeedOrder.is_valid(get_seed_delivery_order_data()) or not SeedOrder.payloads_match(get_ready_seed_delivery(), expected_payload) or actor.global_position.distance_to(get_seed_delivery_pickup_position()) > DELIVERY_ARRIVAL_DISTANCE or not actor.has_method("can_accept_logistics_cargo") or not actor.call("can_accept_logistics_cargo", expected_payload): return false
+	_seed_delivery_transaction = true
+	if not actor.call("accept_logistics_cargo", expected_payload):
+		_seed_delivery_transaction = false
 		return false
+	_seed_delivery_order.output = null
+	_seed_delivery_order.phase = "carried"
+	_seed_delivery_generation += 1
+	_publish_seed_delivery()
+	_seed_delivery_transaction = false
+	return true
+
+func confirm_seed_delivery_deposit(actor: Node2D, expected_payload: Dictionary, chest: VillageChest, expected_generation: int = -1) -> bool:
+	if _seed_delivery_transaction or not _seed_delivery_actor_valid(actor) or (expected_generation >= 0 and expected_generation != _seed_delivery_generation): return false
+	if _seed_delivery_order.get("phase") != "carried" or not SeedOrder.is_valid(get_seed_delivery_order_data()) or not SeedOrder.payloads_match(expected_payload, SeedOrder.expected_payload(_seed_delivery_order)) or not actor.has_method("get_logistics_cargo_data") or not SeedOrder.payloads_match(actor.call("get_logistics_cargo_data"), expected_payload): return false
+	if chest != _seed_delivery_chest(_seed_delivery_home()) or chest == null or actor.global_position.distance_to(chest.global_position + Vector2(0, 48)) > DELIVERY_ARRIVAL_DISTANCE or not actor.has_method("clear_logistics_cargo"): return false
+	_seed_delivery_transaction = true
+	# Destino ilimitado/síncrono. Limpar cargo primeiro evita depósito se ele recusar.
+	if not actor.call("clear_logistics_cargo", expected_payload):
+		_seed_delivery_transaction = false
+		return false
+	chest.deposit_item(expected_payload.item_id, int(expected_payload.quantity))
+	_seed_delivery_order.delivered += 1
+	_seed_delivery_order.phase = "refund_pending" if _seed_delivery_order.cancelled else "brewing"
+	_finish_seed_delivery_if_resolved()
+	if not _seed_delivery_order.is_empty() and not _seed_delivery_order.cancelled:
+		batch_timer.wait_time = float(_seed_delivery_order.seconds_per_craft)
+		batch_timer.start()
+	_seed_delivery_generation += 1
+	_publish_seed_delivery()
+	_seed_delivery_transaction = false
+	return true
+
+func _finish_seed_delivery_if_resolved() -> void:
+	if _seed_delivery_order.converted != _seed_delivery_order.delivered: return
+	if (_seed_delivery_order.cancelled and _seed_delivery_order.reservations.is_empty()) or (not _seed_delivery_order.cancelled and _seed_delivery_order.delivered == _seed_delivery_order.total):
+		_seed_delivery_order.clear()
+		estado_atual = "IDLE"
+		batch_timer.stop()
+
+func _publish_seed_delivery() -> void:
+	_atualizar_interface_lote()
+	if not SaveManager.is_applying_snapshot(): seed_delivery_changed.emit()
+
+func get_seed_delivery_status() -> Dictionary:
+	var status := {"active": not _seed_delivery_order.is_empty(), "destination": SeedOrder.DESTINATION, "code": "idle", "text": "Sem pedido de sementes.", "hint": "", "total": 0, "converted": 0, "delivered": 0, "refunded": 0, "refund_pending": 0, "cancelled": false, "progress": 0.0, "order_id": "", "result_item": "", "result_quantity": 0}
+	if _seed_delivery_order.is_empty(): return status
+	for key in ["total", "converted", "delivered", "refunded", "cancelled", "order_id", "result_item", "result_quantity"]: status[key] = _seed_delivery_order[key]
+	status.refund_pending = _seed_delivery_order.reservations.size() if status.cancelled else 0
+	status.code = _seed_delivery_order.phase
+	var crop := Database.obter_nome_item(status.result_item)
+	status.text = "%d/%d preparos no Baú · %dx %s por preparo" % [status.delivered, status.total, status.result_quantity, crop]
+	status.hint = {"brewing": "Produzindo; o próximo preparo espera o depósito físico.", "ready": "Preparo pronto no caldeirão; aguardando retirada do golem.", "carried": "Sementes com o golem; aguardando depósito físico no Baú.", "refund_pending": "Cancelamento pendente. Libere espaço para devolver as reservas restantes."}.get(status.code, "")
+	status.progress = float(status.delivered) / float(status.total)
+	if status.cancelled: status.hint += " Pedido cancelado; saída convertida continua destinada ao Baú."
+	var home := _seed_delivery_home()
+	if home == null:
+		status.code = "home_unavailable"
+		status.hint += " Vila ausente: nenhuma entrega remota."
+	else:
+		var actor := home.get_node_or_null("Golem")
+		if actor != null and int(actor.get("work_priority")) not in [0, 1]:
+			status.code = "waiting_priority"
+			status.hint += " Use Colher primeiro ou Regar primeiro para transportar."
+	return status
+
+
+func load_save_data(data: Dictionary) -> bool:
+	if _seed_delivery_transaction or not is_save_data_valid(data):
+		return false
+	_seed_delivery_generation += 1
+	_seed_delivery_snapshot_generation = -1
+	_seed_delivery_order.clear()
 	# Substituir um snapshot nunca cancela/reembolsa o estado anterior: os estoques
 	# do mesmo save ja contem o efeito das reservas. Nada e' consumido outra vez.
 	$BrewTimer.stop()
@@ -254,7 +468,15 @@ func load_save_data(data: Dictionary) -> bool:
 	estado_atual = data["state"]
 	$BaseAnchor/SpriteCaldeirao.play("idle")
 	$BaseAnchor/SpriteCaldeirao.scale = Vector2(0.5, 0.5)
-	if estado_atual == "BREWING" or estado_atual == "READY":
+	if estado_atual == "SEED_DELIVERY":
+		_seed_delivery_order = data.delivery.duplicate(true)
+		if SaveManager.is_applying_snapshot():
+			_seed_delivery_snapshot_generation = _seed_delivery_generation
+		_abrir_painel_lote()
+		if _seed_delivery_order.phase == "brewing":
+			batch_timer.wait_time = float(_seed_delivery_order.seconds_per_craft)
+			batch_timer.start(maxf(float(_seed_delivery_order.time_remaining), 0.001))
+	elif estado_atual == "BREWING" or estado_atual == "READY":
 		item_em_producao = data["result_item"]
 		_item_quantidade_em_producao = int(data["result_quantity"])
 		if estado_atual == "BREWING":
@@ -281,6 +503,8 @@ func load_save_data(data: Dictionary) -> bool:
 			batch_timer.wait_time = _batch_tempo_por_unidade
 			batch_timer.start(maxf(float(batch["time_remaining"]), 0.001))
 	_atualizar_interface_lote()
+	if not SaveManager.is_applying_snapshot():
+		seed_delivery_changed.emit()
 	return true
 
 
@@ -335,6 +559,10 @@ func _on_area_2d_input_event(viewport, event, shape_idx):
 
 
 func _perform_primary_interaction() -> void:
+	if estado_atual == "SEED_DELIVERY":
+		_abrir_painel_lote()
+		_atualizar_interface_lote()
+		return # Acompanhar não cancela, recolhe nem muda o destino.
 	if estado_atual == "READY":
 		_tentar_entregar_producao_pronta()
 		return
@@ -357,7 +585,13 @@ func _on_btn_livro_receitas_pressed() -> void:
 func _on_btn_cancelar_producao_pressed() -> void:
 	cancelar_producao_em_lote()
 
-func iniciar_producao_em_lote(recipe_id: String, quantidade: int) -> bool:
+func iniciar_producao_em_lote(recipe_id: String, quantidade: int, destination: String = PERSONAL_DESTINATION) -> bool:
+	if _seed_delivery_transaction:
+		return false
+	if destination == SeedOrder.DESTINATION:
+		return _start_seed_delivery(recipe_id, quantidade)
+	if destination != PERSONAL_DESTINATION:
+		return false
 	if _batch_ativo:
 		push_warning("Cauldron: ja existe uma producao em lote em andamento.")
 		return false
@@ -441,6 +675,9 @@ func iniciar_producao_em_lote(recipe_id: String, quantidade: int) -> bool:
 	return true
 
 func cancelar_producao_em_lote() -> void:
+	if estado_atual == "SEED_DELIVERY":
+		_cancel_seed_delivery()
+		return
 	if not _batch_ativo:
 		return
 
@@ -546,13 +783,34 @@ func _iniciar_proximo_tick_lote() -> void:
 		_processar_tick_lote()
 
 func _on_batch_timer_timeout() -> void:
+	if estado_atual == "SEED_DELIVERY":
+		_convert_seed_delivery_craft()
+		return
 	_processar_tick_lote()
 
+
+func _advance_seed_delivery_inactive_time(elapsed_seconds: float) -> bool:
+	if _seed_delivery_transaction or _seed_delivery_order.get("phase") != "brewing": return false
+	var snapshot_catchup := SaveManager.is_applying_snapshot()
+	if snapshot_catchup and _seed_delivery_snapshot_generation != _seed_delivery_generation:
+		return false # Guardar o timer antes de recusar avanço público/reentrante.
+	if not SeedOrder.is_valid(get_seed_delivery_order_data()): return false
+	var remaining := maxf(batch_timer.time_left, 0.0)
+	if elapsed_seconds >= remaining:
+		_convert_seed_delivery_craft(snapshot_catchup)
+	else:
+		batch_timer.stop()
+		batch_timer.start(maxf(remaining - elapsed_seconds, 0.001))
+	# Token de um único catch-up do snapshot validado, nunca autorização durável.
+	_seed_delivery_snapshot_generation = -1
+	return true
 
 func advance_inactive_time(elapsed_seconds: float) -> bool:
 	var remaining_elapsed: float = maxf(elapsed_seconds, 0.0)
 	if remaining_elapsed <= 0.0:
 		return false
+	if estado_atual == "SEED_DELIVERY":
+		return _advance_seed_delivery_inactive_time(remaining_elapsed)
 	var advanced: bool = false
 
 	if _batch_ativo and batch_timer != null:
@@ -591,6 +849,9 @@ func advance_inactive_time(elapsed_seconds: float) -> bool:
 	return false
 
 func _processar_tick_lote() -> void:
+	if estado_atual == "SEED_DELIVERY":
+		_convert_seed_delivery_craft()
+		return
 	if not _batch_ativo or _batch_cancel_pending:
 		return
 
@@ -653,13 +914,22 @@ func _atualizar_interface_lote() -> void:
 	batch_progress_bar.max_value = 1.0
 	batch_progress_bar.value = feedback["progress"]
 	_atualizar_botao_cancelar_lote(feedback["can_cancel"])
-	btn_cancelar_producao.text = "Tentar cancelar novamente" if _batch_cancel_pending else "Cancelar produção"
+	btn_cancelar_producao.text = "Tentar cancelar novamente" if _batch_cancel_pending or (_seed_delivery_order.get("cancelled", false) and not _seed_delivery_order.get("reservations", []).is_empty()) else "Cancelar produção"
 	batch_status_label.modulate = Color("ebcb7a") if _batch_cancel_pending or _batch_waiting_for_space or estado_atual == "READY" else Color.WHITE
 
 
 func get_production_feedback() -> Dictionary:
 	# Projeção somente leitura dos estados existentes; nenhum retry/consumo aqui.
 	var feedback := {"visible": false, "title": "", "hint": "", "progress": 0.0, "show_progress": false, "can_cancel": false}
+	if estado_atual == "SEED_DELIVERY":
+		var status := get_seed_delivery_status()
+		feedback.visible = true
+		feedback.title = status.text
+		feedback.hint = status.hint
+		feedback.progress = status.progress
+		feedback.show_progress = not status.cancelled
+		feedback.can_cancel = not status.cancelled or status.refund_pending > 0
+		return feedback
 	if not _batch_ativo and estado_atual not in ["BREWING", "READY"]:
 		return feedback
 	feedback["visible"] = true

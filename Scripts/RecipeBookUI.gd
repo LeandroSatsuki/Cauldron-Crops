@@ -28,6 +28,8 @@ var recipe_resolver = null
 var _drag_helper: UIDragHelper = null
 var _refresh_check_accum: float = 0.0
 var _layout_initialized: bool = false
+var _delivery_destination: CheckButton
+var _delivery_hint: Label
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_STOP
@@ -64,6 +66,7 @@ func _ready() -> void:
 		btn_produce.pressed.connect(_on_produce_pressed)
 
 	_initialize_recipe_resolver()
+	_create_delivery_controls()
 	_cache_inventory_snapshot()
 	_refresh_recipe_list()
 	_show_empty_state()
@@ -76,6 +79,7 @@ func _process(delta: float) -> void:
 	if _refresh_check_accum < 0.25:
 		return
 	_refresh_check_accum = 0.0
+	_update_delivery_controls()
 
 	var current_count: int = GlobalInventory.receitas_descobertas.size()
 	if current_count != _last_discovered_count:
@@ -98,6 +102,7 @@ func _apply_layout() -> void:
 		global_position = global_position.clamp(Vector2(20, 20), (viewport_size - size - Vector2(20, 20)).max(Vector2(20, 20)))
 
 func abrir() -> void:
+	_reset_delivery_destination()
 	visible = true
 	move_to_front()
 	grab_click_focus()
@@ -105,6 +110,7 @@ func abrir() -> void:
 	_refresh_recipe_list()
 
 func fechar() -> void:
+	_reset_delivery_destination()
 	visible = false
 	var popup_host := get_parent()
 	var current_scene := get_tree().current_scene if get_tree() != null else null
@@ -201,6 +207,7 @@ func _show_recipe_by_index(index: int) -> void:
 	details.scroll_vertical = 0
 	_selected_recipe_id = recipe_id
 	_craft_quantity = 1
+	_reset_delivery_destination()
 	_show_recipe(recipe_id)
 
 func _show_recipe(recipe_id: String) -> void:
@@ -377,6 +384,7 @@ func _initialize_recipe_resolver() -> void:
 	recipe_resolver = RecipeResolverScript.new()
 
 func _atualizar_controles_producao(quantidade_maxima: int) -> void:
+	_update_delivery_controls()
 	if quantity_label:
 		if quantidade_maxima <= 0:
 			quantity_label.text = "Quantidade: 0"
@@ -463,8 +471,10 @@ func _on_produce_pressed() -> void:
 		return
 
 	var quantidade := int(_craft_quantity)
-	var ok := bool(cauldron.iniciar_producao_em_lote(_selected_recipe_id, quantidade))
+	var destination := "village_storage" if _delivery_destination != null and _delivery_destination.button_pressed else "personal"
+	var ok := bool(cauldron.iniciar_producao_em_lote(_selected_recipe_id, quantidade, destination)) if destination == "village_storage" else bool(cauldron.iniciar_producao_em_lote(_selected_recipe_id, quantidade))
 	if ok:
+		_reset_delivery_destination()
 		if status_label:
 			status_label.text = "Producao iniciada."
 		fechar()
@@ -486,6 +496,93 @@ func set_cauldron(cauldron: Node) -> void:
 		return
 
 	cauldron_ref = cauldron
+	_update_delivery_controls()
+
+
+func _create_delivery_controls() -> void:
+	var box: VBoxContainer = $MarginContainer/VBoxRoot/Body/RightPanel/RightBox
+	_delivery_destination = CheckButton.new()
+	_delivery_destination.name = "SeedDeliveryDestination"
+	_delivery_destination.text = "Baú via golem"
+	_delivery_destination.mouse_filter = Control.MOUSE_FILTER_STOP
+	_delivery_destination.toggled.connect(_on_delivery_destination_toggled)
+	box.add_child(_delivery_destination)
+	box.move_child(_delivery_destination, btn_produce.get_index())
+	_delivery_hint = Label.new()
+	_delivery_hint.name = "SeedDeliveryHint"
+	_delivery_hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_delivery_hint.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	box.add_child(_delivery_hint)
+	box.move_child(_delivery_hint, btn_produce.get_index())
+	_update_delivery_controls()
+
+
+func _reset_delivery_destination() -> void:
+	if _delivery_destination != null:
+		_delivery_destination.set_pressed_no_signal(false)
+	_update_delivery_controls()
+
+
+func _on_delivery_destination_toggled(_pressed: bool) -> void:
+	_update_delivery_controls()
+
+
+func _update_delivery_controls() -> void:
+	if _delivery_destination == null or _delivery_hint == null:
+		return
+	var recipe: Dictionary = recipe_resolver.get_recipe(_selected_recipe_id) if recipe_resolver != null else {}
+	var seed_recipe := str(recipe.get("resultado_item", "")) in ["semente_basica", "semente_verao"]
+	_delivery_destination.visible = seed_recipe
+	_delivery_hint.visible = seed_recipe
+	if not seed_recipe:
+		_delivery_destination.set_pressed_no_signal(false)
+		return
+	var cauldron := _get_valid_cauldron()
+	var offer: Dictionary = cauldron.call("get_seed_delivery_offer", _selected_recipe_id) if cauldron != null and cauldron.has_method("get_seed_delivery_offer") else {"eligible": false, "reason": "Caldeirão indisponível."}
+	_delivery_destination.disabled = not bool(offer.get("eligible", false))
+	if _delivery_destination.disabled:
+		_delivery_destination.set_pressed_no_signal(false)
+	_update_seed_destination_description(recipe)
+	var reason := _delivery_reason_text(str(offer.get("reason", "")))
+	_delivery_destination.tooltip_text = reason
+	if not _delivery_destination.button_pressed:
+		_delivery_hint.text = "Destino: Mochila. " + (reason if _delivery_destination.disabled else "Escolha Baú via golem para uma encomenda finita.")
+		return
+	var preparations := maxi(_craft_quantity, 0)
+	var units := preparations * int(recipe.get("resultado_quantidade", 0))
+	_delivery_hint.text = "Destino: Baú. %d preparos = %d sementes. Um preparo por viagem; o próximo começa após o depósito. Sem repetição automática." % [preparations, units]
+	var home := get_tree().current_scene if get_tree() != null else null
+	var golem := home.get_node_or_null("Golem") if home != null else null
+	if golem != null and int(golem.get("work_priority")) not in [0, 1]:
+		_delivery_hint.text += " Aguarda Colher primeiro ou Regar primeiro; não muda a prioridade sozinho."
+	else:
+		_delivery_hint.text += " O transporte pode atrasar rega e colheita."
+
+
+func _update_seed_destination_description(recipe: Dictionary) -> void:
+	if recipe.get("source") != "resource" or status_label == null:
+		return
+	# Projeção contextual: os dados/custos da receita permanecem inalterados.
+	var description := str(recipe.get("descricao", ""))
+	description = description.replace("O semeador continua exclusivo de trigo.", "O semeador pode usar Trigo ou Tomate, quando ativado explicitamente.")
+	if _delivery_destination.button_pressed:
+		description = description.replace("Resultado na Mochila: plante à mão ou deposite no Baú para o golem.", "Entrega física ao Baú pelo golem; semear continua uma escolha separada.")
+		description = description.replace("Resultado na Mochila: plante e regue na Primavera ou no Verão.", "Entrega física ao Baú pelo golem. Tomate cresce na Primavera ou no Verão.")
+	status_label.text = "Categoria: %s\n%s" % [_format_category_name(str(recipe.get("categoria", ""))), description]
+	if _craft_quantity <= 0:
+		status_label.text += "\nVoce nao tem ingredientes suficientes."
+
+
+func _delivery_reason_text(code: String) -> String:
+	match code:
+		"locked": return "Restaure a Clareira para liberar a entrega pelo golem."
+		"too_far": return "Aproxime-se do caldeirão para encomendar a entrega."
+		"home_unavailable": return "Entrega disponível somente na vila ativa."
+		"no_golem": return "Golem indisponível; nenhum recurso será reservado."
+		"no_chest": return "Baú da Vila indisponível."
+		"recipe_unavailable": return "Aprenda a receita antes de encomendar."
+		"unsupported_result": return "Este transporte aceita apenas sementes de Trigo ou Tomate."
+		_: return code
 
 func _get_valid_cauldron() -> Node:
 	if cauldron_ref != null and cauldron_ref.has_method("iniciar_producao_em_lote"):

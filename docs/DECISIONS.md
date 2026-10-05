@@ -1,5 +1,12 @@
 # Decisions
 
+## Decisão 142 - Abastecimento físico de sementes aprovado
+
+- Em 2026-10-04, o autor respondeu “aprovado” ao contrato integral de `6da1cd5`, autorizando B–E do FARM_SYSTEM_V2 e substituindo o portão da Decisão 141. Não é aceite manual, artístico ou de balanceamento.
+- Destino opt-in por lote finito após Clareira, somente resultados `semente_basica`/`semente_verao` de receitas disponíveis; um preparo inteiro por transporte, próximo só após depósito. Modos Colher primeiro/Regar primeiro atendem após tarefa/carga atual, antes de novas agrícolas; exclusivos/Pausado conservam. Cancelar para timer não convertido e futuros preparos, refund só de reservas não convertidas, saída/cargo preservado para o baú.
+- Produção pessoal, receitas/rendimentos/tempos/XP, seleções e semeador OFF permanecem; Aceleradora só para colheita. Sem fila/autorreposição, calendário/Elixir/Abóbora, segundo ator, economia/F10 ou arte final. Engenharia guiada por perfis com donos distintos; principal integra, QA revisa e fechamento/publicação selecionam apenas alterações próprias.
+- Implementado em 2026-10-05, pacote limpo ainda em preparação por este checkpoint. Dedicados domínio150/transporte184 por backend, persistência109/fixture2/reabertura8 por backend, UI39/42 (três capturas). Catch-up interno do loader converte no máximo um preparo; intenção do Livro não sobrevive ao apply aceito. 80 testes manuais pendentes, 75 textos anteriores intactos, sem exigir execução imediata.
+
 ## Decisão 141 - Formulação do abastecimento físico de sementes
 
 - Em 2026-10-04, o autor pediu a próxima fase após `8dd2c00`. Fase A documental: gameplay/engenharia recomendam fechar Caldeirão → golem → Village Storage para sementes, cuja transferência hoje é pessoal. O pedido não aprova por consequência destino logístico, custódia ou prioridade; contrato integral em FARM_SYSTEM_V2 aguarda confirmação antes de B–E.

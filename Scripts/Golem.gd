@@ -25,6 +25,11 @@ const ACCELERATOR_FACTOR := 1.5
 var state: String = "IDLE"
 var carried_rewards: Array = []
 var seed_cargo := GolemSeedCargo.new()
+var logistics_cargo := GolemLogisticsCargo.new()
+var _logistics_transaction := false
+var _logistics_source: Node2D
+var _logistics_expected: Dictionary = {}
+var _logistics_source_generation := -1
 var seeding_enabled := false
 var selected_seed_id := GolemSeedCargo.SEED_ITEM_ID
 var accelerator_prepared := false
@@ -55,6 +60,7 @@ var _home_position: Vector2 = Vector2.ZERO
 var _idle_cycle_count: int = 0
 var _rest_point: Node2D = null
 const SEED_MOVEMENT_STATES := ["MOVING_TO_SEED_CHEST", "MOVING_TO_SEED_PLOT", "MOVING_TO_SEED_RETURN"]
+const LOGISTICS_MOVEMENT_STATES := ["MOVING_TO_LOGISTICS_SOURCE", "MOVING_TO_LOGISTICS_CHEST"]
 const SEED_ARRIVAL_DISTANCE := 14.0
 var _seed_target_cell := Vector2i(-1, -1)
 var _seed_route_elapsed := 0.0
@@ -106,14 +112,18 @@ func _process(_delta: float) -> void:
 	z_index = int(global_position.y) + 3
 	_atualizar_visual_vida()
 	if _seed_cargo_visual:
-		_seed_cargo_visual.visible = seed_cargo.has_seed()
-		var cargo_id := seed_cargo.get_item_id()
+		_seed_cargo_visual.visible = seed_cargo.has_seed() or logistics_cargo.has_cargo()
+		var cargo_id := logistics_cargo.get_item_id() if logistics_cargo.has_cargo() else seed_cargo.get_item_id()
 		if cargo_id != _seed_visual_item_id:
 			_seed_visual_item_id = cargo_id
 			var cargo_texture := Database.obter_textura_item(cargo_id)
 			_seed_cargo_visual.texture = cargo_texture if cargo_texture != null else preload("res://Assets/Tools/tool_seed.png")
 
 func _physics_process(delta: float) -> void:
+	if (logistics_cargo.has_cargo() or state in LOGISTICS_MOVEMENT_STATES or state == "DEPOSITING_LOGISTICS") and (not _accelerator_context_valid() or not _logistics_priority_allowed()):
+		if state != "IDLE" or life_state != "IDLE" or velocity != Vector2.ZERO:
+			_parar_execucao_atual()
+		return # Conserva toda a saída; nenhum depósito remoto ou modo novo.
 	if (seed_cargo.has_seed() or state in SEED_MOVEMENT_STATES or state in ["PLANTING_SEED", "RETURNING_SEED"]) and not _accelerator_context_valid():
 		if state != "IDLE" or life_state != "IDLE" or velocity != Vector2.ZERO:
 			_parar_execucao_atual()
@@ -125,6 +135,9 @@ func _physics_process(delta: float) -> void:
 	var effective_speed := get_delivery_move_speed()
 	if navigation_agent != null:
 		navigation_agent.max_speed = effective_speed
+	if state in LOGISTICS_MOVEMENT_STATES:
+		_process_logistics_movement(delta)
+		return
 	if state in SEED_MOVEMENT_STATES:
 		_process_seed_movement(delta)
 		return
@@ -176,6 +189,8 @@ func _physics_process(delta: float) -> void:
 	_monitorar_travamento(delta)
 
 func _on_think_timer_timeout() -> void:
+	if _logistics_transaction:
+		return
 	if (accelerator_prepared or accelerator_active) and not _accelerator_context_valid():
 		return
 	if state != "IDLE":
@@ -186,6 +201,12 @@ func _on_think_timer_timeout() -> void:
 	if work_priority == PRIORITY_PAUSED:
 		_registrar_acao("pausado")
 		return
+	if logistics_cargo.has_cargo():
+		if _logistics_priority_allowed():
+			_resume_logistics_cargo()
+		else:
+			_registrar_acao("sementes encomendadas aguardando modo misto")
+		return
 	if seed_cargo.has_seed():
 		_resume_seed_cargo()
 		return
@@ -195,6 +216,8 @@ func _on_think_timer_timeout() -> void:
 		_registrar_acao("indo ao baú")
 		_procurar_bau()
 		return
+	if _start_ready_seed_delivery():
+		return # Saída pronta precede novas tarefas, nunca a custódia atual.
 
 	var talento_desbloqueado: bool = _tem_skill_golem_irrigador()
 	_recalcular_contadores_lotes()
@@ -249,11 +272,15 @@ func get_work_priority() -> int:
 	return work_priority
 
 func set_work_priority(nova_prioridade: int) -> bool:
+	if _logistics_transaction:
+		return false
 	if nova_prioridade < PRIORITY_HARVEST_FIRST or nova_prioridade > PRIORITY_PAUSED:
 		return false
 
 	work_priority = nova_prioridade
 	_cancelar_vida_ociosa()
+	if not _logistics_priority_allowed() and (state in LOGISTICS_MOVEMENT_STATES or state == "DEPOSITING_LOGISTICS"):
+		_parar_execucao_atual()
 	if work_priority == PRIORITY_PAUSED:
 		_parar_execucao_atual()
 	else:
@@ -288,6 +315,12 @@ func get_talent_irrigator_label() -> String:
 func get_current_task_label() -> String:
 	if work_priority == PRIORITY_PAUSED:
 		return "Pausado"
+	if logistics_cargo.has_cargo():
+		if not _logistics_priority_allowed():
+			return "Sementes encomendadas aguardando modo misto"
+		return "Depositando sementes encomendadas" if state == "DEPOSITING_LOGISTICS" else "Transportando sementes encomendadas"
+	if state == "MOVING_TO_LOGISTICS_SOURCE":
+		return "Indo retirar sementes no caldeirão"
 	if life_state == "LOOKING":
 		return "Olhando ao redor"
 	if life_state == "GOING_TO_REST":
@@ -377,6 +410,9 @@ func _parar_execucao_atual() -> void:
 		navigation_agent.target_position = global_position
 	_limpar_alvo_lote()
 	target_chest = null
+	_logistics_source = null
+	_logistics_expected = {}
+	_logistics_source_generation = -1
 	_cancelar_vida_ociosa()
 	state = "IDLE"
 	ultima_acao = "pausado"
@@ -391,10 +427,11 @@ func get_work_save_data() -> Dictionary:
 	return {"version": GolemWorkState.VERSION, "seeding_enabled": seeding_enabled, "selected_seed_id": selected_seed_id,
 		"work_priority": work_priority, "harvest_cargo": harvest,
 		"seed_cargo": seed_cargo.get_save_data(), "accelerator_prepared": accelerator_prepared,
-		"accelerator_active": accelerator_active, "harvest_delivery_started": harvest_delivery_started}
+		"accelerator_active": accelerator_active, "harvest_delivery_started": harvest_delivery_started,
+		"logistics_cargo": logistics_cargo.get_save_data()}
 
 func load_work_save_data(data: Dictionary, grove_restored: bool) -> bool:
-	if not GolemWorkState.is_valid(data, grove_restored):
+	if _logistics_transaction or not GolemWorkState.is_valid(data, grove_restored):
 		return false
 	_parar_execucao_atual()
 	work_priority = int(data["work_priority"])
@@ -403,6 +440,8 @@ func load_work_save_data(data: Dictionary, grove_restored: bool) -> bool:
 	carried_rewards = GolemWorkState.harvest_rewards(data["harvest_cargo"])
 	seed_cargo = GolemSeedCargo.new()
 	seed_cargo.apply_save_data(data["seed_cargo"])
+	logistics_cargo = GolemLogisticsCargo.new()
+	logistics_cargo.apply_save_data(data.get("logistics_cargo"))
 	var flags := GolemWorkState.accelerator_flags(data)
 	accelerator_prepared = flags["accelerator_prepared"]
 	accelerator_active = flags["accelerator_active"]
@@ -416,7 +455,7 @@ func _dispatch_work_callback(callback: Callable, generation: int) -> void:
 
 func _task_is_current(generation: int) -> bool:
 	return is_inside_tree() and not is_queued_for_deletion() and generation == _task_generation \
-		and (not (accelerator_prepared or accelerator_active) or _accelerator_context_valid())
+		and (not (accelerator_prepared or accelerator_active or logistics_cargo.has_cargo() or state in LOGISTICS_MOVEMENT_STATES or state == "DEPOSITING_LOGISTICS") or _accelerator_context_valid())
 
 func _receive_harvest_cargo(rewards: Array) -> void:
 	carried_rewards = rewards.duplicate(true)
@@ -660,7 +699,7 @@ func _procurar_lote_para_regar() -> bool:
 	return true
 
 func _procurar_bau() -> void:
-	if state != "IDLE" or work_priority == PRIORITY_PAUSED or carried_rewards.is_empty() or seed_cargo.has_seed() or not _accelerator_context_valid():
+	if state != "IDLE" or work_priority == PRIORITY_PAUSED or carried_rewards.is_empty() or seed_cargo.has_seed() or logistics_cargo.has_cargo() or not _accelerator_context_valid():
 		return
 	_cancelar_vida_ociosa()
 	target_chest = _encontrar_bau()
@@ -803,7 +842,13 @@ func _abortar_movimento(mensagem: String) -> void:
 	_stuck_time = 0.0
 	_avoidance_attempts = 0
 	_final_destination = Vector2.ZERO
-	if state in SEED_MOVEMENT_STATES:
+	if state in LOGISTICS_MOVEMENT_STATES:
+		_logistics_source = null
+		target_chest = null
+		_logistics_expected = {}
+		_logistics_source_generation = -1
+		_registrar_acao("sementes encomendadas aguardando caminho")
+	elif state in SEED_MOVEMENT_STATES:
 		_limpar_alvo_lote()
 		target_chest = null
 		_registrar_acao("semente aguardando caminho" if seed_cargo.has_seed() else "plantio aguardando caminho")
@@ -874,7 +919,7 @@ func _obter_centro_caldeirao() -> Vector2:
 	return Vector2.ZERO
 
 func _esta_em_movimento() -> bool:
-	return state in SEED_MOVEMENT_STATES or state == "MOVING_TO_PLOT" or state == "MOVING_TO_CHEST" or state == "MOVING_TO_REST"
+	return state in SEED_MOVEMENT_STATES or state in LOGISTICS_MOVEMENT_STATES or state == "MOVING_TO_PLOT" or state == "MOVING_TO_CHEST" or state == "MOVING_TO_REST"
 
 func get_life_state() -> String:
 	return life_state
@@ -1245,7 +1290,7 @@ func _seed_crop_label(seed_id: String) -> String:
 
 
 func _start_seeding() -> bool:
-	if not _can_seed_now() or seed_cargo.has_seed():
+	if not _can_seed_now() or seed_cargo.has_seed() or logistics_cargo.has_cargo() or state in LOGISTICS_MOVEMENT_STATES:
 		return false
 	var chest := _encontrar_bau() as VillageChest
 	if chest == null or chest.get_item_quantity(selected_seed_id) < 1:
@@ -1324,7 +1369,7 @@ func _arrive_seed_chest() -> void:
 	if state != "MOVING_TO_SEED_CHEST":
 		return
 	var live := _obter_farm_plot_por_grid_position(_seed_target_cell)
-	if not _can_seed_now() or not _seed_chest_in_reach() or live != target_plot or not _valid_seed_plot(live):
+	if logistics_cargo.has_cargo() or not _can_seed_now() or not _seed_chest_in_reach() or live != target_plot or not _valid_seed_plot(live):
 		_finish_seed_job("retirada recusada; estoque preservado")
 		return
 	if not seed_cargo.take_from_chest(target_chest as VillageChest, _seed_target_cell, selected_seed_id):
@@ -1416,3 +1461,148 @@ func _finish_seed_job(message: String) -> void:
 	target_chest = null
 	state = "IDLE"
 	_registrar_acao(message)
+
+
+# Abastecimento encomendado: Caldeirão coordena os dois commits sem sinais
+# intermediários. Este ator só agenda/caminha e conserva a custódia recebida.
+func get_logistics_cargo_data() -> Variant:
+	return logistics_cargo.get_save_data()
+
+func is_logistics_transaction_in_progress() -> bool:
+	return _logistics_transaction
+
+func can_accept_logistics_cargo(payload: Dictionary) -> bool:
+	return _accelerator_context_valid() and GroveExpedition.restored and _logistics_priority_allowed() \
+		and not accelerator_active and carried_rewards.is_empty() and not seed_cargo.has_seed() and logistics_cargo.accepts(payload)
+
+func accept_logistics_cargo(payload: Dictionary) -> bool:
+	return can_accept_logistics_cargo(payload) and logistics_cargo.accept(payload)
+
+func clear_logistics_cargo(expected_payload: Dictionary) -> bool:
+	return _accelerator_context_valid() and logistics_cargo.clear(expected_payload)
+
+func _logistics_priority_allowed() -> bool:
+	return work_priority in [PRIORITY_HARVEST_FIRST, PRIORITY_WATER_FIRST]
+
+func _find_logistics_source() -> Node2D:
+	if not _accelerator_context_valid():
+		return null
+	var source := get_tree().current_scene.get_node_or_null("CauldronUI") as Node2D
+	if not is_instance_valid(source) or not source.is_inside_tree() or source.is_queued_for_deletion() \
+		or not source.has_method("get_ready_seed_delivery") or not source.has_method("get_seed_delivery_generation") \
+		or not source.has_method("get_seed_delivery_pickup_position") or not source.has_method("take_ready_seed_delivery") \
+		or not source.has_method("confirm_seed_delivery_deposit"):
+		return null
+	return source
+
+func _logistics_source_live() -> bool:
+	return is_instance_valid(_logistics_source) and _logistics_source == _find_logistics_source()
+
+func _start_ready_seed_delivery() -> bool:
+	if state != "IDLE" or not _logistics_priority_allowed() or not GroveExpedition.restored \
+		or logistics_cargo.has_cargo() or seed_cargo.has_seed() or not carried_rewards.is_empty():
+		return false
+	var source := _find_logistics_source()
+	if source == null:
+		return false
+	var output: Dictionary = source.call("get_ready_seed_delivery")
+	if output.is_empty():
+		return false
+	if not GolemLogisticsCargo.is_save_data_valid(output):
+		_registrar_acao("saída de sementes inválida; retirada recusada")
+		return true # Não iniciar outra tarefa mascarando um contrato inválido.
+	_logistics_source = source
+	_logistics_expected = output.duplicate(true)
+	_logistics_source_generation = int(source.call("get_seed_delivery_generation"))
+	_cancelar_vida_ociosa()
+	state = "MOVING_TO_LOGISTICS_SOURCE"
+	_registrar_acao("indo retirar sementes encomendadas")
+	_start_seed_route(source.call("get_seed_delivery_pickup_position"), Callable(self, "_arrive_logistics_source"))
+	return true
+
+func _arrive_logistics_source() -> void:
+	if state != "MOVING_TO_LOGISTICS_SOURCE" or not _accelerator_context_valid() or not _logistics_priority_allowed():
+		return
+	if not _logistics_source_live() or global_position.distance_to(_logistics_source.call("get_seed_delivery_pickup_position")) > SEED_ARRIVAL_DISTANCE:
+		_finish_logistics_job("retirada aguardando caldeirão/caminho")
+		return
+	var source := _logistics_source
+	var generation := _task_generation
+	_logistics_transaction = true
+	var taken: bool = source.call("take_ready_seed_delivery", self, _logistics_expected, _logistics_source_generation)
+	_logistics_transaction = false
+	if not _task_is_current(generation):
+		return
+	if taken:
+		_resume_logistics_cargo()
+	else:
+		_finish_logistics_job("retirada recusada; saída preservada")
+
+func _resume_logistics_cargo() -> void:
+	if not logistics_cargo.has_cargo() or not _accelerator_context_valid() or not _logistics_priority_allowed():
+		return
+	_cancelar_vida_ociosa()
+	_logistics_source = _find_logistics_source()
+	target_chest = _encontrar_bau()
+	if _logistics_source == null or not is_instance_valid(target_chest):
+		_finish_logistics_job("sementes aguardando caldeirão/baú")
+		return
+	_logistics_expected = logistics_cargo.get_save_data()
+	_logistics_source_generation = int(_logistics_source.call("get_seed_delivery_generation"))
+	state = "MOVING_TO_LOGISTICS_CHEST"
+	_registrar_acao("transportando sementes encomendadas")
+	_start_seed_route(_seed_chest_position(target_chest), Callable(self, "_arrive_logistics_chest"))
+
+func _arrive_logistics_chest() -> void:
+	if state != "MOVING_TO_LOGISTICS_CHEST" or not _accelerator_context_valid() or not _logistics_priority_allowed():
+		return
+	if not _seed_chest_in_reach() or not _logistics_source_live() or not logistics_cargo.matches(_logistics_expected):
+		_finish_logistics_job("sementes aguardando baú/caminho")
+		return
+	state = "DEPOSITING_LOGISTICS"
+	var generation := _task_generation
+	var source_generation := _logistics_source_generation
+	var expected := _logistics_expected.duplicate(true)
+	await get_tree().create_timer(deposit_duration).timeout
+	if not _task_is_current(generation) or state != "DEPOSITING_LOGISTICS" or not _logistics_priority_allowed():
+		return
+	if not _accelerator_context_valid() or not _seed_chest_in_reach() or not _logistics_source_live() or not logistics_cargo.matches(expected):
+		_finish_logistics_job("sementes aguardando baú/caminho")
+		return
+	_logistics_transaction = true
+	var deposited: bool = _logistics_source.call("confirm_seed_delivery_deposit", self, expected, target_chest, source_generation)
+	_logistics_transaction = false
+	if not _task_is_current(generation):
+		return
+	_finish_logistics_job("sementes encomendadas depositadas" if deposited else "depósito recusado; sementes preservadas")
+
+func _finish_logistics_job(message: String) -> void:
+	_parar_execucao_atual()
+	_registrar_acao(message)
+
+func _process_logistics_movement(delta: float) -> void:
+	_seed_route_elapsed += delta
+	if _seed_route_elapsed > 30.0:
+		_abortar_movimento("Golem: trajeto logístico indisponível; custódia preservada.")
+		return
+	var destination := _current_avoidance_point if _is_avoiding_obstacle else _final_destination
+	if global_position.distance_to(destination) <= SEED_ARRIVAL_DISTANCE:
+		velocity = Vector2.ZERO
+		_concluir_deslocamento()
+		return
+	if navigation_agent == null:
+		_abortar_movimento("Golem: navegação logística indisponível; custódia preservada.")
+		return
+	if NavigationServer2D.map_get_iteration_id(navigation_agent.get_navigation_map()) == 0:
+		return
+	var next := navigation_agent.get_next_path_position()
+	if navigation_agent.get_current_navigation_path().is_empty() or navigation_agent.is_navigation_finished():
+		if _seed_route_elapsed < 0.2:
+			velocity = Vector2.ZERO
+			return
+		_abortar_movimento("Golem: caminho logístico terminou longe do destino; custódia preservada.")
+		return
+	var direction := next - global_position
+	velocity = direction.normalized() * minf(move_speed_pixels_per_second, direction.length() / maxf(delta, 0.001))
+	move_and_slide()
+	_monitorar_travamento(delta)

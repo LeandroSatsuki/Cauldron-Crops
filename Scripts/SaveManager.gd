@@ -40,7 +40,7 @@ func save_game() -> bool:
 	if not _is_growth_charges_valid(GlobalInventory.cargas_crescimento):
 		last_file_error = "Doses de crescimento inválidas. O save anterior não foi alterado."
 		return false
-	if _applying_snapshot or EconomyManager.is_well_transaction_in_progress() or HerbariumProduction.is_transaction_in_progress():
+	if _applying_snapshot or EconomyManager.is_well_transaction_in_progress() or HerbariumProduction.is_transaction_in_progress() or _seed_delivery_transaction_in_progress():
 		last_file_error = "Aguarde o fim do carregamento antes de salvar."
 		return false
 	var home: Node = _get_save_scene()
@@ -53,6 +53,9 @@ func save_game() -> bool:
 		return false
 	if _get_save_golem() == null:
 		last_file_error = "Golem indisponível. O save anterior não foi alterado."
+		return false
+	if not _seed_delivery_snapshot_valid({}):
+		last_file_error = "Encomenda de sementes inválida. O save anterior não foi alterado."
 		return false
 	# Validar o domínio vivo antes de reconstruir índices ou abrir arquivos.
 	if not _resolve_herbarium_snapshot({"herbarium_production": HerbariumProduction.get_save_data()}).get("valid", false):
@@ -89,6 +92,9 @@ func save_game() -> bool:
 		last_file_error = "Carga do golem inválida. O save anterior não foi alterado."
 		_show_file_error("Não foi possível salvar", last_file_error)
 		return false
+	if not _is_cauldron_save_payload_valid(data) or not _seed_delivery_snapshot_valid(data):
+		last_file_error = "Produção ou custódia do caldeirão inválida. O save anterior não foi alterado."
+		return false
 	var result: Dictionary = ProtectedSaveFileScript.new().write(SAVE_PATH, data)
 	if not result.success:
 		last_file_error = result.message
@@ -101,7 +107,7 @@ func save_game() -> bool:
 
 func load_game() -> bool:
 	last_file_error = ""
-	if _applying_snapshot or EconomyManager.is_well_transaction_in_progress() or HerbariumProduction.is_transaction_in_progress():
+	if _applying_snapshot or EconomyManager.is_well_transaction_in_progress() or HerbariumProduction.is_transaction_in_progress() or _seed_delivery_transaction_in_progress():
 		last_file_error = "Aguarde o fim da transação antes de carregar."
 		return false
 	if not has_save():
@@ -254,7 +260,10 @@ func _build_save_data() -> Dictionary:
 	return save_data
 
 func _apply_save_data(data: Dictionary) -> bool:
-	if _applying_snapshot or EconomyManager.is_well_transaction_in_progress() or HerbariumProduction.is_transaction_in_progress():
+	if _applying_snapshot or EconomyManager.is_well_transaction_in_progress() or HerbariumProduction.is_transaction_in_progress() or _seed_delivery_transaction_in_progress():
+		return false
+	if not _seed_delivery_snapshot_valid(data):
+		push_warning("SaveManager: encomenda/carga de sementes incoerente; save não aplicado.")
 		return false
 	var herbarium_snapshot := _resolve_herbarium_snapshot(data)
 	if not herbarium_snapshot.get("valid", false):
@@ -331,6 +340,7 @@ func _apply_save_data(data: Dictionary) -> bool:
 		current_inventory[key] = int(quantity)
 
 	var home: Node = _get_save_scene()
+	var delivery_snapshot := _effective_seed_delivery_snapshot(data)
 	_applying_snapshot = true
 	if home != null and home.has_method("cancel_consumable_application"):
 		home.cancel_consumable_application()
@@ -343,10 +353,10 @@ func _apply_save_data(data: Dictionary) -> bool:
 			return false
 	# Invalidar callbacks e substituir carga antes dos sinais de progresso/lotes.
 	# Legado completo limpa runtime sem refund; contratos parciais não o substituem.
-	if data.has("golem_work") or inventory_data.get("inventario") is Dictionary:
+	if data.has("golem_work") or inventory_data.get("inventario") is Dictionary or delivery_snapshot["has_delivery"]:
 		var golem := _get_save_golem()
 		if golem != null:
-			golem.call("load_work_save_data", data.get("golem_work", GolemWorkState.default_data()), _saved_grove_restored(data))
+			golem.call("load_work_save_data", delivery_snapshot["golem"], delivery_snapshot["grove_restored"])
 
 	if not GlobalInventory.set_inventory_contents(current_inventory):
 		_applying_snapshot = false
@@ -444,13 +454,23 @@ func _apply_save_data(data: Dictionary) -> bool:
 	# em parciais que preservam exatamente a disponibilidade anterior.
 	HerbariumProduction.load_save_data(herbarium_snapshot["state"])
 
-	if data.has("cauldrons") or inventory_data.get("inventario") is Dictionary:
+	if data.has("cauldrons") or inventory_data.get("inventario") is Dictionary or delivery_snapshot["has_delivery"]:
 		# Save antigo completo nao contem producao: limpar o runtime sem refund.
 		# Payload parcial de contratos agricolas continua sem tocar no caldeirao.
-		var cauldron_states: Dictionary = data.get("cauldrons", {})
+		var cauldron_states: Dictionary = delivery_snapshot["cauldrons"]
 		var cauldron_nodes: Dictionary = _get_cauldron_nodes()
 		for cauldron_id in cauldron_nodes:
 			cauldron_nodes[cauldron_id].call("load_save_data", cauldron_states.get(cauldron_id, {"state": "IDLE"}))
+	# Intenção de interface nunca sobrevive a um apply aceito, mesmo se o
+	# parcial preserva o caldeirão IDLE. Não substitui nem cancela a produção.
+	for cauldron_node in _get_cauldron_nodes().values():
+		var book: Node = cauldron_node.get_node_or_null("PopupLayer/RecipeBookUI")
+		if book != null and book.has_method("fechar"):
+			book.call("fechar")
+	var current_ui: Node = current_scene.get_node_or_null("UI") if current_scene != null else null
+	var fallback_book: Node = current_ui.get_node_or_null("RecipeBookUI") if current_ui != null else null
+	if fallback_book != null and fallback_book.has_method("fechar"):
+		fallback_book.call("fechar")
 	if data.has("fishing_pending_capture") or inventory_data.get("inventario") is Dictionary:
 		var fishing: Node = _get_fishing_minigame()
 		if fishing != null:
@@ -547,10 +567,77 @@ func _saved_grove_restored(data: Dictionary) -> bool:
 func _is_golem_save_payload_valid(data: Dictionary) -> bool:
 	if not data.has("golem_work"):
 		return true
-	if not GolemWorkState.is_valid(data["golem_work"], _saved_grove_restored(data)):
+	var work: Variant = data["golem_work"]
+	var has_logistics := work is Dictionary and work.get("logistics_cargo") != null
+	var grove_restored := _effective_grove_restored(data) if has_logistics else _saved_grove_restored(data)
+	if not GolemWorkState.is_valid(work, grove_restored):
 		return false
 	# Não carregar/descartar carga numa vila sem o seu único golem físico.
 	return _get_save_golem() != null
+
+
+func _seed_delivery_transaction_in_progress() -> bool:
+	var golem := _get_save_golem()
+	if golem != null and golem.has_method("is_logistics_transaction_in_progress") and bool(golem.call("is_logistics_transaction_in_progress")):
+		return true
+	for cauldron in _get_cauldron_nodes().values():
+		if cauldron.has_method("is_seed_delivery_transaction_in_progress") and bool(cauldron.call("is_seed_delivery_transaction_in_progress")):
+			return true
+	return false
+
+
+func _effective_grove_restored(data: Dictionary) -> bool:
+	if data.has("grove_expedition"):
+		return _saved_grove_restored(data)
+	var inventory: Variant = data.get("inventory")
+	if inventory is Dictionary and inventory.get("inventario") is Dictionary:
+		return false
+	return GroveExpedition.restored
+
+
+func _effective_seed_delivery_snapshot(data: Dictionary) -> Dictionary:
+	var inventory: Variant = data.get("inventory")
+	var complete := inventory is Dictionary and inventory.get("inventario") is Dictionary
+	var states: Dictionary = {}
+	var nodes := _get_cauldron_nodes()
+	var incoming: Variant = data.get("cauldrons", {})
+	for key in nodes:
+		if data.has("cauldrons") or complete:
+			states[key] = incoming.get(key, {"state": "IDLE"}) if incoming is Dictionary else null
+		else:
+			states[key] = nodes[key].call("get_save_data")
+	var work: Variant = data.get("golem_work", GolemWorkState.default_data() if complete else _build_golem_save_data())
+	var has_delivery := work is Dictionary and work.get("logistics_cargo") != null
+	for state in states.values():
+		if state is Dictionary and (state.get("state") == "SEED_DELIVERY" or state.get("delivery") != null):
+			has_delivery = true
+	return {"cauldrons": states, "golem": work, "grove_restored": _effective_grove_restored(data), "has_delivery": has_delivery}
+
+
+func _seed_delivery_snapshot_valid(data: Dictionary) -> bool:
+	if data.has("grove_expedition") and not GroveExpedition.is_save_data_valid(data["grove_expedition"]):
+		return false
+	if not _is_cauldron_save_payload_valid(data):
+		return false
+	var resolved := _effective_seed_delivery_snapshot(data)
+	if not resolved["has_delivery"]:
+		return true
+	if not resolved["grove_restored"] or _get_save_golem() == null or not GolemWorkState.is_valid(resolved["golem"], true):
+		return false
+	var nodes := _get_cauldron_nodes()
+	var active_order: Variant = null
+	for key in resolved["cauldrons"]:
+		var state: Variant = resolved["cauldrons"][key]
+		if not state is Dictionary or not bool(nodes[key].call("is_save_data_valid", state)):
+			return false
+		if state.get("state") == "SEED_DELIVERY":
+			if active_order != null:
+				return false
+			active_order = state.get("delivery")
+	var cargo: Variant = resolved["golem"].get("logistics_cargo")
+	if active_order == null:
+		return cargo == null
+	return SeedDeliveryOrder.matches_cargo(active_order, cargo)
 
 func _resolve_backpack_progress(data: Dictionary, inventory_data: Dictionary) -> Variant:
 	if inventory_data.has("backpack_milestones"):

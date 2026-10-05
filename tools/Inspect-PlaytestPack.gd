@@ -30,8 +30,44 @@ func _initialize() -> void:
 		return
 	if not _check_herbarium_contract():
 		return
-	print("PlaytestPackAudit: PASS - recursos, receitas sustentáveis, Poço, Solo Vivo, Aceleradora, Raiz renovável, tomate Primavera/Verão, semeadura seletiva, Adubo Flamejante, Herbário produtivo, aplicação, exclusões e save separado.")
+	if not _check_seed_delivery_contract():
+		return
+	print("PlaytestPackAudit: PASS - recursos, receitas sustentáveis, Poço, Solo Vivo, Aceleradora, Raiz renovável, tomate Primavera/Verão, semeadura seletiva, Adubo Flamejante, Herbário produtivo, abastecimento físico de sementes, aplicação, exclusões e save separado.")
 	quit(0)
+
+func _check_seed_delivery_contract() -> bool:
+	for path in ["res://Scripts/data/SeedDeliveryOrder.gd", "res://Scripts/data/GolemLogisticsCargo.gd"]:
+		if not ResourceLoader.exists(path) or ResourceLoader.load(path) == null:
+			return _fail("custódia logística de sementes ausente: " + path)
+	var order: GDScript = ResourceLoader.load("res://Scripts/data/SeedDeliveryOrder.gd")
+	var constants := order.get_script_constant_map()
+	if constants.get("ITEM_IDS") != ["semente_basica", "semente_verao"] or constants.get("DESTINATION") != "village_storage" or constants.get("SOURCE_ID") != "cauldron_village":
+		return _fail("destino/whitelist do abastecimento fora do contrato")
+	var payload := {"order_id": "pack-contract", "step": 1, "source_id": "cauldron_village", "item_id": "semente_basica", "quantity": 3}
+	if not order.call("is_payload_valid", payload):
+		return _fail("payload logístico válido recusado")
+	for item in ["trigo", "semente_outono", "semente_inverno"]:
+		var invalid := payload.duplicate(true)
+		invalid["item_id"] = item
+		if order.call("is_payload_valid", invalid):
+			return _fail("produto não autorizado aceito para transporte")
+	var work: GDScript = ResourceLoader.load("res://Scripts/data/GolemWorkState.gd")
+	var default: Dictionary = work.call("default_data")
+	if not default.has("logistics_cargo") or default["logistics_cargo"] != null:
+		return _fail("cargo logístico legado não começa vazio")
+	var required := {
+		"res://Scripts/Cauldron.gd": ["get_seed_delivery_offer", "get_ready_seed_delivery", "take_ready_seed_delivery", "confirm_seed_delivery_deposit", "is_seed_delivery_transaction_in_progress"],
+		"res://Scripts/Golem.gd": ["get_logistics_cargo_data", "is_logistics_transaction_in_progress"],
+		"res://Scripts/RecipeBookUI.gd": ["_create_delivery_controls", "_update_delivery_controls"],
+		"res://Scripts/SaveManager.gd": ["_seed_delivery_snapshot_valid", "_effective_seed_delivery_snapshot", "_seed_delivery_transaction_in_progress"],
+	}
+	for path in required:
+		var script: GDScript = ResourceLoader.load(path)
+		var names: Array = []
+		for method in script.get_script_method_list(): names.append(str(method["name"]))
+		for method in required[path]:
+			if method not in names: return _fail("API de abastecimento ausente: " + path + " " + method)
+	return true
 
 func _check_herbarium_contract() -> bool:
 	for path in ["res://Scripts/HerbariumProduction.gd", "res://Scripts/data/HerbariumProductionState.gd", "res://Scripts/ProductiveHerbarium.gd", "res://Scripts/ProductiveHerbariumPanel.gd"]:

@@ -5,10 +5,11 @@ const VERSION := 1
 const REQUIRED_KEYS := ["version", "seeding_enabled", "work_priority", "harvest_cargo", "seed_cargo"]
 const ACCELERATOR_KEYS := ["accelerator_prepared", "accelerator_active", "harvest_delivery_started"]
 const SELECTION_KEY := "selected_seed_id"
+const LOGISTICS_KEY := "logistics_cargo"
 
 static func default_data() -> Dictionary:
 	return {"version": VERSION, "seeding_enabled": false, SELECTION_KEY: GolemSeedCargo.SEED_ITEM_ID, "work_priority": 0, "harvest_cargo": {}, "seed_cargo": null,
-		"accelerator_prepared": false, "accelerator_active": false, "harvest_delivery_started": false}
+		"accelerator_prepared": false, "accelerator_active": false, "harvest_delivery_started": false, LOGISTICS_KEY: null}
 
 static func accelerator_flags(data: Dictionary) -> Dictionary:
 	# Cargo legado é conservadoramente uma entrega já iniciada. Ausentes não
@@ -24,7 +25,7 @@ static func is_valid(value: Variant, grove_restored: bool) -> bool:
 	if not data.has_all(REQUIRED_KEYS):
 		return false
 	for key in data:
-		if key not in REQUIRED_KEYS and key not in ACCELERATOR_KEYS and key != SELECTION_KEY:
+		if key not in REQUIRED_KEYS and key not in ACCELERATOR_KEYS and key != SELECTION_KEY and key != LOGISTICS_KEY:
 			return false
 	if data.has(SELECTION_KEY) and not GolemSeedCargo.is_selectable_seed_id(data[SELECTION_KEY]):
 		return false
@@ -41,6 +42,11 @@ static func is_valid(value: Variant, grove_restored: bool) -> bool:
 	if not FarmTileData.is_pending_harvest_valid(data["harvest_cargo"]) or not GolemSeedCargo.is_save_data_valid(data["seed_cargo"]):
 		return false
 	var has_seed: bool = data["seed_cargo"] != null
+	if not GolemLogisticsCargo.is_save_data_valid(data.get(LOGISTICS_KEY)):
+		return false
+	var has_logistics: bool = data.get(LOGISTICS_KEY) != null
+	if has_logistics and (not grove_restored or has_seed or not data["harvest_cargo"].is_empty()):
+		return false
 	if (data["seeding_enabled"] or has_seed) and not grove_restored:
 		return false
 	if has_seed:
@@ -51,7 +57,7 @@ static func is_valid(value: Variant, grove_restored: bool) -> bool:
 	var flags := accelerator_flags(data)
 	if flags["accelerator_prepared"] and flags["accelerator_active"]:
 		return false
-	if flags["harvest_delivery_started"] and (data["harvest_cargo"].is_empty() or has_seed):
+	if flags["harvest_delivery_started"] and (data["harvest_cargo"].is_empty() or has_seed or has_logistics):
 		return false
 	if flags["accelerator_active"] and not flags["harvest_delivery_started"]:
 		return false

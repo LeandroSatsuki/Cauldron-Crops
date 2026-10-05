@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-10-05 - Abastecimento físico de sementes implementado
+
+- Contrato integral `6da1cd5` aprovado pelo autor (Decisão142). Livro oferece Mochila padrão ou Baú via golem após Clareira; apenas receitas disponíveis de sementes de Trigo/Tomate, quantidade finita, sem fila/autorloop ou alteração de custos/rendimento/tempo/XP.
+- Um preparo convertido por vez no caldeirão OU cargo próprio do golem; retirada, transporte e depósito físicos. Próximo timer somente após depósito. Modos mistos atendem após tarefa/carga atual, antes de novas agrícolas; exclusivos/Pausado conservam. Cancelar devolve só reservas não convertidas e preserva saída/cargo/refund pendente.
+- Save v4/work v1 opcionais estritos, preflight efetivo conjunto e writer protegido; legado/parcial/replay/catch-up/reabertura testados. Catch-up validado do loader não encadeia produção; Livro fecha/reseta intenção em todo apply aceito. Descrição UI acompanha destino sem alterar receita.
+- Dedicados domínio150/transporte184/persistência109 por backend, fixture2/reabertura8 por backend e UI39/42; três capturas técnicas. Pacote limpo/regressão integral ainda em preparação neste checkpoint. 75 textos manuais intactos + cinco SD = 80 pendentes; QA não homologa mouse físico, arte, ritmo ou balanceamento.
+- Arte com Antigravity, demanda funcional em ART_HANDOFF. Assets/cenas artísticas concorrentes preservados fora da publicação; sem save pessoal, F10, economia, calendário, Elixir, segundo ator ou lore novo.
+
 ## 2026-10-04 - Proposta de abastecimento físico de sementes
 
 - Fase A documental após `8dd2c00`; gameplay/engenharia recomendam fechar Caldeirão → golem → Village Storage para as sementes de Trigo/Tomate atuais. Contrato completo/B–E em FARM_SYSTEM_V2/Decisão 141, aguardando aprovação antes de código.

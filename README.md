@@ -14,9 +14,9 @@ Direção e produção de arte: Antigravity, com aprovação criativa do autor. 
 
 ## Sobre o jogo
 
-Pacote de teste vigente: `Builds/Playtest/HerbariumProduction-20261004`, fonte `328af62`.67/67 regressões e16reaberturas passaram; executável headless/OpenGL e recursos PCK auditados,102logs finais sem erros. Use StartPlaytest.cmd com EXE/PCK juntos; save separado e75testes manuais pendentes. Checkpoints abaixo são históricos quando anteriores ao Herbário produtivo.
+Novo checkpoint implementado: abastecimento físico de sementes; pacote limpo em preparação. O pacote certificado anterior é `Builds/Playtest/HerbariumProduction-20261004`, fonte `328af62`; seus 67/67 testes são evidência anterior, não desta entrega. Save de playtest separado; 80 testes manuais pendentes.
 
-Etapa atual: **Herbário produtivo fechado tecnicamente**, validação manual pendente. Após restaurar Herbário e Clareira, melhoria opcional de8 trigos+2 tomates+1 Mistura libera coleta local de1 Raiz Gélida/90s de sessão na Mochila. Primeira coleta pronta no ponto; sem acúmulo/offline ou repetição de prêmios. Bosque1/45s preservado. Contrato/QA em [Sistema agrícola](./docs/FARM_SYSTEM_V2.md);75 testes manuais pendentes,70 textos anteriores intactos. Arte permanece com Antigravity.
+Etapa atual: destino opcional **Baú via golem** no Livro para lotes finitos de sementes de Trigo/Tomate após a Clareira. Um preparo por transporte físico; o próximo só começa após depósito. Produção pessoal segue padrão; cancelamento preserva produto convertido e devolve somente futuras reservas. Não liga semeadura nem muda sua cultura. Contrato/QA em [Sistema agrícola](./docs/FARM_SYSTEM_V2.md); arte com Antigravity. Checkpoints abaixo são históricos quando anteriores a este incremento.
 
 Organização atual: especialistas de gameplay/progressão, narrativa, engenharia e QA apoiam o agente principal conforme o assunto, sob aprovação criativa do autor. O perfil artístico permanece como referência histórica; direção e produção de arte estão no Antigravity externo. Fontes, responsabilidades e limites em [Equipe de especialistas](./docs/AGENT_TEAM.md). Os moldes do protótipo não representam arte final; esta organização não acrescenta sistemas ao jogo.
 
