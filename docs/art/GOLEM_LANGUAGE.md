@@ -97,6 +97,24 @@ If removing the face makes the creature stop working, the design is relying too 
 
 The creature should still feel born from its material when facial details are ignored.
 
+## Anti-Pattern: Obvious Anatomy
+
+A material-based golem must NOT be designed by first constructing a humanoid skeleton and then replacing the body parts with material.
+
+Avoid an obvious:
+
+**head → neck → torso → arms → hands → legs**
+
+hierarchy.
+
+Avoid designs where branches, roots, crystals or other material structures merely occupy the positions of human limbs.
+
+The creature should read as one organically formed organism before the viewer can identify individual anatomical parts.
+
+If the viewer can immediately point to "the head", "the arm", "the leg" and "the torso", reconsider the design.
+
+The material should create the anatomy, not decorate a pre-existing anatomy.
+
 ## Extremities
 
 Extremities must remain consistent with the material.
@@ -190,15 +208,27 @@ The spirit may manifest in other materials through:
 
 The exact color does not have to be blue for every species. The important rule is the **presence of an internal magical life-sign**, not a universal effect color.
 
+### Subtlety rule
+
+The magical spirit should normally be **discovered, not announced**.
+
+At first glance, the viewer should primarily perceive the material and the creature.
+
+Only on closer inspection should the viewer notice evidence that something magical is alive inside it.
+
+Avoid making the spirit the most visually dominant feature.
+
 Avoid:
 
+- large glowing cores;
+- exposed magical hearts;
+- large luminous cracks;
+- bright internal channels;
+- obvious magical symbols;
 - large external auras;
-- neon outlines;
 - heavy magical smoke;
 - excessive particles;
-- magic that visually overwhelms the material.
-
-The material should remain the primary visual identity; the inner magic is the evidence of life.
+- magic that overwhelms the material.
 
 ## Visual Language
 
@@ -239,8 +269,10 @@ When generating a new golem:
 6. Give the creature a restrained, material-appropriate visible vestige of its inner magic.
 7. Check silhouette without facial details.
 8. Check material identity without facial details.
-9. Only then add restrained magical accents or surface details.
-10. Preserve the shared species philosophy without forcing shared anatomy.
+9. Check whether the anatomy reads as an organic whole rather than a humanoid skeleton.
+10. Check whether the magic is discovered rather than announced.
+11. Only then add restrained magical accents or surface details.
+12. Preserve the shared species philosophy without forcing shared anatomy.
 
 ## Reference Status
 
@@ -265,6 +297,8 @@ It is not a mandate that every future golem share the same body.
 
 > **Golems should be strange before they are cute. Their cuteness should emerge from the contrast between an unfamiliar magical body and gentle, curious, slightly awkward behavior.**
 
-> **Every golem must show some restrained evidence of the magical spirit inhabiting its material.**
+> **Every golem must show some restrained evidence of the magical spirit inhabiting its material. The spirit should normally be discovered, not announced.**
 
 > **No two golems need to share the same anatomy. They share a philosophy, not a body plan.**
+
+> **Never start from a humanoid skeleton. Let the material create the creature.**
