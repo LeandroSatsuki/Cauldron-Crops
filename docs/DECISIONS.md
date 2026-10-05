@@ -2,9 +2,11 @@
 
 ## Decisão 140 - Herbário produtivo aprovado
 
+- Fechamento limpo: fonte `328af62`, pacote HerbariumProduction-20261004,67/67 regressões/16reaberturas/9fixtures/2cenários adicionais. EXE headless/OpenGL/PCK/manifesto/hashes e102logs finais sem ERROR conferidos; checkout removido.75manuais pendentes,70textos antigos intactos. Revisão de entrega independente concluída sem bloqueador; não homologa manual/arte/balanceamento.
+
 - Em 2026-10-04, o autor respondeu “aprovado” ao contrato integral publicado em `2c2461b`, autorizando B–E e substituindo o portão da Decisão 139. Melhoria opcional após Herbário/Clareira, custo único8 trigos+2 tomates+1 Mistura, fonte local1 Raiz/90s de sessão, primeira coleta disponível, uma coleta pronta e resultado pessoal sem offline. Não homologa balanceamento/arte/manual.
 - Implementados domínio local/relógio único, transação Storage prioritário/Mochila complementar, ponto independente/painel opaco/aproximação/cancelamento e save v4 opcional estrito/gates efetivos/preflight. Completo antigo desativado e parcial preservado; contradição recusada sem mutação/I/O. Bosque1/45, culturas/golem/receitas e Rama/slots/XP antigos preservados.
-- Dedicados isolados: domínio115 e persistência101/fixture2/reabertura8 por backend; UI70 headless/75 OpenGL. Fechamento limpo e revisão final em execução.70 roteiros anteriores intactos+5HP=75 manuais pendentes; sem teste imediato/save pessoal/arte concorrente incorporada. Antigravity mantém direção/produção; passagem em ART_HANDOFF. Não ativar outros sistemas reservados por consequência.
+- Dedicados isolados: domínio115 e persistência101/fixture2/reabertura8 por backend; UI70 headless/75 OpenGL. Pacote limpo concluído; revisão de entrega concluída sem bloqueador.70 roteiros anteriores intactos+5HP=75 manuais pendentes; sem teste imediato/save pessoal/arte concorrente incorporada. Antigravity mantém direção/produção; passagem em ART_HANDOFF. Não ativar outros sistemas reservados por consequência.
 
 ## Decisão 139 - Formulação de Herbário produtivo
 

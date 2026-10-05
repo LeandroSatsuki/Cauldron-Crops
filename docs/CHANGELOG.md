@@ -2,9 +2,11 @@
 
 ## 2026-10-04 - Herbário produtivo aprovado e implementado
 
+- Pacote limpo HerbariumProduction-20261004 de `328af62`:67/67 regressões,16reaberturas/9fixtures/2cenários adicionais, startups EXE headless/OpenGL/PCK/manifesto/hashes e102logs finais sem ERROR; checkout removido.75manuais pendentes,70textos intactos. Negativo correto recusa FlameFertilizer antigo por Herbário ausente; negativas iniciais preservadas fora dos resultados finais. Revisão independente de entrega concluída sem bloqueador.
+
 - Autor confirmou a proposta `2c2461b` (Decisão140). Melhoria opcional após Herbário/Clareira, custo único8 trigos+2 tomates+1 Mistura, ponto local de1 Raiz/90s de sessão e primeira coleta disponível, sem acúmulo/offline. Storage prioritário/Mochila complementar para ativação; coleta exclusivamente pessoal.
 - Domínio/relógio separados do Bosque, capacidade/reentrada/rollback, preflight/gates efetivos/savev4 opcional estrito, ponto/painel opaco/aproximação e callbacks invalidados. Sem novos prêmios de restauração/cultura/golem/receita/arte; fonte Bosque1/45 intacta.
-- Dedicados isolados domínio115/persistência101/fixture2/reabertura8 por backend, UI70/75. Pacote limpo e revisão final em execução.70 textos manuais intactos+5HP=75 pendentes, sem teste imediato/save pessoal/arte externa incorporada. Passagem funcional ao Antigravity.
+- Dedicados isolados domínio115/persistência101/fixture2/reabertura8 por backend, UI70/75. Pacote limpo concluído; revisão de entrega concluída sem bloqueador.70 textos manuais intactos+5HP=75 pendentes, sem teste imediato/save pessoal/arte externa incorporada. Passagem funcional ao Antigravity.
 
 ## 2026-10-04 - Proposta de Herbário produtivo
 

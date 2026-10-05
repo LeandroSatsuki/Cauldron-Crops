@@ -122,7 +122,9 @@ Resposta Antigravity: pendente. Plano de substituição: pendente. Aceite artís
 
 ### Herbário produtivo na vila
 
-**Registro:** 2026-10-04. Contrato integral aprovado após `2c2461b`, Decisão140. Domínio, persistência e interação implementados; pacote limpo em fechamento. Não é aprovação de arte, mouse físico ou balanceamento.
+- Entrega funcional limpa: fonte `328af62`, pacote HerbariumProduction-20261004,67/67 regressões/16reaberturas/9fixtures/2cenários; EXE headless/OpenGL/PCK/manifesto/hashes e102logs finais sem ERROR, checkout removido.75manuais pendentes,70anteriores intactos. Este pacote não incorpora a arte concorrente do workspace nem homologa a aparência final do ponto.
+
+**Registro:** 2026-10-04. Contrato integral aprovado após `2c2461b`, Decisão140. Domínio, persistência, interação e pacote limpo concluídos. Não é aprovação de arte, mouse físico ou balanceamento.
 
 - IDs existentes: `raiz_gelida`, `trigo`, `tomate_sol`, `mistura_restauradora`. Nenhum asset, receita ou conceito artístico novo produzido por Codex.
 - Ponto físico independente `Main/ProductiveHerbarium`, criado em runtime104pixels a leste de `RestorationProject_FirstHerbarium` (posição atual1484,926). Arquivos `Scripts/ProductiveHerbarium.gd`/`ProductiveHerbariumPanel.gd`; `ClickableArea` tem círculo24pixels e aproximação62pixels. Não desloca projeto original/pocket/cultivo livre/caminhos ou altera a geometria externa concorrente.
