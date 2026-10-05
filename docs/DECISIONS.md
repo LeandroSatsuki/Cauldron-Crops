@@ -1,5 +1,14 @@
 # Decisions
 
+## Decisão 141 - Formulação do abastecimento físico de sementes
+
+- Em 2026-10-04, o autor pediu a próxima fase após `8dd2c00`. Fase A documental: gameplay/engenharia recomendam fechar Caldeirão → golem → Village Storage para sementes, cuja transferência hoje é pessoal. O pedido não aprova por consequência destino logístico, custódia ou prioridade; contrato integral em FARM_SYSTEM_V2 aguarda confirmação antes de B–E.
+- Candidato: após Clareira, destino opt-in por lote finito de receitas disponíveis com resultado `semente_basica` ou `semente_verao`; padrão pessoal e receitas/rendimentos/tempos/XP atuais preservados. Um preparo convertido por vez, retirada/cargo/depósito físicos e próximo preparo somente após depósito. Sem fila, reposição automática, novo ator, cultura ou receita.
+- Nos modos Colher primeiro/Regar primeiro, finalizar tarefa/carga atual e atender saída pronta antes de nova tarefa agrícola. Modos exclusivos/Pausado conservam e explicam espera, sem alterar prioridade. Semear OFF e cultura escolhida independentes; Aceleradora exclusiva de colheita. Lote grande pode atrasar tarefas agrícolas, sem vantagem de ritmo homologada.
+- Conversão baixa somente seu recibo e cria saída imutável; cancelamento restitui somente futuras reservas, preservando saída/cargo para o baú, inclusive refund pendente. Sem fallback à Mochila, teleporte ou sementes + refund. Cargo logístico separado/exclusivo; preflight conjunto caldeirão/golem/gate/snapshot parcial e writer antes de mutação/I/O.
+- Abóbora requer acesso sazonal e destino útil; Elixir permanece reservado. Segunda restauração é reserva de layout sem benefício definido. Craft legado de golem incrementa contador, não cria segundo ator. Nenhuma alternativa ativada.
+- Nenhum runtime, teste ou exportação novo nesta consulta; fonte `328af62`/HerbariumProduction-20261004 permanece. 67/67 é evidência anterior; 75 textos manuais preservados e pendentes, sem teste imediato ou save pessoal acessado. Arte concorrente preservada fora da publicação; Antigravity mantém direção/produção. Proposta não é conteúdo implementado em ART_HANDOFF.
+
 ## Decisão 140 - Herbário produtivo aprovado
 
 - Fechamento limpo: fonte `328af62`, pacote HerbariumProduction-20261004,67/67 regressões/16reaberturas/9fixtures/2cenários adicionais. EXE headless/OpenGL/PCK/manifesto/hashes e102logs finais sem ERROR conferidos; checkout removido.75manuais pendentes,70textos antigos intactos. Revisão de entrega independente concluída sem bloqueador; não homologa manual/arte/balanceamento.

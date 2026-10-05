@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-10-04 - Proposta de abastecimento físico de sementes
+
+- Fase A documental após `8dd2c00`; gameplay/engenharia recomendam fechar Caldeirão → golem → Village Storage para as sementes de Trigo/Tomate atuais. Contrato completo/B–E em FARM_SYSTEM_V2/Decisão 141, aguardando aprovação antes de código.
+- Lote finito opt-in, gate Clareira, saída pessoal padrão; um preparo convertido por vez, transporte físico e próximo timer somente após depósito. Modos mistos existentes atendem após tarefa/carga atual e antes de novas agrícolas; exclusivos/Pausado esperam. Cancelamento restitui apenas futuras reservas, preserva saída/cargo e refund pendente. Sem semeador autorligado, mudança de cultura, Aceleradora em sementes, fila ou fabricação infinita.
+- Custódia própria e preflight efetivo conjunto caldeirão/golem/gate/partiais/writer necessários; READY atual não é produto materializado independente. Lote grande pode atrasar agricultura; vantagem de ritmo não homologada. Abóbora/Elixir e novas restaurações/golems não ativados.
+- Nenhum código, receita, cena, save, arte, teste ou build novo nesta consulta. Fonte `328af62`/HerbariumProduction-20261004 preservada; 67/67 é baseline anterior, 75 roteiros manuais intactos/pendentes. Arte concorrente fora da publicação, sem save pessoal acessado ou teste imediato exigido. Proposta não é conteúdo entregue em ART_HANDOFF.
+- QA documental independente sem bloqueador para publicação/apresentação; esclarecido cancelamento do timer ainda não convertido. Coordenador confirmou 75 textos/ordem iguais a `8dd2c00`, diff sem erros e seleção de apenas cinco documentos próprios, sem hunk artístico concorrente. Não é aprovação de design/B–E ou teste novo.
+
 ## 2026-10-04 - Herbário produtivo aprovado e implementado
 
 - Pacote limpo HerbariumProduction-20261004 de `328af62`:67/67 regressões,16reaberturas/9fixtures/2cenários adicionais, startups EXE headless/OpenGL/PCK/manifesto/hashes e102logs finais sem ERROR; checkout removido.75manuais pendentes,70textos intactos. Negativo correto recusa FlameFertilizer antigo por Herbário ausente; negativas iniciais preservadas fora dos resultados finais. Revisão independente de entrega concluída sem bloqueador.
