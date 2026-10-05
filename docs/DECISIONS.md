@@ -2,6 +2,8 @@
 
 ## Decisão 138 - Uso agrícola do Adubo Flamejante aprovado
 
+- B–E fechadas tecnicamente na fonte `17e7050`, pacote limpo FlameFertilizer-20261004:64/64 headless,15reaberturas/8fixtures/2cenários adicionais; EXE headless/OpenGL/PCK/manifesto/hashes/97logs finais sem ERROR e limpeza do worktree conferida. Dedicados domínio124/persistência86/fixture2/reabertura8 por backend, UI144/150 (6 capturas extras). Recompensa primária adubada usa um aviso +3, sem +1/+2 sobrepostos; RNG/totais intactos. A preliminar `aa8f759` fica preservada, não é a entrega vigente. 65 textos antigos intactos+5AF=70 manuais pendentes; revisão final independente concluída sem bloqueador, sem aceite artístico/manual/balanceamento.
+
 - Em 2026-10-04, o autor respondeu “sim” ao contrato integral apresentado após `6f92350`. Autoriza B–E do FARM_SYSTEM_V2: receita atual preservada, um adubo da Mochila, tomate crescendo/maduro antes da materialização, +2 tomates aditivos, uma aplicação por cultura e perda na morte/reset real, sem refund pós-aplicação.
 - A confirmação substitui o portão da Decisão 137; não homologa balanceamento, arte, conforto ou testes manuais. Crescimento, rega, estações, sementes/drops, XP vigente, semeadura e logística física continuam iguais; não ativar Elixir, calendário, economia ou novos sistemas por consequência.
 - FarmPlot mantém a autoridade; a aproximação captura identidade transitória da cultura. Replantar no mesmo nó invalida o alvo, amadurecer não. Campo opcional estrito em save v4, GRID/legado/preflight, recompensas exatas e transferência ao cargo existente evitam gasto em outra planta ou reaplicação do bônus.
