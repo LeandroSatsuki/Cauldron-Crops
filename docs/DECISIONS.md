@@ -1,5 +1,12 @@
 # Decisions
 
+## Decisão 143 - Formulação do destino dos excedentes
+
+- Em 2026-10-05, após o fechamento SeedDelivery, o autor respondeu “aprovado”. A continuidade foi tratada como consulta do próximo recorte, não aprovação implícita de preços, comércio ou benefícios novos. Gameplay/engenharia, em leitura guiada por perfis, recomendam economia inicial com saída escolhida para excedentes E primeiro uso útil da moeda; vender isoladamente não fecha um loop.
+- Direção monetária/saída universal permanece a Decisão 84. Representação da troca e primeiro uso público exigem escolha humana; nome/lore, itens, taxas, custo e gate continuam abertos. Não reativar SellMenu, lojas, NPCs, F10, Dormir pago ou preços legados por consequência. Aquisição alternativa de materiais e melhoria funcional são opções de discussão, não conteúdos aprovados.
+- Proposta, evidências, alternativas e plano técnico condicionado em `INITIAL_ECONOMY_DESIGN.md`. Segunda restauração precisa de nova possibilidade definida; Abóbora depende de acesso sazonal e uso aprovado, Elixir segue reservado. B–E somente após confirmação do contrato delimitado, não da direção genérica.
+- Somente documentação: nenhum runtime, teste/exportação ou save pessoal acessado. Fonte `8b73dc6`/SeedDelivery e fechamento `aeb4333` preservados; 71/71 é evidência anterior, 80 textos/ordem manuais permanecem pendentes e intactos. Arte com Antigravity; alterações concorrentes não integram esta entrega.
+
 ## Decisão 142 - Abastecimento físico de sementes aprovado
 
 - Em 2026-10-04, o autor respondeu “aprovado” ao contrato integral de `6da1cd5`, autorizando B–E do FARM_SYSTEM_V2 e substituindo o portão da Decisão 141. Não é aceite manual, artístico ou de balanceamento.
