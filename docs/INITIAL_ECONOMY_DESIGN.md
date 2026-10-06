@@ -1,8 +1,8 @@
 # Economia inicial e destino dos excedentes
 
-**Fase A de design, 2026-10-05. Somente proposta; implementação não autorizada.** Após o fechamento técnico do abastecimento físico de sementes, o autor respondeu “aprovado”. Esta consulta identifica o próximo objetivo de gameplay, sem interpretar a resposta como aprovação de preços, comércio, NPCs ou benefícios ainda não apresentados.
+**Contrato candidato, Fase A, 2026-10-05. Aguardando aprovação integral antes de B–E.** O autor autorizou continuar após a recomendação de aquisição alternativa de materiais. O recorte abaixo concretiza essa recomendação; preços, gate e representação comercial ainda não foram aprovados.
 
-A recomendação é fechar o percurso **produção → excedente escolhido → moeda universal → uma possibilidade útil ao jogador**. A saída de baixo atrito já é direção aprovada pela Decisão 84; sua representação, seus valores e o primeiro uso público da moeda ainda precisam de decisão. Venda sem esse uso apenas troca recursos parados por moeda parada.
+O percurso proposto é **produção → excedente do baú escolhido → Moedas → Carvão ou Raiz Gélida no baú → receitas e projetos existentes**. A coleta continua disponível sem moeda. Isso introduz comércio limitado no protótipo, não apenas uma melhoria de armazenamento; não reativa a loja antiga nem define sua representação narrativa final.
 
 ## Estado confirmado
 
@@ -22,36 +22,71 @@ Cultivo de Trigo/Tomate, semeadura seletiva, colheita física, produção finita
 
 Outra fonte renovável ou mais lotes tenderiam a ampliar quantidade, sem garantir uma nova escolha. A Abóbora possui semente determinística por Tomate + Raiz, mas fabricar a semente não resolve sua estação nem o destino da colheita. Nenhuma alternativa está autorizada por esta comparação.
 
-## Fronteira econômica recomendada
+## Acesso e representação propostos
 
-Estes limites são candidatos, não um contrato completo para B–E:
+Após restaurar a Clareira, abrir fisicamente o Baú da Vila oferece um botão **Troca**. O gate protege a primeira expedição/restauração e não exige Herbário produtivo, semeador ligado ou talento. Saves com a Clareira restaurada tornam-se elegíveis, sem prêmio, crédito inicial ou transação automática.
 
-- Uma ação manual na vila, com item, quantidade e total explicitamente confirmados. O baú físico existente pode ser ponto de acesso técnico, mas isso não o transforma automaticamente em loja ou mecanismo narrativo de comércio.
-- Consumo direto do Village Storage quando aprovado, preservando a separação da Mochila. Definir a origem pessoal ou complementar no contrato; não fundir estoques, retirar automaticamente tudo ou vender cargas/reservas que já pertencem a outra tarefa.
-- Lista inicial pequena de comuns regularmente acessíveis. Não converter `valor_base`, `pode_vender` ou `Database.precos` em balanceamento aprovado. Declarar o que o piloto cobre e o que falta para a direção universal; uma lista parcial não atende todo o catálogo.
-- Um primeiro uso funcional da moeda antes de publicar o sistema. Aquisição alternativa de materiais comuns ou melhoria com nova função são caminhos para discussão, não conteúdo escolhido. Compra de sementes, lojas iniciais e NPCs não voltam por consequência.
-- Escolha de produzir, reservar ou trocar; sem venda automática, metas aleatórias ou obrigação de praticar todas as atividades. Progresso obrigatório mantém caminho determinístico apropriado.
-- Sem trabalho remoto no Bosque, simulação offline, rede de baús, segundo golem, mastery, lore ou arte final. Antigravity mantém direção e produção artística.
+O painel usa **Moedas** como rótulo provisório da unidade universal, fora dos slots. Não pressupõe Gold, comerciante, mensageiro ou mecanismo mágico. Aceitar este piloto significa autorizar explicitamente uma interface comercial abstrata no baú, posterior à Clareira; caso essa representação não combine com a história, deve ser substituída antes da implementação. Antigravity mantém direção e produção artística.
 
-## Decisão humana necessária
+## Itens e preços de piloto
 
-A próxima decisão deve aprovar conjuntamente **como a troca se apresenta** e **o que a moeda permite fazer pela primeira vez**. O nome/lore monetário continua aberto; usar “Moedas” provisoriamente exige confirmação, não assumir Gold.
+Valores por unidade, candidatos para teste, não derivados automaticamente dos preços legados nem balanceamento homologado:
 
-Aquisição alternativa de materiais favorece quem quer progredir com suas atividades preferidas, mas precisa preservar o valor da exploração e não ressuscitar a loja inicial retirada. Uma melhoria pode criar um objetivo claro, mas seu benefício precisa ser escolhido antes: não inventar mais slots, capacidade do baú ou bônus numérico para justificar a venda.
+| Item | Receber ao vender | Pagar para obter |
+| --- | ---: | ---: |
+| Trigo `trigo` | 1 | Não disponível |
+| Tomate do Sol `tomate_sol` | 2 | Não disponível |
+| Carvão `carvao` | 1 | 4 |
+| Raiz Gélida `raiz_gelida` | 2 | 6 |
+| Peixe Comum `peixe_comum` | 1 | Não disponível |
 
-Depois dessa decisão, formular itens, taxas, custo do benefício, desbloqueio e interação completa. **B–E não começam apenas com aprovação da direção geral:** o autor precisa confirmar o contrato delimitado. Se nenhum primeiro uso econômico combinar com o projeto, retornar à segunda restauração e escolher a nova possibilidade que ela abre.
+Somente esses cinco IDs entram na venda. Água, sementes, consumíveis, Mistura, crafts, raros, colecionáveis e Abóbora permanecem fora. A Abóbora ainda carece de acesso sazonal público adequado; não abrir cultivo, Elixir ou estação por consequência. Este piloto cobre cinco recursos comuns, não cumpre ainda a saída universal de todo o catálogo da Decisão 84.
+
+Cada operação aceita de **1 a 99 unidades**, escolhidas manualmente, e exige confirmação. Compra não tem fila, estoque comercial finito, timer, pedido automático ou progresso offline; entrega imediatamente no mesmo Village Storage como transação local abstrata. Não simula produção/coleta/transporte de golem.
+
+## Origem e confirmação
+
+Venda retira exclusivamente do estoque autoritativo do Baú da Vila ativa. Compra debita a carteira e acrescenta exclusivamente ao mesmo baú. Mochila não complementa a venda nem recebe compras; é preciso depositar pessoalmente recursos externos antes de negociá-los. Reservas já retiradas pelo caldeirão, resultados prontos, cargos de colheita/semente/logística e baú cacheado não são estoque negociável.
+
+O fluxo é abrir baú → Troca → escolher Vender ou Obter materiais → item → quantidade → conferir total e saldo resultante → confirmar. Manter ícone/nome, estoque disponível, quantidade e moeda explícitos, em painel opaco. Os painéis lado a lado de Mochila/baú e suas transferências continuam; troca e transferência não podem estar ativas simultaneamente. Fechar a troca retorna ao baú; Esc/cancelamento não gastam. Sem nova HUD fixa, venda por clique simples/direito, vender tudo ou seleção obrigatória de item/ferramenta.
+
+Confirmar exige vila ativa, ausência de transição/load, Clareira restaurada, baú direto válido, personagem no alcance contextual seguro calculado pelo Main a partir do pedido-base de 52 pixels e geração vigente. Esse alcance considera obstáculo, raio do personagem e margem; não impor 52 como limiar final, o que poderia recusar o jogador após a própria aproximação parar em posição válida. Alterar intenção, fechar painel, load ou viagem invalida callbacks. Revalidar saldo e estoque bruto antes do commit; quantidade impossível recusa integralmente, nunca vende o restante ou ajusta o número silenciosamente. Aumento do estoque pode manter a quantidade escolhida. Confirmação duplamente acionada não repete a operação.
+
+Venda de ingredientes é escolha do jogador: mostrar a origem e o total, mas não reservar automaticamente recursos para receitas futuras ou recomprar sozinho. Falha conserva todos os recursos e moeda; só publicar feedback/atualização após o par estoque/carteira estar coerente.
+
+## Utilidade e consequências para o loop
+
+Carvão comprado permite recuperar sementes de Trigo e fabricar Mistura Restauradora; Raiz comprada participa de Crescimento e Infusão Purificadora. Comprar não concede flags de descoberta, receita, XP, restauração, coleta do Bosque ou marco da Mochila. Fontes existentes e seus intervalos permanecem.
+
+Uma Raiz custaria seis trigos ou três tomates vendidos. Isso pode reduzir ou substituir expedições posteriores para adquirir essas unidades; o gate protege a primeira expedição, não sua frequência futura. É uma escolha deliberada entre atividades, não promessa de que a exploração mantém a mesma atratividade. Cultivos de 3–6 segundos continuam, sem alongar timers para justificar preços.
+
+Compra/revenda direta perde moeda: Carvão 4→1, Raiz 6→2. As receitas atuais que consomem esses materiais produzem sementes/consumíveis/crafts excluídos da venda, não uma conversão alquímica direta lucrativa entre os cinco comuns. Agricultura pode gerar valor como pretendido: a colheita base é **uma unidade**, e dois trigos → três sementes → três colheitas de trigo rendem um trigo líquido antes de água/tempo/trabalho. Adubo acrescenta dois tomates à cultura elegível; não tratar toda colheita como base três nem RNG como rendimento garantido. Isto não demonstra balanceamento global ou ausência de toda exploração econômica futura.
+
+## Transações e salvamento
+
+Carteira aceita saldo inteiro não negativo até **9.007.199.254.740.991**, o maior inteiro seguro no percurso JSON adotado para o piloto. Validar tipo, finitude, integralidade e limite antes de converter, multiplicar, somar ou debitar; booleanos, strings e números fracionários não viram moeda por coerção. Quantidade de troca permanece 1–99, independentemente do stack pessoal. Estoque do item operado e seu resultado precisam estar no intervalo seguro; estoque legado maior bloqueia aquela troca sem truncar ou invalidar todo o v4 por essa nova política.
+
+Commit síncrono com proteção de reentrada e save/load durante a operação: validar ambos os lados, aplicar retirada/crédito ou débito/depósito, conferir resultado e só então notificar. Não usar `VillageResourceAccess.consume()`, que completa pela Mochila, nem os métodos permissivos atuais como substitutos de preflight. Uma falha inesperada precisa restaurar o par exato, não adicionar um refund reexecutável.
+
+Preservar save v4 e saldo legado válido exatamente. Completo sem campo monetário inicia em zero; parcial sem o campo preserva o saldo runtime. Campo monetário explícito inválido ou container econômico inválido recusa antes de mutação, retorno à vila ou I/O, sem zerar/reparar silenciosamente. Container explícito de `village_chest_inventory` deve ser um Dictionary, não convertido silenciosamente em baú vazio. Writer valida a carteira e recusa enquanto houver transação; arquivo anterior permanece. Ter saldo positivo antes da Clareira é compatível com legado: o gate restringe comandos, não validade da carteira.
+
+Não persistir intenção, cotação, callbacks, histórico de trocas ou nova flag de desbloqueio. Load aceito fecha/resetará intenção e não executa transações. Carteira e baú continuam substituições independentes em snapshots parciais, sujeitos à validação de seus valores efetivos: isso **não** garante conservação entre snapshots parciais arbitrariamente montados nem é sistema anticheat. Não ampliar incidentalmente as regras de todos os estoques antigos.
+
+## Aprovação necessária
+
+Confirmar conjuntamente **comércio provisório pelo baú após Clareira, rótulo Moedas, cinco preços de venda e duas compras da tabela, estoque exclusivamente Village Storage, operações manuais de 1–99 com confirmação, compras imediatas locais, efeito possível sobre expedições e regras de transação/persistência acima**. Só então executar B–E. Nenhuma loja antiga, compra de sementes, NPC, Dormir pago, requests, F10, calendário, mapa, espécie, segundo ator, mastery ou tempo offline é autorizada por consequência.
 
 ## Plano técnico condicionado ao contrato
 
-1. **B, transações e dados:** domínio pequeno de troca e primeiro uso, elegibilidade explícita, confirmação e consumo/crédito atômicos. Recibo por origem, saldo inteiro não negativo, limites numéricos e proteção de reentrada. Revisar ciclos de fabricação/recompra; não criar framework antecipado.
-2. **C, persistência:** preflight de estado efetivo e writer antes de mutação/I/O, compatibilidade completa/parcial, replay e reabertura sem duplicação. Preservar saldo legado válido sem premiar ou zerar silenciosamente; definir tratamento de valores incompatíveis no contrato.
-3. **D, interação:** acesso contextual com aproximação, painel opaco, quantidade, total e confirmação/cancelamento. Revalidar origem, saldo, contexto e geração; não vender pela simples seleção do item. Registrar somente implementação visual real em ART_HANDOFF.
-4. **E, fechamento:** recusas/rollback, capacidades, concorrência com caldeirão/golem, saldo/preços/limites, save/load/viagem e ciclos econômicos. QA isolado, regressões, pacote limpo e novos roteiros sem apagar os 80 atuais. Automação não homologa ritmo, conforto, arte ou balanceamento.
+1. **B, transações e dados:** tabela própria dos cinco IDs/duas compras, consulta/commit Storage-only, guard e rollback exato de estoque/carteira. Domínio limitado, sem framework econômico, registro persistente de transações ou ingestão de preços legados.
+2. **C, persistência:** preflight monetário/writer, completo antigo/default zero/parcial, saldo/container explícito inválido e reabertura; intenção invalidada e saldo independente do gate. Recusa preserva runtime/arquivo, sem normalizar estoques alheios.
+3. **D, interação:** botão condicionado no baú, painel opaco e confirmação por item/quantidade/total/saldo; exclusão com transferência, ferramentas/picking/atalhos preservados e cancelamento por geração/contexto. Registrar somente implementação visual real em ART_HANDOFF.
+4. **E, fechamento:** cada ID/preço, 1/99/0/fracionário/overflow, estoque/saldo insuficiente ou legado excessivo, rollback/reentrada/callbacks obsoletos, distâncias/cena/cache/viagem, snapshot completo/parcial e arquivo anterior. Conferir cargos/reservas/receitas/marcos intactos e compra/revenda sem lucro direto. QA isolado, regressões, pacote limpo e novos roteiros sem apagar os 80 atuais. Automação não homologa ritmo, conforto, arte ou balanceamento.
 
 ## Fontes e validação desta consulta
 
-Gameplay e engenharia fizeram consultas independentes somente leitura, guiadas pela leitura explícita dos perfis; não houve carregamento nativo confirmado. Fontes: Decisão 84, contexto §88, ROADMAP vigente, FARM_SYSTEM_V2, FIRST_EXTERNAL_REGION_VERTICAL_SLICE, TIME_SYSTEM, `VillageChest.gd`, `SellMenu.gd`, `EconomyManager.gd`, `SaveManager.gd`, `RestorationProject.gd`, `Main.gd`, `Database.gd`, `FarmPlot.gd` e receitas de Semente de Outono/Elixir.
+Gameplay e engenharia revisaram o candidato em leitura guiada pelos perfis, sem aprovação de design. Gameplay recomendou excluir Abóbora, reconhecer comércio e substituição possível de coleta; engenharia delimitou estoque bruto, números seguros, reentrada e o limite de conservação dos snapshots parciais. Fontes: Decisão 84, contexto §88, ROADMAP vigente, FARM_SYSTEM_V2, FIRST_EXTERNAL_REGION_VERTICAL_SLICE, `VillageChest.gd`, `VillageChestPanel.gd`, `VillageResourceAccess.gd`, `SellMenu.gd`, `EconomyManager.gd`, `SaveManager.gd`, `Database.gd`, `FarmPlot.gd` e receitas atuais.
 
 Esta fase altera somente documentação. Nenhum jogo, teste ou exportação novo; nenhum save pessoal acessado ou arte concorrente integrada. Não há nota de conteúdo entregue em ART_HANDOFF. Revisão documental confere limites e preservação do checklist, não aprova design.
 
-QA independente em leitura guiada não encontrou bloqueador material: claims confrontados com código e Decisão 84, diff próprio sem erros de whitespace, 80 entradas manuais idênticas ao HEAD em texto/ordem e nenhuma concluída. Parecer não aprova design ou recertifica a build. Publicação seleciona os quatro documentos próprios, excluindo o hunk artístico do contexto §71 e demais alterações externas.
+QA independente deste contrato concluiu sem bloqueadores após corrigir o alcance de confirmação: os 52 pixels são pedido-base, não limiar efetivo; a validação futura reutiliza o cálculo seguro do Main. Os 80 textos/ordem manuais são idênticos ao HEAD e permanecem pendentes. O parecer não aprova design, preços, lore ou runtime. Publicação seleciona somente os quatro documentos próprios; alterações artísticas concorrentes, inclusive o hunk do contexto §71, ficam fora. A revisão inicial `e6a6e5e` permanece histórica.

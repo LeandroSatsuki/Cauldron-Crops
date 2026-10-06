@@ -1,5 +1,13 @@
 # Decisions
 
+## Decisão 144 - Contrato candidato de comércio limitado na vila
+
+- Em 2026-10-05 o autor pediu “pode seguir” após a recomendação de aquisição alternativa de materiais. A continuidade aprofunda essa opção, sem aprovar parâmetros ainda não apresentados. Contrato completo em `INITIAL_ECONOMY_DESIGN.md`, aguardando confirmação integral antes de B–E.
+- Candidato: botão Troca no Baú após Clareira; Moedas como rótulo provisório, venda exclusivamente do Storage de Trigo1/Tomate2/Carvão1/Raiz2/Peixe1 por unidade, aquisição de Carvão4/Raiz6 para o mesmo baú. Comércio abstrato local, manual, 1–99 unidades/confirmar total e saldo, sem compra de sementes/NPC/loja antiga ou teleporte de logística do golem.
+- Compra pode substituir unidades coletadas em expedições posteriores; não concede descoberta/XP/marco nem garante preservar frequência da exploração. Base de colheita é uma unidade, Adubo acrescenta duas ao tomate elegível. Preços são piloto proposto, não balanceamento homologado; Abóbora e demais comuns fora da lista ainda não possuem saída universal por este recorte.
+- Carteira estrita até maior inteiro seguro JSON, estoque bruto/resultado operacional válidos, commit síncrono/guard/rollback. Completo sem saldo resolve0, parcial ausente preserva, legado válido permanece; inválido recusa antes de mutação/I/O. Gate restringe comandos, não saldo legado. Parciais carteira/baú continuam independentes; não prometer conservação entre snapshots arbitrários nem anticheat.
+- Somente documentação, 80 manuais pendentes/intactos e baseline SeedDelivery preservados; nenhum teste/jogo/exportação/save pessoal ou integração de arte. Aprovação deve incluir comércio provisório/gate, nome, preços, fonte/destino, confirmação, aquisição imediata e persistência; não reativar sistemas reservados por consequência.
+
 ## Decisão 143 - Formulação do destino dos excedentes
 
 - Em 2026-10-05, após o fechamento SeedDelivery, o autor respondeu “aprovado”. A continuidade foi tratada como consulta do próximo recorte, não aprovação implícita de preços, comércio ou benefícios novos. Gameplay/engenharia, em leitura guiada por perfis, recomendam economia inicial com saída escolhida para excedentes E primeiro uso útil da moeda; vender isoladamente não fecha um loop.
